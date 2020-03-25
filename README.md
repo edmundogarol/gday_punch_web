@@ -1,2 +1,3 @@
-# gday_punch_be
-Gday Punch Backend (Django REST Framework)
+# Gday Punch Backend (Django REST Framework)
+
+Repository: `gday_punch_be`
