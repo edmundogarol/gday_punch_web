@@ -1,3 +1,3 @@
-# Gday Punch Backend (Django REST Framework)
+# Gday Punch Web App (Django REST Framework + React.JS)
 
-Repository: `gday_punch_be`
+Repository: `gday_punch_web`
