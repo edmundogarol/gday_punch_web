@@ -1,26 +1,28 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { getImageModule } from "./utils/utils";
+import "./App.scss";
 
 function App() {
+  const styles = getStyles();
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+      <header className="App-header app-temp-background">
+        <img
+          src={getImageModule("gday.png")}
+          className="App-logo"
+          alt="Gday Punch Logo"
+        />
+        <h1>Gday Punch Manga Magazine</h1>
+        <p>Launching December 2020!</p>
       </header>
     </div>
   );
+}
+
+function getStyles() {
+  return {
+  }
 }
 
 export default App;

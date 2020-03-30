@@ -125,4 +125,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+# Static file directory in the React app
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/images/"),
+]
+
 STATIC_URL = '/static/'
