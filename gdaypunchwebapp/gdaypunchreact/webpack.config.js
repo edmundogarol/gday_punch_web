@@ -1,13 +1,8 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 const isDevelopment = process.env.NODE_ENV === "development";
 
 module.exports = {
-  devServer: {
-    contentBase: "./dist",
-    hot: true
-  },
   module: {
     rules: [
       {

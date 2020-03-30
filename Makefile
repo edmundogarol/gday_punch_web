@@ -15,10 +15,7 @@ build:
 migrate:
 	python manage.py migrate
 
-loaddata:
-	# python manage.py loaddata authorsFixture && python manage.py loaddata booksFixture
-	
 server:
 	python manage.py runserver
 
-app: gui	dev	build	migrate	loaddata	server
+app: gui	dev	build	migrate	server
