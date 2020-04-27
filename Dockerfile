@@ -26,7 +26,5 @@ ADD . /gdaypunchweb/
 # Expose port 8080 to other containers
 EXPOSE 8080
 
-CMD /etc/init.d/apache2 start -D FOREGROUND
-
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
