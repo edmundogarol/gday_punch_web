@@ -16,6 +16,6 @@ migrate:
 	python manage.py migrate
 
 server:
-	python manage.py runserver
+	python manage.py runserver 0.0.0.0:8000
 
-app: gui	dev	build	migrate	server
+app: gui	migrate	server
