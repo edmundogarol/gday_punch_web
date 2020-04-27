@@ -23,8 +23,8 @@ WORKDIR /gdaypunchweb
 # Copy the current directory contents into the container at /gdaypunchweb
 ADD . /gdaypunchweb/
 
-# Expose port 8080 to other containers
-EXPOSE 8080
+# Expose port 8000 to other containers
+EXPOSE 8000
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
