@@ -25,7 +25,11 @@ SECRET_KEY = '4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["gday-punch-web-dev.us-west-2.elasticbeanstalk.com"]
+ALLOWED_HOSTS = [
+    "gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
+    "172.31.9.239",
+    "35.166.24.200",
+]
 
 
 # Application definition
