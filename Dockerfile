@@ -36,11 +36,12 @@ RUN mkdir -p /opt/app/pip_cache
 RUN mkdir -p /opt/app/gdaypunchbackend
 RUN mkdir -p /opt/app/gdaypunchwebapp
 COPY requirements.txt start-server.sh /opt/app/
-COPY .pip_cache /opt/app/pip_cache/
+# COPY .pip_cache /opt/app/pip_cache/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 WORKDIR /opt/app
-RUN pip install -r requirements.txt --cache-dir /opt/app/pip_cache
+# RUN pip install -r requirements.txt --cache-dir /opt/app/pip_cache
+RUN pip install -r requirements.txt
 RUN chown -R www-data:www-data /opt/app
 
 # Expose port 8000 to other containers
