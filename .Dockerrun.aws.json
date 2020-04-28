@@ -1,0 +1,18 @@
+{
+  "AWSEBDockerrunVersion": 1,
+  "Image": {
+  	"Name": "gdaypunchimage",
+  	"Update": "true"
+  },
+  "Volumes": [
+    {
+      "HostDirectory": "/var/app/mydb",
+      "ContainerDirectory": "/etc/mysql"
+    }
+  ],
+  "Ports": [
+  	{
+  		"ContainerPort": "8000"
+  	}
+  ]
+}

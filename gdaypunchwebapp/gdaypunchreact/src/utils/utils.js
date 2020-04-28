@@ -4,5 +4,5 @@
  * @param {string} name of img to retrieve
  */
 export function getImageModule(url) {
-  return require(`../../public/images/${url}`).default;
+  return require(`../../public/static/images/${url}`).default;
 }
