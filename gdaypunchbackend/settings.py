@@ -27,13 +27,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
-    "172.31.9.239",
-    "35.166.24.200",
+    "localhost",
+    "0.0.0.0",
 ]
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

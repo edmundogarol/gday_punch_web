@@ -19,33 +19,25 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/so
 RUN sudo apt update
 RUN sudo apt -y install yarn
 
-# # create root directory for our project in the container
-# RUN mkdir /gdaypunchweb
-
-# # Set the working directory to /gdaypunchweb
-# WORKDIR /gdaypunchweb
-
-# # Copy the current directory contents into the container at /gdaypunchweb
-# ADD . /gdaypunchweb/
-
-# Install any needed packages specified in requirements.txt
-# RUN pip3 install -r requirements.txt
-
+#Create root directory for our project in the container
 RUN mkdir -p /opt/app
 RUN mkdir -p /opt/app/pip_cache
 RUN mkdir -p /opt/app/gdaypunchbackend
 RUN mkdir -p /opt/app/gdaypunchwebapp
+
+#Copy app contents to root directory
 COPY requirements.txt start-server.sh /opt/app/
-# COPY .pip_cache /opt/app/pip_cache/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
+
+#Navigate to root
 WORKDIR /opt/app
+
 # RUN pip install -r requirements.txt --cache-dir /opt/app/pip_cache
 RUN pip install -r requirements.txt
 RUN chown -R www-data:www-data /opt/app
 
 # Expose port 8000 to other containers
 EXPOSE 8020
-
 STOPSIGNAL SIGTERM
 CMD ["/opt/app/start-server.sh"]
