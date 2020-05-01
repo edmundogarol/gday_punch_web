@@ -26,9 +26,14 @@ SECRET_KEY = '4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    "gdaypunch.com",
+    ".gdaypunch.com",
+    "gdaypunch.elasticbeanstalk.com",
     "gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
+    ".gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
     "localhost",
     "0.0.0.0",
+    "172.31.15.249",
 ]
 
 def is_ec2_linux():
@@ -58,11 +63,12 @@ def get_linux_ec2_private_ip():
 # So we detect if we are in elastic beanstalk,
 # and add the instances private ip address
 private_ip = get_linux_ec2_private_ip()
-print(private_ip)
+print('private_ip: ' + str(private_ip))
 if private_ip:
     ALLOWED_HOSTS.append(private_ip)
     
-print(ALLOWED_HOSTS)
+print("ALLOWED_HOSTS: ")
+print(', '.join(ALLOWED_HOSTS))
 
 # Application definition
 INSTALLED_APPS = [
