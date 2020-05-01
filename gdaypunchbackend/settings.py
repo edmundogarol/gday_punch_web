@@ -65,10 +65,7 @@ def get_linux_ec2_private_ip():
 private_ip = get_linux_ec2_private_ip()
 print('private_ip: ' + str(private_ip))
 if private_ip:
-    ALLOWED_HOSTS.append(private_ip)
-    
-print("ALLOWED_HOSTS: ")
-print(', '.join(ALLOWED_HOSTS))
+    ALLOWED_HOSTS.append(private_ip.decode('UTF-8'))
 
 # Application definition
 INSTALLED_APPS = [
