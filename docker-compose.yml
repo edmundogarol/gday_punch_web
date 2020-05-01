@@ -6,6 +6,6 @@ services:
     command: bash -c "make app"
     container_name: gdaypunchcontainer
     volumes:
-      - .:/opt/app
+      - .:/gdaypunchweb
     ports:
-      - "8020:8020"
+      - "8000:8000"
