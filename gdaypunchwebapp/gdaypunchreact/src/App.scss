@@ -29,6 +29,8 @@ code {
 
 .app-temp-background {
   background-image: url("/static/images/launch-background.png");
+  background-position: center;
+  background-size: contain;
 }
 
 .App-header {

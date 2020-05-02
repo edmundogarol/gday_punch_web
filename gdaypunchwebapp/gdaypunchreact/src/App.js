@@ -1,28 +1,36 @@
 import React from "react";
-import { getImageModule } from "./utils/utils";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+
+import Home from "./pages/Home";
 import "./App.scss";
 
 function App() {
   const styles = getStyles();
 
   return (
-    <div className="App">
-      <header className="App-header app-temp-background">
-        <img
-          src={getImageModule("gday.png")}
-          className="App-logo"
-          alt="Gday Punch Logo"
-        />
-        <h1>Gday Punch Manga Magazine</h1>
-        <p>Launching December 2020!</p>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <nav style={{ display: "none" }}>
+          <ul>
+            <li>
+              <Link to="/">Home</Link>
+            </li>
+          </ul>
+        </nav>
+        <Switch>
+          <Route path="/about"></Route>
+          <Route path="/users"></Route>
+          <Route path="/">
+            <Home />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 
 function getStyles() {
-  return {
-  }
+  return {};
 }
 
 export default App;
