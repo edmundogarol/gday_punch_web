@@ -26,16 +26,21 @@ RUN mkdir -p /opt/app/gdaypunchbackend
 RUN mkdir -p /opt/app/gdaypunchwebapp
 
 #Copy app contents to root directory
-COPY requirements.txt start-server.sh Makefile /opt/app/
+COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
+
+WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
+RUN	yarn && yarn run dev
 
 #Navigate to root
 WORKDIR /opt/app
 
-# RUN pip install -r requirements.txt --cache-dir /opt/app/pip_cache
+#Install requirements and migrate
 RUN pip install -r requirements.txt
-RUN make guts
+RUN python manage.py migrate
+
+#Change root permissions
 RUN chown -R www-data:www-data /opt/app
 
 # Expose port 8000 to other containers
