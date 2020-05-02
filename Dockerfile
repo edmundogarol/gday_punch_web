@@ -26,7 +26,7 @@ RUN mkdir -p /opt/app/gdaypunchbackend
 RUN mkdir -p /opt/app/gdaypunchwebapp
 
 #Copy app contents to root directory
-COPY requirements.txt start-server.sh /opt/app/
+COPY requirements.txt start-server.sh Makefile /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 
@@ -36,6 +36,8 @@ WORKDIR /opt/app
 # RUN pip install -r requirements.txt --cache-dir /opt/app/pip_cache
 RUN pip install -r requirements.txt
 RUN chown -R www-data:www-data /opt/app
+
+RUN make guts
 
 # Expose port 8000 to other containers
 EXPOSE 8020
