@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     "gdaypunch.elasticbeanstalk.com",
     "gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
     ".gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
+    "www.beta-gdaypunch.com",
+    "beta-gdaypunch.com",
     "localhost",
     "0.0.0.0",
     "172.31.15.249",
