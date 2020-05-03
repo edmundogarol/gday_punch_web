@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
     "beta-gdaypunch.com",
     "localhost",
     "0.0.0.0",
+    "192.168.1.104",
     "172.31.15.249",
 ]
 

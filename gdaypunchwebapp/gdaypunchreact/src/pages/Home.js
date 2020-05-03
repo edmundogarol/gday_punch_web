@@ -8,7 +8,9 @@ import {
   faPenNib,
   faBook,
   faChevronCircleRight,
-  faChevronCircleLeft
+  faChevronCircleLeft,
+  faSearchPlus,
+  faSearchMinus
 } from "@fortawesome/free-solid-svg-icons";
 import Escape from "static/resources/Escape.pdf";
 
@@ -16,10 +18,22 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 export default function Home() {
   const [pageNumber, setPage] = useState(1);
+  const [sizeLevel, setSize] = useState(0);
+
   const styles = getStyles();
 
   const prevDisabled = pageNumber === 1;
   const nextDisabled = pageNumber === 4;
+  const lowerDisabled = sizeLevel === 0;
+  const higerDisabled = sizeLevel === 2;
+
+  console.log('sizeLevel', sizeLevel);
+
+  const readerSizeLevels = [
+    { container: "60", page: 500 },
+    { container: "80", page: 750 },
+    { container: "100", page: 1000 }
+  ];
 
   return (
     <div className="App">
@@ -50,25 +64,47 @@ export default function Home() {
           </div>
         </div>
       </header>
-      <div style={styles.pdf}>
-        <FontAwesomeIcon
-          style={styles.pdfButton(prevDisabled)}
-          icon={faChevronCircleLeft}
-          onClick={() => (prevDisabled ? null : setPage(pageNumber - 1))}
-        />
-        <Document
-          file={Escape}
-          height={"100%"}
-          scale={1}
-          className="App-header"
-        >
-          <Page pageNumber={pageNumber} />
-        </Document>
-        <FontAwesomeIcon
-          style={styles.pdfButton(nextDisabled)}
-          icon={faChevronCircleRight}
-          onClick={() => (nextDisabled ? null : setPage(pageNumber + 1))}
-        />
+      <div className="pdf-reader">
+        <h1>Escape</h1>
+        <h4>by Edmundo Garol</h4>
+        <div style={styles.pdf}>
+          <FontAwesomeIcon
+            className="pdf-button"
+            style={styles.pdfNavigator("left", nextDisabled)}
+            icon={faChevronCircleLeft}
+            onClick={() => (nextDisabled ? null : setPage(pageNumber + 1))}
+          />
+          <Document
+            style={{ width: `${readerSizeLevels[sizeLevel].container}%` }}
+            file={Escape}
+            className="App-header"
+          >
+            <Page
+              pageNumber={pageNumber}
+              width={readerSizeLevels[sizeLevel].page}
+              object-fit="fill"
+              size="A4"
+            />
+          </Document>
+          <FontAwesomeIcon
+            className="pdf-button"
+            style={styles.pdfNavigator("right", prevDisabled)}
+            icon={faChevronCircleRight}
+            onClick={() => (prevDisabled ? null : setPage(pageNumber - 1))}
+          />
+          <FontAwesomeIcon
+            className="pdf-button"
+            style={styles.pdfMagnifier("left", false)}
+            icon={faSearchMinus}
+            onClick={() => (lowerDisabled ? null : setSize(sizeLevel - 1))}
+          />
+          <FontAwesomeIcon
+            className="pdf-button"
+            style={styles.pdfMagnifier("right", false)}
+            icon={faSearchPlus}
+            onClick={() => (higerDisabled ? null : setSize(sizeLevel + 1))}
+          />
+        </div>
       </div>
     </div>
   );
@@ -93,12 +129,25 @@ function getStyles() {
       flexDirection: "row",
       justifyContent: "space-around",
       alignItems: "center",
-      padding: 50
+      position: "relative",
+      paddingBottom: 50
     },
-    pdfButton: (disabled) => ({
+    pdfMagnifier: (position, disabled) => ({
+      position: "absolute",
+      bottom: 0,
       height: "4em",
       width: "4em",
-      opacity: disabled ? "0.2" : "0.8"
+      opacity: disabled ? "0" : "0.3",
+      transform: position === "left" ? "translateX(-40px)" : "translateX(40px)"
+    }),
+    pdfNavigator: (position, disabled) => ({
+      left: position === "left" ? 0 : "unset",
+      right: position === "right" ? 0 : "unset",
+      opacity: disabled ? "0" : "0.3",
+      position: "absolute",
+      zIndex: 1,
+      height: "4em",
+      width: "4em"
     })
   };
 }
