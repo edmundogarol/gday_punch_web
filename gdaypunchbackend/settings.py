@@ -168,6 +168,7 @@ USE_TZ = True
 # Static file directory in the React app
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),
+    os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
 ]
 
 STATIC_URL = '/static/'

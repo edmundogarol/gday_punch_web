@@ -18,9 +18,9 @@ export default function Home() {
         <h1>Gday Punch Manga Magazine</h1>
         <p>Launching December 2020!</p>
       </header>
-      {/* <Document file={Escape}>
+      <Document file={Escape}>
         <Page pageNumber={1} />
-      </Document> */}
+      </Document>
     </div>
   );
 }

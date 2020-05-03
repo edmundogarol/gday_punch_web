@@ -47,6 +47,10 @@ module.exports = {
       }
     ]
   },
+  output: {
+    path: '../../gdaypunchbackend/static/[hash].worker.js',
+    publicPath: `/static/`
+  },
   resolve: {
     extensions: [".js", ".jsx", ".scss"],
     alias: {
