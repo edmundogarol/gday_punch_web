@@ -1,36 +1,30 @@
 import React from "react";
-import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { Provider } from "react-redux";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { createStore, applyMiddleware } from "redux";
+import createSagaMiddleware from "redux-saga";
+import appReducer from "reducers/app";
+import appSaga from "sagas/app";
 
-import Home from "./pages/Home";
+import Home from "pages/Home";
 import "./App.scss";
 
+/**
+ * Set up and run app sagas listening for events
+ */
+const sagaMiddleware = createSagaMiddleware();
+const store = createStore(appReducer, applyMiddleware(sagaMiddleware));
+sagaMiddleware.run(appSaga);
+
 function App() {
-  const styles = getStyles();
-
   return (
-    <Router>
-      <div>
-        <nav style={{ display: "none" }}>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-          </ul>
-        </nav>
-        <Switch>
-          <Route path="/about"></Route>
-          <Route path="/users"></Route>
-          <Route path="/">
-            <Home />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+    <Provider store={store}>
+      <Router history={history}>
+        <Route exact path="/" component={Home} />
+        {/* <Route path="/book/:id/" component={BookDetail} /> */}
+      </Router>
+    </Provider>
   );
-}
-
-function getStyles() {
-  return {};
 }
 
 export default App;

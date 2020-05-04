@@ -25,6 +25,7 @@
         "semi": "off",
         "space-before-function-paren": "off",
         "quotes": "off",
+        "generator-star-spacing": "off",
         "import/no-unresolved": [
             2, 
             { "caseSensitive": true }

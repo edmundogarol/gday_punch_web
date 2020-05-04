@@ -20,7 +20,23 @@ code {
   }
 }
 
-.App-header a {
+nav {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15pt;
+  margin-right: 35pt;
+
+  a {
+    text-decoration: none;
+    color: #cecece;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 2pt;
+  }
+}
+
+.App-header .home-logo {
   display: flex;
   align-items: center;
   height: 100px;
@@ -28,13 +44,13 @@ code {
 }
 
 .App-logo {
-  height: 40vmin;
+  height: 30vmin;
   pointer-events: none;
   margin-left: -87px;
 }
 
 .App-logo-big {
-  height: 20vmin;
+  height: 16vmin;
   pointer-events: none;
   z-index: 1;
 }
@@ -113,7 +129,7 @@ code {
     }
   }
 
-  h1,
+  h2,
   h4 {
     margin: unset;
   }
@@ -142,6 +158,10 @@ code {
   width: 80%;
   justify-content: space-evenly;
   margin-top: 30pt;
+
+  h2 {
+    font-size: 1em;
+  }
 
   .svg-inline--fa {
     height: 2em;
