@@ -10,7 +10,8 @@ import {
   faChevronCircleRight,
   faChevronCircleLeft,
   faSearchPlus,
-  faSearchMinus
+  faSearchMinus,
+  faHeart
 } from "@fortawesome/free-solid-svg-icons";
 import Escape from "static/resources/Escape.pdf";
 
@@ -27,7 +28,7 @@ export default function Home() {
   const lowerDisabled = sizeLevel === 0;
   const higerDisabled = sizeLevel === 2;
 
-  console.log('sizeLevel', sizeLevel);
+  console.log("sizeLevel", sizeLevel);
 
   const readerSizeLevels = [
     { container: "60", page: 500 },
@@ -38,17 +39,19 @@ export default function Home() {
   return (
     <div className="App">
       <header className="App-header app-temp-background">
-        <img
-          src={getImageModule("gday.png")}
-          className="App-logo"
-          alt="Gday Punch Logo"
-        />
-        <img
-          src={getImageModule("gday_big.png")}
-          className="App-logo-big"
-          alt="Gday Punch Logo Big"
-        />
-        <p>Launching December 2020!</p>
+        <a href="https://www.gdaypunch.com">
+          <img
+            src={getImageModule("gday_big.png")}
+            className="App-logo-big"
+            alt="Gday Punch Logo Big"
+          />
+          <img
+            src={getImageModule("gday.png")}
+            className="App-logo"
+            alt="Gday Punch Logo"
+          />
+        </a>
+        <p>New Web App Launching in December 2020!</p>
         <div className="feature-content">
           <div className="feature">
             <FontAwesomeIcon icon={faPenNib} style={styles.mangaka} />
@@ -65,8 +68,13 @@ export default function Home() {
         </div>
       </header>
       <div className="pdf-reader">
-        <h1>Escape</h1>
-        <h4>by Edmundo Garol</h4>
+        <div className="pdf-details">
+          <div>
+            <h1>Escape</h1>
+            <h4>by Edmundo Garol</h4>
+          </div>
+          <FontAwesomeIcon icon={faHeart} /> (0)
+        </div>
         <div style={styles.pdf}>
           <FontAwesomeIcon
             className="pdf-button"

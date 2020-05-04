@@ -20,11 +20,17 @@ code {
   }
 }
 
+.App-header a {
+  display: flex;
+  align-items: center;
+  height: 100px;
+  margin-top: 50pt;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
-  position: absolute;
-  margin-top: -70pt;
+  margin-left: -87px;
 }
 
 .App-logo-big {
@@ -80,7 +86,36 @@ code {
   width: 4em;
 
   &:hover {
-    opacity: 1;
+    opacity: 1 !important;
+    cursor: pointer;
+  }
+}
+
+.pdf-details {
+  display: flex;
+  flex-direction: row;
+  text-align: start;
+  margin-left: auto;
+  margin-right: auto;
+  width: max-content;
+  margin-top: 10pt;
+  margin-bottom: 10pt;
+  align-items: flex-end;
+
+  svg {
+    margin-left: 20pt;
+    height: 1em;
+
+    &:hover {
+      cursor: pointer;
+      width: 1.3em;
+      height: 1.3em;
+    }
+  }
+
+  h1,
+  h4 {
+    margin: unset;
   }
 }
 
