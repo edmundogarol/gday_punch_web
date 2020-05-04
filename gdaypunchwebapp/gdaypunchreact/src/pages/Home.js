@@ -4,13 +4,10 @@ import { Page, pdfjs } from "react-pdf";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Document } from "react-pdf/dist/entry.webpack";
-import { getImageModule } from "utils/utils";
 import { doLogin } from "actions/user";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Header from "components/header";
 import {
-  faEye,
-  faPenNib,
-  faBook,
   faChevronCircleRight,
   faChevronCircleLeft,
   faSearchPlus,
@@ -58,45 +55,7 @@ class Home extends React.Component {
 
     return (
       <div className="App">
-        <header className="App-header app-temp-background">
-          <nav>
-            <a
-              href="#"
-              onClick={() =>
-                this.props.login({ username: "admin", password: "password" })
-              }
-            >
-              Login
-            </a>
-          </nav>
-          <a className="home-logo" href="https://www.gdaypunch.com">
-            <img
-              src={getImageModule("gday_big.png")}
-              className="App-logo-big"
-              alt="Gday Punch Logo Big"
-            />
-            <img
-              src={getImageModule("gday.png")}
-              className="App-logo"
-              alt="Gday Punch Logo"
-            />
-          </a>
-          <p>New Web App Launching in December 2020!</p>
-          <div className="feature-content">
-            <div className="feature">
-              <FontAwesomeIcon icon={faPenNib} style={styles.mangaka} />
-              <h2>Mangaka</h2>
-            </div>
-            <div className="feature">
-              <FontAwesomeIcon icon={faBook} style={styles.readers} />
-              <h2>Readers</h2>
-            </div>
-            <div className="feature">
-              <FontAwesomeIcon icon={faEye} style={styles.editors} />
-              <h2>Editors</h2>
-            </div>
-          </div>
-        </header>
+        <Header login={this.props.login} />
         <div className="pdf-reader">
           <div className="pdf-details">
             <div>
@@ -161,18 +120,6 @@ class Home extends React.Component {
 
 function getStyles() {
   return {
-    mangaka: {
-      color: "#bbbb21",
-      filter: "saturate(0.5)"
-    },
-    readers: {
-      color: "#bb5c26",
-      filter: "saturate(0.5)"
-    },
-    editors: {
-      color: "#b83027",
-      filter: "saturate(0.5)"
-    },
     pdf: {
       display: "flex",
       flexDirection: "row",

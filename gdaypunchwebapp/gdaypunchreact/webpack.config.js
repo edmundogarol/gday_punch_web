@@ -55,6 +55,7 @@ module.exports = {
     extensions: [".js", ".jsx", ".scss"],
     alias: {
       pages: path.resolve(__dirname, 'src/pages/'),
+      components: path.resolve(__dirname, 'src/components/'),
       actions: path.resolve(__dirname, 'src/actions/'),
       sagas: path.resolve(__dirname, 'src/sagas/'),
       reducers: path.resolve(__dirname, 'src/reducers/'),
