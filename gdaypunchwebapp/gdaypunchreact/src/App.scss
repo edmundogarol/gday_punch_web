@@ -24,8 +24,9 @@ nav {
   width: 100%;
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 15pt;
-  margin-right: 35pt;
+  position: absolute;
+  top: 30pt;
+  right: 30pt;
 
   a {
     text-decoration: none;
@@ -36,7 +37,7 @@ nav {
   }
 }
 
-.App-header .home-logo {
+.App-header-container .home-logo {
   display: flex;
   align-items: center;
   height: 100px;
@@ -68,7 +69,16 @@ nav {
   background-size: contain;
 }
 
-.App-header {
+.header {
+  align-items: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  animation: 0.6s ease-in 0s 1 slideInFromLeft;
+}
+
+.App-header-container {
   background-color: #f1f1f1;
   min-height: 75vh;
   display: flex;
@@ -87,6 +97,123 @@ nav {
       height: 100% !important;
       width: 100% !important;
     }
+  }
+}
+
+.registration {
+  width: 20em;
+  font-size: 1em;
+  text-transform: uppercase;
+  letter-spacing: 1pt;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  min-height: 9em;
+
+  .registration-inputs {
+    min-width: 20em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 5em;
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    input {
+      width: 18em;
+      height: 3em;
+      border-radius: 5px;
+    }
+  }
+
+  .sign-up-button {
+    width: 12em;
+    min-height: 2em;
+    border-radius: 5px;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    color: #ffffff;
+    letter-spacing: 2pt;
+    background: #e0811f;
+    border: none;
+  }
+}
+
+.registration {
+  visibility: hidden;
+  animation: 0.5s ease-in 0s 1 slideOutToRight;
+}
+
+.exit {
+  animation: 0.6s ease-in 0s 1 slideOutToLeft;
+  transform: translateX(-100%);
+}
+
+.show {
+  display: flex;
+  visibility: visible;
+  animation: 0.5s ease-in 0s 1 slideInFromRight;
+  transform: translateX(0%);
+}
+
+@keyframes slideInFromLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  90% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToLeft {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  30% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slideInFromRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  90% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutToRight {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
   }
 }
 

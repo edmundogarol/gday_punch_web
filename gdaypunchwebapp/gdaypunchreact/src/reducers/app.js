@@ -1,5 +1,5 @@
 import { combineReducers } from "redux";
-import { DO_LOGIN } from "actions/user";
+import { DO_LOGIN, CLOSE_LOGIN } from "actions/user";
 
 const INITIAL_STATE = {
   loggingIn: false
@@ -11,6 +11,11 @@ const appReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loggingIn: true
+      };
+    case CLOSE_LOGIN:
+      return {
+        ...state,
+        loggingIn: false
       };
     default:
       return state;

@@ -58,6 +58,7 @@ module.exports = {
       components: path.resolve(__dirname, 'src/components/'),
       actions: path.resolve(__dirname, 'src/actions/'),
       sagas: path.resolve(__dirname, 'src/sagas/'),
+      selectors: path.resolve(__dirname, 'src/selectors/'),
       reducers: path.resolve(__dirname, 'src/reducers/'),
       utils: path.resolve(__dirname, 'src/utils/'),
       static: path.resolve(__dirname, 'public/static/')

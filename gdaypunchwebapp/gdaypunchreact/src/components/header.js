@@ -5,19 +5,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faPenNib, faBook } from "@fortawesome/free-solid-svg-icons";
 
 export default function Header(props) {
-  const { login } = props;
   const styles = getStyles();
 
   return (
-    <header className="App-header app-temp-background">
-      <nav>
-        <a
-          href="#"
-          onClick={() => login({ username: "admin", password: "password" })}
-        >
-          Login
-        </a>
-      </nav>
+    <div className={`header ${props.loggingIn ? "exit" : ""}`}>
       <a className="home-logo" href="https://www.gdaypunch.com">
         <img
           src={getImageModule("gday_big.png")}
@@ -45,9 +36,14 @@ export default function Header(props) {
           <h2>Editors</h2>
         </div>
       </div>
-    </header>
+    </div>
   );
 }
+
+Header.propTypes = {
+  // Redux Properties
+  loggingIn: PropTypes.bool.isRequired
+};
 
 function getStyles() {
   return {
@@ -65,8 +61,3 @@ function getStyles() {
     }
   };
 }
-
-Header.propTypes = {
-  // Redux Properties
-  login: PropTypes.func.isRequired
-};

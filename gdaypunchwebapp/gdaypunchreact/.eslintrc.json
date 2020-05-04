@@ -23,6 +23,7 @@
     ],
     "rules": {
         "semi": "off",
+        "indent": "off",
         "space-before-function-paren": "off",
         "quotes": "off",
         "generator-star-spacing": "off",

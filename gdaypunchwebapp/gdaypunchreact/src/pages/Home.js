@@ -4,7 +4,8 @@ import { Page, pdfjs } from "react-pdf";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Document } from "react-pdf/dist/entry.webpack";
-import { doLogin } from "actions/user";
+import { doLogin, closeLogin } from "actions/user";
+import { selectLoggingIn } from "selectors/app";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "components/header";
 import {
@@ -53,9 +54,43 @@ class Home extends React.Component {
       { container: "100", page: 1000 }
     ];
 
+    console.log("loggingIn", this.props.loggingIn);
+
     return (
       <div className="App">
-        <Header login={this.props.login} />
+        <div className="App-header-container app-temp-background">
+          <nav>
+            <a
+              href="#"
+              onClick={() =>
+                this.props.loggingIn
+                  ? this.props.home()
+                  : this.props.login({
+                      username: "admin",
+                      password: "password"
+                    })
+              }
+            >
+              {this.props.loggingIn ? "Home" : "Login"}
+            </a>
+          </nav>
+            <Header login={this.props.login} loggingIn={this.props.loggingIn}/>
+            <div className={`registration ${this.props.loggingIn ? "show" : ""}`}>
+              <div className="registration-inputs">
+                <div className="input-group">
+                  <label htmlFor="email">Email</label>
+                  <input type="text" name="email" />
+                </div>
+                <div className="input-group">
+                  <label htmlFor="email">Password</label>
+                  <input type="password" name="password" />
+                </div>
+              </div>
+              <button className="sign-up-button" type="submit">
+                Sign Up
+              </button>
+            </div>
+        </div>
         <div className="pdf-reader">
           <div className="pdf-details">
             <div>
@@ -150,12 +185,18 @@ function getStyles() {
 
 Home.propTypes = {
   // Redux Properties
-  login: PropTypes.func.isRequired
+  loggingIn: PropTypes.bool.isRequired,
+  // Redux Functions
+  login: PropTypes.func.isRequired,
+  home: PropTypes.func.isRequired
 };
 
-const mapStateToProps = createStructuredSelector({});
+const mapStateToProps = createStructuredSelector({
+  loggingIn: selectLoggingIn
+});
 const mapDispatchToProps = {
-  login: doLogin
+  login: doLogin,
+  home: closeLogin
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
