@@ -113,7 +113,7 @@ class Home extends React.Component {
                 width: `${readerSizeLevels[this.state.sizeLevel].container}%`
               }}
               file={Escape}
-              className="App-header"
+              className="pdf-container"
             >
               <Page
                 pageNumber={this.state.pageNumber}
