@@ -9,7 +9,7 @@ export function* register() {
 
   const response = yield call(api, "users/", {
     method: "POST",
-    payload: pendingRegistration
+    body: pendingRegistration
   });
 
   if (response && response.ok) {

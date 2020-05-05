@@ -10,6 +10,7 @@ export function* api(...args) {
     const response = yield call(gdayfetch, ...args);
 
     if (response.ok) {
+      console.debug('Ok!', response);
     } else if (response.status === 403) {
       console.debug("Login required");
     } else if (response.status === 503) {

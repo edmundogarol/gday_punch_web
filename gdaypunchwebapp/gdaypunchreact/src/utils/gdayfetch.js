@@ -17,6 +17,7 @@ const APPLICATION_JSON = "application/json";
  * @param {*} params fetch params
  */
 export async function gdayfetch(url, params = {}) {
+  console.log("params", params);
   const composedURL = new URL(url, window.location.origin);
   const {
     contentType = APPLICATION_JSON,
@@ -38,24 +39,16 @@ export async function gdayfetch(url, params = {}) {
 
   finalParams.headers = {
     ...finalParams.headers,
+    "Content-Type": contentType,
     Accept: accept,
     "X-CSRFToken": csrftoken
   };
 
-  if (params.contentType !== null) {
-    finalParams.headers["Content-Type"] = contentType;
-  }
+  finalParams.body = JSON.stringify(finalParams.body);
 
-  // by default, we will use application/json here, otherwise we'll just leave
-  // it like 'multipart/form-data'
-  if (contentType === APPLICATION_JSON) {
-    finalParams.body = JSON.stringify(finalParams.body);
-  }
-
-  const response = await fetch(composedURL, finalParams)
-    .catch((exc) => {
-      throw exc;
-    });
+  const response = await fetch(composedURL, finalParams).catch((exc) => {
+    throw exc;
+  });
 
   const responseContentType = response.headers.get("content-type");
 
