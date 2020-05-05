@@ -125,7 +125,7 @@ nav {
     justify-content: space-between;
 
     input {
-      width: 18em;
+      width: 15em;
       height: 3em;
       border-radius: 5px;
     }
@@ -164,9 +164,9 @@ nav {
 @keyframes slideInFromLeft {
   0% {
     opacity: 0;
-    transform: translateX(-100%);
+    transform: translateX(-20pt);
   }
-  90% {
+  50% {
     opacity: 0.2;
   }
   100% {
@@ -192,7 +192,7 @@ nav {
 @keyframes slideInFromRight {
   0% {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateX(20pt);
   }
   90% {
     opacity: 0.2;
