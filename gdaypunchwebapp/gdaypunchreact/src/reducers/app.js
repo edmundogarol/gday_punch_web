@@ -1,21 +1,31 @@
 import { combineReducers } from "redux";
-import { DO_LOGIN, CLOSE_LOGIN } from "actions/user";
+import {
+  DO_REGISTRATION,
+  CLOSE_REGISTRATION,
+  OPEN_REGISTRATION
+} from "actions/user";
 
 const INITIAL_STATE = {
-  loggingIn: false
+  registrationToggle: false,
+  registering: false
 };
 
 const appReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case DO_LOGIN:
+    case OPEN_REGISTRATION:
       return {
         ...state,
-        loggingIn: true
+        registrationToggle: true
       };
-    case CLOSE_LOGIN:
+    case DO_REGISTRATION:
       return {
         ...state,
-        loggingIn: false
+        registering: true
+      };
+    case CLOSE_REGISTRATION:
+      return {
+        ...state,
+        registrationToggle: false
       };
     default:
       return state;

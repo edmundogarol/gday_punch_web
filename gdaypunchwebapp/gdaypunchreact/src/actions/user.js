@@ -1,14 +1,19 @@
-export const DO_LOGIN = "user/DO_LOGIN";
-export const CLOSE_LOGIN = "user/CLOSE_LOGIN";
+export const DO_REGISTRATION = "user/DO_REGISTRATION";
+export const CLOSE_REGISTRATION = "user/CLOSE_REGISTRATION";
+export const OPEN_REGISTRATION = "user/OPEN_REGISTRATION";
 
-export const doLogin = ({ username, password }) => ({
-  type: DO_LOGIN,
+export const openRegistration = () => ({
+  type: OPEN_REGISTRATION
+});
+
+export const doRegistration = ({ username, password }) => ({
+  type: DO_REGISTRATION,
   payload: {
     username,
     password
   }
 });
 
-export const closeLogin = () => ({
-  type: CLOSE_LOGIN
+export const closeRegistration = () => ({
+  type: CLOSE_REGISTRATION
 });

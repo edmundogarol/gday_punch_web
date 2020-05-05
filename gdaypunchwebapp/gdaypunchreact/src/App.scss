@@ -145,7 +145,7 @@ nav {
 }
 
 .registration {
-  visibility: hidden;
+  display: none;
   animation: 0.5s ease-in 0s 1 slideOutToRight;
 }
 
@@ -180,12 +180,12 @@ nav {
     opacity: 1;
     transform: translateX(0);
   }
-  30% {
+  60% {
     opacity: 0.3;
   }
   100% {
     opacity: 0;
-    transform: translateX(-100%);
+    transform: translateX(-20pt);
   }
 }
 

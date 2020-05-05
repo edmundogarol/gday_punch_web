@@ -4,8 +4,12 @@ import { Page, pdfjs } from "react-pdf";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Document } from "react-pdf/dist/entry.webpack";
-import { doLogin, closeLogin } from "actions/user";
-import { selectLoggingIn } from "selectors/app";
+import {
+  doRegistration,
+  openRegistration,
+  closeRegistration
+} from "actions/user";
+import { selectRegisterationToggle } from "selectors/app";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "components/header";
 import {
@@ -41,6 +45,12 @@ class Home extends React.Component {
   }
 
   render() {
+    const {
+      registrationToggle,
+      openRegister,
+      closeRegister,
+      register
+    } = this.props;
     const styles = getStyles();
 
     const prevDisabled = this.state.pageNumber === 1;
@@ -54,7 +64,7 @@ class Home extends React.Component {
       { container: "100", page: 1000 }
     ];
 
-    console.log("loggingIn", this.props.loggingIn);
+    console.log("Registering", registrationToggle);
 
     return (
       <div className="App">
@@ -63,33 +73,34 @@ class Home extends React.Component {
             <a
               href="#"
               onClick={() =>
-                this.props.loggingIn
-                  ? this.props.home()
-                  : this.props.login({
-                      username: "admin",
-                      password: "password"
-                    })
+                registrationToggle ? closeRegister() : openRegister()
               }
             >
-              {this.props.loggingIn ? "Home" : "Login"}
+              {registrationToggle ? "Home" : "Login"}
             </a>
           </nav>
-            <Header login={this.props.login} loggingIn={this.props.loggingIn}/>
-            <div className={`registration ${this.props.loggingIn ? "show" : ""}`}>
-              <div className="registration-inputs">
-                <div className="input-group">
-                  <label htmlFor="email">Email</label>
-                  <input type="text" name="email" />
-                </div>
-                <div className="input-group">
-                  <label htmlFor="email">Password</label>
-                  <input type="password" name="password" />
-                </div>
+          <Header registrationOpen={registrationToggle} />
+          <div className={`registration ${registrationToggle ? "show" : ""}`}>
+            <div className="registration-inputs">
+              <div className="input-group">
+                <label htmlFor="email">Email</label>
+                <input type="text" name="email" />
               </div>
-              <button className="sign-up-button" type="submit">
-                Sign Up
-              </button>
+              <div className="input-group">
+                <label htmlFor="email">Password</label>
+                <input type="password" name="password" />
+              </div>
             </div>
+            <button
+              onClick={() =>
+                register({ username: "admin", password: "gdaypassword" })
+              }
+              className="sign-up-button"
+              type="submit"
+            >
+              Sign Up
+            </button>
+          </div>
         </div>
         <div className="pdf-reader">
           <div className="pdf-details">
@@ -185,18 +196,20 @@ function getStyles() {
 
 Home.propTypes = {
   // Redux Properties
-  loggingIn: PropTypes.bool.isRequired,
+  registrationToggle: PropTypes.bool.isRequired,
   // Redux Functions
-  login: PropTypes.func.isRequired,
-  home: PropTypes.func.isRequired
+  register: PropTypes.func.isRequired,
+  openRegister: PropTypes.func.isRequired,
+  closeRegister: PropTypes.func.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
-  loggingIn: selectLoggingIn
+  registrationToggle: selectRegisterationToggle
 });
 const mapDispatchToProps = {
-  login: doLogin,
-  home: closeLogin
+  register: doRegistration,
+  openRegister: openRegistration,
+  closeRegister: closeRegistration
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -1,9 +1,9 @@
 import { call, all, takeEvery } from "redux-saga/effects";
-import { DO_LOGIN } from "actions/user";
+import { DO_REGISTRATION } from "actions/user";
 import { api } from "utils/api";
 
-export function* login() {
-  console.log("Log in saga");
+export function* register() {
+  console.log("Register in saga");
 
   const response = yield call(api, "users/", {
     method: "GET"
@@ -11,13 +11,13 @@ export function* login() {
 
   if (response && response.ok) {
     const data = yield response.json();
-    // yield put(updateLogin(data));
+    // yield put(updateUser(data));
     console.log("Response Data", data);
   } else {
-    console.log("Login error", JSON.stringify(response));
+    console.log("Registration error", JSON.stringify(response));
   }
 }
 
 export default function* appSaga() {
-  yield all([takeEvery(DO_LOGIN, login)]);
+  yield all([takeEvery(DO_REGISTRATION, register)]);
 }

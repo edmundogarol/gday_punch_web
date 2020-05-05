@@ -8,7 +8,7 @@ export default function Header(props) {
   const styles = getStyles();
 
   return (
-    <div className={`header ${props.loggingIn ? "exit" : ""}`}>
+    <div className={`header ${props.registrationOpen ? "exit" : ""}`}>
       <a className="home-logo" href="https://www.gdaypunch.com">
         <img
           src={getImageModule("gday_big.png")}
@@ -42,7 +42,7 @@ export default function Header(props) {
 
 Header.propTypes = {
   // Redux Properties
-  loggingIn: PropTypes.bool.isRequired
+  registrationOpen: PropTypes.bool.isRequired
 };
 
 function getStyles() {
