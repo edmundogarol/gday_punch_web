@@ -1,5 +1,5 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const path = require('path');
+const path = require("path");
 
 const isDevelopment = process.env.NODE_ENV === "development";
 
@@ -25,9 +25,9 @@ module.exports = {
         test: /\.(pdf)$/,
         use: [
           {
-            loader: 'file-loader',
+            loader: "file-loader",
             options: {
-              name: '[name].[ext]'
+              name: "[name].[ext]"
             }
           }
         ]
@@ -48,20 +48,22 @@ module.exports = {
     ]
   },
   output: {
-    path: '../../gdaypunchbackend/static/[hash].worker.js',
+    path: "../../gdaypunchbackend/static/[hash].worker.js",
     publicPath: `/static/`
   },
+  context: path.resolve(__dirname, "./"),
   resolve: {
+    modules: [path.resolve(__dirname, "./"), "node_modules"],
     extensions: [".js", ".jsx", ".scss"],
     alias: {
-      pages: path.resolve(__dirname, 'src/pages/'),
-      components: path.resolve(__dirname, 'src/components/'),
-      actions: path.resolve(__dirname, 'src/actions/'),
-      sagas: path.resolve(__dirname, 'src/sagas/'),
-      selectors: path.resolve(__dirname, 'src/selectors/'),
-      reducers: path.resolve(__dirname, 'src/reducers/'),
-      utils: path.resolve(__dirname, 'src/utils/'),
-      static: path.resolve(__dirname, 'public/static/')
+      pages: path.resolve(__dirname, "src/pages/"),
+      components: path.resolve(__dirname, "src/components/"),
+      actions: path.resolve(__dirname, "src/actions/"),
+      sagas: path.resolve(__dirname, "src/sagas/"),
+      selectors: path.resolve(__dirname, "src/selectors/"),
+      reducers: path.resolve(__dirname, "src/reducers/"),
+      utils: path.resolve(__dirname, "src/utils/"),
+      static: path.resolve(__dirname, "public/static/")
     }
   },
   plugins: [

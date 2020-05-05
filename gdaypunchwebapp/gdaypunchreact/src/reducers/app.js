@@ -7,7 +7,8 @@ import {
 
 const INITIAL_STATE = {
   registrationToggle: false,
-  registering: false
+  registering: false,
+  pendingRegistration: {}
 };
 
 const appReducer = (state = INITIAL_STATE, action) => {
@@ -20,7 +21,8 @@ const appReducer = (state = INITIAL_STATE, action) => {
     case DO_REGISTRATION:
       return {
         ...state,
-        registering: true
+        registering: true,
+        pendingRegistration: action.payload
       };
     case CLOSE_REGISTRATION:
       return {

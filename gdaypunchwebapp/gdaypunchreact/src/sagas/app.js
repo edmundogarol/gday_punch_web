@@ -1,12 +1,15 @@
-import { call, all, takeEvery } from "redux-saga/effects";
+import { call, all, takeEvery, select } from "redux-saga/effects";
 import { DO_REGISTRATION } from "actions/user";
+import { selectPendingRegistration } from "selectors/app";
 import { api } from "utils/api";
 
 export function* register() {
   console.log("Register in saga");
+  const pendingRegistration = yield select(selectPendingRegistration);
 
   const response = yield call(api, "users/", {
-    method: "GET"
+    method: "POST",
+    payload: pendingRegistration
   });
 
   if (response && response.ok) {
