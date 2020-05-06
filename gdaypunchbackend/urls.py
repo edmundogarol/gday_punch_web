@@ -26,6 +26,5 @@ urlpatterns = [
     path('', include('gdaypunchwebapp.urls')),
     path('login/', include('gdaypunchwebapp.urls')),
     path('api/', include(router.urls)),
-    path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 ]

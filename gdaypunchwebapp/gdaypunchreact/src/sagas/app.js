@@ -7,7 +7,7 @@ export function* register() {
   console.log("Register in saga");
   const pendingRegistration = yield select(selectPendingRegistration);
 
-  const response = yield call(api, "users/", {
+  const response = yield call(api, "user/", {
     method: "POST",
     body: pendingRegistration
   });

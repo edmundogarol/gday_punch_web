@@ -18,7 +18,7 @@ const APPLICATION_JSON = "application/json";
  */
 export async function gdayfetch(url, params = {}) {
   console.log("params", params);
-  const composedURL = new URL(url, window.location.origin);
+  const composedURL = new URL(`api/${url}`, window.location.origin);
   const {
     contentType = APPLICATION_JSON,
     accept = APPLICATION_JSON,

@@ -91,15 +91,27 @@ class Home extends React.Component {
                 <input type="password" name="password" />
               </div>
             </div>
-            <button
-              onClick={() =>
-                register({ username: "admin", password: "gdaypassword" })
-              }
-              className="sign-up-button"
-              type="submit"
-            >
-              Sign Up
-            </button>
+            <div className="account-buttons">
+              <button
+                onClick={() =>
+                  register({ username: "admin", password: "gdaypassword" })
+                }
+                className="sign-up-button"
+                type="submit"
+              >
+                Sign Up
+              </button>
+              <span></span>
+              <button
+                onClick={() =>
+                  register({ username: "admin", password: "gdaypassword" })
+                }
+                className="sign-up-button"
+                type="submit"
+              >
+                Login
+              </button>
+            </div>
           </div>
         </div>
         <div className="pdf-reader">
