@@ -1,7 +1,8 @@
-from django.contrib.auth.models import User, Group
+from .models import User
+from django.contrib.auth.models import Group
 from rest_framework import viewsets
 from rest_framework import permissions
-from gdaypunchbackend.gdaypunchapi.serializers import UserSerializer, GroupSerializer
+from .serializers import UserSerializer, GroupSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -10,7 +11,6 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
 
 
 class GroupViewSet(viewsets.ModelViewSet):

@@ -39,6 +39,7 @@ ALLOWED_HOSTS = [
     "172.31.15.249",
 ]
 
+
 def is_ec2_linux():
     """Detect if we are running on an EC2 Linux Instance
        See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
@@ -48,19 +49,23 @@ def is_ec2_linux():
             uuid = f.read()
             return uuid.startswith("ec2")
     return False
+
+
 def get_linux_ec2_private_ip():
     """Get the private IP Address of the machine if running on an EC2 linux server"""
     from urllib.request import urlopen
     if not is_ec2_linux():
         return None
     try:
-        response = urlopen('http://169.254.169.254/latest/meta-data/local-ipv4')
+        response = urlopen(
+            'http://169.254.169.254/latest/meta-data/local-ipv4')
         return response.read()
     except:
         return None
     finally:
         if response:
             response.close()
+
 
 # ElasticBeanstalk healthcheck sends requests with host header = internal ip
 # So we detect if we are in elastic beanstalk,
@@ -79,9 +84,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'gdaypunchbackend.gdaypunchapi',
     'gdaypunchbackend',
     'gdaypunchwebapp',
 ]
+
+AUTH_USER_MODEL = 'gdaypunchapi.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -128,7 +136,6 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
