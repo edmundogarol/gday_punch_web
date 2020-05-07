@@ -1,16 +1,21 @@
-from .models import User
 from django.contrib.auth.models import Group
-from rest_framework import viewsets
-from rest_framework import permissions
+from rest_framework import viewsets, permissions, exceptions, authentication
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth import authenticate, get_user_model, login
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from .serializers import UserSerializer, GroupSerializer
+from .models import User
 
 
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows users to be viewed or edited.
     """
-    queryset = User.objects.all().order_by('-date_joined')
+    queryset = User.objects.all().order_by('-id')
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -20,3 +25,35 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class LoginView(APIView):
+    authentication_classes = (SessionAuthentication,)
+
+    def post(self, request, format=None):
+
+        email = request.data.get('email', None)
+        password = request.data.get('password', None)
+
+        if not email or not password:
+            raise exceptions.AuthenticationFailed('No credentials provided.')
+
+        try:
+            user = User.objects.get(email=email, password=password)
+        except User.DoesNotExist:
+            raise exceptions.AuthenticationFailed('User does not exist.')
+
+        if user is None:
+            raise exceptions.AuthenticationFailed(
+                'Invalid username/password.')
+        else:
+            login(request, user)
+
+        if not user.is_active:
+            raise exceptions.AuthenticationFailed('User inactive or deleted.')
+
+        content = {
+            'user': str(request.user),
+            'auth': str(request.auth),  # None
+        }
+        return Response(content)

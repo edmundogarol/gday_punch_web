@@ -7,6 +7,11 @@ export const selectRegisterationToggle = createSelector(
   ({ registrationToggle }) => registrationToggle
 );
 
+export const selectPendingLogin = createSelector(
+  selectDomain,
+  ({ pendingLogin }) => pendingLogin
+);
+
 export const selectPendingRegistration = createSelector(
   selectDomain,
   ({ pendingRegistration }) => pendingRegistration

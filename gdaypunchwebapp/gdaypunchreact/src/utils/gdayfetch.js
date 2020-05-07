@@ -17,8 +17,11 @@ const APPLICATION_JSON = "application/json";
  * @param {*} params fetch params
  */
 export async function gdayfetch(url, params = {}) {
-  console.log("params", params);
-  const composedURL = new URL(`api/${url}`, window.location.origin);
+  const composedURL = new URL(
+    url.includes("api-auth") ? url : `api/${url}`,
+    window.location.origin
+  );
+
   const {
     contentType = APPLICATION_JSON,
     accept = APPLICATION_JSON,
@@ -27,14 +30,12 @@ export async function gdayfetch(url, params = {}) {
   } = params;
 
   const finalParams = {
-    // Default values
     credentials: "same-origin",
     ...inputParams
   };
 
   buildSearchParams(queryParams, composedURL.searchParams);
 
-  // Get the CSRF-Token from the session it needs to be included as a header.
   const csrftoken = Cookies.get("csrftoken");
 
   finalParams.headers = {

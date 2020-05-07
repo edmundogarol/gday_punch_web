@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Document } from "react-pdf/dist/entry.webpack";
 import {
+  doLogin,
   doRegistration,
   openRegistration,
   closeRegistration
@@ -49,7 +50,8 @@ class Home extends React.Component {
       registrationToggle,
       openRegister,
       closeRegister,
-      register
+      register,
+      login
     } = this.props;
     const styles = getStyles();
 
@@ -63,8 +65,6 @@ class Home extends React.Component {
       { container: "80", page: 750 },
       { container: "100", page: 1000 }
     ];
-
-    console.log("Registering", registrationToggle);
 
     return (
       <div className="App">
@@ -94,7 +94,10 @@ class Home extends React.Component {
             <div className="account-buttons">
               <button
                 onClick={() =>
-                  register({ username: "admin", password: "gdaypassword" })
+                  register({
+                    email: "info@amaaustralia.com",
+                    password: "gdaypassword"
+                  })
                 }
                 className="sign-up-button"
                 type="submit"
@@ -104,7 +107,10 @@ class Home extends React.Component {
               <span></span>
               <button
                 onClick={() =>
-                  register({ username: "admin", password: "gdaypassword" })
+                  login({
+                    email: "info@amaaustralia.com",
+                    password: "gdaypassword"
+                  })
                 }
                 className="sign-up-button"
                 type="submit"
@@ -210,6 +216,7 @@ Home.propTypes = {
   // Redux Properties
   registrationToggle: PropTypes.bool.isRequired,
   // Redux Functions
+  login: PropTypes.func.isRequired,
   register: PropTypes.func.isRequired,
   openRegister: PropTypes.func.isRequired,
   closeRegister: PropTypes.func.isRequired
@@ -219,6 +226,7 @@ const mapStateToProps = createStructuredSelector({
   registrationToggle: selectRegisterationToggle
 });
 const mapDispatchToProps = {
+  login: doLogin,
   register: doRegistration,
   openRegister: openRegistration,
   closeRegister: closeRegistration
