@@ -38,7 +38,7 @@ WORKDIR /opt/app
 
 #Install requirements and migrate
 RUN pip install -r requirements.txt
-RUN python manage.py migrate
+RUN python manage.py migrate --noinput
 
 #Change root permissions
 RUN chown -R www-data:www-data /opt/app

@@ -13,16 +13,20 @@ deletedb:
 	rm db.sqlite3
 
 dev:
-	python3 -m venv venv && source venv/bin/activate 
+	python -m venv venv && source venv/bin/activate 
 	
 build:
-	pip3 install -r requirements.txt 
+	pip install -r requirements.txt 
+
+env: dev build
 
 migrate:
 	python manage.py migrate
 
 makemigrations:
 	python manage.py makemigrations 
+
+migrations: makemigrations migrate
 
 server:
 	python manage.py runserver 0.0.0.0:8000
