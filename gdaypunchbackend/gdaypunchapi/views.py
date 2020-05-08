@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate, get_user_model, login
+from django.contrib.auth.hashers import check_password
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from .serializers import UserSerializer, GroupSerializer
 from .models import User
@@ -15,7 +16,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-id')
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -39,11 +40,11 @@ class LoginView(APIView):
             raise exceptions.AuthenticationFailed('No credentials provided.')
 
         try:
-            user = User.objects.get(email=email, password=password)
+            user = User.objects.get(email=email)
         except User.DoesNotExist:
             raise exceptions.AuthenticationFailed('User does not exist.')
 
-        if user is None:
+        if user is None or not check_password(password, user.password):
             raise exceptions.AuthenticationFailed(
                 'Invalid username/password.')
         else:
@@ -54,6 +55,6 @@ class LoginView(APIView):
 
         content = {
             'user': str(request.user),
-            'auth': str(request.auth),  # None
+            'logged_in': True,  # None
         }
         return Response(content)

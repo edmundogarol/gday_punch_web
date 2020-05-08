@@ -29,7 +29,9 @@ class Home extends React.Component {
     super(props);
     this.state = {
       pageNumber: 1,
-      sizeLevel: 0
+      sizeLevel: 0,
+      email: "",
+      password: ""
     };
   }
 
@@ -45,13 +47,27 @@ class Home extends React.Component {
     });
   }
 
+  handleLoginSubmit() {
+    const { email, password } = this.state;
+    this.props.login({
+      email,
+      password
+    });
+  }
+
+  handleRegisterSubmit() {
+    const { email, password } = this.state;
+    this.props.register({
+      email,
+      password
+    });
+  }
+
   render() {
     const {
       registrationToggle,
       openRegister,
       closeRegister,
-      register,
-      login
     } = this.props;
     const styles = getStyles();
 
@@ -84,21 +100,28 @@ class Home extends React.Component {
             <div className="registration-inputs">
               <div className="input-group">
                 <label htmlFor="email">Email</label>
-                <input type="text" name="email" />
+                <input
+                  type="text"
+                  name="email"
+                  onChange={(e) => this.setState({ email: e.target.value })}
+                  value={this.state.email}
+                  placeholder="Enter Email"
+                />
               </div>
               <div className="input-group">
                 <label htmlFor="email">Password</label>
-                <input type="password" name="password" />
+                <input
+                  type="password"
+                  name="password"
+                  onChange={(e) => this.setState({ password: e.target.value })}
+                  value={this.state.password}
+                  placeholder="Enter Password"
+                />
               </div>
             </div>
             <div className="account-buttons">
               <button
-                onClick={() =>
-                  register({
-                    email: "info@amaaustralia.com",
-                    password: "gdaypassword"
-                  })
-                }
+                onClick={() => this.handleRegisterSubmit()}
                 className="sign-up-button"
                 type="submit"
               >
@@ -106,12 +129,7 @@ class Home extends React.Component {
               </button>
               <span></span>
               <button
-                onClick={() =>
-                  login({
-                    email: "info@amaaustralia.com",
-                    password: "gdaypassword"
-                  })
-                }
+                onClick={() => this.handleLoginSubmit()}
                 className="sign-up-button"
                 type="submit"
               >

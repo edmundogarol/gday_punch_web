@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.contrib.auth.models import PermissionsMixin
 
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
@@ -68,4 +69,3 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    # is_staff, is_active, date_joined,

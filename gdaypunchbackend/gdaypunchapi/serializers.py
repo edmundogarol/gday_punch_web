@@ -1,13 +1,33 @@
 from django.contrib.auth.models import Group
 from rest_framework import serializers
+from django.contrib.auth import login
+from rest_framework.response import Response
 from .models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            email=validated_data['email'],
+            password=validated_data['password'],
+        )
+
+        user.set_password(validated_data['password'])
+        user.save()
+
+        content = {
+            'user': str(user),
+            'logged_in': True,  # None
+        }
+
+        return user
+
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", "bio", "location", 
-                    "birth_date", "roles", "password", "pk")
+        fields = ("first_name", "last_name", "email", "bio", "location",
+                  "birth_date", "roles", "password", "pk")
+        extra_kwargs = {'password': {'write_only': True}}
 
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
