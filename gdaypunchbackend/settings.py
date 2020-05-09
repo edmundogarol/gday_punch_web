@@ -147,7 +147,8 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 # create role gdayuser with login password 'gdaypassword'; // Create user + password
 # \q // exit PSQL CLI
 
-
+print("OS ENVIRON")
+print(os.environ)
 if 'RDS_HOSTNAME' in os.environ:
     DATABASES = {
         'default': {
