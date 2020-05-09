@@ -26,7 +26,6 @@ RUN mkdir -p /opt/app/gdaypunchbackend
 RUN mkdir -p /opt/app/gdaypunchwebapp
 
 #Copy app contents to root directory
-# RUN sudo /opt/elasticbeanstalk/bin/get-config environment --output yaml | sed -n '1!p' | sed -e 's/^\(.*\): /\1=/g' | sed -e 's/^/export /' > env.sh; source env.sh
 COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
@@ -39,6 +38,7 @@ WORKDIR /opt/app
 
 #Install requirements and migrate
 RUN pip install -r requirements.txt
+RUN sudo /opt/elasticbeanstalk/bin/get-config environment --output yaml | sed -n '1!p' | sed -e 's/^\(.*\): /\1=/g' | sed -e 's/^/export /' > env.sh;
 RUN python manage.py migrate --noinput
 
 #Change root permissions

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import environ
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -147,17 +148,32 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 # create role gdayuser with login password 'gdaypassword'; // Create user + password
 # \q // exit PSQL CLI
 
-print("OS ENVIRON")
-print(os.environ)
-if 'RDS_HOSTNAME' in os.environ:
+environ.Env.read_env()
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+
+envvars = {
+    "ENV_DB": env.str('RDS_DB_NAME'),
+    "ENV_DB_USERNAME": env.str('RDS_USERNAME'),
+    "ENV_DB_PASSWORD": env.str('RDS_PASSWORD'),
+    "ENV_DB_HOSTNAME": env.str('RDS_HOSTNAME'),
+    "ENV_DB_PORT": env.str('RDS_PORT'),
+}
+
+print("ENV VARS")
+print(envvars)
+
+if envvars['ENV_DB_HOSTNAME']:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['RDS_DB_NAME'],
-            'USER': os.environ['RDS_USERNAME'],
-            'PASSWORD': os.environ['RDS_PASSWORD'],
-            'HOST': os.environ['RDS_HOSTNAME'],
-            'PORT': os.environ['RDS_PORT'],
+            'NAME': envvars['ENV_DB'],
+            'USER': envvars['ENV_DB_USERNAME'],
+            'PASSWORD': envvars['ENV_DB_PASSWORD'],
+            'HOST': envvars['ENV_DB_HOSTNAME'],
+            'PORT': envvars['ENV_DB_PORT'],
         }
     }
 else:

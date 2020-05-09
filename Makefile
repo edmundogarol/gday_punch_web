@@ -33,4 +33,4 @@ server:
 
 resetdb: deletemigrations deletedb makemigrations migrate
 
-app: gui	migrate	server
+app: gui	dev build migrate	server
