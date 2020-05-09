@@ -72,7 +72,6 @@ def get_linux_ec2_private_ip():
 # So we detect if we are in elastic beanstalk,
 # and add the instances private ip address
 private_ip = get_linux_ec2_private_ip()
-print('private_ip: ' + str(private_ip))
 if private_ip:
     ALLOWED_HOSTS.append(private_ip.decode('UTF-8'))
 
@@ -150,7 +149,6 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 
 environ.Env.read_env()
 env = environ.Env(
-    # set casting, default value
     DEBUG=(bool, False)
 )
 
@@ -165,28 +163,16 @@ envvars = {
 print("ENV VARS")
 print(envvars)
 
-if envvars['ENV_DB_HOSTNAME']:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': envvars['ENV_DB'],
-            'USER': envvars['ENV_DB_USERNAME'],
-            'PASSWORD': envvars['ENV_DB_PASSWORD'],
-            'HOST': envvars['ENV_DB_HOSTNAME'],
-            'PORT': envvars['ENV_DB_PORT'],
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': envvars['ENV_DB'],
+        'USER': envvars['ENV_DB_USERNAME'],
+        'PASSWORD': envvars['ENV_DB_PASSWORD'],
+        'HOST': envvars['ENV_DB_HOSTNAME'],
+        'PORT': envvars['ENV_DB_PORT'],
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'gdaypunch',
-            'USER': 'gdayuser',
-            'PASSWORD': 'gdaypassword',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

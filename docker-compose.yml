@@ -3,7 +3,7 @@ version: '3'
 services:
   web:
     build: .
-    command: bash -c "make app"
+    command: bash -c "make dockerapp"
     container_name: gdaypunchcontainer
     volumes:
       - .:/gdaypunchweb

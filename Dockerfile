@@ -36,9 +36,12 @@ RUN	yarn && yarn run dev
 #Navigate to root
 WORKDIR /opt/app
 
+RUN sudo /opt/elasticbeanstalk/bin/get-config environment --output yaml | sed -n '1!p' | sed -e 's/^\(.*\): /\1=/g' | sed -e 's/^/export /' > .env;
+COPY .env /opt/app/gdaypunchbackend/
+COPY .env /opt/app/
+
 #Install requirements and migrate
 RUN pip install -r requirements.txt
-RUN sudo /opt/elasticbeanstalk/bin/get-config environment --output yaml | sed -n '1!p' | sed -e 's/^\(.*\): /\1=/g' | sed -e 's/^/export /' > env.sh;
 RUN python manage.py migrate --noinput
 
 #Change root permissions
