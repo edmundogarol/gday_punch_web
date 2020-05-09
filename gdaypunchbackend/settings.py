@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     "0.0.0.0",
     "192.168.1.104",
     "172.31.15.249",
+    "172.31.6.161",
 ]
 
 
@@ -155,28 +156,16 @@ with open('./gday-db-config.json') as f:
 print("SETTINGS")
 print(SETTINGS)
 
-if 'RDS_HOSTNAME' in SETTINGS:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': SETTINGS['RDS_DB_NAME'],
-            'USER': SETTINGS['RDS_USERNAME'],
-            'PASSWORD': SETTINGS['RDS_PASSWORD'],
-            'HOST': SETTINGS['RDS_HOSTNAME'],
-            'PORT': SETTINGS['RDS_PORT'],
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': SETTINGS['RDS_DB_NAME'],
+        'USER': SETTINGS['RDS_USERNAME'],
+        'PASSWORD': SETTINGS['RDS_PASSWORD'],
+        'HOST': SETTINGS['RDS_HOSTNAME'],
+        'PORT': SETTINGS['RDS_PORT'],
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'gdaypunch',
-            'USER': 'gdayuser',
-            'PASSWORD': 'gdaypassword',
-            'HOST': 'localhost',
-            'PORT': '5432',
-        }
-    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
