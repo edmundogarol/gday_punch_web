@@ -38,6 +38,7 @@ WORKDIR /opt/app
 
 #Install requirements and migrate
 RUN pip install -r requirements.txt
+RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json ./gdaypunchbackend/gday-db-config.json
 RUN python manage.py migrate --noinput
 
 #Change root permissions

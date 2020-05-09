@@ -14,7 +14,7 @@ deletedb:
 
 dev:
 	python -m venv venv && source venv/bin/activate 
-	
+
 build:
 	pip install -r requirements.txt 
 

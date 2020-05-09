@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 from .utils.get_eb_env import patch_environment
+import json
 
 patch_environment()
 
@@ -150,18 +151,22 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 # create role gdayuser with login password 'gdaypassword'; // Create user + password
 # \q // exit PSQL CLI
 
-print("OS ENVIRON")
-print(os.environ)
+SETTINGS = None
+with open('./gday-db-config.json') as f:
+    SETTINGS = json.load(f)
 
-if 'RDS_HOSTNAME' in os.environ:
+print("SETTINGS")
+print(SETTINGS)
+
+if 'RDS_HOSTNAME' in SETTINGS:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.environ['RDS_DB_NAME'],
-            'USER': os.environ['RDS_USERNAME'],
-            'PASSWORD': os.environ['RDS_PASSWORD'],
-            'HOST': os.environ['RDS_HOSTNAME'],
-            'PORT': os.environ['RDS_PORT'],
+            'NAME': SETTINGS['RDS_DB_NAME'],
+            'USER': SETTINGS['RDS_USERNAME'],
+            'PASSWORD': SETTINGS['RDS_PASSWORD'],
+            'HOST': SETTINGS['RDS_HOSTNAME'],
+            'PORT': SETTINGS['RDS_PORT'],
         }
     }
 else:
