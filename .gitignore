@@ -143,4 +143,4 @@ gdaypunchbackend/static/vendors~pdfjsWorker.main.js
 gdaypunchbackend/static/main.js
 
 # App Secret Keys
-gdaypunchbackend/gday-db-config.json
+gday-db-config.json
