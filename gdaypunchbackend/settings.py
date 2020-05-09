@@ -149,8 +149,13 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 # create role gdayuser with login password 'gdaypassword'; // Create user + password
 # \q // exit PSQL CLI
 
+if 'DEVENV' in os.environ:
+    dbconfig = "./gday-db-config.json"
+else:
+    dbconfig = '/opt/app/gday-db-config.json'
+
 SETTINGS = None
-with open('./gday-db-config.json') as f:
+with open(dbconfig) as f:
     SETTINGS = json.load(f)
 
 print("SETTINGS")

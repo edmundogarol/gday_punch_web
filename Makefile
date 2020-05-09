@@ -29,7 +29,7 @@ makemigrations:
 migrations: makemigrations migrate
 
 server:
-	python manage.py runserver 0.0.0.0:8000
+	DEVENV=development python manage.py runserver 0.0.0.0:8000
 
 resetdb: deletemigrations deletedb makemigrations migrate
 
