@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import environ
+from .utils.get_eb_env import patch_environment
+
+patch_environment()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -72,6 +74,7 @@ def get_linux_ec2_private_ip():
 # So we detect if we are in elastic beanstalk,
 # and add the instances private ip address
 private_ip = get_linux_ec2_private_ip()
+print('private_ip: ' + str(private_ip))
 if private_ip:
     ALLOWED_HOSTS.append(private_ip.decode('UTF-8'))
 
@@ -147,32 +150,31 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 # create role gdayuser with login password 'gdaypassword'; // Create user + password
 # \q // exit PSQL CLI
 
-environ.Env.read_env()
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+print("OS ENVIRON")
+print(os.environ)
 
-envvars = {
-    "ENV_DB": env.str('RDS_DB_NAME'),
-    "ENV_DB_USERNAME": env.str('RDS_USERNAME'),
-    "ENV_DB_PASSWORD": env.str('RDS_PASSWORD'),
-    "ENV_DB_HOSTNAME": env.str('RDS_HOSTNAME'),
-    "ENV_DB_PORT": env.str('RDS_PORT'),
-}
-
-print("ENV VARS")
-print(envvars)
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': envvars['ENV_DB'],
-        'USER': envvars['ENV_DB_USERNAME'],
-        'PASSWORD': envvars['ENV_DB_PASSWORD'],
-        'HOST': envvars['ENV_DB_HOSTNAME'],
-        'PORT': envvars['ENV_DB_PORT'],
+if 'RDS_HOSTNAME' in os.environ:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ['RDS_DB_NAME'],
+            'USER': os.environ['RDS_USERNAME'],
+            'PASSWORD': os.environ['RDS_PASSWORD'],
+            'HOST': os.environ['RDS_HOSTNAME'],
+            'PORT': os.environ['RDS_PORT'],
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'gdaypunch',
+            'USER': 'gdayuser',
+            'PASSWORD': 'gdaypassword',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
