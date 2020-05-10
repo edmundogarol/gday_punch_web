@@ -21,10 +21,10 @@ build:
 env: dev build
 
 migrate:
-	python manage.py migrate
+	DEVENV=development python manage.py migrate
 
 makemigrations:
-	python manage.py makemigrations 
+	DEVENV=development python manage.py makemigrations 
 
 migrations: makemigrations migrate
 
