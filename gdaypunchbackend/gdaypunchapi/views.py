@@ -3,7 +3,7 @@ from rest_framework import viewsets, permissions, exceptions, authentication
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth import authenticate, get_user_model, login
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.hashers import check_password
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from .serializers import UserSerializer, GroupSerializer
@@ -28,8 +28,32 @@ class GroupViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
+class LogoutView(APIView):
+    authentication_classes = (SessionAuthentication,)
+
+    def get(self, request, format=None):
+        logout(request)
+        content = {
+            'logged_in': False,
+        }
+        return Response(content)
+
+
 class LoginView(APIView):
     authentication_classes = (SessionAuthentication,)
+
+    def get(self, request, format=None):
+        if str(self.request.user) != 'AnonymousUser':
+            content = {
+                'user': str(self.request.user),
+                'logged_in': True,
+            }
+            return Response(content)
+        else:
+            content = {
+                'logged_in': False,
+            }
+            return Response(content)
 
     def post(self, request, format=None):
 

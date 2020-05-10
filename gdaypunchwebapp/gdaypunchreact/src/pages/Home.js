@@ -4,15 +4,11 @@ import { Page, pdfjs } from "react-pdf";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Document } from "react-pdf/dist/entry.webpack";
-import {
-  doLogin,
-  doRegistration,
-  openRegistration,
-  closeRegistration
-} from "actions/user";
-import { selectRegisterationToggle } from "selectors/app";
+import { doLogout, openRegistration, closeRegistration } from "actions/user";
+import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "components/header";
+import Login from "components/login";
 import {
   faChevronCircleRight,
   faChevronCircleLeft,
@@ -29,9 +25,7 @@ class Home extends React.Component {
     super(props);
     this.state = {
       pageNumber: 1,
-      sizeLevel: 0,
-      email: "",
-      password: ""
+      sizeLevel: 0
     };
   }
 
@@ -47,27 +41,13 @@ class Home extends React.Component {
     });
   }
 
-  handleLoginSubmit() {
-    const { email, password } = this.state;
-    this.props.login({
-      email,
-      password
-    });
-  }
-
-  handleRegisterSubmit() {
-    const { email, password } = this.state;
-    this.props.register({
-      email,
-      password
-    });
-  }
-
   render() {
     const {
-      registrationToggle,
+      loggedIn,
+      loginView,
       openRegister,
       closeRegister,
+      logout
     } = this.props;
     const styles = getStyles();
 
@@ -88,55 +68,18 @@ class Home extends React.Component {
           <nav>
             <a
               href="#"
-              onClick={() =>
-                registrationToggle ? closeRegister() : openRegister()
-              }
+              onClick={() => (loginView ? closeRegister() : openRegister())}
             >
-              {registrationToggle ? "Home" : "Login"}
+              {loginView ? "Home" : "Login"}
             </a>
+            {loggedIn && (
+              <a href="#" style={styles.logout} onClick={() => logout()}>
+                Logout
+              </a>
+            )}
           </nav>
-          <Header registrationOpen={registrationToggle} />
-          <div className={`registration ${registrationToggle ? "show" : ""}`}>
-            <div className="registration-inputs">
-              <div className="input-group">
-                <label htmlFor="email">Email</label>
-                <input
-                  type="text"
-                  name="email"
-                  onChange={(e) => this.setState({ email: e.target.value })}
-                  value={this.state.email}
-                  placeholder="Enter Email"
-                />
-              </div>
-              <div className="input-group">
-                <label htmlFor="email">Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  onChange={(e) => this.setState({ password: e.target.value })}
-                  value={this.state.password}
-                  placeholder="Enter Password"
-                />
-              </div>
-            </div>
-            <div className="account-buttons">
-              <button
-                onClick={() => this.handleRegisterSubmit()}
-                className="sign-up-button"
-                type="submit"
-              >
-                Sign Up
-              </button>
-              <span></span>
-              <button
-                onClick={() => this.handleLoginSubmit()}
-                className="sign-up-button"
-                type="submit"
-              >
-                Login
-              </button>
-            </div>
-          </div>
+          <Header loginView={loginView} />
+          <Login />
         </div>
         <div className="pdf-reader">
           <div className="pdf-details">
@@ -202,6 +145,9 @@ class Home extends React.Component {
 
 function getStyles() {
   return {
+    logout: {
+      marginLeft: "2em"
+    },
     pdf: {
       display: "flex",
       flexDirection: "row",
@@ -232,20 +178,21 @@ function getStyles() {
 
 Home.propTypes = {
   // Redux Properties
-  registrationToggle: PropTypes.bool.isRequired,
+  loggedIn: PropTypes.bool.isRequired,
+  loginView: PropTypes.bool.isRequired,
   // Redux Functions
-  login: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
   openRegister: PropTypes.func.isRequired,
   closeRegister: PropTypes.func.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
-  registrationToggle: selectRegisterationToggle
+  loggedIn: selectLoggedIn,
+  loginView: selectLoginViewToggle
 });
+
 const mapDispatchToProps = {
-  login: doLogin,
-  register: doRegistration,
+  logout: doLogout,
   openRegister: openRegistration,
   closeRegister: closeRegistration
 };

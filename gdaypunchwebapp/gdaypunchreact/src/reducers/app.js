@@ -1,6 +1,8 @@
 import { combineReducers } from "redux";
 import {
   DO_LOGIN,
+  UPDATE_LOGIN_ERROR,
+  UPDATE_REGISTRATION_ERROR,
   DO_REGISTRATION,
   CLOSE_REGISTRATION,
   OPEN_REGISTRATION,
@@ -16,10 +18,12 @@ const INITIAL_STATE = {
     bio: undefined,
     location: undefined,
     birth_date: undefined,
+    logged_in: false,
     roles: []
   },
-  registrationToggle: false,
-  registering: false,
+  loginView: false,
+  loginError: undefined,
+  registrationError: undefined,
   pendingLogin: {},
   pendingRegistration: {}
 };
@@ -31,21 +35,32 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         pendingLogin: action.payload
       };
+    case UPDATE_LOGIN_ERROR:
+      return {
+        ...state,
+        registrationError: undefined,
+        loginError: action.payload.error
+      };
+    case UPDATE_REGISTRATION_ERROR:
+      return {
+        ...state,
+        loginError: undefined,
+        registrationError: action.payload.error
+      };
     case OPEN_REGISTRATION:
       return {
         ...state,
-        registrationToggle: true
+        loginView: true
       };
     case DO_REGISTRATION:
       return {
         ...state,
-        registering: true,
         pendingRegistration: action.payload
       };
     case CLOSE_REGISTRATION:
       return {
         ...state,
-        registrationToggle: false
+        loginView: false
       };
     case UPDATE_USER:
       return {

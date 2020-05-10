@@ -1,12 +1,14 @@
+import { call, all, takeLatest, select, put } from "redux-saga/effects";
 import {
-  call,
-  all,
-  takeEvery,
-  takeLatest,
-  select,
-  put
-} from "redux-saga/effects";
-import { DO_LOGIN, DO_REGISTRATION, updateUser } from "actions/user";
+  DO_LOGIN,
+  DO_LOGOUT,
+  DO_REGISTRATION,
+  DO_CHECK_LOGIN,
+  doCheckLogin,
+  updateUser,
+  updateLoginError,
+  updateRegistrationError
+} from "actions/user";
 import { selectPendingRegistration, selectPendingLogin } from "selectors/app";
 import { api } from "utils/api";
 
@@ -24,6 +26,22 @@ export function* register() {
     console.log("Response Data", data);
   } else {
     console.log("Registration error", JSON.stringify(response));
+    yield put(updateRegistrationError(response.data))
+  }
+}
+
+export function* checkLogin() {
+  const response = yield call(api, "login-check/", {
+    method: "GET"
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateUser(data));
+    console.log("Login Check", data);
+  } else {
+    console.log("Login check error", JSON.stringify(response));
+    yield put(updateLoginError(response.data))
   }
 }
 
@@ -45,12 +63,30 @@ export function* login() {
     console.log("Logged in user", data);
   } else {
     console.log("Login error", JSON.stringify(response));
+    yield put(updateLoginError(response.data))
+  }
+}
+
+export function* logout() {
+  const response = yield call(api, "logout/", {
+    method: "GET"
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateUser(data));
+    yield put(doCheckLogin());
+    console.log("Log Out", data);
+  } else {
+    console.log("Log Out error", JSON.stringify(response));
   }
 }
 
 export default function* appSaga() {
   yield all([
     takeLatest(DO_LOGIN, login),
-    takeLatest(DO_REGISTRATION, register)
+    takeLatest(DO_LOGOUT, logout),
+    takeLatest(DO_REGISTRATION, register),
+    takeLatest(DO_CHECK_LOGIN, checkLogin)
   ]);
 }
