@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 from rest_framework import serializers
 from django.contrib.auth import login
 from rest_framework.response import Response
-from .models import User
+from .models import User, Manga
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -34,3 +34,9 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Group
         fields = ['url', 'name']
+
+
+class MangaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Manga
+        fields = ("title", "author", "pdf", "likes")

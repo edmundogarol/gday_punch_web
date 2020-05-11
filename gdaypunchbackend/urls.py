@@ -17,15 +17,16 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
 from rest_framework import routers
-from .gdaypunchapi.views import UserViewSet, LoginView, LogoutView
+from .gdaypunchapi.views import UserViewSet, LoginView, LogoutView, MangaView
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet)
+router.register(r'manga', MangaView)
 
 urlpatterns = [
     url(r'api/login/', LoginView.as_view()),
-    url(r'api/login-check/', LoginView.as_view()),
     url(r'api/logout/', LogoutView.as_view()),
+    url(r'api/login-check/', LoginView.as_view()),
     path('', include('gdaypunchwebapp.urls')),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))

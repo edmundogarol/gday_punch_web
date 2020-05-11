@@ -2,10 +2,10 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.contrib.auth.models import PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from rest_framework import exceptions
+from django.db.models import Count
 
 
 class UserManager(BaseUserManager):
@@ -19,7 +19,7 @@ class UserManager(BaseUserManager):
         except ValidationError as e:
             raise exceptions.ValidationError(
                 {
-                    'email': 'Invalid format.'
+                    'email': 'Invalid format. Check and try again.'
                 })
         else:
             email = self.normalize_email(email)
@@ -82,3 +82,24 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
+
+
+class Manga(models.Model):
+    title = models.TextField()
+    author = models.ForeignKey(User,  on_delete=models.PROTECT)
+    pdf = models.TextField()
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def likes(self):
+        likes = Like.objects.all()
+        mangaLikes = Count(likes.get(user=self.author.pk))
+        print(mangaLikes)
+        return mangaLikes
+
+
+class Like(models.Model):
+    manga = models.ForeignKey(Manga,  on_delete=models.PROTECT)
+    user = models.ForeignKey(User,  on_delete=models.PROTECT)
