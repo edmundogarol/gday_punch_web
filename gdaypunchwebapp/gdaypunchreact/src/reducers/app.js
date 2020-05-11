@@ -71,14 +71,15 @@ const appReducer = (state = INITIAL_STATE, action) => {
     case SUGGEST_REGISTER_TO_CONTINUE:
       return {
         ...state,
-        suggestRegistration: action.payload.message
-      };
-    case SUGGEST_REGISTER_TO_CONTINUE:
-      return {
-        ...state,
         loginError: undefined,
         registrationError: undefined,
         suggestRegistration: action.payload.message
+      };
+    case REGISTRATION_SUCCESS:
+      return {
+        ...state,
+        pendingLogin: {},
+        pendingRegistration: {}
       };
     case REGISTRATION_SUCCESS:
       return {
