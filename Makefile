@@ -13,7 +13,7 @@ deletedb:
 	rm db.sqlite3
 
 dev:
-	python -m venv venv && source venv/bin/activate 
+	python -m venv venv && source venv/bin/activate && brew services start postgresql
 
 build:
 	pip install -r requirements.txt 
