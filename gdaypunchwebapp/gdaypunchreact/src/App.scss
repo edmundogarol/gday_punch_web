@@ -259,6 +259,11 @@ nav {
   margin-bottom: 10pt;
   align-items: flex-end;
 
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
   svg {
     margin-left: 20pt;
     height: 1em;

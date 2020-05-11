@@ -63,7 +63,7 @@ class Home extends React.Component {
     ];
 
     return (
-      <div className="App">
+      <div id="top" className="App">
         <div className="App-header-container app-temp-background">
           <nav>
             {!loggedIn && (
@@ -89,7 +89,12 @@ class Home extends React.Component {
               <h2>Escape</h2>
               <h4>by Edmundo Garol</h4>
             </div>
-            <FontAwesomeIcon icon={faHeart} /> (0)
+            <a href="\#top" onClick={() => console.log("LIKED")}>
+              <FontAwesomeIcon
+                icon={faHeart}
+              />
+              (0)
+            </a>
           </div>
           <div style={styles.pdf}>
             <FontAwesomeIcon
