@@ -7,6 +7,7 @@ import {
   doCheckLogin,
   doLogin,
   updateUser,
+  registrationSuccess,
   updateLoginError,
   updateRegistrationError
 } from "actions/user";
@@ -25,6 +26,7 @@ export function* register() {
     const data = response.data;
     yield put(updateUser(data));
     yield put(doLogin(pendingRegistration));
+    yield put(registrationSuccess());
     console.log("Response Data", data);
   } else {
     console.log("Registration error", JSON.stringify(response));

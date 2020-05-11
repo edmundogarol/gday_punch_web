@@ -11,7 +11,8 @@ import {
   selectLoginViewToggle,
   selectLoginError,
   selectRegistrationError,
-  selectSuggestRegistration
+  selectSuggestRegistration,
+  selectLoggedIn
 } from "selectors/app";
 import { ErrorField } from "components/errorField";
 import { InfoField } from "components/infoField";
@@ -26,6 +27,12 @@ class Login extends React.Component {
       email: "",
       password: ""
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.loggedIn === false && this.props.loggedIn) {
+      this.setState({ email: "", password: "" });
+    }
   }
 
   handleLoginSubmit() {
@@ -130,9 +137,7 @@ class Login extends React.Component {
         )}
         {!isEmpty(suggestRegistration) && (
           <InfoField>
-            <div>
-              {suggestRegistration}
-            </div>
+            <div>{suggestRegistration}</div>
           </InfoField>
         )}
         <div className="account-buttons">
@@ -159,6 +164,7 @@ class Login extends React.Component {
 
 Login.propTypes = {
   // Redux Properties
+  loggedIn: PropTypes.bool.isRequired,
   loginView: PropTypes.bool.isRequired,
   loginError: PropTypes.object,
   registrationError: PropTypes.object,
@@ -173,6 +179,7 @@ Login.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
+  loggedIn: selectLoggedIn,
   loginView: selectLoginViewToggle,
   loginError: selectLoginError,
   registrationError: selectRegistrationError,

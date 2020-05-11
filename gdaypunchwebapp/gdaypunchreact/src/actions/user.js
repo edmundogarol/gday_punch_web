@@ -4,6 +4,7 @@ export const DO_CHECK_LOGIN = "user/DO_CHECK_LOGIN";
 export const DO_REGISTRATION = "user/DO_REGISTRATION";
 export const CLOSE_REGISTRATION = "user/CLOSE_REGISTRATION";
 export const OPEN_REGISTRATION = "user/OPEN_REGISTRATION";
+export const REGISTRATION_SUCCESS = "user/REGISTRATION_SUCCESS";
 export const UPDATE_USER = "user/UPDATE_USER";
 export const UPDATE_LOGIN_ERROR = "user/UPDATE_LOGIN_ERROR";
 export const UPDATE_REGISTRATION_ERROR = "user/UPDATE_REGISTRATION_ERROR";
@@ -14,6 +15,10 @@ export const updateUser = (user) => ({
   payload: {
     user
   }
+});
+
+export const registrationSuccess = () => ({
+  type: REGISTRATION_SUCCESS
 });
 
 export const doSuggestRegister = (message) => ({

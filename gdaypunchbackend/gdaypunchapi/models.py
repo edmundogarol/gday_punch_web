@@ -3,20 +3,33 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.contrib.auth.models import PermissionsMixin
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from rest_framework import exceptions
 
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
-        email = self.normalize_email(email)
-        user = self.model(
-            email=email,
-            **extra_fields
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+        print("CREATING USER ___")
+
+        try:
+            validate_email(email)
+        except ValidationError as e:
+            raise exceptions.ValidationError(
+                {
+                    'email': 'Invalid format.'
+                })
+        else:
+            email = self.normalize_email(email)
+            user = self.model(
+                email=email,
+                **extra_fields
+            )
+            user.set_password(password)
+            user.save(using=self._db)
+            return user
 
     def create_user(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', False)
