@@ -9,7 +9,7 @@ export const selectLoginViewToggle = createSelector(
 
 export const selectLoggedIn = createSelector(
   selectDomain,
-  ({ user }) => user.logged_in
+  ({ user }) => user.logged_in || false
 );
 
 export const selectLoginError = createSelector(

@@ -65,6 +65,9 @@ const appReducer = (state = INITIAL_STATE, action) => {
     case UPDATE_USER:
       return {
         ...state,
+        loginError: undefined,
+        registrationError: undefined,
+        loginView: false,
         user: action.payload.user
       };
     default:

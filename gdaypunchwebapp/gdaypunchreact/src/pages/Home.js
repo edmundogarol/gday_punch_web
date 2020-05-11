@@ -66,12 +66,14 @@ class Home extends React.Component {
       <div className="App">
         <div className="App-header-container app-temp-background">
           <nav>
-            <a
-              href="#"
-              onClick={() => (loginView ? closeRegister() : openRegister())}
-            >
-              {loginView ? "Home" : "Login"}
-            </a>
+            {!loggedIn && (
+              <a
+                href="#"
+                onClick={() => (loginView ? closeRegister() : openRegister())}
+              >
+                {loginView ? "Home" : "Login"}
+              </a>
+            )}
             {loggedIn && (
               <a href="#" style={styles.logout} onClick={() => logout()}>
                 Logout
