@@ -42,12 +42,14 @@ const appReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         registrationError: undefined,
+        suggestRegistration: undefined,
         loginError: action.payload.error
       };
     case UPDATE_REGISTRATION_ERROR:
       return {
         ...state,
         loginError: undefined,
+        suggestRegistration: undefined,
         registrationError: action.payload.error
       };
     case OPEN_REGISTRATION:
@@ -70,11 +72,19 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         suggestRegistration: action.payload.message
       };
+    case SUGGEST_REGISTER_TO_CONTINUE:
+      return {
+        ...state,
+        loginError: undefined,
+        registrationError: undefined,
+        suggestRegistration: action.payload.message
+      };
     case UPDATE_USER:
       return {
         ...state,
         loginError: undefined,
         registrationError: undefined,
+        suggestRegistration: undefined,
         loginView: false,
         user: action.payload.user
       };
