@@ -6,6 +6,7 @@ import {
   DO_REGISTRATION,
   CLOSE_REGISTRATION,
   OPEN_REGISTRATION,
+  SUGGEST_REGISTER_TO_CONTINUE,
   UPDATE_USER
 } from "actions/user";
 
@@ -25,7 +26,9 @@ const INITIAL_STATE = {
   loginError: undefined,
   registrationError: undefined,
   pendingLogin: {},
-  pendingRegistration: {}
+  pendingRegistration: {},
+
+  suggestRegistration: undefined
 };
 
 const appReducer = (state = INITIAL_STATE, action) => {
@@ -61,6 +64,11 @@ const appReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         loginView: false
+      };
+    case SUGGEST_REGISTER_TO_CONTINUE:
+      return {
+        ...state,
+        suggestRegistration: action.payload.message
       };
     case UPDATE_USER:
       return {

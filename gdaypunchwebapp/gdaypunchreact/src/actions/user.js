@@ -7,11 +7,19 @@ export const OPEN_REGISTRATION = "user/OPEN_REGISTRATION";
 export const UPDATE_USER = "user/UPDATE_USER";
 export const UPDATE_LOGIN_ERROR = "user/UPDATE_LOGIN_ERROR";
 export const UPDATE_REGISTRATION_ERROR = "user/UPDATE_REGISTRATION_ERROR";
+export const SUGGEST_REGISTER_TO_CONTINUE = "user/SUGGEST_REGISTER_TO_CONTINUE";
 
 export const updateUser = (user) => ({
   type: UPDATE_USER,
   payload: {
     user
+  }
+});
+
+export const doSuggestRegister = (message) => ({
+  type: SUGGEST_REGISTER_TO_CONTINUE,
+  payload: {
+    message
   }
 });
 

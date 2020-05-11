@@ -4,7 +4,12 @@ import { Page, pdfjs } from "react-pdf";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Document } from "react-pdf/dist/entry.webpack";
-import { doLogout, openRegistration, closeRegistration } from "actions/user";
+import {
+  doLogout,
+  openRegistration,
+  closeRegistration,
+  doSuggestRegister
+} from "actions/user";
 import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "components/header";
@@ -30,9 +35,17 @@ class Home extends React.Component {
   }
 
   setPage(page) {
-    this.setState({
-      pageNumber: page
-    });
+    const { loggedIn, openRegister, suggestRegister } = this.props;
+
+    if (!loggedIn) {
+      window.location.href = "/#top";
+      openRegister();
+      suggestRegister('Info: Sign up to continue reading "Escape"!');
+    } else {
+      this.setState({
+        pageNumber: page
+      });
+    }
   }
 
   setSize(page) {
@@ -47,7 +60,8 @@ class Home extends React.Component {
       loginView,
       openRegister,
       closeRegister,
-      logout
+      logout,
+      suggestRegister
     } = this.props;
     const styles = getStyles();
 
@@ -68,6 +82,7 @@ class Home extends React.Component {
           <nav>
             {!loggedIn && (
               <a
+                className="login-button"
                 href="#"
                 onClick={() => (loginView ? closeRegister() : openRegister())}
               >
@@ -89,10 +104,15 @@ class Home extends React.Component {
               <h2>Escape</h2>
               <h4>by Edmundo Garol</h4>
             </div>
-            <a href="\#top" onClick={() => console.log("LIKED")}>
-              <FontAwesomeIcon
-                icon={faHeart}
-              />
+            <a
+              href="\#top"
+              onClick={() => {
+                window.location.href = "/#top";
+                openRegister();
+                suggestRegister("Info: Sign up to like this manga!");
+              }}
+            >
+              <FontAwesomeIcon icon={faHeart} />
               (0)
             </a>
           </div>
@@ -190,6 +210,7 @@ Home.propTypes = {
   // Redux Functions
   logout: PropTypes.func.isRequired,
   openRegister: PropTypes.func.isRequired,
+  suggestRegister: PropTypes.func.isRequired,
   closeRegister: PropTypes.func.isRequired
 };
 
@@ -201,7 +222,8 @@ const mapStateToProps = createStructuredSelector({
 const mapDispatchToProps = {
   logout: doLogout,
   openRegister: openRegistration,
-  closeRegister: closeRegistration
+  closeRegister: closeRegistration,
+  suggestRegister: doSuggestRegister
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

@@ -10,11 +10,14 @@ import {
 import {
   selectLoginViewToggle,
   selectLoginError,
-  selectRegistrationError
+  selectRegistrationError,
+  selectSuggestRegistration
 } from "selectors/app";
 import { ErrorField } from "components/errorField";
+import { InfoField } from "components/infoField";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import { isEmpty } from "lodash";
 
 class Login extends React.Component {
   constructor(props) {
@@ -57,7 +60,12 @@ class Login extends React.Component {
   }
 
   render() {
-    const { loginView, loginError, registrationError } = this.props;
+    const {
+      loginView,
+      loginError,
+      registrationError,
+      suggestRegistration
+    } = this.props;
 
     return (
       <div className={`registration ${loginView ? "show" : ""}`}>
@@ -120,6 +128,13 @@ class Login extends React.Component {
             </div>
           </ErrorField>
         )}
+        {!isEmpty(suggestRegistration) && (
+          <InfoField>
+            <div>
+              {suggestRegistration}
+            </div>
+          </InfoField>
+        )}
         <div className="account-buttons">
           <button
             onClick={() => this.handleRegisterSubmit()}
@@ -147,6 +162,8 @@ Login.propTypes = {
   loginView: PropTypes.bool.isRequired,
   loginError: PropTypes.object,
   registrationError: PropTypes.object,
+  suggestRegistration: PropTypes.string.isRequired,
+
   // Redux Functions
   login: PropTypes.func.isRequired,
   logout: PropTypes.func.isRequired,
@@ -158,7 +175,8 @@ Login.propTypes = {
 const mapStateToProps = createStructuredSelector({
   loginView: selectLoginViewToggle,
   loginError: selectLoginError,
-  registrationError: selectRegistrationError
+  registrationError: selectRegistrationError,
+  suggestRegistration: selectSuggestRegistration
 });
 
 const mapDispatchToProps = {

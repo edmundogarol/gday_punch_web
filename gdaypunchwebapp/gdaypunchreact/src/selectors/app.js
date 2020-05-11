@@ -31,3 +31,8 @@ export const selectPendingRegistration = createSelector(
   selectDomain,
   ({ pendingRegistration }) => pendingRegistration
 );
+
+export const selectSuggestRegistration = createSelector(
+  selectDomain,
+  ({ suggestRegistration }) => suggestRegistration || ""
+);
