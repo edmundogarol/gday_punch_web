@@ -97,7 +97,7 @@ class Manga(models.Model):
 
     @property
     def likes(self):
-        return Like.objects.all().filter(user=self.author.pk).count()
+        return Like.objects.all().filter(manga=self.id).count()
 
     @property
     def user_likes(self):

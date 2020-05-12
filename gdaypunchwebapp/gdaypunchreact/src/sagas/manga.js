@@ -17,7 +17,8 @@ import { selectLikingManga } from "selectors/manga";
 import { api } from "utils/api";
 
 export function* getUserManga() {
-  const { id = 1 } = yield select(selectUser);
+  // const { id = 1 } = yield select(selectUser);
+  const id = 1; // Load main user to get Escape manga details
 
   const response = yield call(api, `manga/${id}/`, {
     method: "GET"

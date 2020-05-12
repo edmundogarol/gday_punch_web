@@ -129,8 +129,7 @@ class Home extends React.Component {
                   window.location.href = "/#top";
                   openRegister();
                   suggestRegister("Info: Sign up to like this manga!");
-                }
-                if (!userManga[1].user_likes) {
+                } else if (!userManga[1].user_likes) {
                   likeManga(userManga[1].id);
                 } else {
                   // unlikeManga(userManga[1].id);
