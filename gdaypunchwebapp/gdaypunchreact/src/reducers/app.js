@@ -1,4 +1,5 @@
 import { combineReducers } from "redux";
+import { mangaReducer } from "./manga";
 import {
   DO_LOGIN,
   UPDATE_LOGIN_ERROR,
@@ -96,5 +97,6 @@ const appReducer = (state = INITIAL_STATE, action) => {
 };
 
 export default combineReducers({
-  app: appReducer
+  app: appReducer,
+  manga: mangaReducer
 });

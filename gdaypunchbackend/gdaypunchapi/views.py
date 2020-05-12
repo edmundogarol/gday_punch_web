@@ -8,6 +8,9 @@ from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.shortcuts import get_object_or_404
+from django_currentuser.middleware import (
+    get_current_user, get_current_authenticated_user)
+from django_currentuser.db.models import CurrentUserField
 
 from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer
 from .models import User, Manga, Like
@@ -41,8 +44,10 @@ class LoginView(APIView):
 
     def get(self, request, format=None):
         if str(self.request.user) != 'AnonymousUser':
+            user = User.objects.get(email=self.request.user)
+            serializer = UserSerializer(user)
             content = {
-                'user': str(self.request.user),
+                'user': serializer.data,
                 'logged_in': True,
             }
             return Response(content)
@@ -74,9 +79,11 @@ class LoginView(APIView):
         if not user.is_active:
             raise exceptions.AuthenticationFailed('User inactive or deleted.')
 
+        user = User.objects.get(email=self.request.user)
+        serializer = UserSerializer(user)
         content = {
-            'user': str(request.user),
-            'logged_in': True,  # None
+            'user': serializer.data,
+            'logged_in': True,
         }
         return Response(content)
 
@@ -91,6 +98,15 @@ class MangaViewSet(viewsets.ModelViewSet):
     queryset = Manga.objects.none()
     serializer_class = MangaSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def get_user(self):
+        return self.request.user
+
+    def list(self, request, *args, **kwargs):
+        author = User.objects.get(email=self.get_user())
+        queryset = Manga.objects.all().filter(author=author)
+        serializer = MangaSerializer(queryset, many=True)
+        return Response(serializer.data)
 
 
 class MangaDetailView(UpdateModelMixin, viewsets.ViewSet):

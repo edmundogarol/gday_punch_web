@@ -73,7 +73,6 @@ def get_linux_ec2_private_ip():
 # So we detect if we are in elastic beanstalk,
 # and add the instances private ip address
 private_ip = get_linux_ec2_private_ip()
-print('private_ip: ' + str(private_ip))
 if private_ip:
     ALLOWED_HOSTS.append(private_ip.decode('UTF-8'))
 
@@ -106,6 +105,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_currentuser.middleware.ThreadLocalUserMiddleware',
 ]
 
 ROOT_URLCONF = 'gdaypunchbackend.urls'
@@ -157,9 +157,6 @@ else:
 SETTINGS = None
 with open(dbconfig) as f:
     SETTINGS = json.load(f)
-
-print("SETTINGS")
-print(SETTINGS)
 
 DATABASES = {
     'default': {

@@ -24,10 +24,14 @@ export function* register() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateUser(data));
+    const user = {
+      logged_in: data.logged_in,
+      ...data.user
+    }
+    yield put(updateUser(user));
     yield put(doLogin(pendingRegistration));
     yield put(registrationSuccess());
-    console.log("Response Data", data);
+    console.log("Response Data", user);
   } else {
     console.log("Registration error", JSON.stringify(response));
     yield put(updateRegistrationError(response.data))
@@ -41,8 +45,12 @@ export function* checkLogin() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateUser(data));
-    console.log("Login Check", data);
+    const user = {
+      logged_in: data.logged_in,
+      ...data.user
+    }
+    yield put(updateUser(user));
+    console.log("Login Check", user);
   } else {
     console.log("Login check error", JSON.stringify(response));
     yield put(updateLoginError(response.data))
@@ -63,8 +71,12 @@ export function* login() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateUser(data));
-    console.log("Logged in user", data);
+    const user = {
+      logged_in: data.logged_in,
+      ...data.user
+    }
+    yield put(updateUser(user));
+    console.log("Logged in user", user);
   } else {
     console.log("Login error", JSON.stringify(response));
     yield put(updateLoginError(response.data))

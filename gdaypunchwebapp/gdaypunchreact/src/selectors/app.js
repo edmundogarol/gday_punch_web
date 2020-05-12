@@ -2,6 +2,8 @@ import { createSelector } from "reselect";
 
 const selectDomain = (state) => state.app;
 
+export const selectUser = createSelector(selectDomain, ({ user }) => user);
+
 export const selectLoginViewToggle = createSelector(
   selectDomain,
   ({ loginView }) => loginView

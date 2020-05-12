@@ -6,6 +6,9 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from rest_framework import exceptions
 from django.db.models import Count
+from django_currentuser.middleware import (
+    get_current_user, get_current_authenticated_user)
+from django_currentuser.db.models import CurrentUserField
 
 
 class UserManager(BaseUserManager):
@@ -95,6 +98,15 @@ class Manga(models.Model):
     @property
     def likes(self):
         return Like.objects.all().filter(user=self.author.pk).count()
+
+    @property
+    def user_likes(self):
+        user = User.objects.get(email=get_current_user())
+        liked = Like.objects.all().filter(user=user).count()
+        if liked > 0:
+            return True
+        else:
+            return False
 
 
 class Like(models.Model):

@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { Page, pdfjs } from "react-pdf";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import { isEmpty } from "lodash";
 import { Document } from "react-pdf/dist/entry.webpack";
 import {
   doLogout,
@@ -10,7 +11,9 @@ import {
   closeRegistration,
   doSuggestRegister
 } from "actions/user";
+import { doGetUserManga, doLikeManga } from "actions/manga";
 import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
+import { selectUserManga } from "selectors/manga";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "components/header";
 import Login from "components/login";
@@ -32,6 +35,18 @@ class Home extends React.Component {
       pageNumber: 1,
       sizeLevel: 0
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    const { loggedIn, getUserManga } = this.props;
+
+    if (!prevProps.loggedIn && loggedIn) {
+      getUserManga();
+    }
+  }
+
+  componentDidMount() {
+    this.props.getUserManga();
   }
 
   setPage(page) {
@@ -61,7 +76,9 @@ class Home extends React.Component {
       openRegister,
       closeRegister,
       logout,
-      suggestRegister
+      suggestRegister,
+      userManga,
+      likeManga
     } = this.props;
     const styles = getStyles();
 
@@ -75,6 +92,8 @@ class Home extends React.Component {
       { container: "80", page: 750 },
       { container: "100", page: 1000 }
     ];
+
+    console.log("userManga", userManga);
 
     return (
       <div id="top" className="App">
@@ -105,15 +124,24 @@ class Home extends React.Component {
               <h4>by Edmundo Garol</h4>
             </div>
             <a
-              href="\#top"
               onClick={() => {
-                window.location.href = "/#top";
-                openRegister();
-                suggestRegister("Info: Sign up to like this manga!");
+                if (!loggedIn) {
+                  window.location.href = "/#top";
+                  openRegister();
+                  suggestRegister("Info: Sign up to like this manga!");
+                }
+                if (!userManga[1].user_likes) {
+                  likeManga(userManga[1].id);
+                } else {
+                  // unlikeManga(userManga[1].id);
+                }
               }}
             >
-              <FontAwesomeIcon icon={faHeart} />
-              (0)
+              <FontAwesomeIcon
+                icon={faHeart}
+                style={!isEmpty(userManga) && userManga[1].user_likes ? { color: "red" } : null}
+              />
+              {`(${!isEmpty(userManga) ? userManga[1].likes : 0})`}
             </a>
           </div>
           <div style={styles.pdf}>
@@ -207,23 +235,29 @@ Home.propTypes = {
   // Redux Properties
   loggedIn: PropTypes.bool.isRequired,
   loginView: PropTypes.bool.isRequired,
+  userManga: PropTypes.object,
   // Redux Functions
   logout: PropTypes.func.isRequired,
   openRegister: PropTypes.func.isRequired,
   suggestRegister: PropTypes.func.isRequired,
-  closeRegister: PropTypes.func.isRequired
+  closeRegister: PropTypes.func.isRequired,
+  getUserManga: PropTypes.func.isRequired,
+  likeManga: PropTypes.func.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
   loggedIn: selectLoggedIn,
-  loginView: selectLoginViewToggle
+  loginView: selectLoginViewToggle,
+  userManga: selectUserManga
 });
 
 const mapDispatchToProps = {
   logout: doLogout,
   openRegister: openRegistration,
   closeRegister: closeRegistration,
-  suggestRegister: doSuggestRegister
+  suggestRegister: doSuggestRegister,
+  getUserManga: doGetUserManga,
+  likeManga: doLikeManga
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

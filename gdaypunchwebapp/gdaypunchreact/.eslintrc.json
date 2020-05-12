@@ -27,6 +27,7 @@
         "space-before-function-paren": "off",
         "quotes": "off",
         "generator-star-spacing": "off",
+        "no-case-declarations": "off",
         "react/no-unused-state": "error",
         "import/no-unresolved": [
             2, 
