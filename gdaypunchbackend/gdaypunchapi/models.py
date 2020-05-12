@@ -85,19 +85,16 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 class Manga(models.Model):
-    title = models.TextField()
+    title = models.TextField(max_length=50, blank=False)
     author = models.ForeignKey(User,  on_delete=models.PROTECT)
-    pdf = models.TextField()
+    pdf = models.TextField(max_length=100, blank=True)
 
     def __str__(self):
         return self.title
 
     @property
     def likes(self):
-        likes = Like.objects.all()
-        mangaLikes = Count(likes.get(user=self.author.pk))
-        print(mangaLikes)
-        return mangaLikes
+        return Like.objects.all().filter(user=self.author.pk).count()
 
 
 class Like(models.Model):

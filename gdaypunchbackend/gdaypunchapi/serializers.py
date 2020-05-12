@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 from rest_framework import serializers
 from django.contrib.auth import login
 from rest_framework.response import Response
-from .models import User, Manga
+from .models import User, Manga, Like
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", "last_name", "email", "bio", "location",
-                  "birth_date", "roles", "password", "pk")
+                  "birth_date", "roles", "password", "id")
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -39,4 +39,10 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class MangaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manga
-        fields = ("title", "author", "pdf", "likes")
+        fields = ("id", "title", "author", "pdf", "likes")
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ("manga", "user")

@@ -7,13 +7,14 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from django.shortcuts import get_object_or_404
 
-from .serializers import UserSerializer, GroupSerializer, MangaSerializer
+from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer
 from .models import User, Manga, Like
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-id')
+    queryset = User.objects.none()
     serializer_class = UserSerializer
     # permission_classes = [permissions.IsAuthenticated]
 
@@ -81,15 +82,18 @@ class LoginView(APIView):
 
 
 class LikeViewSet(viewsets.ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = UserSerializer
+    queryset = Like.objects.none()
+    serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 
-class MangaView(UpdateModelMixin, viewsets.ViewSet):
-    queryset = Manga.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
+class MangaViewSet(viewsets.ModelViewSet):
+    queryset = Manga.objects.none()
     serializer_class = MangaSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class MangaDetailView(UpdateModelMixin, viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         queryset = Manga.objects.all()
