@@ -81,12 +81,6 @@ const appReducer = (state = INITIAL_STATE, action) => {
         pendingLogin: {},
         pendingRegistration: {}
       };
-    case REGISTRATION_SUCCESS:
-      return {
-        ...state,
-        pendingLogin: {},
-        pendingRegistration: {}
-      };
     case UPDATE_USER:
       return {
         ...state,

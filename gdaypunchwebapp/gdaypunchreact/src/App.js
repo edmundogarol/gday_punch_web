@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Provider, connect } from "react-redux";
-import { BrowserRouter as Router, Route } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { createStore, applyMiddleware, compose } from "redux";
 import { createStructuredSelector } from "reselect";
 import createSagaMiddleware from "redux-saga";
@@ -9,6 +9,7 @@ import appSaga from "sagas/app";
 import { doCheckLogin } from "actions/user";
 
 import Home from "pages/Home";
+import PageNotFound from "pages/PageNotFound";
 import "./App.scss";
 
 /**
@@ -29,7 +30,10 @@ function Root(props) {
 
   return (
     <Router history={history}>
-      <Route exact path="/" component={Home} />
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route component={PageNotFound} />
+      </Switch>
     </Router>
   );
 }

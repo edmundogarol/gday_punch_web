@@ -121,6 +121,20 @@ nav {
   }
 }
 
+.page-not-found {
+  height: 100vh;
+  font-size: 2em;
+
+  .home-logo {
+    margin: unset;
+    height: unset;
+
+    img {
+      margin: unset;
+    }
+  }
+}
+
 .registration {
   width: 20em;
   font-size: 1em;
