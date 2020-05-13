@@ -28,6 +28,7 @@ import {
   faSearchMinus,
   faHeart
 } from "@fortawesome/free-solid-svg-icons";
+
 import Escape from "static/resources/Escape.pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -59,7 +60,7 @@ class Home extends React.Component {
     if (!loggedIn) {
       window.location.href = "/#top";
       openRegister();
-      suggestRegister('Info: Sign up or Log in to continue reading!');
+      suggestRegister("Info: Sign up or Log in to continue reading!");
     } else {
       this.setState({
         pageNumber: page

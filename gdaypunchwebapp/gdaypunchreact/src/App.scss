@@ -352,3 +352,72 @@ nav {
     width: 4em;
   }
 }
+
+.footer {
+  background: #191919;
+  display: flex;
+  align-items: center;
+  color: #adadad;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  .contact-us {
+    margin: 2em;
+    text-align: start;
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    p {
+      margin: unset;
+      margin-bottom: 2pt;
+    }
+
+    .website {
+      margin-top: 4pt;
+    }
+  }
+
+  .socials {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 2em;
+    min-width: max-content;
+    width: 30%;
+
+    a {
+      padding: 0.5em;
+      text-decoration: none;
+      color: inherit;
+    }
+    svg {
+      height: 1.5em;
+      width: 1.5em;
+    }
+
+    .fb-hover:hover {
+      background: #3b5998;
+      color: white;
+    }
+
+    .ig-hover:hover {
+      background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+      color: white;
+    }
+
+    .yt-hover:hover {
+      background: #c4302b;
+      color: white;
+    }
+
+    .tw-hover:hover {
+      background: #00acee;
+      color: white;
+    }
+  }
+
+  .copyright {
+    margin: 2em;
+  }
+}

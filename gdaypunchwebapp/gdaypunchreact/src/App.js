@@ -9,6 +9,7 @@ import appReducer from "reducers/app";
 import appSaga from "sagas/app";
 import mangaSaga from "sagas/manga";
 import { doCheckLogin } from "actions/user";
+import Footer from "components/footer";
 
 import Home from "pages/Home";
 import PageNotFound from "pages/PageNotFound";
@@ -40,6 +41,7 @@ function Root(props) {
         <Route exact path="/" component={Home} />
         <Route component={PageNotFound} />
       </Switch>
+      <Footer />
     </Router>
   );
 }
