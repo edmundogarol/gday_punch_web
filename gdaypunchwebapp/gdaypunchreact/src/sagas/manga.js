@@ -27,7 +27,6 @@ export function* getUserManga() {
   if (response && response.ok) {
     const data = response.data;
     yield put(updateUserManga(data));
-    console.log("User Manga Data", data);
   } else {
     console.log("User Manga error", JSON.stringify(response));
   }
@@ -50,7 +49,6 @@ export function* likeManga() {
     // yield put(updateUserManga(data));
     // TODO Temporary refresher of manga
     yield put(doGetUserManga());
-    console.log("Like data", data);
   } else {
     console.log("Like error", JSON.stringify(response));
   }

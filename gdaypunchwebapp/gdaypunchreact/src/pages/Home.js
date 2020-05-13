@@ -12,7 +12,11 @@ import {
   doSuggestRegister
 } from "actions/user";
 import { doGetUserManga, doLikeManga } from "actions/manga";
-import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
+import {
+  selectLoginViewToggle,
+  selectLoggedIn,
+  selectUser
+} from "selectors/app";
 import { selectUserManga } from "selectors/manga";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Header from "components/header";
@@ -55,7 +59,7 @@ class Home extends React.Component {
     if (!loggedIn) {
       window.location.href = "/#top";
       openRegister();
-      suggestRegister('Info: Sign up to continue reading "Escape"!');
+      suggestRegister('Info: Sign up or Log in to continue reading!');
     } else {
       this.setState({
         pageNumber: page
@@ -71,6 +75,7 @@ class Home extends React.Component {
 
   render() {
     const {
+      user,
       loggedIn,
       loginView,
       openRegister,
@@ -93,12 +98,11 @@ class Home extends React.Component {
       { container: "100", page: 1000 }
     ];
 
-    console.log("userManga", userManga);
-
     return (
       <div id="top" className="App">
         <div className="App-header-container app-temp-background">
           <nav>
+            <p>{user.email}</p>
             {!loggedIn && (
               <a
                 className="login-button"
@@ -128,7 +132,9 @@ class Home extends React.Component {
                 if (!loggedIn) {
                   window.location.href = "/#top";
                   openRegister();
-                  suggestRegister("Info: Sign up to like this manga!");
+                  suggestRegister(
+                    "Info: Sign up or Log in to like this manga!"
+                  );
                 } else if (!userManga[1].user_likes) {
                   likeManga(userManga[1].id);
                 } else {
@@ -138,7 +144,11 @@ class Home extends React.Component {
             >
               <FontAwesomeIcon
                 icon={faHeart}
-                style={!isEmpty(userManga) && userManga[1].user_likes ? { color: "red" } : null}
+                style={
+                  !isEmpty(userManga) && userManga[1].user_likes
+                    ? { color: "red" }
+                    : null
+                }
               />
               {`(${!isEmpty(userManga) ? userManga[1].likes : 0})`}
             </a>
@@ -232,6 +242,7 @@ function getStyles() {
 
 Home.propTypes = {
   // Redux Properties
+  user: PropTypes.object.isRequired,
   loggedIn: PropTypes.bool.isRequired,
   loginView: PropTypes.bool.isRequired,
   userManga: PropTypes.object,
@@ -245,6 +256,7 @@ Home.propTypes = {
 };
 
 const mapStateToProps = createStructuredSelector({
+  user: selectUser,
   loggedIn: selectLoggedIn,
   loginView: selectLoginViewToggle,
   userManga: selectUserManga
