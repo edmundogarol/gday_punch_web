@@ -16,6 +16,7 @@ import {
 } from "selectors/app";
 import { ErrorField } from "components/errorField";
 import { InfoField } from "components/infoField";
+import { ConditionsField } from "components/conditionsField";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { isEmpty } from "lodash";
@@ -25,7 +26,9 @@ class Login extends React.Component {
     super(props);
     this.state = {
       email: "",
-      password: ""
+      password: "",
+      subscribeOpen: false,
+      subscribeAgree: false
     };
   }
 
@@ -45,10 +48,17 @@ class Login extends React.Component {
 
   handleRegisterSubmit() {
     const { email, password } = this.state;
-    this.props.register({
-      email,
-      password
-    });
+    if (this.state.subscribeAgree) {
+      console.log("this.state.subscribeAgree", this.state.subscribeAgree);
+      this.props.register({
+        email,
+        password
+      });
+      this.setState({ subscribeOpen: false });
+      this.setState({ subscribeAgree: false });
+    } else {
+      this.setState({ subscribeOpen: true });
+    }
   }
 
   handleKeyDown(e, type) {
@@ -121,6 +131,17 @@ class Login extends React.Component {
               {loginError.detail}
             </div>
           </ErrorField>
+        )}
+        {this.state.subscribeOpen && (
+          <ConditionsField>
+            <div>
+              <input
+                type="checkbox"
+                onChange={() => this.setState({ subscribeAgree: true })}
+              />
+              <p>{"I agree to sign up and subscribe to read and receive more, cool manga content!"}</p>
+            </div>
+          </ConditionsField>
         )}
         {registrationError && (
           <ErrorField>
