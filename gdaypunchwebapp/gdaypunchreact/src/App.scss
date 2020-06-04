@@ -20,20 +20,48 @@ code {
   }
 }
 
-nav {
-  width: 100%;
+.navigation-container {
+  background-color: #1d1d1d;
+  min-height: 10vh;
   display: flex;
-  justify-content: flex-end;
-  position: absolute;
-  top: 30pt;
-  right: 30pt;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(5px + 1.5vmin);
+  color: rgb(179, 179, 179);
+  position: fixed;
+  width: 100%;
+  z-index: 2;
+}
 
-  a {
+nav {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+
+  img {
+    width: 3em;
+  }
+
+  .nav-logo {
+    margin-left: 1em;
+  }
+
+  .nav-links {
+    margin-right: 1em;
+    width: 50%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  a:not(.logo-link) {
     text-decoration: none;
     color: #cecece;
     font-size: 1em;
     text-transform: uppercase;
     letter-spacing: 2pt;
+    margin-left: 2em;
   }
 
   p {
@@ -402,7 +430,14 @@ nav {
     }
 
     .ig-hover:hover {
-      background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%,#d6249f 60%,#285AEB 90%);
+      background: radial-gradient(
+        circle at 30% 107%,
+        #fdf497 0%,
+        #fdf497 5%,
+        #fd5949 45%,
+        #d6249f 60%,
+        #285aeb 90%
+      );
       color: white;
     }
 
@@ -419,5 +454,84 @@ nav {
 
   .copyright {
     margin: 2em;
+  }
+}
+
+.admin {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: row;
+  overflow: scroll;
+
+  .side-menu {
+    width: 30vh;
+    height: 70vh;
+    padding-top: 10vh;
+    background: #f1f1f1;
+    display: flex;
+    flex-direction: column;
+
+    a {
+      width: 100%;
+      height: 3em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      color: #333333;
+      background: #d0d0d0;
+      font-size: 1em;
+    }
+
+    a:hover {
+      color: #f9f9f9;
+      background: #6b6b6b;
+    }
+  }
+
+  .admin-dashboard {
+    width: 100%;
+    padding-top: 10vh;
+  }
+
+  .twitter {
+    display: flex;
+    flex-direction: column;
+    height: 70vh;
+    justify-content: space-around;
+    padding-left: 1em;
+    padding-right: 1em;
+
+    .upload-button {
+      height: 15em;
+      width: 15em;
+      border: 10px dashed #ababab;
+
+      &::-webkit-file-upload-button {
+        visibility: hidden;
+      }
+
+      &::before {
+        content: "Drag and drop image here";
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+    }
+
+    .status-area {
+      height: 8em;
+      font-size: 1em;
+      max-width: 30em;
+      min-height: 5em;
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+
+    .submit-button {
+      height: 3em;
+      width: 30vh;
+    }
   }
 }

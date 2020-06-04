@@ -10,8 +10,10 @@ import appSaga from "sagas/app";
 import mangaSaga from "sagas/manga";
 import { doCheckLogin } from "actions/user";
 import Footer from "components/footer";
+import Navigation from "components/navigation";
 
 import Home from "pages/Home";
+import Admin from "pages/Admin";
 import PageNotFound from "pages/PageNotFound";
 import "./App.scss";
 
@@ -37,8 +39,11 @@ function Root(props) {
 
   return (
     <Router history={history}>
+      <Navigation />
       <Switch>
         <Route exact path="/" component={Home} />
+        <Route exact path="/admin" component={Admin} />
+        <Route exact path="/admin/:app" component={Admin} />
         <Route component={PageNotFound} />
       </Switch>
       <Footer />

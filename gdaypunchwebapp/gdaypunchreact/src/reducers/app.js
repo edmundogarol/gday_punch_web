@@ -22,6 +22,7 @@ const INITIAL_STATE = {
     location: undefined,
     birth_date: undefined,
     logged_in: false,
+    is_staff: false,
     roles: []
   },
   loginView: false,

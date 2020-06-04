@@ -6,16 +6,13 @@ import { createStructuredSelector } from "reselect";
 import { isEmpty } from "lodash";
 import { Document } from "react-pdf/dist/entry.webpack";
 import {
-  doLogout,
   openRegistration,
-  closeRegistration,
   doSuggestRegister
 } from "actions/user";
 import { doGetUserManga, doLikeManga } from "actions/manga";
 import {
   selectLoginViewToggle,
-  selectLoggedIn,
-  selectUser
+  selectLoggedIn
 } from "selectors/app";
 import { selectUserManga } from "selectors/manga";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -76,12 +73,9 @@ class Home extends React.Component {
 
   render() {
     const {
-      user,
       loggedIn,
       loginView,
       openRegister,
-      closeRegister,
-      logout,
       suggestRegister,
       userManga,
       likeManga
@@ -102,23 +96,6 @@ class Home extends React.Component {
     return (
       <div id="top" className="App">
         <div className="App-header-container app-temp-background">
-          <nav>
-            <p>{user.email}</p>
-            {!loggedIn && (
-              <a
-                className="login-button"
-                href="#"
-                onClick={() => (loginView ? closeRegister() : openRegister())}
-              >
-                {loginView ? "Home" : "Login"}
-              </a>
-            )}
-            {loggedIn && (
-              <a href="#" style={styles.logout} onClick={() => logout()}>
-                Logout
-              </a>
-            )}
-          </nav>
           <Header loginView={loginView} />
           <Login />
         </div>
@@ -210,9 +187,6 @@ class Home extends React.Component {
 
 function getStyles() {
   return {
-    logout: {
-      marginLeft: "2em"
-    },
     pdf: {
       display: "flex",
       flexDirection: "row",
@@ -243,30 +217,24 @@ function getStyles() {
 
 Home.propTypes = {
   // Redux Properties
-  user: PropTypes.object.isRequired,
   loggedIn: PropTypes.bool.isRequired,
   loginView: PropTypes.bool.isRequired,
   userManga: PropTypes.object,
   // Redux Functions
-  logout: PropTypes.func.isRequired,
   openRegister: PropTypes.func.isRequired,
   suggestRegister: PropTypes.func.isRequired,
-  closeRegister: PropTypes.func.isRequired,
   getUserManga: PropTypes.func.isRequired,
   likeManga: PropTypes.func.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
-  user: selectUser,
   loggedIn: selectLoggedIn,
   loginView: selectLoginViewToggle,
   userManga: selectUserManga
 });
 
 const mapDispatchToProps = {
-  logout: doLogout,
   openRegister: openRegistration,
-  closeRegister: closeRegistration,
   suggestRegister: doSuggestRegister,
   getUserManga: doGetUserManga,
   likeManga: doLikeManga
