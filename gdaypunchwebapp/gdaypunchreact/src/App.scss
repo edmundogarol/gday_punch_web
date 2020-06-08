@@ -520,6 +520,11 @@ nav {
       }
     }
 
+    img {
+      width: max-content;
+      height: max-content;
+    }
+
     .status-area {
       height: 8em;
       font-size: 1em;
@@ -527,6 +532,8 @@ nav {
       min-height: 5em;
       margin-top: 1em;
       margin-bottom: 1em;
+      border: 1px solid dimgrey;
+      padding: 0.5em;
     }
 
     .submit-button {

@@ -8,6 +8,7 @@ import { all } from "redux-saga/effects";
 import appReducer from "reducers/app";
 import appSaga from "sagas/app";
 import mangaSaga from "sagas/manga";
+import adminSaga from "sagas/admin";
 import { doCheckLogin } from "actions/user";
 import Footer from "components/footer";
 import Navigation from "components/navigation";
@@ -21,7 +22,7 @@ import "./App.scss";
  * Set up and run app sagas listening for events
  */
 function* rootSaga() {
-  yield all([appSaga(), mangaSaga()]);
+  yield all([appSaga(), mangaSaga(), adminSaga()]);
 }
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
