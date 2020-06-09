@@ -6,10 +6,14 @@ import { NavLink, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {} from "@fortawesome/free-solid-svg-icons";
 
-import { doTweet } from "actions/admin";
+import {
+  doTweet,
+  doUpdateTweetImage,
+  doUpdateTweetStatus
+} from "actions/admin";
 
 function Admin(props) {
-  const { tweet } = props;
+  const { tweet, updateTweetStatus, updateTweetImage } = props;
   const [imageUpload, setImage] = useState(undefined);
   const {} = props;
   const { app } = useParams();
@@ -38,25 +42,28 @@ function Admin(props) {
   function handleChangeText() {
     const editableDiv = document.querySelector("[contenteditable]");
     const innerText = editableDiv.innerText;
+
+    updateTweetStatus(innerText);
+
     const hashtagLinkedText = innerText.replace(
       /#(\S+)/g,
       '<a href="http://twitter.com/#!/search/$1">#$1</a>'
     );
-
     editableDiv.innerHTML = hashtagLinkedText;
-    console.log("innerText", innerText);
-    console.log("hashtagLinkedText", hashtagLinkedText);
-
     placeCaretAtEnd(editableDiv);
   }
 
-  function handleUpload() {
+  function handleImageChange(imageFile) {
+    setImage(imageFile);
+    updateTweetImage(imageFile);
+  }
+
+  function handleTweet() {
     const editableDiv = document.querySelector("[contenteditable]");
     const innerText = editableDiv.innerText;
 
-    console.log("Uploading: ", innerText);
-
-    tweet(innerText);
+    updateTweetStatus(innerText);
+    tweet();
   }
 
   return (
@@ -70,16 +77,24 @@ function Admin(props) {
         {twitter && (
           <div className="twitter">
             {imageUpload ? (
-              <img src={imageUpload} />
+              <img
+                src={
+                  imageUpload
+                    ? window.URL.createObjectURL(imageUpload)
+                    : undefined
+                }
+              />
             ) : (
               <input
                 title=" "
-                value={imageUpload}
+                value={
+                  imageUpload
+                    ? window.URL.createObjectURL(imageUpload)
+                    : undefined
+                }
                 className="upload-button"
                 type="file"
-                onChange={(e) =>
-                  setImage(window.URL.createObjectURL(e.target.files[0]))
-                }
+                onChange={(e) => handleImageChange(e.target.files[0])}
               />
             )}
             <div
@@ -90,7 +105,7 @@ function Admin(props) {
               cols="20"
             />
             <button
-              onClick={() => handleUpload()}
+              onClick={() => handleTweet()}
               className="submit-button"
               type="submit"
             >
@@ -104,13 +119,17 @@ function Admin(props) {
 }
 
 Admin.propTypes = {
-  tweet: PropTypes.func
+  tweet: PropTypes.func,
+  updateTweetImage: PropTypes.func,
+  updateTweetStatus: PropTypes.func
 };
 
 const mapStateToProps = createStructuredSelector({});
 
 const mapDispatchToProps = {
-  tweet: doTweet
+  tweet: doTweet,
+  updateTweetImage: doUpdateTweetImage,
+  updateTweetStatus: doUpdateTweetStatus
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Admin);

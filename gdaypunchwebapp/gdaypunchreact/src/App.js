@@ -1,6 +1,11 @@
 import React, { useEffect } from "react";
 import { Provider, connect } from "react-redux";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect
+} from "react-router-dom";
 import { createStore, applyMiddleware, compose } from "redux";
 import { createStructuredSelector } from "reselect";
 import createSagaMiddleware from "redux-saga";
@@ -10,6 +15,7 @@ import appSaga from "sagas/app";
 import mangaSaga from "sagas/manga";
 import adminSaga from "sagas/admin";
 import { doCheckLogin } from "actions/user";
+import { selectUser } from "selectors/app";
 import Footer from "components/footer";
 import Navigation from "components/navigation";
 
@@ -36,15 +42,21 @@ sagaMiddleware.run(rootSaga);
 function Root(props) {
   useEffect(() => {
     props.checkLogin();
-  });
+  }, []);
 
   return (
     <Router history={history}>
       <Navigation />
       <Switch>
         <Route exact path="/" component={Home} />
-        <Route exact path="/admin" component={Admin} />
-        <Route exact path="/admin/:app" component={Admin} />
+        {props.user.is_staff ? (
+          <Switch>
+            <Route exact path="/admin" component={Admin} />
+            <Route exact path="/admin/:app" component={Admin} />
+          </Switch>
+        ) : (
+          <Redirect to="/" />
+        )}
         <Route component={PageNotFound} />
       </Switch>
       <Footer />
@@ -52,7 +64,9 @@ function Root(props) {
   );
 }
 
-const mapStateToProps = createStructuredSelector({});
+const mapStateToProps = createStructuredSelector({
+  user: selectUser
+});
 
 const mapDispatchToProps = {
   checkLogin: doCheckLogin

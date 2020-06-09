@@ -5,7 +5,7 @@ import uuid from "uuid";
 import moment from "moment";
 
 const APPLICATION_JSON = "application/json";
-const URL_ENCODED = "application/x-www-form-urlencoded";
+
 /**
  * Gday Punch Web App fetch wrapper.
  *
@@ -85,26 +85,46 @@ export async function gdayfetch(url, params = {}) {
 export default gdayfetch;
 
 export async function twitterFetch(url, params = {}) {
-  const { tweet, accept = APPLICATION_JSON } = params;
+  const { image, status, mediaId, accept = APPLICATION_JSON } = params;
 
+  const twitterPrefix = image ? "upload" : "api";
+  const twitterPostfix = image ? "?media_category=tweet_image" : "";
   const proxyURL = "https://whispering-forest-13965.herokuapp.com/";
-  const composedURL = `https://api.twitter.com/1.1/${url}.json`;
-  const finalURL = `${proxyURL}https://api.twitter.com/1.1/${url}.json`;
+  const composedURL = `https://${twitterPrefix}.twitter.com/1.1/${url}.json${twitterPostfix}`;
+  const finalURL = `${proxyURL}https://${twitterPrefix}.twitter.com/1.1/${url}.json${twitterPostfix}`;
 
   const consumerKey = "Dd07RFYLVLKnXy1CKWSJL0ha2";
   const consumerSecret = "7XDw7HIOgztqfmaRuXFN1SfYrbMotHoBEjh7lXHHFZosOvRdbj";
   const accessToken = "1142234078919311362-gdwcvwJxXEIfWqxoPmOeYQ9KAofE1M";
   const tokenSecret = "jbcL9C8YOkMzO3EohNqcGWiwunzuwsWVCvALQgYxPX2wZ";
 
-  const parameters = {
+  let parameters = {
     oauth_consumer_key: consumerKey,
     oauth_token: accessToken,
     oauth_nonce: uuid.v1(),
     oauth_timestamp: Math.floor(moment.now() / 1000),
     oauth_signature_method: "HMAC-SHA1",
-    oauth_version: "1.0",
-    status: tweet
+    oauth_version: "1.0"
   };
+
+  if (image) {
+    parameters = {
+      ...parameters,
+      media_data: image,
+      media_category: "tweet_image"
+    };
+  } else if (mediaId) {
+    parameters = {
+      ...parameters,
+      media_ids: mediaId,
+      status
+    };
+  } else {
+    parameters = {
+      ...parameters,
+      status
+    };
+  }
 
   const signature = oauthSignature.generate(
     "POST",
@@ -132,7 +152,15 @@ export async function twitterFetch(url, params = {}) {
   );
 
   const urlencoded = new URLSearchParams();
-  urlencoded.append("status", tweet);
+
+  if (image) {
+    urlencoded.append("media_data", image);
+  } else if (mediaId) {
+    urlencoded.append("status", status);
+    urlencoded.append("media_ids", mediaId);
+  } else {
+    urlencoded.append("status", status);
+  }
 
   const requestOptions = {
     method: "POST",

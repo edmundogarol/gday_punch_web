@@ -3,22 +3,68 @@ import { DO_TWEET } from "actions/admin";
 import { selectPendingTweet } from "selectors/admin";
 import { api } from "utils/api";
 
-export function* tweet() {
-  const tweet = yield select(selectPendingTweet);
+const NO_MEDIA = "admin-sagas/NO_MEDIA";
+
+export function* tweetStatus(mediaId = undefined) {
+  const { status } = yield select(selectPendingTweet);
   const response = yield call(api, "statuses/update", {
     fetchType: "twitter",
     method: "POST",
-    ...tweet
+    mediaId,
+    status
   });
 
   if (response && response.ok) {
     const data = response.data;
     console.log("data", data);
   } else {
-    console.log("Tweet error", JSON.stringify(response));
+    console.log("Tweet Status error", JSON.stringify(response));
+  }
+}
+
+export function* tweetImage() {
+  const tweet = yield select(selectPendingTweet);
+
+  if (tweet.image === undefined) return NO_MEDIA;
+
+  const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const bas64Image = yield call(toBase64, tweet.image);
+  const image = bas64Image.replace("data:image/png;base64,", "");
+
+  const response = yield call(api, "media/upload", {
+    fetchType: "twitter",
+    method: "POST",
+    image
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    if (tweet.status === undefined) {
+      return NO_MEDIA;
+    }
+    return data;
+  } else {
+    console.log("Tweet Image error", JSON.stringify(response));
+  }
+}
+
+export function* callTweet() {
+  const image = yield tweetImage();
+
+  if (image === NO_MEDIA) {
+    yield tweetStatus();
+  } else {
+    yield tweetStatus(image.media_id_string);
   }
 }
 
 export default function* adminSaga() {
-  yield all([takeLatest(DO_TWEET, tweet)]);
+  yield all([takeLatest(DO_TWEET, callTweet)]);
 }
