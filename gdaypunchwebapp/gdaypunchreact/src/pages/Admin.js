@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { NavLink, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {} from "@fortawesome/free-solid-svg-icons";
+import AvatarEditor from "react-avatar-editor";
+import { faSearchPlus, faSearchMinus } from "@fortawesome/free-solid-svg-icons";
+import Slider from "rc-slider";
+import classNames from "classnames";
+import { doResetTweet } from "actions/admin";
+import { selectTweetLoading, selectEmbeddedTweetCode } from "selectors/admin";
+import "rc-slider/assets/index.css";
 
 import {
   doTweet,
@@ -13,11 +19,33 @@ import {
 } from "actions/admin";
 
 function Admin(props) {
-  const { tweet, updateTweetStatus, updateTweetImage } = props;
+  const {
+    tweet,
+    resetTweet,
+    embeddedTweet,
+    updateTweetStatus,
+    updateTweetImage,
+    tweetState
+  } = props;
+  const { tweetLoading, tweetSuccess } = tweetState;
   const [imageUpload, setImage] = useState(undefined);
+  const [imagePosition, setPosition] = useState({ x: 0, y: 0 });
+  const [imageSize, setSize] = useState(1);
+  const editorRef = useRef();
   const {} = props;
   const { app } = useParams();
   const twitter = app === "twitter";
+
+  useEffect(() => {
+    if (tweetSuccess) {
+      resetTweet();
+      setImage(undefined);
+      setPosition({ x: 0, y: 0 });
+
+      const editableDiv = document.querySelector("[contenteditable]");
+      editableDiv.innerHTML = "";
+    }
+  });
 
   function placeCaretAtEnd(el) {
     el.focus();
@@ -53,7 +81,19 @@ function Admin(props) {
     placeCaretAtEnd(editableDiv);
   }
 
-  function handleImageChange(imageFile) {
+  async function handleImageChange() {
+    const { current } = editorRef;
+    if (!!current && !tweetLoading) {
+      const blob = await new Promise((resolve) =>
+        editorRef.current.getImageScaledToCanvas().toBlob(resolve)
+      );
+
+      updateTweetImage(blob);
+    }
+  }
+
+  function handleImageUpload(imageFile) {
+    console.log("UPLOAD CHANGE");
     setImage(imageFile);
     updateTweetImage(imageFile);
   }
@@ -63,7 +103,7 @@ function Admin(props) {
     const innerText = editableDiv.innerText;
 
     updateTweetStatus(innerText);
-    tweet();
+    if (!tweetLoading) tweet();
   }
 
   return (
@@ -76,14 +116,37 @@ function Admin(props) {
       <div className="admin-dashboard">
         {twitter && (
           <div className="twitter">
+            {!!embeddedTweet && (
+              <div dangerouslySetInnerHTML={{ __html: embeddedTweet }} />
+            )}
             {imageUpload ? (
-              <img
-                src={
-                  imageUpload
-                    ? window.URL.createObjectURL(imageUpload)
-                    : undefined
-                }
-              />
+              <>
+                <AvatarEditor
+                  className={classNames({
+                    loading: tweetLoading
+                  })}
+                  ref={editorRef}
+                  image={window.URL.createObjectURL(imageUpload)}
+                  width={250}
+                  height={250}
+                  border={50}
+                  onMouseUp={() => handleImageChange()}
+                  onPositionChange={(position) => setPosition(position)}
+                  position={imagePosition}
+                  color={[255, 255, 255, 0.6]} // RGBA
+                  scale={imageSize}
+                  rotate={0}
+                />
+                <div
+                  className={classNames("avatar-buttons", {
+                    loading: tweetLoading
+                  })}
+                >
+                  <FontAwesomeIcon icon={faSearchMinus} />
+                  <Slider onChange={(value) => setSize(1 + value / 100)} />
+                  <FontAwesomeIcon icon={faSearchPlus} />
+                </div>
+              </>
             ) : (
               <input
                 title=" "
@@ -94,19 +157,28 @@ function Admin(props) {
                 }
                 className="upload-button"
                 type="file"
-                onChange={(e) => handleImageChange(e.target.files[0])}
+                onChange={(e) => handleImageUpload(e.target.files[0])}
               />
             )}
             <div
+              disabled={tweetLoading}
               contentEditable
+              suppressContentEditableWarning={true}
               onKeyDown={() => handleChangeText()}
-              className="status-area"
+              className={classNames("status-area", {
+                loading: tweetLoading
+              })}
               rows="10"
               cols="20"
-            />
+            >
+              {tweetLoading && <div className="loader"></div>}
+            </div>
             <button
+              disabled={tweetLoading}
               onClick={() => handleTweet()}
-              className="submit-button"
+              className={classNames("submit-button", {
+                loading: tweetLoading
+              })}
               type="submit"
             >
               Tweet
@@ -119,17 +191,25 @@ function Admin(props) {
 }
 
 Admin.propTypes = {
+  tweetLoading: PropTypes.bool,
+  tweetSuccess: PropTypes.bool,
+  embeddedTweet: PropTypes.string,
+
   tweet: PropTypes.func,
   updateTweetImage: PropTypes.func,
   updateTweetStatus: PropTypes.func
 };
 
-const mapStateToProps = createStructuredSelector({});
+const mapStateToProps = createStructuredSelector({
+  tweetState: selectTweetLoading,
+  embeddedTweet: selectEmbeddedTweetCode
+});
 
 const mapDispatchToProps = {
   tweet: doTweet,
   updateTweetImage: doUpdateTweetImage,
-  updateTweetStatus: doUpdateTweetStatus
+  updateTweetStatus: doUpdateTweetStatus,
+  resetTweet: doResetTweet
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Admin);

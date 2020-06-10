@@ -1,5 +1,5 @@
-import { call, all, takeLatest, select } from "redux-saga/effects";
-import { DO_TWEET } from "actions/admin";
+import { call, all, takeLatest, select, put } from "redux-saga/effects";
+import { DO_TWEET, startTweetLoading, finishedTweet } from "actions/admin";
 import { selectPendingTweet } from "selectors/admin";
 import { api } from "utils/api";
 
@@ -17,6 +17,7 @@ export function* tweetStatus(mediaId = undefined) {
   if (response && response.ok) {
     const data = response.data;
     console.log("data", data);
+    return data;
   } else {
     console.log("Tweet Status error", JSON.stringify(response));
   }
@@ -55,14 +56,37 @@ export function* tweetImage() {
   }
 }
 
+export function* getEmbeddedTweet(embedId) {
+  const response = yield call(api, "oembed", {
+    fetchType: "twitter",
+    method: "GET",
+    embedId,
+    status
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    console.log("data", data);
+    return data;
+  } else {
+    console.log("Tweet Status error", JSON.stringify(response));
+  }
+}
+
 export function* callTweet() {
+  yield put(startTweetLoading());
   const image = yield tweetImage();
 
+  let tweet;
   if (image === NO_MEDIA) {
-    yield tweetStatus();
+    tweet = yield tweetStatus();
   } else {
-    yield tweetStatus(image.media_id_string);
+    tweet = yield tweetStatus(image.media_id_string);
   }
+
+  const result = yield getEmbeddedTweet(tweet.id_str);
+
+  if (result.html) yield put(finishedTweet(result.html));
 }
 
 export default function* adminSaga() {

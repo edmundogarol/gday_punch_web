@@ -85,13 +85,38 @@ export async function gdayfetch(url, params = {}) {
 export default gdayfetch;
 
 export async function twitterFetch(url, params = {}) {
-  const { image, status, mediaId, accept = APPLICATION_JSON } = params;
+  const {
+    method,
+    image,
+    status,
+    mediaId,
+    embedId,
+    accept = APPLICATION_JSON
+  } = params;
 
-  const twitterPrefix = image ? "upload" : "api";
-  const twitterPostfix = image ? "?media_category=tweet_image" : "";
+  const embeddedURL = `https://twitter.com/GdayManga/status/${embedId}`;
+  let twitterPrefix;
+  let twitterPostfix;
+
+  if (image) {
+    twitterPrefix = "upload";
+    twitterPostfix = "?media_category=tweet_image";
+  } else if (embedId) {
+    twitterPrefix = "publish";
+    twitterPostfix = `?url=${embeddedURL}`;
+  } else {
+    twitterPrefix = "api";
+    twitterPostfix = "";
+  }
+
   const proxyURL = "https://whispering-forest-13965.herokuapp.com/";
-  const composedURL = `https://${twitterPrefix}.twitter.com/1.1/${url}.json${twitterPostfix}`;
-  const finalURL = `${proxyURL}https://${twitterPrefix}.twitter.com/1.1/${url}.json${twitterPostfix}`;
+  let composedURL = `https://${twitterPrefix}.twitter.com/1.1/${url}.json${twitterPostfix}`;
+  let finalURL = `${proxyURL}https://${twitterPrefix}.twitter.com/1.1/${url}.json${twitterPostfix}`;
+
+  if (embedId) {
+    composedURL = `https://${twitterPrefix}.twitter.com/${url}${twitterPostfix}`;
+    finalURL = `${proxyURL}https://${twitterPrefix}.twitter.com/${url}${twitterPostfix}`;
+  }
 
   const consumerKey = "Dd07RFYLVLKnXy1CKWSJL0ha2";
   const consumerSecret = "7XDw7HIOgztqfmaRuXFN1SfYrbMotHoBEjh7lXHHFZosOvRdbj";
@@ -119,6 +144,11 @@ export async function twitterFetch(url, params = {}) {
       media_ids: mediaId,
       status
     };
+  } else if (embedId) {
+    parameters = {
+      ...parameters,
+      url: embeddedURL
+    };
   } else {
     parameters = {
       ...parameters,
@@ -127,7 +157,7 @@ export async function twitterFetch(url, params = {}) {
   }
 
   const signature = oauthSignature.generate(
-    "POST",
+    method,
     composedURL,
     parameters,
     consumerSecret,
@@ -163,11 +193,12 @@ export async function twitterFetch(url, params = {}) {
   }
 
   const requestOptions = {
-    method: "POST",
+    method,
     headers: myHeaders,
-    body: urlencoded,
     redirect: "follow"
   };
+
+  if (!embedId) requestOptions.body = urlencoded;
 
   const response = await fetch(finalURL, requestOptions).catch((exc) => {
     throw exc;
