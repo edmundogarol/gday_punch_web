@@ -10,10 +10,12 @@ import Slider from "rc-slider";
 import classNames from "classnames";
 import { doResetTweet } from "actions/admin";
 import { ErrorField } from "components/errorField";
+import { isEqual } from "lodash";
 import {
   selectTweetLoading,
   selectEmbeddedTweetCode,
-  selectTweetError
+  selectTweetError,
+  selectPendingTweet
 } from "selectors/admin";
 import "rc-slider/assets/index.css";
 
@@ -31,9 +33,12 @@ function Admin(props) {
     updateTweetStatus,
     updateTweetImage,
     tweetState,
+    pendingTweet,
     tweetError
   } = props;
   const { tweetLoading, tweetSuccess } = tweetState;
+  const tweetImage = pendingTweet.image;
+  const [imageUpdated, setImageUpdated] = useState(false);
   const [imageUpload, setImage] = useState(undefined);
   const [imagePosition, setPosition] = useState({ x: 0, y: 0 });
   const [imageSize, setSize] = useState(1);
@@ -87,14 +92,33 @@ function Admin(props) {
     placeCaretAtEnd(editableDiv);
   }
 
-  async function handleImageChange() {
+  async function handleImageChange(positionChanged = false) {
     const { current } = editorRef;
-    if (!!current && !tweetLoading) {
+
+    // Tweet not updated? -> change image
+    if (!!current && !tweetLoading && !imageUpdated) {
       const blob = await new Promise((resolve) =>
-        editorRef.current.getImageScaledToCanvas().toBlob(resolve)
+        editorRef.current.getImage().toBlob(resolve)
       );
 
+      // Image same? -> don't change
+      if (isEqual(blob.size, tweetImage.size) && !positionChanged) {
+        return;
+      }
+
       updateTweetImage(blob);
+      setImageUpdated(true);
+    // Tweet was recently updated
+    } else {
+      const blob = await new Promise((resolve) =>
+        editorRef.current.getImage().toBlob(resolve)
+      );
+
+      // Updating again -> are sizes different? -> update image
+      if (!isEqual(blob.size, tweetImage.size) || positionChanged) {
+        setImageUpdated(false);
+        handleImageChange();
+      }
     }
   }
 
@@ -105,6 +129,8 @@ function Admin(props) {
   }
 
   function handleTweet() {
+    handleImageChange();
+
     const editableDiv = document.querySelector("[contenteditable]");
     const innerText = editableDiv.innerText;
 
@@ -136,8 +162,11 @@ function Admin(props) {
                   width={250}
                   height={250}
                   border={50}
-                  onMouseUp={() => handleImageChange()}
-                  onPositionChange={(position) => setPosition(position)}
+                  onImageChange={() => handleImageChange()}
+                  onPositionChange={(position) => {
+                    setPosition(position);
+                    handleImageChange(true);
+                  }}
                   position={imagePosition}
                   color={[255, 255, 255, 0.6]} // RGBA
                   scale={imageSize}
@@ -209,6 +238,7 @@ Admin.propTypes = {
   tweetSuccess: PropTypes.bool,
   embeddedTweet: PropTypes.string,
   tweetError: PropTypes.string,
+  pendingTweet: PropTypes.object,
 
   tweet: PropTypes.func,
   updateTweetImage: PropTypes.func,
@@ -218,7 +248,8 @@ Admin.propTypes = {
 const mapStateToProps = createStructuredSelector({
   tweetState: selectTweetLoading,
   embeddedTweet: selectEmbeddedTweetCode,
-  tweetError: selectTweetError
+  tweetError: selectTweetError,
+  pendingTweet: selectPendingTweet
 });
 
 const mapDispatchToProps = {
