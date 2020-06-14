@@ -1,9 +1,15 @@
 import { call, all, takeLatest, select, put } from "redux-saga/effects";
-import { DO_TWEET, startTweetLoading, finishedTweet } from "actions/admin";
+import {
+  DO_TWEET,
+  startTweetLoading,
+  finishedTweet,
+  tweetError
+} from "actions/admin";
 import { selectPendingTweet } from "selectors/admin";
 import { api } from "utils/api";
 
 const NO_MEDIA = "admin-sagas/NO_MEDIA";
+const ERROR_TALKING_TO_GDAYPUNCH = "admin-sagas/ERROR_TALKING_TO_GDAYPUNCH";
 
 export function* tweetStatus(mediaId = undefined) {
   const { status } = yield select(selectPendingTweet);
@@ -37,7 +43,9 @@ export function* tweetImage() {
     });
 
   const bas64Image = yield call(toBase64, tweet.image);
-  const image = bas64Image.replace("data:image/png;base64,", "");
+  const pngImage = bas64Image.replace("data:image/png;base64,", "");
+  const jpgImage = pngImage.replace("data:image/jpeg;base64,", "");
+  const image = jpgImage;
 
   const response = yield call(api, "media/upload", {
     fetchType: "twitter",
@@ -53,6 +61,17 @@ export function* tweetImage() {
     return data;
   } else {
     console.log("Tweet Image error", JSON.stringify(response));
+    if (
+      response.status === "TypeError" &&
+      response.statusText.includes("Failed to fetch")
+    ) {
+      return {
+        type: ERROR_TALKING_TO_GDAYPUNCH,
+        status:
+          "Something went wrong talking to Gday Punch. Check that you are connected to the internet and try again"
+      };
+    }
+    return response;
   }
 }
 
@@ -76,6 +95,13 @@ export function* getEmbeddedTweet(embedId) {
 export function* callTweet() {
   yield put(startTweetLoading());
   const image = yield tweetImage();
+
+  if (image.type === ERROR_TALKING_TO_GDAYPUNCH) {
+    yield put(tweetError(image.status));
+    return;
+  } else if (!image.ok) {
+    yield put(tweetError(image.statusText));
+  }
 
   let tweet;
   if (image === NO_MEDIA) {

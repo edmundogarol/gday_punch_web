@@ -1,6 +1,7 @@
 export const DO_TWEET = "admin/DO_TWEET";
 export const DO_UPDATE_TWEET_IMAGE = "admin/DO_UPDATE_TWEET_IMAGE";
 export const DO_UPDATE_TWEET_STATUS = "admin/DO_UPDATE_TWEET_STATUS";
+export const TWEET_ERROR = "admin/TWEET_ERROR";
 export const TWEET_LOADING = "admin/TWEET_LOADING";
 export const TWEET_FINISHED = "admin/TWEET_FINISHED";
 export const TWEET_RESET = "admin/TWEET_RESET";
@@ -17,6 +18,13 @@ export const finishedTweet = (embedded) => ({
   type: TWEET_FINISHED,
   payload: {
     embedded
+  }
+});
+
+export const tweetError = (error) => ({
+  type: TWEET_ERROR,
+  payload: {
+    error
   }
 });
 

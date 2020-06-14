@@ -9,7 +9,12 @@ import { faSearchPlus, faSearchMinus } from "@fortawesome/free-solid-svg-icons";
 import Slider from "rc-slider";
 import classNames from "classnames";
 import { doResetTweet } from "actions/admin";
-import { selectTweetLoading, selectEmbeddedTweetCode } from "selectors/admin";
+import { ErrorField } from "components/errorField";
+import {
+  selectTweetLoading,
+  selectEmbeddedTweetCode,
+  selectTweetError
+} from "selectors/admin";
 import "rc-slider/assets/index.css";
 
 import {
@@ -25,7 +30,8 @@ function Admin(props) {
     embeddedTweet,
     updateTweetStatus,
     updateTweetImage,
-    tweetState
+    tweetState,
+    tweetError
   } = props;
   const { tweetLoading, tweetSuccess } = tweetState;
   const [imageUpload, setImage] = useState(undefined);
@@ -160,6 +166,14 @@ function Admin(props) {
                 onChange={(e) => handleImageUpload(e.target.files[0])}
               />
             )}
+            {tweetError && (
+              <ErrorField style={{ width: "350px", whiteSpace: "normal" }}>
+                <div>
+                  <label>Error:</label>
+                  {tweetError}
+                </div>
+              </ErrorField>
+            )}
             <div
               disabled={tweetLoading}
               contentEditable
@@ -194,6 +208,7 @@ Admin.propTypes = {
   tweetLoading: PropTypes.bool,
   tweetSuccess: PropTypes.bool,
   embeddedTweet: PropTypes.string,
+  tweetError: PropTypes.string,
 
   tweet: PropTypes.func,
   updateTweetImage: PropTypes.func,
@@ -202,7 +217,8 @@ Admin.propTypes = {
 
 const mapStateToProps = createStructuredSelector({
   tweetState: selectTweetLoading,
-  embeddedTweet: selectEmbeddedTweetCode
+  embeddedTweet: selectEmbeddedTweetCode,
+  tweetError: selectTweetError
 });
 
 const mapDispatchToProps = {

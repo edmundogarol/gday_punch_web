@@ -7,6 +7,11 @@ export const selectPendingTweet = createSelector(
   ({ pendingTweet }) => pendingTweet
 );
 
+export const selectTweetError = createSelector(
+  selectDomain,
+  ({ tweetError }) => tweetError
+);
+
 export const selectTweetLoading = createSelector(
   selectDomain,
   ({ tweetLoading, tweetSuccess }) => ({

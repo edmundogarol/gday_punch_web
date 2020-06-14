@@ -1,6 +1,7 @@
 import {
   DO_UPDATE_TWEET_IMAGE,
   DO_UPDATE_TWEET_STATUS,
+  TWEET_ERROR,
   TWEET_LOADING,
   TWEET_FINISHED,
   TWEET_RESET
@@ -9,6 +10,7 @@ import {
 const INITIAL_STATE = {
   tweetLoading: false,
   tweetSuccess: false,
+  tweetError: undefined,
   pendingTweet: {
     image: undefined,
     status: undefined
@@ -20,6 +22,12 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
   const { payload } = action;
 
   switch (action.type) {
+    case TWEET_ERROR:
+      return {
+        ...state,
+        tweetLoading: false,
+        tweetError: payload.error
+      };
     case TWEET_LOADING:
       return {
         ...state,
