@@ -4,7 +4,8 @@ import {
   TWEET_ERROR,
   TWEET_LOADING,
   TWEET_FINISHED,
-  TWEET_RESET
+  TWEET_RESET,
+  SET_DELETING_TWEET
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -15,7 +16,11 @@ const INITIAL_STATE = {
     image: undefined,
     status: undefined
   },
-  embeddedTweet: undefined
+  pendingDeletingTweetId: undefined,
+  embeddedTweet: {
+    html: undefined,
+    id: undefined
+  }
 };
 
 export const adminReducer = (state = INITIAL_STATE, action) => {
@@ -48,6 +53,11 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         tweetSuccess: false
+      };
+    case SET_DELETING_TWEET:
+      return {
+        ...state,
+        pendingDeletingTweetId: payload.statusId
       };
     case DO_UPDATE_TWEET_IMAGE:
       return {

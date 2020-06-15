@@ -91,6 +91,7 @@ export async function twitterFetch(url, params = {}) {
     status,
     mediaId,
     embedId,
+    statusId,
     accept = APPLICATION_JSON
   } = params;
 
@@ -104,18 +105,25 @@ export async function twitterFetch(url, params = {}) {
   } else if (embedId) {
     twitterPrefix = "publish";
     twitterPostfix = `?url=${embeddedURL}`;
+  } else if (statusId) {
+    twitterPrefix = "api";
+    twitterPostfix = `${statusId}.json`;
   } else {
     twitterPrefix = "api";
     twitterPostfix = "";
   }
 
   const proxyURL = "https://whispering-forest-13965.herokuapp.com/";
+
   let composedURL = `https://${twitterPrefix}.twitter.com/1.1/${url}.json${twitterPostfix}`;
-  let finalURL = `${proxyURL}https://${twitterPrefix}.twitter.com/1.1/${url}.json${twitterPostfix}`;
+  let finalURL = `${proxyURL}${composedURL}`;
 
   if (embedId) {
     composedURL = `https://${twitterPrefix}.twitter.com/${url}${twitterPostfix}`;
-    finalURL = `${proxyURL}https://${twitterPrefix}.twitter.com/${url}${twitterPostfix}`;
+    finalURL = `${proxyURL}${composedURL}`;
+  } else if (statusId) {
+    composedURL = `https://${twitterPrefix}.twitter.com/1.1/${url}/${twitterPostfix}`;
+    finalURL = `${proxyURL}${composedURL}`;
   }
 
   const consumerKey = "Dd07RFYLVLKnXy1CKWSJL0ha2";
@@ -148,6 +156,11 @@ export async function twitterFetch(url, params = {}) {
     parameters = {
       ...parameters,
       url: embeddedURL
+    };
+  } else if (statusId) {
+    parameters = {
+      ...parameters,
+      id: statusId
     };
   } else {
     parameters = {
@@ -188,6 +201,8 @@ export async function twitterFetch(url, params = {}) {
   } else if (mediaId) {
     urlencoded.append("status", status);
     urlencoded.append("media_ids", mediaId);
+  } else if (statusId) {
+    urlencoded.append("id", statusId);
   } else {
     urlencoded.append("status", status);
   }

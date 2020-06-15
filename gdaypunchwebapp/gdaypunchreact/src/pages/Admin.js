@@ -5,7 +5,11 @@ import { createStructuredSelector } from "reselect";
 import { NavLink, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AvatarEditor from "react-avatar-editor";
-import { faSearchPlus, faSearchMinus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSearchPlus,
+  faSearchMinus,
+  faTrashAlt
+} from "@fortawesome/free-solid-svg-icons";
 import Slider from "rc-slider";
 import classNames from "classnames";
 import { doResetTweet } from "actions/admin";
@@ -15,14 +19,15 @@ import {
   selectTweetLoading,
   selectEmbeddedTweetCode,
   selectTweetError,
-  selectPendingTweet
+  selectPendingTweet,
 } from "selectors/admin";
 import "rc-slider/assets/index.css";
 
 import {
   doTweet,
   doUpdateTweetImage,
-  doUpdateTweetStatus
+  doUpdateTweetStatus,
+  setDeletingTweet
 } from "actions/admin";
 
 function Admin(props) {
@@ -34,7 +39,8 @@ function Admin(props) {
     updateTweetImage,
     tweetState,
     pendingTweet,
-    tweetError
+    tweetError,
+    deleteTweet
   } = props;
   const { tweetLoading, tweetSuccess } = tweetState;
   const tweetImage = pendingTweet.image;
@@ -108,7 +114,7 @@ function Admin(props) {
 
       updateTweetImage(blob);
       setImageUpdated(true);
-    // Tweet was recently updated
+      // Tweet was recently updated
     } else {
       const blob = await new Promise((resolve) =>
         editorRef.current.getImage().toBlob(resolve)
@@ -148,8 +154,15 @@ function Admin(props) {
       <div className="admin-dashboard">
         {twitter && (
           <div className="twitter">
-            {!!embeddedTweet && (
-              <div dangerouslySetInnerHTML={{ __html: embeddedTweet }} />
+            {!!embeddedTweet.id && (
+              <div className="embedded-group">
+                <div dangerouslySetInnerHTML={{ __html: embeddedTweet.html }} />
+                <FontAwesomeIcon
+                  icon={faTrashAlt}
+                  className="delete-icon"
+                  onClick={() => deleteTweet(embeddedTweet.id)}
+                />
+              </div>
             )}
             {imageUpload ? (
               <>
@@ -236,13 +249,14 @@ function Admin(props) {
 Admin.propTypes = {
   tweetLoading: PropTypes.bool,
   tweetSuccess: PropTypes.bool,
-  embeddedTweet: PropTypes.string,
+  embeddedTweet: PropTypes.object,
   tweetError: PropTypes.string,
   pendingTweet: PropTypes.object,
 
   tweet: PropTypes.func,
   updateTweetImage: PropTypes.func,
-  updateTweetStatus: PropTypes.func
+  updateTweetStatus: PropTypes.func,
+  deleteTweet: PropTypes.func
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -256,7 +270,8 @@ const mapDispatchToProps = {
   tweet: doTweet,
   updateTweetImage: doUpdateTweetImage,
   updateTweetStatus: doUpdateTweetStatus,
-  resetTweet: doResetTweet
+  resetTweet: doResetTweet,
+  deleteTweet: setDeletingTweet
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Admin);

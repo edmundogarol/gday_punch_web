@@ -5,6 +5,7 @@ export const TWEET_ERROR = "admin/TWEET_ERROR";
 export const TWEET_LOADING = "admin/TWEET_LOADING";
 export const TWEET_FINISHED = "admin/TWEET_FINISHED";
 export const TWEET_RESET = "admin/TWEET_RESET";
+export const SET_DELETING_TWEET = "admin/SET_DELETING_TWEET";
 
 export const doTweet = () => ({
   type: DO_TWEET
@@ -18,6 +19,13 @@ export const finishedTweet = (embedded) => ({
   type: TWEET_FINISHED,
   payload: {
     embedded
+  }
+});
+
+export const setDeletingTweet = (statusId) => ({
+  type: SET_DELETING_TWEET,
+  payload: {
+    statusId
   }
 });
 

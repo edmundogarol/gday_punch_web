@@ -20,7 +20,12 @@ export const selectTweetLoading = createSelector(
   })
 );
 
+export const selectPendingDeletingTweet = createSelector(
+  selectDomain,
+  ({ pendingDeletingTweetId }) => ({ statusId: pendingDeletingTweetId })
+);
+
 export const selectEmbeddedTweetCode = createSelector(
   selectDomain,
-  ({ embeddedTweet }) => embeddedTweet
+  ({ embeddedTweet }) => ({ html: embeddedTweet.html, id: embeddedTweet.id })
 );

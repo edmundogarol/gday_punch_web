@@ -503,6 +503,30 @@ nav {
     padding-right: 1em;
     width: max-content;
 
+    .embedded-group {
+      display: flex;
+      align-items: flex-end;
+      background: #eef8ff;
+      margin-bottom: 1em;
+      width: 350px;
+    }
+
+    .delete-icon {
+      height: 1.5em;
+      width: 1.5em;
+      margin: 1em;
+
+      &:hover {
+        cursor: pointer;
+        transform: scale(1.1);
+      }
+
+      &:active{
+        cursor: pointer;
+        transform: scale(1.2);
+      }
+    }
+
     canvas {
       border: 1px solid rgb(158, 158, 158);
       background: rgb(158, 158, 158);
@@ -516,7 +540,7 @@ nav {
 
     .upload-button {
       height: 15em;
-      width: 15em;
+      width: 330px;
       border: 10px dashed #ababab;
 
       &::-webkit-file-upload-button {
@@ -569,6 +593,16 @@ nav {
       color: #212121;
       text-transform: uppercase;
       letter-spacing: 1pt;
+
+      &:hover {
+        cursor: pointer;
+        transform: scale(1.1);
+      }
+
+      &:active {
+        cursor: pointer;
+        transform: scale(1.2);
+      }
     }
 
     .submit-button.loading {
