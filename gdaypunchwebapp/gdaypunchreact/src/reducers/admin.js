@@ -1,6 +1,7 @@
 import {
   DO_UPDATE_TWEET_IMAGE,
   DO_UPDATE_TWEET_STATUS,
+  DO_UPDATE_RETWEET_URL,
   TWEET_ERROR,
   TWEET_LOADING,
   TWEET_FINISHED,
@@ -14,7 +15,8 @@ const INITIAL_STATE = {
   tweetError: undefined,
   pendingTweet: {
     image: undefined,
-    status: undefined
+    status: undefined,
+    retweetUrl: undefined
   },
   pendingDeletingTweetId: undefined,
   embeddedTweet: {
@@ -65,6 +67,14 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
         pendingTweet: {
           ...state.pendingTweet,
           image: payload.image
+        }
+      };
+    case DO_UPDATE_RETWEET_URL:
+      return {
+        ...state,
+        pendingTweet: {
+          ...state.pendingTweet,
+          retweetUrl: payload.url
         }
       };
     case DO_UPDATE_TWEET_STATUS:

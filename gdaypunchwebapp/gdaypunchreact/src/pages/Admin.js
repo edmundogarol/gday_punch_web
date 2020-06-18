@@ -19,7 +19,7 @@ import {
   selectTweetLoading,
   selectEmbeddedTweetCode,
   selectTweetError,
-  selectPendingTweet,
+  selectPendingTweet
 } from "selectors/admin";
 import "rc-slider/assets/index.css";
 
@@ -27,6 +27,7 @@ import {
   doTweet,
   doUpdateTweetImage,
   doUpdateTweetStatus,
+  doUpdateReTweetUrl,
   setDeletingTweet
 } from "actions/admin";
 
@@ -37,6 +38,7 @@ function Admin(props) {
     embeddedTweet,
     updateTweetStatus,
     updateTweetImage,
+    updateReTweetUrl,
     tweetState,
     pendingTweet,
     tweetError,
@@ -46,6 +48,7 @@ function Admin(props) {
   const tweetImage = pendingTweet.image;
   const [imageUpdated, setImageUpdated] = useState(false);
   const [imageUpload, setImage] = useState(undefined);
+  const [retweetUrl, setRetweetUrl] = useState();
   const [imagePosition, setPosition] = useState({ x: 0, y: 0 });
   const [imageSize, setSize] = useState(1);
   const editorRef = useRef();
@@ -56,6 +59,7 @@ function Admin(props) {
   useEffect(() => {
     if (tweetSuccess) {
       resetTweet();
+      setRetweetUrl("");
       setImage(undefined);
       setPosition({ x: 0, y: 0 });
 
@@ -115,7 +119,7 @@ function Admin(props) {
       updateTweetImage(blob);
       setImageUpdated(true);
       // Tweet was recently updated
-    } else {
+    } else if (!!current && tweetImage && tweetImage.size) {
       const blob = await new Promise((resolve) =>
         editorRef.current.getImage().toBlob(resolve)
       );
@@ -128,20 +132,93 @@ function Admin(props) {
     }
   }
 
+  function handleRetweetChange(e) {
+    setRetweetUrl(e.target.value);
+  }
+
   function handleImageUpload(imageFile) {
-    console.log("UPLOAD CHANGE");
     setImage(imageFile);
     updateTweetImage(imageFile);
   }
 
   function handleTweet() {
-    handleImageChange();
-
     const editableDiv = document.querySelector("[contenteditable]");
     const innerText = editableDiv.innerText;
 
+    if (retweetUrl && !innerText.length) {
+      alert("If retweeting, please add a comment/status.");
+      return;
+    }
+
+    handleImageChange();
+
     updateTweetStatus(innerText);
+    updateReTweetUrl(retweetUrl);
     if (!tweetLoading) tweet();
+  }
+
+  function imageRenderer() {
+    return imageUpload ? (
+      <>
+        <AvatarEditor
+          className={classNames({
+            loading: tweetLoading
+          })}
+          ref={editorRef}
+          image={window.URL.createObjectURL(imageUpload)}
+          width={250}
+          height={250}
+          border={50}
+          onImageChange={() => handleImageChange()}
+          onPositionChange={(position) => {
+            setPosition(position);
+            handleImageChange(true);
+          }}
+          position={imagePosition}
+          color={[255, 255, 255, 0.6]} // RGBA
+          scale={imageSize}
+          rotate={0}
+        />
+        <div
+          className={classNames("avatar-buttons", {
+            loading: tweetLoading
+          })}
+        >
+          <FontAwesomeIcon
+            className={classNames({
+              loading: tweetLoading
+            })}
+            icon={faSearchMinus}
+          />
+          <Slider
+            disabled={tweetLoading}
+            className={classNames("resize-slider", {
+              loading: tweetLoading
+            })}
+            onChange={(value) => setSize(1 + value / 100)}
+          />
+          <FontAwesomeIcon
+            className={classNames({
+              loading: tweetLoading
+            })}
+            icon={faSearchPlus}
+          />
+        </div>
+      </>
+    ) : (
+      <input
+        title=" "
+        value={
+          imageUpload ? window.URL.createObjectURL(imageUpload) : undefined
+        }
+        className={classNames("upload-button", {
+          loading: tweetLoading
+        })}
+        disabled={tweetLoading}
+        type="file"
+        onChange={(e) => handleImageUpload(e.target.files[0])}
+      />
+    );
   }
 
   return (
@@ -164,50 +241,7 @@ function Admin(props) {
                 />
               </div>
             )}
-            {imageUpload ? (
-              <>
-                <AvatarEditor
-                  className={classNames({
-                    loading: tweetLoading
-                  })}
-                  ref={editorRef}
-                  image={window.URL.createObjectURL(imageUpload)}
-                  width={250}
-                  height={250}
-                  border={50}
-                  onImageChange={() => handleImageChange()}
-                  onPositionChange={(position) => {
-                    setPosition(position);
-                    handleImageChange(true);
-                  }}
-                  position={imagePosition}
-                  color={[255, 255, 255, 0.6]} // RGBA
-                  scale={imageSize}
-                  rotate={0}
-                />
-                <div
-                  className={classNames("avatar-buttons", {
-                    loading: tweetLoading
-                  })}
-                >
-                  <FontAwesomeIcon icon={faSearchMinus} />
-                  <Slider onChange={(value) => setSize(1 + value / 100)} />
-                  <FontAwesomeIcon icon={faSearchPlus} />
-                </div>
-              </>
-            ) : (
-              <input
-                title=" "
-                value={
-                  imageUpload
-                    ? window.URL.createObjectURL(imageUpload)
-                    : undefined
-                }
-                className="upload-button"
-                type="file"
-                onChange={(e) => handleImageUpload(e.target.files[0])}
-              />
-            )}
+            {!retweetUrl && imageRenderer()}
             {tweetError && (
               <ErrorField style={{ width: "350px", whiteSpace: "normal" }}>
                 <div>
@@ -215,6 +249,17 @@ function Admin(props) {
                   {tweetError}
                 </div>
               </ErrorField>
+            )}
+            {!imageUpload && (
+              <input
+                className={classNames("retweet-url", {
+                  loading: tweetLoading
+                })}
+                value={retweetUrl}
+                disabled={tweetLoading}
+                placeholder="Retweet URL"
+                onChange={handleRetweetChange}
+              />
             )}
             <div
               disabled={tweetLoading}
@@ -270,6 +315,7 @@ const mapDispatchToProps = {
   tweet: doTweet,
   updateTweetImage: doUpdateTweetImage,
   updateTweetStatus: doUpdateTweetStatus,
+  updateReTweetUrl: doUpdateReTweetUrl,
   resetTweet: doResetTweet,
   deleteTweet: setDeletingTweet
 };

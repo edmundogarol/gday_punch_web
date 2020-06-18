@@ -92,6 +92,7 @@ export async function twitterFetch(url, params = {}) {
     mediaId,
     embedId,
     statusId,
+    retweetUrl,
     accept = APPLICATION_JSON
   } = params;
 
@@ -162,6 +163,12 @@ export async function twitterFetch(url, params = {}) {
       ...parameters,
       id: statusId
     };
+  } else if (retweetUrl) {
+    parameters = {
+      ...parameters,
+      status,
+      attachment_url: retweetUrl
+    };
   } else {
     parameters = {
       ...parameters,
@@ -203,6 +210,9 @@ export async function twitterFetch(url, params = {}) {
     urlencoded.append("media_ids", mediaId);
   } else if (statusId) {
     urlencoded.append("id", statusId);
+  } else if (retweetUrl) {
+    urlencoded.append("status", status);
+    urlencoded.append("attachment_url", retweetUrl);
   } else {
     urlencoded.append("status", status);
   }

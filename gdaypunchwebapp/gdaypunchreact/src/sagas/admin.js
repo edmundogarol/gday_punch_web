@@ -32,6 +32,23 @@ export function* tweetStatus(mediaId = undefined) {
   }
 }
 
+export function* retweetStatus() {
+  const { status, retweetUrl } = yield select(selectPendingTweet);
+  const response = yield call(api, "statuses/update", {
+    fetchType: "twitter",
+    method: "POST",
+    retweetUrl,
+    status
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    return data;
+  } else {
+    console.log("ReTweet Status error", JSON.stringify(response));
+  }
+}
+
 export function* tweetImage() {
   const tweet = yield select(selectPendingTweet);
 
@@ -80,7 +97,6 @@ export function* tweetImage() {
 
 export function* deleteTweet() {
   const statusId = (yield select(selectPendingDeletingTweet)).statusId;
-  console.log('statusId', statusId);
   yield put(startTweetLoading());
   const response = yield call(api, "statuses/destroy", {
     fetchType: "twitter",
@@ -107,7 +123,6 @@ export function* getEmbeddedTweet(embedId) {
 
   if (response && response.ok) {
     const data = response.data;
-    console.log("data", data);
     return data;
   } else {
     console.log("Tweet Status error", JSON.stringify(response));
@@ -115,27 +130,38 @@ export function* getEmbeddedTweet(embedId) {
 }
 
 export function* callTweet() {
+  const tweet = yield select(selectPendingTweet);
+
   yield put(startTweetLoading());
-  const image = yield tweetImage();
 
-  if (image.type === ERROR_TALKING_TO_GDAYPUNCH) {
-    yield put(tweetError(image.status));
-    return;
-  } else if (!image.ok) {
-    yield put(tweetError(image.statusText));
+  let image;
+  if (tweet.image) {
+    image = yield tweetImage();
+
+    if (image.type === ERROR_TALKING_TO_GDAYPUNCH) {
+      yield put(tweetError(image.status));
+      return;
+    } else if (!image.ok) {
+      yield put(tweetError(image.statusText));
+    }
   }
 
-  let tweet;
-  if (image === NO_MEDIA) {
-    tweet = yield tweetStatus();
+  let tweetResult;
+  if (image === NO_MEDIA || image === undefined) {
+    if (tweet.retweetUrl) {
+      tweetResult = yield retweetStatus();
+    } else {
+      tweetResult = yield tweetStatus();
+    }
   } else {
-    tweet = yield tweetStatus(image.media_id_string);
+    tweetResult = yield tweetStatus(image.media_id_string);
   }
 
-  const result = yield getEmbeddedTweet(tweet.id_str);
+  const result = yield getEmbeddedTweet(tweetResult.id_str);
 
-  if (result.html)
-    yield put(finishedTweet({ html: result.html, id: tweet.id_str }));
+  if (result.html) {
+    yield put(finishedTweet({ html: result.html, id: tweetResult.id_str }));
+  }
 }
 
 export default function* adminSaga() {

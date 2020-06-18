@@ -511,6 +511,19 @@ nav {
       width: 350px;
     }
 
+    .retweet-url {
+      border: none;
+      background: #ececec;
+      padding: 1em;
+      margin-top: 1em;
+      width: 330px;
+    }
+
+    .retweet-url.loading {
+      filter: blur(2px);
+      cursor: not-allowed;
+    }
+
     .delete-icon {
       height: 1.5em;
       width: 1.5em;
@@ -521,7 +534,7 @@ nav {
         transform: scale(1.1);
       }
 
-      &:active{
+      &:active {
         cursor: pointer;
         transform: scale(1.2);
       }
@@ -554,6 +567,16 @@ nav {
         align-items: center;
         height: 100%;
       }
+    }
+
+    .resize-slider.loading {
+      filter: blur(2px);
+      cursor: not-allowed;
+    }
+
+    .upload-button.loading {
+      filter: blur(2px);
+      cursor: not-allowed;
     }
 
     .avatar-buttons {
@@ -610,6 +633,11 @@ nav {
       cursor: not-allowed;
     }
   }
+}
+
+.loading {
+  filter: blur(2px);
+  cursor: not-allowed;
 }
 
 .loader {

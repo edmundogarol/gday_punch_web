@@ -1,6 +1,7 @@
 export const DO_TWEET = "admin/DO_TWEET";
 export const DO_UPDATE_TWEET_IMAGE = "admin/DO_UPDATE_TWEET_IMAGE";
 export const DO_UPDATE_TWEET_STATUS = "admin/DO_UPDATE_TWEET_STATUS";
+export const DO_UPDATE_RETWEET_URL ="admin/DO_UPDATE_RETWEET_URL";
 export const TWEET_ERROR = "admin/TWEET_ERROR";
 export const TWEET_LOADING = "admin/TWEET_LOADING";
 export const TWEET_FINISHED = "admin/TWEET_FINISHED";
@@ -47,9 +48,16 @@ export const doUpdateTweetImage = (image) => ({
   }
 });
 
-export const doUpdateTweetStatus = (status) => ({
+export const doUpdateTweetStatus = (status = "") => ({
   type: DO_UPDATE_TWEET_STATUS,
   payload: {
     status
+  }
+});
+
+export const doUpdateReTweetUrl = (url) => ({
+  type: DO_UPDATE_RETWEET_URL,
+  payload: {
+    url
   }
 });
