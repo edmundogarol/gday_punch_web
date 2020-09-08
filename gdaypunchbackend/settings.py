@@ -88,12 +88,17 @@ INSTALLED_APPS = [
     'gdaypunchbackend.gdaypunchapi',
     'gdaypunchbackend',
     'gdaypunchwebapp',
+    'rest_framework_swagger',
 ]
 
 AUTH_USER_MODEL = 'gdaypunchapi.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'PAGE_SIZE': 10
 }
 

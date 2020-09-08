@@ -3,13 +3,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import UpdateModelMixin
+
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from django.shortcuts import get_object_or_404
-from django_currentuser.middleware import (
-    get_current_user, get_current_authenticated_user)
+from django_currentuser.middleware import (get_current_user, get_current_authenticated_user)
 from django_currentuser.db.models import CurrentUserField
 
 from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer
@@ -41,6 +41,7 @@ class LogoutView(APIView):
 
 class LoginView(APIView):
     authentication_classes = (SessionAuthentication,)
+    permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
         if str(self.request.user) != 'AnonymousUser':
@@ -110,6 +111,7 @@ class MangaViewSet(viewsets.ModelViewSet):
 
 
 class MangaDetailView(UpdateModelMixin, viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def retrieve(self, request, pk=None):
         queryset = Manga.objects.all()
