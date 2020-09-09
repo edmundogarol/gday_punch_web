@@ -27,7 +27,7 @@ makemigrations:
 	DEVENV=development python manage.py makemigrations 
 
 collectstatic:
-	python manage.py collectstatic
+	PRODENV=collectingstatic python manage.py collectstatic
 
 migrations: makemigrations migrate
 
