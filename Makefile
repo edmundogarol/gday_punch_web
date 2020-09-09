@@ -26,6 +26,9 @@ migrate:
 makemigrations:
 	DEVENV=development python manage.py makemigrations 
 
+collectstatic:
+	python manage.py collectstatic
+
 migrations: makemigrations migrate
 
 server:
@@ -35,4 +38,4 @@ resetdb: deletemigrations deletedb makemigrations migrate
 
 app: gui	dev build migrate	server
 
-dockerapp: gui build migrate	server
+dockerapp: gui build migrate collectstatic	server
