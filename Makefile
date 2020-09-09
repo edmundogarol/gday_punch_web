@@ -38,4 +38,4 @@ resetdb: deletemigrations deletedb makemigrations migrate
 
 app: gui	dev build migrate	server
 
-dockerapp: gui build migrate collectstatic	server
+dockerapp: gui build migrate	server
