@@ -211,12 +211,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 # Static file directory in the React app
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+if 'PRODENV' in os.environ:
+    STATIC_ROOT = "/opt/app/static/",
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),
-    os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
-    os.path.join(BASE_DIR, 'static/')
-]
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),
+        os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
+    ]
+else :
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),
+        os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
+        os.path.join(BASE_DIR, "static/"),
+    ]
 
 STATIC_URL = '/static/'

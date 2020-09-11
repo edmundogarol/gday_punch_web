@@ -24,6 +24,7 @@ RUN mkdir -p /opt/app
 RUN mkdir -p /opt/app/pip_cache
 RUN mkdir -p /opt/app/gdaypunchbackend
 RUN mkdir -p /opt/app/gdaypunchwebapp
+RUN mkdir -p /opt/app/static
 
 #Copy app contents to root directory
 COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
@@ -40,6 +41,9 @@ WORKDIR /opt/app
 RUN pip install -r requirements.txt
 RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
 RUN python manage.py migrate --noinput
+
+#Collect static files into main
+RUN make collectstatic
 
 #Change root permissions
 RUN chown -R www-data:www-data /opt/app
