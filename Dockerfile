@@ -31,6 +31,10 @@ COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 
+#Copy static contents into root static folder
+COPY gdaypunchbackend/static /opt/app/static/
+COPY gdaypunchwebapp/gdaypunchreact/public/static /opt/app/static/
+
 WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
 RUN	yarn && yarn run dev
 
@@ -41,9 +45,6 @@ WORKDIR /opt/app
 RUN pip install -r requirements.txt
 RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
 RUN python manage.py migrate --noinput
-
-#Collect static files into main
-RUN make collectstatic
 
 #Change root permissions
 RUN chown -R www-data:www-data /opt/app
