@@ -31,7 +31,7 @@ COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 
-#Copy static contents into root static folder
+#Copy static contents into root static folder 
 COPY gdaypunchbackend/static /opt/app/static/
 COPY gdaypunchwebapp/gdaypunchreact/public/static /opt/app/static/
 
