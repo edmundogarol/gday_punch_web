@@ -9,6 +9,5 @@ server {
     }
     location /static {
         root /opt/app;
-        try_files $uri $uri/ @secondStatic;
     }
 }
