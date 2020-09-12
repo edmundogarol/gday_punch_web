@@ -30,7 +30,7 @@ COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 
-#Show app dir for debugging
+#Show app dir for debugging - eb deploy seems behind one commit
 RUN ls /opt/app
 RUN ls /opt/app/gdaypunchbackend/public/static/
 RUN ls /opt/app/gdaypunchwebapp/gdaypunchreact/public/static/
