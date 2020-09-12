@@ -24,16 +24,11 @@ RUN mkdir -p /opt/app
 RUN mkdir -p /opt/app/pip_cache
 RUN mkdir -p /opt/app/gdaypunchbackend
 RUN mkdir -p /opt/app/gdaypunchwebapp
-RUN mkdir -p /opt/app/static
 
 #Copy app contents to root directory
 COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
-
-#Copy static contents into root static folder 
-COPY gdaypunchbackend/static /opt/app/static/
-COPY gdaypunchwebapp/gdaypunchreact/public/static /opt/app/static/
 
 WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
 RUN	yarn && yarn run dev
@@ -47,7 +42,6 @@ RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
 RUN python manage.py migrate --noinput
 
 #Change root permissions
-RUN chown -R www-data:www-data /opt/app/static
 RUN chown -R www-data:www-data /opt/app
 
 # Expose port 8000 to other containers
