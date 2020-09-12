@@ -31,7 +31,7 @@ COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 
 WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
-RUN	yarn && yarn run dev
+RUN	yarn && yarn run build
 
 #Navigate to root
 WORKDIR /opt/app
