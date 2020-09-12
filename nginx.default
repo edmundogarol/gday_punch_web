@@ -9,9 +9,5 @@ server {
     }
     location /static {
         root /opt/app/gdaypunchbackend/public;
-        try_files $uri $uri/ @secondStatic;
-    }
-    location @secondStatic {
-        root /opt/app/gdaypunchwebapp/gdaypunchreact/public;
     }
 }
