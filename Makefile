@@ -26,7 +26,7 @@ migrate:
 makemigrations:
 	DEVENV=development python manage.py makemigrations 
 
-collectstatic:
+static:
 	python manage.py collectstatic
 
 migrations: makemigrations migrate
