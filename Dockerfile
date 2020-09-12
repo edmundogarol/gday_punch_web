@@ -47,6 +47,7 @@ RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
 RUN python manage.py migrate --noinput
 
 #Change root permissions
+RUN chown -R www-data:www-data /opt/app/static
 RUN chown -R www-data:www-data /opt/app
 
 # Expose port 8000 to other containers
