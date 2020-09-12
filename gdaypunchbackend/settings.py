@@ -212,7 +212,7 @@ USE_TZ = True
 
 STATIC_ROOT = "/opt/app/static/"
 
- STATICFILES_DIRS = [
+STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),
     os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
 ]
