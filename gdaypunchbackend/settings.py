@@ -210,10 +210,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-if 'PRODENV' in os.environ:
-    STATIC_ROOT = os.path.join(BASE_DIR, "gdaypunchbackend/public/static/")
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, "opt/app/gdaypunchbackend/public/static/")
+STATIC_ROOT = "opt/app/gdaypunchbackend/public/static/"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),
