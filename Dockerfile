@@ -30,7 +30,7 @@ COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 
-# WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
+WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
 RUN	yarn && yarn run build
 
 #Navigate to root
