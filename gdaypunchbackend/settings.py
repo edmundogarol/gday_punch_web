@@ -218,6 +218,7 @@ else:
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),
     os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
+    os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
 ]
 
 # Static file directory in the React app

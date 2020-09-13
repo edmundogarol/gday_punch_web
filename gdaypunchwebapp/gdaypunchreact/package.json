@@ -50,9 +50,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "dev": "NODE_ENV=development webpack --mode development ./src/index.js --output ../../gdaypunchbackend/static/main.js",
-    "devwatch": "NODE_ENV=development webpack --watch --mode development ./src/index.js --output ../../gdaypunchbackend/static/main.js",
-    "build": "NODE_ENV=production webpack --mode production -p ./src/index.js --output ../../gdaypunchbackend/static/main.js",
+    "dev": "NODE_ENV=development webpack --mode development ./src/index.js --output ../../gdaypunchbackend/build/main.js",
+    "devwatch": "NODE_ENV=development webpack --watch --mode development ./src/index.js --output ../../gdaypunchbackend/build/main.js",
+    "build": "NODE_ENV=production webpack --mode production -p ./src/index.js --output ../../gdaypunchbackend/build/main.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
