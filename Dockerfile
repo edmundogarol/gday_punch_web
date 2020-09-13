@@ -36,6 +36,9 @@ COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 #Navigate to root
 WORKDIR /opt/app
 
+#Static files debug
+RUN ls gdaypunchbackend/public/static
+
 #Install requirements and migrate - Cachebust db-config download to always pick up latest config
 RUN pip install -r requirements.txt
 ARG CACHEBUST=1
