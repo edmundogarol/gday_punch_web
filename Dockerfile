@@ -39,6 +39,7 @@ WORKDIR /opt/app
 #Install requirements and migrate - Rebuilt RDS instance (13-09-2020)
 RUN pip install -r requirements.txt
 RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
+RUN cat gday-db-config.json
 RUN python manage.py migrate --noinput
 
 #Collect Static
