@@ -36,7 +36,7 @@ RUN	yarn && yarn run build
 #Navigate to root
 WORKDIR /opt/app
 
-#Install requirements and migrate
+#Install requirements and migrate - Rebuilt RDS instance (13-09-2020)
 RUN pip install -r requirements.txt
 RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
 RUN python manage.py migrate --noinput
