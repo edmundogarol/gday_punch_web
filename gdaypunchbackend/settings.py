@@ -154,7 +154,7 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 # create role gdayuser with login password 'gdaypassword'; // Create user + password
 # \q // exit PSQL CLI
 
-if ('DEVENV' in os.environ) or ('PRODENV' in os.environ):
+if 'DEVENV' in os.environ:
     dbconfig = "./gday-db-config.json"
 else:
     dbconfig = '/opt/app/gday-db-config.json'
@@ -210,7 +210,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-STATIC_ROOT = "opt/app/gdaypunchbackend/public/static/"
+if 'DEVENV' in os.environ:
+    STATIC_ROOT = os.path.join(BASE_DIR, "gdaypunchbackend/public/static/")
+else:
+    STATIC_ROOT = "opt/app/gdaypunchbackend/public/static/"
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),

@@ -141,3 +141,6 @@ node_modules
 gdaypunchbackend/static/*.worker.js
 gdaypunchbackend/static/vendors~pdfjsWorker.main.js
 gdaypunchbackend/static/main.js
+gdaypunchbackend/static/1.main*
+gdaypunchbackend/static/main*
+gdaypunchbackend/public

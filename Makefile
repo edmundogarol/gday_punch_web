@@ -3,6 +3,9 @@
 gui:
 	cd gdaypunchwebapp/gdaypunchreact && yarn && yarn run dev
 
+prodgui:
+	cd gdaypunchwebapp/gdaypunchreact && yarn && yarn run build
+
 watchgui:
 	cd gdaypunchwebapp/gdaypunchreact && yarn && yarn run devwatch
 
@@ -27,7 +30,7 @@ makemigrations:
 	DEVENV=development python manage.py makemigrations 
 
 static:
-	python manage.py collectstatic
+	DEVENV=development python manage.py collectstatic
 
 migrations: makemigrations migrate
 
@@ -39,3 +42,8 @@ resetdb: deletemigrations deletedb makemigrations migrate
 app: gui	dev build migrate	server
 
 dockerapp: gui build migrate	server
+
+ebdeploy: 
+	eb deploy
+
+deploy: prodgui static ebdeploy

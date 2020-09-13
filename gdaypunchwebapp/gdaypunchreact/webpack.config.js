@@ -68,8 +68,8 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: isDevelopment ? "[name].css" : "[name].[hash].css",
-      chunkFilename: isDevelopment ? "[id].css" : "[id].[hash].css"
+      filename: "main.css",
+      chunkFilename: "main.css"
     }),
   ]
 };
