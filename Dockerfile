@@ -30,8 +30,8 @@ COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
 
-WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
-RUN	yarn && yarn run build
+# WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
+# RUN	yarn && yarn run build
 
 #Navigate to root
 WORKDIR /opt/app
@@ -44,7 +44,7 @@ RUN cat gday-db-config.json
 RUN python manage.py migrate --noinput
 
 #Collect Static
-RUN python manage.py migrate collectstatic
+# RUN python manage.py migrate collectstatic
 
 #Change root permissions
 RUN chown -R www-data:www-data /opt/app

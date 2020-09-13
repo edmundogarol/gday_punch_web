@@ -30,7 +30,7 @@ makemigrations:
 	DEVENV=development python manage.py makemigrations 
 
 static:
-	DEVENV=development python manage.py collectstatic
+	DEVENV=development python manage.py collectstatic --noinput
 
 migrations: makemigrations migrate
 
@@ -46,4 +46,4 @@ dockerapp: gui build migrate	server
 ebdeploy: 
 	eb deploy
 
-deploy: prodgui static ebdeploy
+predeploy: prodgui static

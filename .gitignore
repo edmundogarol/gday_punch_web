@@ -8,7 +8,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
 develop-eggs/
 dist/
 downloads/
@@ -138,9 +137,9 @@ node_modules
 !.elasticbeanstalk/*.global.yml
 
 # Build static files
+gdaypunchbackend/build/*.worker.js
 gdaypunchbackend/static/*.worker.js
 gdaypunchbackend/static/vendors~pdfjsWorker.main.js
 gdaypunchbackend/static/main.js
 gdaypunchbackend/static/1.main*
 gdaypunchbackend/static/main*
-gdaypunchbackend/public
