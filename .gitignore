@@ -137,6 +137,7 @@ node_modules
 !.elasticbeanstalk/*.global.yml
 
 # Build static files
+gdaypunchbackend/public
 gdaypunchbackend/build
 gdaypunchbackend/static/*.worker.js
 gdaypunchbackend/static/vendors~pdfjsWorker.main.js
