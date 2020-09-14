@@ -46,4 +46,4 @@ dockerapp: gui build migrate	server
 ebdeploy: 
 	eb deploy
 
-predeploy: prodgui static
+predeploy: prodgui static	ebdeploy
