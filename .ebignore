@@ -1,3 +1,38 @@
-gdaypunchbackend/build
-gdaypunchbackend/static
-gdaypunchwebapp/gdaypunchreact/public/static
+# dependencies
+node_modules/
+
+# repository/project stuff
+.idea/
+.git/
+.gitlab-ci.yml
+README.md
+.vscode
+
+# misc
+.DS_Store
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+venv
+
+# non prod env files
+.env.development
+.env.test
+
+# backend 
+./gdaypunchbackend/_pycache_/
+./gdaypunchbackend/build/
+./gdaypunchbackend/static/
+
+./gdaypunchwebapp/_pycache_/
+./gdaypunchwebapp/gdaypunchreact/public/static/
+./gdaypunchwebapp/gdaypunchreact/.vscode/
+./gdaypunchwebapp/gdaypunchreact/node_modules/
