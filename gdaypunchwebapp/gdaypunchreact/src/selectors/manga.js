@@ -11,3 +11,8 @@ export const selectLikingManga = createSelector(
   selectDomain,
   ({ likingManga }) => likingManga
 );
+
+export const selectGPManga = createSelector(
+  selectDomain,
+  ({ gpManga }) => gpManga
+);

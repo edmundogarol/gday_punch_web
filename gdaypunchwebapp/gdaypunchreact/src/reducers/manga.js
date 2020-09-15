@@ -1,6 +1,11 @@
-import { UPDATE_USER_MANGA, DO_LIKE_MANGA } from "actions/manga";
+import {
+  UPDATE_USER_MANGA,
+  DO_LIKE_MANGA,
+  UPDATE_GP_MANGA
+} from "actions/manga";
 
 const INITIAL_STATE = {
+  gpManga: {},
   userManga: {},
   likingManga: undefined
 };
@@ -14,6 +19,11 @@ export const mangaReducer = (state = INITIAL_STATE, action) => {
           ...state.userManga,
           [action.payload.manga.id]: action.payload.manga
         }
+      };
+    case UPDATE_GP_MANGA:
+      return {
+        ...state,
+        gpManga: action.payload.gpManga
       };
     case DO_LIKE_MANGA:
       return {

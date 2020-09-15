@@ -1,3 +1,4 @@
+import { pdfjs } from "react-pdf";
 import {
   call,
   all,
@@ -9,12 +10,28 @@ import {
 import {
   DO_GET_USER_MANGA,
   DO_LIKE_MANGA,
+  DO_GET_GP_MANGA,
   doGetUserManga,
-  updateUserManga
+  updateUserManga,
+  updateGPManga
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { selectLikingManga } from "selectors/manga";
 import { api } from "utils/api";
+
+export function* getGPManga() {
+  // const loadingPDF = yield call(pdfjs.getDocument, {
+  //   url:
+  //     "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf",
+  //   length: 2000000,
+  //   rangeChunkSize: 2000000
+  // });
+
+  // loadingPDF.onProgress((pdf) => {
+  //   console.log("pdf", pdf);
+  //   put(updateGPManga(pdf));
+  // })
+}
 
 export function* getUserManga() {
   // const { id = 1 } = yield select(selectUser);
@@ -56,6 +73,7 @@ export function* likeManga() {
 
 export default function* mangaSaga() {
   yield all([
+    takeLatest(DO_GET_GP_MANGA, getGPManga),
     takeLatest(DO_GET_USER_MANGA, getUserManga),
     takeEvery(DO_LIKE_MANGA, likeManga)
   ]);

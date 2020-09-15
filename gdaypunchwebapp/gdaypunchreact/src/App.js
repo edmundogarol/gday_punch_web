@@ -21,6 +21,7 @@ import Navigation from "components/navigation";
 
 import Home from "pages/Home";
 import Admin from "pages/Admin";
+import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
 import "./App.scss";
 
@@ -46,20 +47,25 @@ function Root(props) {
 
   return (
     <Router history={history}>
-      <Navigation />
       <Switch>
-        <Route exact path="/" component={Home} />
-        {props.user.is_staff ? (
+        <Route exact path="/manga" component={Reader} />
+        <Route path="/">
+          <Navigation />
           <Switch>
-            <Route exact path="/admin" component={Admin} />
-            <Route exact path="/admin/:app" component={Admin} />
+            <Route exact path="/" component={Home} />
+            {props.user.is_staff ? (
+              <Switch>
+                <Route exact path="/admin" component={Admin} />
+                <Route exact path="/admin/:app" component={Admin} />
+              </Switch>
+            ) : (
+              <Redirect to="/" />
+            )}
+            <Route component={PageNotFound} />
           </Switch>
-        ) : (
-          <Redirect to="/" />
-        )}
-        <Route component={PageNotFound} />
+          <Footer />
+        </Route>
       </Switch>
-      <Footer />
     </Router>
   );
 }
