@@ -47,7 +47,11 @@ function Root(props) {
 
   const gdayPunchIssue =
     "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf";
-  const manga =
+
+  // TEMPORARY MANGA
+  const escape =
+    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/Escape.pdf";
+  const thrones =
     "https://gdaypunch-static.s3-us-west-2.amazonaws.com/Escape.pdf";
   const orientation = "japanese";
 
@@ -58,7 +62,12 @@ function Root(props) {
           exact
           path="/gpmm/:id"
           component={() => (
-            <Reader file={gdayPunchIssue} orientation={"english"} pageCount={104} readerOnly />
+            <Reader
+              file={gdayPunchIssue}
+              orientation={"english"}
+              pageCount={104}
+              readerOnly
+            />
           )}
         />
         <Route path="/">
@@ -67,9 +76,16 @@ function Root(props) {
             <Route exact path="/" component={Home} />
             <Route
               exact
-              path="/manga/:id"
+              path="/manga/escape"
               component={() => (
-                <Reader file={manga} orientation={orientation} pageCount={4} />
+                <Reader file={escape} orientation={orientation} pageCount={4} />
+              )}
+            />
+            <Route
+              exact
+              path="/manga/thrones"
+              component={() => (
+                <Reader file={thrones} orientation={orientation} pageCount={8} />
               )}
             />
             {props.user.is_staff ? (

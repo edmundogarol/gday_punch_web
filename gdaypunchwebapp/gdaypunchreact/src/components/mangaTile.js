@@ -6,16 +6,16 @@ import { createStructuredSelector } from "reselect";
 import { Link } from "react-router-dom";
 
 function MangaTile(props) {
-  const { cover, title } = props;
+  const { id, cover, title } = props;
   const styles = getStyles();
 
   return (
-    <Link to="/manga/0" style={styles.removeLinkStyle}>
+    <Link to={`/manga/${id}`} style={styles.removeLinkStyle}>
       <img src={cover} style={styles.tile} />
       <div className="pdf-details">
         <div>
           <h2>{title}</h2>
-          <h4>by Edmundo Garol</h4>
+          <h4>by Edmundo (Yungy) Garol</h4>
         </div>
       </div>
     </Link>
@@ -39,6 +39,7 @@ function getStyles() {
 
 MangaTile.propTypes = {
   // Component Properites
+  id: PropTypes.string,
   cover: PropTypes.string,
   title: PropTypes.string
   // Redux Properties
