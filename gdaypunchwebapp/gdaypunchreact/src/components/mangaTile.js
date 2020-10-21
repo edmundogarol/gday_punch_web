@@ -3,13 +3,14 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import { Link } from "react-router-dom";
 
 function MangaTile(props) {
   const { cover, title } = props;
   const styles = getStyles();
 
   return (
-    <a>
+    <Link to="/manga/0" style={styles.removeLinkStyle}>
       <img src={cover} style={styles.tile} />
       <div className="pdf-details">
         <div>
@@ -17,7 +18,7 @@ function MangaTile(props) {
           <h4>by Edmundo Garol</h4>
         </div>
       </div>
-    </a>
+    </Link>
   );
 }
 
@@ -28,6 +29,10 @@ function getStyles() {
       margin: "15vh",
       marginTop: "10vh",
       marginBottom: "unset",
+    },
+    removeLinkStyle: {
+      textDecoration: "none",
+      color: "black"
     }
   };
 }
