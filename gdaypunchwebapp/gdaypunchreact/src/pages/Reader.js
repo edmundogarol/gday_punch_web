@@ -21,7 +21,10 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 class Reader extends React.Component {
   constructor(props) {
     super(props);
+    console.log("props.file", props.file);
+
     this.state = {
+      file: props.file,
       pageNumber: 1,
       sizeLevel: 0
     };
@@ -59,62 +62,62 @@ class Reader extends React.Component {
     ];
 
     return (
-      <div id="top" className="App">
-        <div className="pdf-reader">
-          <div style={styles.pdf}>
-            <FontAwesomeIcon
-              className="pdf-button"
-              style={styles.pdfNavigator("left", prevDisabled)}
-              icon={faChevronCircleLeft}
-              onClick={() =>
-                prevDisabled ? null : this.setPage(this.state.pageNumber - 1)
-              }
+      <div className="pdf-reader">
+        <div style={styles.pdf}>
+          <FontAwesomeIcon
+            className="pdf-button"
+            style={styles.pdfNavigator("left", prevDisabled)}
+            icon={faChevronCircleLeft}
+            onClick={() =>
+              prevDisabled ? null : this.setPage(this.state.pageNumber - 1)
+            }
+          />
+          <Document
+            style={{
+              width: `${readerSizeLevels[this.state.sizeLevel].container}%`
+            }}
+            // file={gpManga}
+            file={
+              "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf"
+            }
+            className="pdf-container"
+            options={{
+              rangeChunkSize: 2000000
+            }}
+          >
+            <Page
+              loading={"Hang on! Loading page..."}
+              pageNumber={this.state.pageNumber}
+              width={readerSizeLevels[this.state.sizeLevel].page}
+              object-fit="fill"
+              onRenderSuccess={null}
+              size="A4"
             />
-            <Document
-              style={{
-                width: `${readerSizeLevels[this.state.sizeLevel].container}%`
-              }}
-              // file={gpManga}
-              file={"https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf"}
-              className="pdf-container"
-              options={{
-                rangeChunkSize: 2000000
-              }}
-            >
-              <Page
-                loading={"Hang on! Loading page..."}
-                pageNumber={this.state.pageNumber}
-                width={readerSizeLevels[this.state.sizeLevel].page}
-                object-fit="fill"
-                onRenderSuccess={null}
-                size="A4"
-              />
-            </Document>
-            <FontAwesomeIcon
-              className="pdf-button"
-              style={styles.pdfNavigator("right", nextDisabled)}
-              icon={faChevronCircleRight}
-              onClick={() =>
-                nextDisabled ? null : this.setPage(this.state.pageNumber + 1)
-              }
-            />
-            <FontAwesomeIcon
-              className="pdf-button"
-              style={styles.pdfMagnifier("left", false)}
-              icon={faSearchMinus}
-              onClick={() =>
-                lowerDisabled ? null : this.setSize(this.state.sizeLevel - 1)
-              }
-            />
-            <FontAwesomeIcon
-              className="pdf-button"
-              style={styles.pdfMagnifier("right", false)}
-              icon={faSearchPlus}
-              onClick={() =>
-                higerDisabled ? null : this.setSize(this.state.sizeLevel + 1)
-              }
-            />
-          </div>
+          </Document>
+          <FontAwesomeIcon
+            className="pdf-button"
+            style={styles.pdfNavigator("right", nextDisabled)}
+            icon={faChevronCircleRight}
+            onClick={() =>
+              nextDisabled ? null : this.setPage(this.state.pageNumber + 1)
+            }
+          />
+          <FontAwesomeIcon
+            className="pdf-button"
+            style={styles.pdfMagnifier("left", false)}
+            icon={faSearchMinus}
+            onClick={() =>
+              lowerDisabled ? null : this.setSize(this.state.sizeLevel - 1)
+            }
+          />
+          <FontAwesomeIcon
+            className="pdf-button"
+            style={styles.pdfMagnifier("right", false)}
+            icon={faSearchPlus}
+            onClick={() =>
+              higerDisabled ? null : this.setSize(this.state.sizeLevel + 1)
+            }
+          />
         </div>
       </div>
     );
@@ -124,35 +127,45 @@ class Reader extends React.Component {
 function getStyles() {
   return {
     pdf: {
-      display: "flex",
+      display: "grid",
       flexDirection: "row",
       justifyContent: "space-around",
       alignItems: "center",
       position: "relative",
-      paddingBottom: 50
+      paddingBottom: 50,
+      gridTemplateColumns: "50px auto 50px",
+      gridTemplateRows: "auto 100px",
     },
     pdfMagnifier: (position, disabled) => ({
-      position: "fixed",
       bottom: 0,
       height: "4em",
       width: "4em",
       opacity: disabled ? "0" : "0.3",
-      transform: position === "left" ? "translateX(-40px)" : "translateX(40px)"
+      transform: position === "left" ? "translateX(-40px)" : "translateX(40px)",
+      gridColumnStart: 2,
+      gridColumnEnd: 2,
+      gridRowStart: 2,
+      gridRowEnd: 2,
+      justifySelf: "center",
     }),
     pdfNavigator: (position, disabled) => ({
-      left: position === "left" ? 0 : "unset",
-      right: position === "right" ? 0 : "unset",
-      top: "50%",
+      position: "relative",
       opacity: disabled ? "0" : "0.3",
-      position: "fixed",
       zIndex: 1,
       height: "4em",
-      width: "4em"
+      width: "4em",
+      gridColumnStart: position === "left" ? 0 : 3,
+      gridColumnEnd: position === "left" ? 0 : 3,
+      gridRowStart: 1,
+      gridRowEnd: 1,
+      justifySelf: "center",
     })
   };
 }
 
 Reader.propTypes = {
+  // Component Properites
+  file: PropTypes.string,
   // Redux Properties
   gpManga: PropTypes.object,
   loggedIn: PropTypes.bool.isRequired,

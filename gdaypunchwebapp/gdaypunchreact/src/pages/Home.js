@@ -5,19 +5,7 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { isEmpty } from "lodash";
 import { Document } from "react-pdf/dist/entry.webpack";
-import {
-  openRegistration,
-  doSuggestRegister
-} from "actions/user";
-import { doGetUserManga, doLikeManga } from "actions/manga";
-import {
-  selectLoginViewToggle,
-  selectLoggedIn
-} from "selectors/app";
-import { selectUserManga } from "selectors/manga";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Header from "components/header";
-import Login from "components/login";
 import {
   faChevronCircleRight,
   faChevronCircleLeft,
@@ -25,6 +13,17 @@ import {
   faSearchMinus,
   faHeart
 } from "@fortawesome/free-solid-svg-icons";
+
+import { openRegistration, doSuggestRegister } from "actions/user";
+import { doGetUserManga, doLikeManga } from "actions/manga";
+
+import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
+import { selectUserManga } from "selectors/manga";
+
+import Header from "components/header";
+import Login from "components/login";
+
+import Reader from "./Reader";
 
 import Escape from "static/resources/Escape.pdf";
 
@@ -131,54 +130,7 @@ class Home extends React.Component {
               {`(${!isEmpty(userManga) ? userManga[1].likes : 0})`}
             </a>
           </div>
-          <div style={styles.pdf}>
-            <FontAwesomeIcon
-              className="pdf-button"
-              style={styles.pdfNavigator("left", nextDisabled)}
-              icon={faChevronCircleLeft}
-              onClick={() =>
-                nextDisabled ? null : this.setPage(this.state.pageNumber + 1)
-              }
-            />
-            <Document
-              style={{
-                width: `${readerSizeLevels[this.state.sizeLevel].container}%`
-              }}
-              file={Escape}
-              className="pdf-container"
-            >
-              <Page
-                pageNumber={this.state.pageNumber}
-                width={readerSizeLevels[this.state.sizeLevel].page}
-                object-fit="fill"
-                size="A4"
-              />
-            </Document>
-            <FontAwesomeIcon
-              className="pdf-button"
-              style={styles.pdfNavigator("right", prevDisabled)}
-              icon={faChevronCircleRight}
-              onClick={() =>
-                prevDisabled ? null : this.setPage(this.state.pageNumber - 1)
-              }
-            />
-            <FontAwesomeIcon
-              className="pdf-button"
-              style={styles.pdfMagnifier("left", false)}
-              icon={faSearchMinus}
-              onClick={() =>
-                lowerDisabled ? null : this.setSize(this.state.sizeLevel - 1)
-              }
-            />
-            <FontAwesomeIcon
-              className="pdf-button"
-              style={styles.pdfMagnifier("right", false)}
-              icon={faSearchPlus}
-              onClick={() =>
-                higerDisabled ? null : this.setSize(this.state.sizeLevel + 1)
-              }
-            />
-          </div>
+          <Reader />
         </div>
       </div>
     );

@@ -140,6 +140,10 @@ nav {
   justify-content: center;
   font-size: calc(5px + 2vmin);
   color: rgb(179, 179, 179);
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 1;
 
   .react-pdf__Document,
   .react-pdf__Page,
