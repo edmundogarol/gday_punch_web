@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
+import classNames from "classnames";
 import { Page, pdfjs } from "react-pdf";
 import { connect } from "react-redux";
+import { useParams } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
 import { Document } from "react-pdf/dist/entry.webpack";
 import { openRegistration, doSuggestRegister } from "actions/user";
@@ -18,110 +20,98 @@ import {
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-class Reader extends React.Component {
-  constructor(props) {
-    super(props);
-    console.log("props.file", props.file);
+function Reader(props) {
+  const { file, orientation, getGPManga, readerOnly, pageCount } = props;
+  const [pageNumber, setPageNumber] = useState(1);
+  const [sizeLevel, setSizeLevel] = useState(0);
+  const { id } = useParams();
+  const mangaId = id;
 
-    this.state = {
-      file: props.file,
-      pageNumber: 1,
-      sizeLevel: 0
-    };
-  }
+  const styles = getStyles();
 
-  componentDidMount() {
-    this.props.getGPManga();
-  }
+  const japaneseReading = orientation === "japanese";
+  const firstPage = pageNumber === 1;
+  const lastPage = pageNumber === pageCount;
+  const leftNavigatorDisabled = japaneseReading ? lastPage : firstPage;
+  const rightNavigatorDisabled = japaneseReading ? firstPage : lastPage;
+  const lowerDisabled = sizeLevel === 0;
+  const higerDisabled = sizeLevel === 2;
 
-  setPage(page) {
-    this.setState({
-      pageNumber: page
-    });
-  }
+  const readerSizeLevels = [
+    { container: "60", page: 500 },
+    { container: "80", page: 750 },
+    { container: "100", page: 1000 }
+  ];
 
-  setSize(page) {
-    this.setState({
-      sizeLevel: page
-    });
-  }
+  useEffect(() => {
+    getGPManga();
+  });
 
-  render() {
-    const { gpManga } = this.props;
-    const styles = getStyles();
-
-    const prevDisabled = this.state.pageNumber === 1;
-    const nextDisabled = this.state.pageNumber === 100;
-    const lowerDisabled = this.state.sizeLevel === 0;
-    const higerDisabled = this.state.sizeLevel === 2;
-
-    const readerSizeLevels = [
-      { container: "60", page: 500 },
-      { container: "80", page: 750 },
-      { container: "100", page: 1000 }
-    ];
-
-    return (
-      <div className="pdf-reader">
-        <div style={styles.pdf}>
-          <FontAwesomeIcon
-            className="pdf-button"
-            style={styles.pdfNavigator("left", prevDisabled)}
-            icon={faChevronCircleLeft}
-            onClick={() =>
-              prevDisabled ? null : this.setPage(this.state.pageNumber - 1)
-            }
+  return (
+    <div
+      className={classNames("pdf-reader", {
+        "reader-only": readerOnly
+      })}
+    >
+      <div style={styles.pdf}>
+        <FontAwesomeIcon
+          className={classNames("pdf-button", {
+            disabled: leftNavigatorDisabled
+          })}
+          style={styles.pdfNavigator("left", leftNavigatorDisabled)}
+          icon={faChevronCircleLeft}
+          onClick={() =>
+            leftNavigatorDisabled
+              ? null
+              : setPageNumber(japaneseReading ? pageNumber + 1 : pageNumber - 1)
+          }
+        />
+        <Document
+          style={{
+            width: `${readerSizeLevels[sizeLevel].container}%`
+          }}
+          file={file}
+          className="pdf-container"
+          options={{
+            rangeChunkSize: 2000000
+          }}
+        >
+          <Page
+            loading={"Hang on! Loading page..."}
+            pageNumber={pageNumber}
+            width={readerSizeLevels[sizeLevel].page}
+            object-fit="fill"
+            onRenderSuccess={null}
+            size="A4"
           />
-          <Document
-            style={{
-              width: `${readerSizeLevels[this.state.sizeLevel].container}%`
-            }}
-            // file={gpManga}
-            file={
-              "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf"
-            }
-            className="pdf-container"
-            options={{
-              rangeChunkSize: 2000000
-            }}
-          >
-            <Page
-              loading={"Hang on! Loading page..."}
-              pageNumber={this.state.pageNumber}
-              width={readerSizeLevels[this.state.sizeLevel].page}
-              object-fit="fill"
-              onRenderSuccess={null}
-              size="A4"
-            />
-          </Document>
-          <FontAwesomeIcon
-            className="pdf-button"
-            style={styles.pdfNavigator("right", nextDisabled)}
-            icon={faChevronCircleRight}
-            onClick={() =>
-              nextDisabled ? null : this.setPage(this.state.pageNumber + 1)
-            }
-          />
-          <FontAwesomeIcon
-            className="pdf-button"
-            style={styles.pdfMagnifier("left", false)}
-            icon={faSearchMinus}
-            onClick={() =>
-              lowerDisabled ? null : this.setSize(this.state.sizeLevel - 1)
-            }
-          />
-          <FontAwesomeIcon
-            className="pdf-button"
-            style={styles.pdfMagnifier("right", false)}
-            icon={faSearchPlus}
-            onClick={() =>
-              higerDisabled ? null : this.setSize(this.state.sizeLevel + 1)
-            }
-          />
-        </div>
+        </Document>
+        <FontAwesomeIcon
+          className={classNames("pdf-button", {
+            disabled: rightNavigatorDisabled
+          })}
+          style={styles.pdfNavigator("right", rightNavigatorDisabled)}
+          icon={faChevronCircleRight}
+          onClick={() =>
+            rightNavigatorDisabled
+              ? null
+              : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1)
+          }
+        />
+        <FontAwesomeIcon
+          className="pdf-button"
+          style={styles.pdfMagnifier("left", false)}
+          icon={faSearchMinus}
+          onClick={() => (lowerDisabled ? null : setSizeLevel(sizeLevel - 1))}
+        />
+        <FontAwesomeIcon
+          className="pdf-button"
+          style={styles.pdfMagnifier("right", false)}
+          icon={faSearchPlus}
+          onClick={() => (higerDisabled ? null : setSizeLevel(sizeLevel + 1))}
+        />
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 function getStyles() {
@@ -134,7 +124,7 @@ function getStyles() {
       position: "relative",
       paddingBottom: 50,
       gridTemplateColumns: "50px auto 50px",
-      gridTemplateRows: "auto 100px",
+      gridTemplateRows: "auto 100px"
     },
     pdfMagnifier: (position, disabled) => ({
       bottom: 0,
@@ -146,7 +136,7 @@ function getStyles() {
       gridColumnEnd: 2,
       gridRowStart: 2,
       gridRowEnd: 2,
-      justifySelf: "center",
+      justifySelf: "center"
     }),
     pdfNavigator: (position, disabled) => ({
       position: "relative",
@@ -158,7 +148,7 @@ function getStyles() {
       gridColumnEnd: position === "left" ? 0 : 3,
       gridRowStart: 1,
       gridRowEnd: 1,
-      justifySelf: "center",
+      justifySelf: "center"
     })
   };
 }
@@ -166,6 +156,9 @@ function getStyles() {
 Reader.propTypes = {
   // Component Properites
   file: PropTypes.string,
+  orientation: PropTypes.string,
+  readerOnly: PropTypes.bool,
+  pageCount: PropTypes.number,
   // Redux Properties
   gpManga: PropTypes.object,
   loggedIn: PropTypes.bool.isRequired,

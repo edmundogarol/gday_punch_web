@@ -304,6 +304,11 @@ nav {
 .pdf-reader {
   font-style: italic;
   color: #272727;
+  padding-top: 10vh;
+}
+
+.reader-only {
+  padding-top: unset;
 }
 
 .pdf-button {
@@ -318,6 +323,13 @@ nav {
   }
 }
 
+.disabled {
+  &:hover {
+    opacity: 0 !important;
+    cursor: initial;
+  }
+}
+
 .pdf-details {
   display: flex;
   flex-direction: row;
@@ -328,7 +340,8 @@ nav {
   margin-top: 10pt;
   margin-bottom: 10pt;
   align-items: flex-end;
-
+  margin-bottom: 10vh;
+  
   a {
     text-decoration: none;
     color: black;

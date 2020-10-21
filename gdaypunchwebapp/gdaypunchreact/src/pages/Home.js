@@ -1,16 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Page, pdfjs } from "react-pdf";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { isEmpty } from "lodash";
-import { Document } from "react-pdf/dist/entry.webpack";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChevronCircleRight,
-  faChevronCircleLeft,
-  faSearchPlus,
-  faSearchMinus,
   faHeart
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -22,20 +16,15 @@ import { selectUserManga } from "selectors/manga";
 
 import Header from "components/header";
 import Login from "components/login";
+import MangaTile from "components/mangaTile";
 
-import Reader from "./Reader";
-
-import Escape from "static/resources/Escape.pdf";
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import Escape from "static/resources/escape.png";
+import GPMM1 from "static/resources/gpmm1.png";
+import Tezuka from "static/resources/tezuka.png";
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      pageNumber: 1,
-      sizeLevel: 0
-    };
   }
 
   componentDidUpdate(prevProps) {
@@ -50,7 +39,7 @@ class Home extends React.Component {
     this.props.getUserManga();
   }
 
-  setPage(page) {
+  clickManga(page) {
     const { loggedIn, openRegister, suggestRegister } = this.props;
 
     if (!loggedIn) {
@@ -58,16 +47,7 @@ class Home extends React.Component {
       openRegister();
       suggestRegister("Info: Sign up or Log in to continue reading!");
     } else {
-      this.setState({
-        pageNumber: page
-      });
     }
-  }
-
-  setSize(page) {
-    this.setState({
-      sizeLevel: page
-    });
   }
 
   render() {
@@ -81,24 +61,17 @@ class Home extends React.Component {
     } = this.props;
     const styles = getStyles();
 
-    const prevDisabled = this.state.pageNumber === 1;
-    const nextDisabled = this.state.pageNumber === 4;
-    const lowerDisabled = this.state.sizeLevel === 0;
-    const higerDisabled = this.state.sizeLevel === 2;
-
-    const readerSizeLevels = [
-      { container: "60", page: 500 },
-      { container: "80", page: 750 },
-      { container: "100", page: 1000 }
-    ];
-
     return (
       <div id="top" className="App">
         <div className="App-header-container app-temp-background">
           <Header loginView={loginView} />
           <Login />
         </div>
-        <div className="pdf-reader">
+        <div style={styles.list}>
+          <MangaTile cover={Escape} title="Escape" />
+          <MangaTile cover={Tezuka} title="Thrones of Lore" />
+        </div>
+        {/* <div className="pdf-reader">
           <div className="pdf-details">
             <div>
               <h2>Escape</h2>
@@ -130,8 +103,7 @@ class Home extends React.Component {
               {`(${!isEmpty(userManga) ? userManga[1].likes : 0})`}
             </a>
           </div>
-          <Reader />
-        </div>
+        </div> */}
       </div>
     );
   }
@@ -139,31 +111,10 @@ class Home extends React.Component {
 
 function getStyles() {
   return {
-    pdf: {
+    list: {
       display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-around",
-      alignItems: "center",
-      position: "relative",
-      paddingBottom: 50
-    },
-    pdfMagnifier: (position, disabled) => ({
-      position: "absolute",
-      bottom: 0,
-      height: "4em",
-      width: "4em",
-      opacity: disabled ? "0" : "0.3",
-      transform: position === "left" ? "translateX(-40px)" : "translateX(40px)"
-    }),
-    pdfNavigator: (position, disabled) => ({
-      left: position === "left" ? 0 : "unset",
-      right: position === "right" ? 0 : "unset",
-      opacity: disabled ? "0" : "0.3",
-      position: "absolute",
-      zIndex: 1,
-      height: "4em",
-      width: "4em"
-    })
+      justifyContent: "center"
+    }
   };
 }
 

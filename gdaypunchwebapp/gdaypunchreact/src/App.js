@@ -45,14 +45,33 @@ function Root(props) {
     props.checkLogin();
   }, []);
 
+  const gdayPunchIssue =
+    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf";
+  const manga =
+    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/Escape.pdf";
+  const orientation = "japanese";
+
   return (
     <Router history={history}>
       <Switch>
-        <Route exact path="/manga" component={Reader} />
+        <Route
+          exact
+          path="/gpmm/:id"
+          component={() => (
+            <Reader file={gdayPunchIssue} orientation={"english"} pageCount={104} readerOnly />
+          )}
+        />
         <Route path="/">
           <Navigation />
           <Switch>
             <Route exact path="/" component={Home} />
+            <Route
+              exact
+              path="/manga/:id"
+              component={() => (
+                <Reader file={manga} orientation={orientation} pageCount={4} />
+              )}
+            />
             {props.user.is_staff ? (
               <Switch>
                 <Route exact path="/admin" component={Admin} />
