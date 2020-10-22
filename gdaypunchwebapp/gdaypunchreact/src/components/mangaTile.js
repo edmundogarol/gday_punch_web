@@ -14,8 +14,8 @@ function MangaTile(props) {
       <img src={cover} style={styles.tile} />
       <div className="pdf-details">
         <div>
-          <h2>{title}</h2>
-          <h4>by Edmundo (Yungy) Garol</h4>
+          <h2 style={styles.mangaTitle}>{title}</h2>
+          <h4 style={styles.mangaArtist}>by Edmundo (Yungy) Garol</h4>
         </div>
       </div>
     </Link>
@@ -33,6 +33,12 @@ function getStyles() {
     removeLinkStyle: {
       textDecoration: "none",
       color: "black"
+    },
+    mangaTitle: {
+      fontSize: "1em",
+    },
+    mangaArtist: {
+      fontSize: "0.8em",
     }
   };
 }

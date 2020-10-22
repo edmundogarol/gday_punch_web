@@ -19,6 +19,7 @@ import MangaTile from "components/mangaTile";
 import Escape from "static/resources/escape.png";
 import GPMM1 from "static/resources/gpmm1.png";
 import Tezuka from "static/resources/tezuka.png";
+import Yungy from "static/resources/yungy.jpg";
 
 class Home extends React.Component {
   constructor(props) {
@@ -69,14 +70,24 @@ class Home extends React.Component {
           <MangaTile id="escape" cover={Escape} title="Escape" />
           <MangaTile id="thrones" cover={Tezuka} title="Thrones of Lore" />
         </div>
-        <div style={styles.donateContainer}>
-          <h3 style={styles.donateTitle}>Support Yungy's Manga</h3>
-          <h5 style={styles.donateSubTitle}>So I can create bigger and better projects!</h5>
+        <div style={styles.donateSection}>
+          <div style={styles.artistProfile}>
+            <img src={Yungy} style={styles.tile} />
+          </div>
+          <div style={styles.donateContainer}>
+            <h3 style={styles.donateHeader}>
+              Yungy <span style={styles.donateHeaderTag}>@yungy.art</span>
+            </h3>
+            <h3 style={styles.donateTitle}>Support Yungy's Manga</h3>
+            <h5 style={styles.donateSubTitle}>
+              So he can create bigger and better projects!
+            </h5>
+          </div>
           <form
             action="https://www.paypal.com/donate"
             method="post"
             target="_top"
-            style={styles.donate}
+            style={styles.donateButton}
           >
             <input type="hidden" name="cmd" value="_donations" />
             <input
@@ -97,6 +108,7 @@ class Home extends React.Component {
               name="submit"
               title="PayPal - The safer, easier way to pay online!"
               alt="Donate with PayPal button"
+              style={styles.donate}
             />
             <img
               alt=""
@@ -148,22 +160,68 @@ class Home extends React.Component {
 
 function getStyles() {
   return {
+    tile: {
+      height: "20vh",
+      borderRadius: "100%"
+    },
     donate: {
-      transform: "scale(1.5)"
+      height: "8vh"
+    },
+    artistProfile: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
+    },
+    donateSection: {
+      display: "flex",
+      flexDirection: "row",
+      height: "max-content",
+      justifyContent: "center",
+      background: "#dcdcdc",
+      flexWrap: "wrap",
+      paddingTop: "50px",
+      paddingBottom: "50px",
     },
     donateContainer: {
       display: "flex",
       flexDirection: "column",
-      height: "28vh"
+      justifyContent: "center",
+      alignItems: "start",
+      marginRight: 50,
+      marginLeft: 50
+    },
+    donateHeader: {
+      fontSize: "1.6em",
+      fontStyle: "italic",
+      marginTop: "unset",
+      color: "dimgrey",
+      marginBottom: "0.3em"
+    },
+    donateHeaderTag: {
+      fontSize: "0.8em",
+      fontStyle: "italic",
+      marginTop: "unset",
+      color: "whitesmoke",
+      marginBottom: "0.3em"
     },
     donateTitle: {
-      fontSize: "2em",
-      marginBottom: "0.5em",
+      fontSize: "1.3em",
+      marginBottom: "unset",
+      marginTop: "unset",
+      letterSpacing: 1,
+      color: "#1d1d1d",
+      textAlign: "start"
     },
     donateSubTitle: {
-      fontSize: "1em",
+      fontSize: "0.7em",
       marginTop: "unset",
-      marginBottom: "2.4em"
+      marginBottom: "1em",
+      textAlign: "start",
+      color: "#1d1d1d"
+    },
+    donateButton: {
+      display: "flex",
+      alignItems: "center",
     },
     list: {
       display: "flex",
