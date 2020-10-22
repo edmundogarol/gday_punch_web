@@ -18,7 +18,7 @@ import MangaTile from "components/mangaTile";
 
 import Escape from "static/resources/escape.png";
 import GPMM1 from "static/resources/gpmm1.png";
-import Tezuka from "static/resources/tezuka.png";
+import Kingslore from "static/resources/kingslore.png";
 import Yungy from "static/resources/yungy.jpg";
 
 class Home extends React.Component {
@@ -68,7 +68,7 @@ class Home extends React.Component {
         </div>
         <div style={styles.list}>
           <MangaTile id="escape" cover={Escape} title="Escape" />
-          <MangaTile id="thrones" cover={Tezuka} title="Thrones of Lore" />
+          <MangaTile id="kingslore" cover={Kingslore} title="Kingslore" />
         </div>
         <div style={styles.donateSection}>
           <div style={styles.artistProfile}>

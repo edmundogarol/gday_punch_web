@@ -51,8 +51,8 @@ function Root(props) {
   // TEMPORARY MANGA
   const escape =
     "https://gdaypunch-static.s3-us-west-2.amazonaws.com/Escape.pdf";
-  const thrones =
-    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/Escape.pdf";
+  const kingslore =
+    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_Kingslore.pdf";
   const orientation = "japanese";
 
   return (
@@ -83,9 +83,9 @@ function Root(props) {
             />
             <Route
               exact
-              path="/manga/thrones"
+              path="/manga/kingslore"
               component={() => (
-                <Reader file={thrones} orientation={orientation} pageCount={8} />
+                <Reader file={kingslore} orientation={orientation} pageCount={8} />
               )}
             />
             {props.user.is_staff ? (
