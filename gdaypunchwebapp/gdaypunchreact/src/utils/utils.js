@@ -6,3 +6,7 @@
 export function getImageModule(url) {
   return require(`../../public/static/images/${url}`).default;
 }
+
+export function getCoverImage(url) {
+  return require(`../../public/${url}`).default;
+}

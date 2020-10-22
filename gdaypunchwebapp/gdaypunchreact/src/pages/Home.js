@@ -7,10 +7,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 
 import { openRegistration, doSuggestRegister } from "actions/user";
-import { doGetUserManga, doLikeManga } from "actions/manga";
+import { doGetFeaturedManga, doLikeManga } from "actions/manga";
 
 import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
-import { selectUserManga } from "selectors/manga";
+import { selectFeaturedManga } from "selectors/manga";
 
 import Header from "components/header";
 import Login from "components/login";
@@ -27,15 +27,15 @@ class Home extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { loggedIn, getUserManga } = this.props;
+    const { loggedIn, getFeaturedManga } = this.props;
 
     if (!prevProps.loggedIn && loggedIn) {
-      getUserManga();
+      getFeaturedManga();
     }
   }
 
   componentDidMount() {
-    this.props.getUserManga();
+    this.props.getFeaturedManga();
   }
 
   clickManga(page) {
@@ -55,7 +55,7 @@ class Home extends React.Component {
       loginView,
       openRegister,
       suggestRegister,
-      userManga,
+      featuredManga,
       likeManga
     } = this.props;
     const styles = getStyles();
@@ -67,8 +67,10 @@ class Home extends React.Component {
           <Login />
         </div>
         <div style={styles.list}>
-          <MangaTile id="escape" cover={Escape} title="Escape" />
-          <MangaTile id="kingslore" cover={Kingslore} title="Kingslore" />
+          {!isEmpty(featuredManga) &&
+            featuredManga.map((manga) => {
+              return manga ? <MangaTile key={manga.id} manga={manga} /> : null;
+            })}
         </div>
         <div style={styles.donateSection}>
           <div style={styles.artistProfile}>
@@ -180,7 +182,7 @@ function getStyles() {
       background: "#dcdcdc",
       flexWrap: "wrap",
       paddingTop: "50px",
-      paddingBottom: "50px",
+      paddingBottom: "50px"
     },
     donateContainer: {
       display: "flex",
@@ -221,7 +223,7 @@ function getStyles() {
     },
     donateButton: {
       display: "flex",
-      alignItems: "center",
+      alignItems: "center"
     },
     list: {
       display: "flex",
@@ -235,24 +237,24 @@ Home.propTypes = {
   // Redux Properties
   loggedIn: PropTypes.bool.isRequired,
   loginView: PropTypes.bool.isRequired,
-  userManga: PropTypes.object,
+  featuredManga: PropTypes.array,
   // Redux Functions
   openRegister: PropTypes.func.isRequired,
   suggestRegister: PropTypes.func.isRequired,
-  getUserManga: PropTypes.func.isRequired,
+  getFeaturedManga: PropTypes.func.isRequired,
   likeManga: PropTypes.func.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
   loggedIn: selectLoggedIn,
   loginView: selectLoginViewToggle,
-  userManga: selectUserManga
+  featuredManga: selectFeaturedManga
 });
 
 const mapDispatchToProps = {
   openRegister: openRegistration,
   suggestRegister: doSuggestRegister,
-  getUserManga: doGetUserManga,
+  getFeaturedManga: doGetFeaturedManga,
   likeManga: doLikeManga
 };
 

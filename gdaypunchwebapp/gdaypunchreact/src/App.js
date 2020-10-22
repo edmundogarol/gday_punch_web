@@ -41,6 +41,8 @@ const store = createStore(
 sagaMiddleware.run(rootSaga);
 
 function Root(props) {
+  const { user } = props;
+
   useEffect(() => {
     props.checkLogin();
   }, []);
@@ -48,11 +50,6 @@ function Root(props) {
   const gdayPunchIssue =
     "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf";
 
-  // TEMPORARY MANGA
-  const escape =
-    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/Escape.pdf";
-  const kingslore =
-    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_Kingslore.pdf";
   const orientation = "japanese";
 
   return (
@@ -74,21 +71,8 @@ function Root(props) {
           <Navigation />
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route
-              exact
-              path="/manga/escape"
-              component={() => (
-                <Reader file={escape} orientation={orientation} pageCount={4} />
-              )}
-            />
-            <Route
-              exact
-              path="/manga/kingslore"
-              component={() => (
-                <Reader file={kingslore} orientation={orientation} pageCount={8} />
-              )}
-            />
-            {props.user.is_staff ? (
+            <Route exact path="/manga/:id" component={Reader} />
+            {user.is_staff ? (
               <Switch>
                 <Route exact path="/admin" component={Admin} />
                 <Route exact path="/admin/:app" component={Admin} />

@@ -85,12 +85,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-
+    
 
 class Manga(models.Model):
     title = models.TextField(max_length=50, blank=False)
     author = models.ForeignKey(User,  on_delete=models.PROTECT)
     pdf = models.TextField(max_length=100, blank=True)
+    cover = models.TextField(max_length=100, blank=True)
 
     def __str__(self):
         return self.title
@@ -112,3 +113,28 @@ class Manga(models.Model):
 class Like(models.Model):
     manga = models.ForeignKey(Manga,  on_delete=models.PROTECT)
     user = models.ForeignKey(User,  on_delete=models.PROTECT)
+
+
+class CollectionType(models.Model):
+    ISSUE = 1
+    MANGA = 2
+    ILLUSTRATION = 3
+    COLLECTION_TYPES = (
+        (ISSUE, 'issue'),
+        (MANGA, 'manga'),
+        (ILLUSTRATION, 'illustration'),
+    )
+
+    id = models.PositiveSmallIntegerField(
+        choices=COLLECTION_TYPES, primary_key=True)
+
+    def __str__(self):
+        return self.get_id_display()
+
+
+class Collection(models.Model):
+    owner = models.ForeignKey(User,  on_delete=models.PROTECT)
+    name = models.TextField(max_length=50, blank=False)
+    mangas = models.ManyToManyField(Manga, blank=False)
+    collectionType = models.ForeignKey(CollectionType,  on_delete=models.PROTECT)
+

@@ -7,9 +7,9 @@ import { useParams } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
 import { Document } from "react-pdf/dist/entry.webpack";
 import { openRegistration, doSuggestRegister } from "actions/user";
-import { doGetGPManga } from "actions/manga";
+import { doGetManga, doSetReadingManga } from "actions/manga";
 import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
-import { selectUserManga, selectGPManga } from "selectors/manga";
+import { selectReadingManga } from "selectors/manga";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronCircleRight,
@@ -21,13 +21,16 @@ import {
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function Reader(props) {
-  const { file, orientation, getGPManga, readerOnly, pageCount } = props;
+  const { orientation = "japanese", readerOnly, manga, getManga } = props;
   const [pageNumber, setPageNumber] = useState(1);
   const [sizeLevel, setSizeLevel] = useState(0);
   const { id } = useParams();
   const mangaId = id;
-
   const styles = getStyles();
+
+  let pageCount;
+  if (manga && manga.title === "Escape") pageCount = 4;
+  if (manga && manga.title === "Kingslore") pageCount = 8;
 
   const japaneseReading = orientation === "japanese";
   const firstPage = pageNumber === 1;
@@ -44,8 +47,15 @@ function Reader(props) {
   ];
 
   useEffect(() => {
-    getGPManga();
-  });
+    const { setReadingManga, manga } = props;
+
+    if (manga === undefined) {
+      setReadingManga(mangaId);
+      getManga(mangaId);
+    }
+  }, [manga]);
+
+  console.log("Reader.js", { manga });
 
   return (
     <div
@@ -70,7 +80,7 @@ function Reader(props) {
           style={{
             width: `${readerSizeLevels[sizeLevel].container}%`
           }}
-          file={file}
+          file={manga ? manga.pdf : null}
           className="pdf-container"
           options={{
             rangeChunkSize: 2000000
@@ -155,10 +165,10 @@ function getStyles() {
 
 Reader.propTypes = {
   // Component Properites
-  file: PropTypes.string,
   orientation: PropTypes.string,
   readerOnly: PropTypes.bool,
   pageCount: PropTypes.number,
+  manga: PropTypes.object,
   // Redux Properties
   gpManga: PropTypes.object,
   loggedIn: PropTypes.bool.isRequired,
@@ -167,20 +177,21 @@ Reader.propTypes = {
   // Redux Functions
   openRegister: PropTypes.func.isRequired,
   suggestRegister: PropTypes.func.isRequired,
-  getGPManga: PropTypes.func.isRequired
+  setReadingManga: PropTypes.func.isRequired,
+  getManga: PropTypes.func.isRequired
 };
 
 const mapStateToProps = createStructuredSelector({
-  gpManga: selectGPManga,
   loggedIn: selectLoggedIn,
   loginView: selectLoginViewToggle,
-  userManga: selectUserManga
+  manga: selectReadingManga
 });
 
 const mapDispatchToProps = {
   openRegister: openRegistration,
   suggestRegister: doSuggestRegister,
-  getGPManga: doGetGPManga
+  setReadingManga: doSetReadingManga,
+  getManga: doGetManga
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Reader);

@@ -1,29 +1,30 @@
 import {
-  UPDATE_USER_MANGA,
   DO_LIKE_MANGA,
-  UPDATE_GP_MANGA
+  UPDATE_MANGA,
+  SET_READING_MANGA,
 } from "actions/manga";
 
 const INITIAL_STATE = {
-  gpManga: {},
-  userManga: {},
+  manga: {},
+  featuredMangaIds: [1, 2],
+  readingManga: undefined,
   likingManga: undefined
 };
 
 export const mangaReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case UPDATE_USER_MANGA:
+    case UPDATE_MANGA:
       return {
         ...state,
-        userManga: {
-          ...state.userManga,
+        manga: {
+          ...state.manga,
           [action.payload.manga.id]: action.payload.manga
         }
       };
-    case UPDATE_GP_MANGA:
+    case SET_READING_MANGA:
       return {
         ...state,
-        gpManga: action.payload.gpManga
+        readingManga: action.payload.mangaId
       };
     case DO_LIKE_MANGA:
       return {

@@ -12,7 +12,7 @@ export default function Footer() {
     <div className="footer">
       <div className="contact-us">
         <p>For more information contact:</p>
-        <p>info@amaaustralia.com</p>
+        <p>info@gdaypunch.com</p>
         <a href="http://gdaypunch.com/"><p className="website">www.gdaypunch.com</p></a>
       </div>
       <div className="socials">
