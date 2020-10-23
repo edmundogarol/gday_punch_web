@@ -12,8 +12,8 @@ from django.shortcuts import get_object_or_404
 from django_currentuser.middleware import (get_current_user, get_current_authenticated_user)
 from django_currentuser.db.models import CurrentUserField
 
-from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer
-from .models import User, Manga, Like
+from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer, CommentSerializer
+from .models import User, Manga, Like, Comment
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -92,6 +92,12 @@ class LoginView(APIView):
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.none()
     serializer_class = LikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.none()
+    serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
 
 

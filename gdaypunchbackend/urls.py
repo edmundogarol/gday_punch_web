@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
 from rest_framework import routers
-from .gdaypunchapi.views import UserViewSet, LoginView, LogoutView, MangaDetailView, MangaViewSet, LikeViewSet
+from .gdaypunchapi.views import UserViewSet, LoginView, LogoutView, MangaDetailView, MangaViewSet, LikeViewSet, CommentViewSet
 from rest_framework_swagger.views import get_swagger_view
 
 schema_view = get_swagger_view(title='Gday Punch Web App API')
@@ -27,6 +27,7 @@ router.register(r'user', UserViewSet)
 router.register(r'manga', MangaDetailView, basename='manga')
 router.register(r'mangas', MangaViewSet, basename='mangas')
 router.register(r'like', LikeViewSet, basename="like")
+router.register(r'comment', CommentViewSet, basename="comment")
 
 urlpatterns = [
     url(r'^docs/', schema_view),
