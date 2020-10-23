@@ -45,7 +45,7 @@ function MangaTile(props) {
         onClick={() => handleMangaClick(`/manga/${manga.id}`, "manga")}
         style={styles.removeLinkStyle}
       >
-        <img src={getCoverImage(manga.cover)} style={styles.tile} />
+        <img src={manga.cover} style={styles.tile} />
       </a>
       <div className="pdf-details">
         <a

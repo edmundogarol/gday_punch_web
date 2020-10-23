@@ -16,8 +16,6 @@ import Header from "components/header";
 import Login from "components/login";
 import MangaTile from "components/mangaTile";
 
-import { getCoverImage } from "utils/utils";
-
 class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -61,7 +59,7 @@ class Home extends React.Component {
         </div>
         <div style={styles.donateSection}>
           <div style={styles.artistProfile}>
-            <img src={getCoverImage("static/resources/yungy.jpg")} style={styles.tile} />
+            <img src={"https://gdaypunch-static.s3-us-west-2.amazonaws.com/yungy.jpg"} style={styles.tile} />
           </div>
           <div style={styles.donateContainer}>
             <h3 style={styles.donateHeader}>
