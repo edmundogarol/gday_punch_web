@@ -74,7 +74,7 @@ export function* likeManga() {
     const data = response.data;
     // yield put(updateUserManga(data));
     // TODO Temporary refresher of manga
-    yield put(getManga(id));
+    yield call(getManga, manga);
   } else {
     console.log("Like error", JSON.stringify(response));
   }
