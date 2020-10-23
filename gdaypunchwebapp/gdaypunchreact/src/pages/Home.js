@@ -16,10 +16,7 @@ import Header from "components/header";
 import Login from "components/login";
 import MangaTile from "components/mangaTile";
 
-import Escape from "static/resources/escape.png";
-import GPMM1 from "static/resources/gpmm1.png";
-import Kingslore from "static/resources/kingslore.png";
-import Yungy from "static/resources/yungy.jpg";
+import { getCoverImage } from "utils/utils";
 
 class Home extends React.Component {
   constructor(props) {
@@ -64,7 +61,7 @@ class Home extends React.Component {
         </div>
         <div style={styles.donateSection}>
           <div style={styles.artistProfile}>
-            <img src={Yungy} style={styles.tile} />
+            <img src={getCoverImage("static/resources/yungy.jpg")} style={styles.tile} />
           </div>
           <div style={styles.donateContainer}>
             <h3 style={styles.donateHeader}>
