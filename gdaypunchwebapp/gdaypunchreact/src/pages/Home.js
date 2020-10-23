@@ -26,27 +26,8 @@ class Home extends React.Component {
     super(props);
   }
 
-  componentDidUpdate(prevProps) {
-    const { loggedIn, getFeaturedManga } = this.props;
-
-    if (!prevProps.loggedIn && loggedIn) {
-      getFeaturedManga();
-    }
-  }
-
   componentDidMount() {
     this.props.getFeaturedManga();
-  }
-
-  clickManga(page) {
-    const { loggedIn, openRegister, suggestRegister } = this.props;
-
-    if (!loggedIn) {
-      window.location.href = "/#top";
-      openRegister();
-      suggestRegister("Info: Sign up or Log in to continue reading!");
-    } else {
-    }
   }
 
   render() {
@@ -69,7 +50,16 @@ class Home extends React.Component {
         <div style={styles.list}>
           {!isEmpty(featuredManga) &&
             featuredManga.map((manga) => {
-              return manga ? <MangaTile key={manga.id} manga={manga} /> : null;
+              return manga ? (
+                <MangaTile
+                  key={manga.id}
+                  manga={manga}
+                  loggedIn={loggedIn}
+                  likeManga={likeManga}
+                  openRegister={openRegister}
+                  suggestRegister={suggestRegister}
+                />
+              ) : null;
             })}
         </div>
         <div style={styles.donateSection}>

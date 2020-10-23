@@ -11,6 +11,9 @@ import {
   updateLoginError,
   updateRegistrationError
 } from "actions/user";
+import {
+  doGetFeaturedManga,
+} from "actions/manga";
 import { selectPendingRegistration, selectPendingLogin } from "selectors/app";
 import { api } from "utils/api";
 
@@ -74,6 +77,7 @@ export function* login() {
       ...data.user
     }
     yield put(updateUser(user));
+    yield put(doGetFeaturedManga());
   } else {
     console.log("Login error", JSON.stringify(response));
     yield put(updateLoginError(response.data))
@@ -89,6 +93,7 @@ export function* logout() {
     const data = response.data;
     yield put(updateUser(data));
     yield put(doCheckLogin());
+    yield put(doGetFeaturedManga());
   } else {
     console.log("Log Out error", JSON.stringify(response));
   }

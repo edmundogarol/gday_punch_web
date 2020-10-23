@@ -15,13 +15,20 @@ import {
   faChevronCircleRight,
   faChevronCircleLeft,
   faSearchPlus,
-  faSearchMinus
+  faSearchMinus,
+  faHome
 } from "@fortawesome/free-solid-svg-icons";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function Reader(props) {
-  const { orientation = "japanese", readerOnly, manga, getManga } = props;
+  const {
+    orientation = "japanese",
+    readerOnly,
+    manga,
+    getManga,
+    loggedIn
+  } = props;
   const [pageNumber, setPageNumber] = useState(1);
   const [sizeLevel, setSizeLevel] = useState(0);
   const { id } = useParams();
@@ -55,8 +62,6 @@ function Reader(props) {
     }
   }, [manga]);
 
-  console.log("Reader.js", { manga });
-
   return (
     <div
       className={classNames("pdf-reader", {
@@ -65,14 +70,12 @@ function Reader(props) {
     >
       <div style={styles.pdf}>
         <FontAwesomeIcon
-          className={classNames("pdf-button", {
-            disabled: leftNavigatorDisabled
-          })}
-          style={styles.pdfNavigator("left", leftNavigatorDisabled)}
-          icon={faChevronCircleLeft}
+          className="pdf-button"
+          style={styles.pdfNavigator("left")}
+          icon={leftNavigatorDisabled ? faHome : faChevronCircleLeft}
           onClick={() =>
             leftNavigatorDisabled
-              ? null
+              ? window.location.href = "/"
               : setPageNumber(japaneseReading ? pageNumber + 1 : pageNumber - 1)
           }
         />
@@ -96,14 +99,12 @@ function Reader(props) {
           />
         </Document>
         <FontAwesomeIcon
-          className={classNames("pdf-button", {
-            disabled: rightNavigatorDisabled
-          })}
-          style={styles.pdfNavigator("right", rightNavigatorDisabled)}
-          icon={faChevronCircleRight}
+          className="pdf-button"
+          style={styles.pdfNavigator("right")}
+          icon={rightNavigatorDisabled ? faHome : faChevronCircleRight}
           onClick={() =>
             rightNavigatorDisabled
-              ? null
+              ? window.location.href = "/"
               : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1)
           }
         />
@@ -148,9 +149,9 @@ function getStyles() {
       gridRowEnd: 2,
       justifySelf: "center"
     }),
-    pdfNavigator: (position, disabled) => ({
+    pdfNavigator: (position) => ({
       position: "relative",
-      opacity: disabled ? "0" : "0.3",
+      opacity: 0.3,
       zIndex: 1,
       height: "4em",
       width: "4em",

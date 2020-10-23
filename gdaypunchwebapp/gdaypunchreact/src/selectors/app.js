@@ -19,6 +19,11 @@ export const selectLoginError = createSelector(
   ({ loginError }) => loginError
 );
 
+export const selectLoginCheckFinished = createSelector(
+  selectDomain,
+  ({ loginCheckFinished }) => loginCheckFinished
+);
+
 export const selectRegistrationError = createSelector(
   selectDomain,
   ({ registrationError }) => registrationError

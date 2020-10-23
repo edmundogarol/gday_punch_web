@@ -27,6 +27,7 @@ const INITIAL_STATE = {
     roles: []
   },
   loginView: false,
+  loginCheckFinished: false,
   loginError: undefined,
   registrationError: undefined,
   pendingLogin: {},
@@ -91,7 +92,8 @@ const appReducer = (state = INITIAL_STATE, action) => {
         registrationError: undefined,
         suggestRegistration: undefined,
         loginView: false,
-        user: action.payload.user
+        user: action.payload.user,
+        loginCheckFinished: true
       };
     default:
       return state;

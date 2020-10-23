@@ -1,41 +1,61 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-import classNames from "classnames";
+import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { getCoverImage } from "utils/utils";
 
 function MangaTile(props) {
-  const { clickNotAllowedCallback, loggedIn, likeManga, manga } = props;
-  const { id, cover, title } = manga;
+  const { loggedIn, manga, likeManga, openRegister, suggestRegister } = props;
   const styles = getStyles();
 
+  function handleMangaClick(destination, clickType) {
+    const clickTypeMessages = {
+      manga: "Info: Sign up or Log in to read this manga!",
+      like: "Info: Sign up or Log in to like this manga!"
+    };
+
+    if (clickType === "manga") {
+      if (!loggedIn) {
+        window.location.href = "/#top";
+        openRegister();
+        suggestRegister(clickTypeMessages[clickType]);
+      } else {
+        // window.location.href = destination;
+        props.history.push(destination);
+      }
+    } else if (clickType === "like") {
+      if (!loggedIn) {
+        window.location.href = "/#top";
+        openRegister();
+        suggestRegister(clickTypeMessages[clickType]);
+      } else if (!manga.user_likes) {
+        likeManga(manga.id);
+      } else {
+        // unlikeManga(manga[1].id);
+      }
+    }
+  }
+
   return (
-    <div>
-      <Link to={`/manga/${id}`} style={styles.removeLinkStyle}>
-        <img src={getCoverImage(cover)} style={styles.tile} />
-      </Link>
+    <div className="manga-tile">
+      <a
+        onClick={() => handleMangaClick(`/manga/${manga.id}`, "manga")}
+        style={styles.removeLinkStyle}
+      >
+        <img src={getCoverImage(manga.cover)} style={styles.tile} />
+      </a>
       <div className="pdf-details">
-        <Link to={`/manga/${id}`} style={styles.removeLinkStyle}>
-          <h2 style={styles.mangaTitle}>{title}</h2>
-          <h4 style={styles.mangaArtist}>by Edmundo (Yungy) Garol</h4>
-        </Link>
         <a
-          onClick={() => {
-            if (!loggedIn) {
-              window.location.href = "/#top";
-              openRegister();
-              suggestRegister("Info: Sign up or Log in to like this manga!");
-            } else if (!manga.user_likes) {
-              likeManga(manga.id);
-            } else {
-              // unlikeManga(manga[1].id);
-            }
-          }}
+          onClick={() => handleMangaClick(`/manga/${manga.id}`, "manga")}
+          style={styles.removeLinkStyle}
         >
+          <h2 style={styles.mangaTitle}>{manga.title}</h2>
+          <h4 style={styles.mangaArtist}>by Edmundo (Yungy) Garol</h4>
+        </a>
+        <a onClick={() => handleMangaClick(undefined, "like")}>
           <FontAwesomeIcon
             icon={faHeart}
             style={manga && manga.user_likes ? { color: "red" } : null}
@@ -79,4 +99,4 @@ const mapStateToProps = createStructuredSelector({});
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(MangaTile);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MangaTile));

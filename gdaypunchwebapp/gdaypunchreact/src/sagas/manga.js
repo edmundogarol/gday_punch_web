@@ -38,20 +38,12 @@ export function* getFeaturedManga() {
 }
 
 export function* getMangaCollection(mangaIds) {
-  const availableIds = yield select(selectAllMangaIds);
-  const filteredIds = mangaIds.filter(id => {
-    return availableIds.indexOf(id) < 0
-  });
-
-  const collection = yield all(filteredIds.map((manga) => call(getManga, manga)));
+  const collection = yield all(mangaIds.map((manga) => call(getManga, manga)));
   return collection;
 }
 
 export function* getManga(id) {
   const mangaId = typeof id !== "number" ? id?.payload?.mangaId : id;
-  const availableIds = yield select(selectAllMangaIds);
-
-  if(availableIds.includes(parseInt(mangaId, 10))) return yield select(selectManga(mangaId))
 
   const response = yield call(api, `manga/${mangaId}/`, {
     method: "GET"

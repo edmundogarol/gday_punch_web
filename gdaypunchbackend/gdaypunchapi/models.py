@@ -103,7 +103,7 @@ class Manga(models.Model):
     @property
     def user_likes(self):
         user = User.objects.get(email=get_current_user())
-        liked = Like.objects.all().filter(user=user).count()
+        liked = Like.objects.all().filter(user=user, manga=self.id).count()
         if liked > 0:
             return True
         else:

@@ -15,7 +15,7 @@ import appSaga from "sagas/app";
 import mangaSaga from "sagas/manga";
 import adminSaga from "sagas/admin";
 import { doCheckLogin } from "actions/user";
-import { selectUser } from "selectors/app";
+import { selectUser, selectLoginCheckFinished } from "selectors/app";
 import Footer from "components/footer";
 import Navigation from "components/navigation";
 
@@ -41,7 +41,7 @@ const store = createStore(
 sagaMiddleware.run(rootSaga);
 
 function Root(props) {
-  const { user } = props;
+  const { user, loginCheckFinished } = props;
 
   useEffect(() => {
     props.checkLogin();
@@ -71,7 +71,11 @@ function Root(props) {
           <Navigation />
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route exact path="/manga/:id" component={Reader} />
+            {loginCheckFinished && !user.logged_in ? (
+              <Redirect to="/" />
+            ) : (
+              <Route exact path="/manga/:id" component={Reader} />
+            )}
             {user.is_staff ? (
               <Switch>
                 <Route exact path="/admin" component={Admin} />
@@ -90,7 +94,8 @@ function Root(props) {
 }
 
 const mapStateToProps = createStructuredSelector({
-  user: selectUser
+  user: selectUser,
+  loginCheckFinished: selectLoginCheckFinished
 });
 
 const mapDispatchToProps = {

@@ -357,14 +357,33 @@ nav {
 
     &:hover {
       cursor: pointer;
-      width: 1.3em;
-      height: 1.3em;
+      transition-duration: 0.3s;
+      box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.5);
+      -webkit-transform: scale(1.02);
+      transform: scale(1.02);
     }
   }
 
   h2,
   h4 {
     margin: unset;
+  }
+}
+
+.manga-tile {
+  a {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  img {
+    &:hover {
+      transition-duration: 0.3s;
+      box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.5);
+      -webkit-transform: scale(1.1);
+      transform: scale(1.05);
+    }
   }
 }
 
