@@ -77,7 +77,7 @@ function Reader(props) {
           icon={leftNavigatorDisabled ? homeButton : faChevronCircleLeft}
           onClick={() =>
             leftNavigatorDisabled
-              ? window.location.href = "/"
+              ? (window.location.href = "/")
               : setPageNumber(japaneseReading ? pageNumber + 1 : pageNumber - 1)
           }
         />
@@ -106,7 +106,7 @@ function Reader(props) {
           icon={rightNavigatorDisabled ? homeButton : faChevronCircleRight}
           onClick={() =>
             rightNavigatorDisabled
-              ? window.location.href = "/"
+              ? (window.location.href = "/")
               : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1)
           }
         />
@@ -123,19 +123,31 @@ function Reader(props) {
           onClick={() => (higerDisabled ? null : setSizeLevel(sizeLevel + 1))}
         />
       </div>
-      {false && <div className="comments-section">
-        <h2>Comments</h2>
-        <div className="comments-container">
-          <div className="comment">
-            <div className="author">Rando User</div>
-            <div className="content">Sample comment about this manga. Woohoo!</div>
+
+      <div className="modal">
+        <div className="title">Confirm</div>
+        <div className="prompt">Update account username to comment:</div>
+        <input type="textfield" />
+        <button className="effect-fade">Update</button>
+      </div>
+
+      {true && (
+        <div className="comments-section">
+          <h2>Comments</h2>
+          <div className="comments-container">
+            <div className="comment">
+              <div className="author">Rando User</div>
+              <div className="content">
+                Sample comment about this manga. Woohoo!
+              </div>
+            </div>
+          </div>
+          <div className="comment-creator">
+            <input type="textarea" />
+            <button className="effect-fade">Submit</button>
           </div>
         </div>
-        <div className="comment-creator">
-          <input type="textarea" />
-          <button>Submit</button>
-        </div>
-      </div>}
+      )}
     </div>
   );
 }
