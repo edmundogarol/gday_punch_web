@@ -34,7 +34,7 @@ function MangaTile(props) {
       } else if (!manga.user_likes) {
         likeManga(manga.id);
       } else {
-        // unlikeManga(manga[1].id);
+        // Implement Unlike Manga
       }
     }
   }
@@ -99,4 +99,7 @@ const mapStateToProps = createStructuredSelector({});
 
 const mapDispatchToProps = {};
 
-export default connect(mapStateToProps, mapDispatchToProps)(withRouter(MangaTile));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withRouter(MangaTile));
