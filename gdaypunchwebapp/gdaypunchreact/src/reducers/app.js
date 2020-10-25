@@ -15,6 +15,7 @@ import {
 
 const INITIAL_STATE = {
   user: {
+    id: undefined,
     first_name: undefined,
     last_name: undefined,
     username: undefined,
@@ -92,7 +93,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         registrationError: undefined,
         suggestRegistration: undefined,
         loginView: false,
-        user: action.payload.user,
+        user: {...state.user, ...action.payload.user},
         loginCheckFinished: true
       };
     default:

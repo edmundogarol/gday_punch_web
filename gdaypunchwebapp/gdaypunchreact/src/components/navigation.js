@@ -37,7 +37,7 @@ class Navigation extends React.Component {
             </NavLink>
           </div>
           <div className="nav-links">
-            <p>{user.email}</p>
+            <p>{user.username && user.username.length ? user.username : user.email}</p>
             {user.is_staff && <Link to="/admin">{"Admin"}</Link>}
             {!loggedIn && (
               <a

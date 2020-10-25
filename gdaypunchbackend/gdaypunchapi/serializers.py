@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 from rest_framework import serializers
 from django.contrib.auth import login
 from rest_framework.response import Response
-from .models import User, Manga, Like, Comment
+from .models import User, Manga, Like, Comment, CommentLike
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,7 +25,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "email", "bio", "location",
+        fields = ("first_name", "last_name", "username", "email", "bio", "location",
                   "birth_date", "roles", "password", "id", "is_staff")
         extra_kwargs = {'password': {'write_only': True}}
 
@@ -48,7 +48,13 @@ class LikeSerializer(serializers.ModelSerializer):
         fields = ("manga", "user")
 
 
+class CommentLikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CommentLike
+        fields = ("comment", "user")
+
+
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ("content", "manga", "user")
+        fields = ("id", "content", "manga", "user", "user_username", "likes", "user_likes")

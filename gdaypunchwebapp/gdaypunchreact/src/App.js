@@ -23,8 +23,9 @@ import Home from "pages/Home";
 import Admin from "pages/Admin";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
-import "./App.scss";
 
+import 'antd/dist/antd.css';
+import "./App.scss";
 /**
  * Set up and run app sagas listening for events
  */

@@ -49,7 +49,6 @@ class Login extends React.Component {
   handleRegisterSubmit() {
     const { email, password } = this.state;
     if (this.state.subscribeAgree) {
-      console.log("this.state.subscribeAgree", this.state.subscribeAgree);
       this.props.register({
         email,
         password

@@ -102,7 +102,7 @@ class Manga(models.Model):
 
     @property
     def comments(self):
-        return Comment.objects.all().filter(manga=self.id)
+        return Comment.objects.all().filter(manga=self.id).count()
 
     @property
     def user_likes(self):
@@ -122,6 +122,29 @@ class Like(models.Model):
 class Comment(models.Model):
     content = models.TextField(max_length=500, blank=False)
     manga = models.ForeignKey(Manga,  on_delete=models.PROTECT)
+    user = models.ForeignKey(User,  on_delete=models.PROTECT)
+
+    @property
+    def user_username(self):
+        user = User.objects.get(email=self.user)
+        return user.username
+
+    @property
+    def likes(self):
+        return CommentLike.objects.all().filter(comment=self.id).count()
+
+    @property
+    def user_likes(self):
+        user = User.objects.get(email=get_current_user())
+        liked = CommentLike.objects.all().filter(user=user, comment=self.id).count()
+        if liked > 0:
+            return True
+        else:
+            return False
+
+
+class CommentLike(models.Model):
+    comment = models.ForeignKey(Comment,  on_delete=models.PROTECT)
     user = models.ForeignKey(User,  on_delete=models.PROTECT)
 
 

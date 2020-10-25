@@ -4,6 +4,7 @@ import {
   DO_LOGOUT,
   DO_REGISTRATION,
   DO_CHECK_LOGIN,
+  UPDATE_USER_DETAILS,
   doCheckLogin,
   doLogin,
   updateUser,
@@ -11,11 +12,14 @@ import {
   updateLoginError,
   updateRegistrationError
 } from "actions/user";
+import { doGetFeaturedManga } from "actions/manga";
 import {
-  doGetFeaturedManga,
-} from "actions/manga";
-import { selectPendingRegistration, selectPendingLogin } from "selectors/app";
+  selectPendingRegistration,
+  selectPendingLogin,
+  selectUser
+} from "selectors/app";
 import { api } from "utils/api";
+import { message } from "antd";
 
 export function* register() {
   const pendingRegistration = yield select(selectPendingRegistration);
@@ -30,12 +34,36 @@ export function* register() {
     const user = {
       logged_in: data.logged_in,
       ...data.user
-    }
+    };
     yield put(updateUser(user));
     yield put(doLogin(pendingRegistration));
     yield put(registrationSuccess());
   } else {
     console.log("Registration error", JSON.stringify(response));
+    yield put(updateRegistrationError(response.data));
+  }
+}
+
+export function* patchUser(action) {
+  const currentUser = yield select(selectUser);
+
+  const response = yield call(api, `user/${currentUser.id}/`, {
+    method: "PATCH",
+    body: {
+      username: action.payload.user.username
+    } 
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    const user = {
+      ...data
+    }
+
+    yield put(updateUser(user));
+    message.success(`Successfully updated username to: ${user.username}`)
+  } else {
+    console.log("Update user details error", JSON.stringify(response));
     yield put(updateRegistrationError(response.data))
   }
 }
@@ -50,11 +78,11 @@ export function* checkLogin() {
     const user = {
       logged_in: data.logged_in,
       ...data.user
-    }
+    };
     yield put(updateUser(user));
   } else {
     console.log("Login check error", JSON.stringify(response));
-    yield put(updateLoginError(response.data))
+    yield put(updateLoginError(response.data));
   }
 }
 
@@ -75,12 +103,12 @@ export function* login() {
     const user = {
       logged_in: data.logged_in,
       ...data.user
-    }
+    };
     yield put(updateUser(user));
     yield put(doGetFeaturedManga());
   } else {
     console.log("Login error", JSON.stringify(response));
-    yield put(updateLoginError(response.data))
+    yield put(updateLoginError(response.data));
   }
 }
 
@@ -101,6 +129,7 @@ export function* logout() {
 
 export default function* appSaga() {
   yield all([
+    takeLatest(UPDATE_USER_DETAILS, patchUser),
     takeLatest(DO_LOGIN, login),
     takeLatest(DO_LOGOUT, logout),
     takeLatest(DO_REGISTRATION, register),

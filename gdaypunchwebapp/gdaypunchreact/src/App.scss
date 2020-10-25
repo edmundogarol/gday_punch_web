@@ -199,10 +199,15 @@ nav {
     align-items: center;
     justify-content: space-between;
 
+    label {
+      font-size: 0.8em;
+    }
+
     input {
       width: 15em;
       height: 3em;
       border-radius: 5px;
+      font-size: 0.8em;
     }
   }
 
@@ -306,9 +311,16 @@ nav {
 }
 
 .pdf-reader {
-  font-style: italic;
   color: #272727;
   padding-top: 10vh;
+
+  .pdf-details {
+    align-items: center;
+
+    h2 {
+      margin-right: 10pt;
+    }
+  }
 }
 
 .reader-only {
@@ -391,10 +403,6 @@ nav {
   padding: 50px;
   padding-top: unset;
 
-  h2 {
-    font-style: initial;
-  }
-
   .comments-container {
     padding-bottom: 15pt;
 
@@ -404,6 +412,7 @@ nav {
       display: flex;
 
       .author {
+        font-style: italic;
         font-weight: 600;
         margin-right: 10pt;
         color: #7b7b7b;
@@ -411,8 +420,8 @@ nav {
       }
 
       .content {
-        font-style: initial;
         font-size: 11pt;
+        margin-right: 10px;
       }
     }
   }
@@ -485,6 +494,7 @@ nav {
   margin-top: 30pt;
 
   h2 {
+    color: #d2d2d2;
     font-size: 1em;
   }
 

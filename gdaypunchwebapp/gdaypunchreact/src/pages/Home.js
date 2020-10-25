@@ -106,40 +106,6 @@ class Home extends React.Component {
             />
           </form>
         </div>
-
-        {/* <div className="pdf-reader">
-          <div className="pdf-details">
-            <div>
-              <h2>Escape</h2>
-              <h4>by Edmundo Garol</h4>
-            </div>
-            <a
-              onClick={() => {
-                if (!loggedIn) {
-                  window.location.href = "/#top";
-                  openRegister();
-                  suggestRegister(
-                    "Info: Sign up or Log in to like this manga!"
-                  );
-                } else if (!userManga[1].user_likes) {
-                  likeManga(userManga[1].id);
-                } else {
-                  // unlikeManga(userManga[1].id);
-                }
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faHeart}
-                style={
-                  !isEmpty(userManga) && userManga[1].user_likes
-                    ? { color: "red" }
-                    : null
-                }
-              />
-              {`(${!isEmpty(userManga) ? userManga[1].likes : 0})`}
-            </a>
-          </div>
-        </div> */}
       </div>
     );
   }

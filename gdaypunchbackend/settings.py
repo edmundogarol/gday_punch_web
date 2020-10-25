@@ -94,6 +94,19 @@ INSTALLED_APPS = [
 AUTH_USER_MODEL = 'gdaypunchapi.User'
 
 REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'post_user': '5/minute',
+        'post_anon': '3/minute',
+        'get_anon': '100/minute',
+        'post_user': '5/minute',
+        'get_user': '150/minute',
+        'anon': '100/day',
+        'user': '1000/day',
+    },
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': (

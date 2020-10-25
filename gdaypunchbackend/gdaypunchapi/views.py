@@ -1,4 +1,4 @@
-from rest_framework import viewsets, permissions, exceptions, authentication
+from rest_framework import viewsets, permissions, exceptions, authentication, throttling
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -8,18 +8,37 @@ from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django_currentuser.middleware import (get_current_user, get_current_authenticated_user)
 from django_currentuser.db.models import CurrentUserField
 
-from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer, CommentSerializer
-from .models import User, Manga, Like, Comment
+from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer, CommentSerializer, CommentLikeSerializer
+from .models import User, Manga, Like, Comment, CommentLike
+
+class PostUserRateThrottle(throttling.UserRateThrottle):
+    scope = 'post_user'
+    def allow_request(self, request, view):
+        if request.method == "GET":
+            return True
+        return super().allow_request(request, view)
 
 
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.none()
-    serializer_class = UserSerializer
-    # permission_classes = [permissions.IsAuthenticated]
+class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def retrieve(self, request, pk=None):
+        queryset = User.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        queryset = User.objects.all()
+        user = queryset.get(pk=kwargs.get('pk'))
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -95,10 +114,34 @@ class LikeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentLikeViewSet(viewsets.ModelViewSet):
+    queryset = CommentLike.objects.none()
+    serializer_class = CommentLikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CommentViewSet(viewsets.ModelViewSet):    
+    throttle_classes = [PostUserRateThrottle]
     queryset = Comment.objects.none()
     serializer_class = CommentSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+    def retrieve(self, request, pk=None):
+        queryset = Comment.objects.all()
+        comment = get_object_or_404(queryset, id=pk)
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
+
+
+class MangaCommentsViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def retrieve(self, request, pk=None):
+        queryset = Comment.objects.all()
+        mangaComments = get_list_or_404(queryset, manga=pk)
+        serializer = CommentSerializer(mangaComments, many=True)
+        return Response(serializer.data)
 
 
 class MangaViewSet(viewsets.ModelViewSet):
