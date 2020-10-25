@@ -430,7 +430,8 @@ nav {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    width: 450px;
+    width: 100%;
+    max-width: 450px;
     height: 88px;
     justify-content: space-between;
 
