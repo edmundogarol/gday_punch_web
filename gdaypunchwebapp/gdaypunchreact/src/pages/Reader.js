@@ -231,7 +231,7 @@ function Reader(props) {
               className="effect-fade"
               onClick={() => handleCommentSubmit()}
             >
-              Submit
+              Comment
             </button>
           </div>
         </div>
