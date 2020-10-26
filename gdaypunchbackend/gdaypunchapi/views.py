@@ -24,7 +24,23 @@ class PostUserRateThrottle(throttling.UserRateThrottle):
 
 
 class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.AllowAny]
+
+    def create(self, validated_data):
+        user = User.objects.create_user(
+            email=validated_data.data['email'],
+            password=validated_data.data['password'],
+        )
+
+        user.set_password(validated_data.data['password'])
+        user.save()
+
+        content = {
+            'user': str(user),
+            'logged_in': True,  # None
+        }
+
+        return Response(content)
 
     def retrieve(self, request, pk=None):
         queryset = User.objects.all()
