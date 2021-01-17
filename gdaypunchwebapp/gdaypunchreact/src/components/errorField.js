@@ -20,7 +20,7 @@ export const ErrorField = styled.div`
     padding: 1em;
     padding-left: 2em;
     padding-right: 2em;
-    width: 100%;
+    width: max-content;
     height: max-content;
     flex-wrap: wrap;
   }

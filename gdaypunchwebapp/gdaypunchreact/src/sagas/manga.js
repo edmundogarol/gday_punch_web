@@ -117,6 +117,7 @@ export function* getComments(action) {
     yield put(updateComments(data));
   } else {
     console.log("Manga Comments fetch error", JSON.stringify(response));
+    yield put(updateComments([]));
   }
 }
 

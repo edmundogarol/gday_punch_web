@@ -3,6 +3,7 @@ import { mangaReducer } from "./manga";
 import { adminReducer } from "./admin";
 import {
   DO_LOGIN,
+  LOGOUT_SUCESS,
   UPDATE_LOGIN_ERROR,
   UPDATE_REGISTRATION_ERROR,
   DO_REGISTRATION,
@@ -94,6 +95,16 @@ const appReducer = (state = INITIAL_STATE, action) => {
         suggestRegistration: undefined,
         loginView: false,
         user: {...state.user, ...action.payload.user},
+        loginCheckFinished: true
+      };
+    case LOGOUT_SUCESS:
+      return {
+        ...state,
+        loginError: undefined,
+        registrationError: undefined,
+        suggestRegistration: undefined,
+        loginView: false,
+        user: INITIAL_STATE.user,
         loginCheckFinished: true
       };
     default:

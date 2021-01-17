@@ -2,6 +2,7 @@ export const DO_LOGIN = "user/DO_LOGIN";
 export const DO_LOGOUT = "user/DO_LOGOUT";
 export const DO_CHECK_LOGIN = "user/DO_CHECK_LOGIN";
 export const DO_REGISTRATION = "user/DO_REGISTRATION";
+export const LOGOUT_SUCESS = "user/LOGOUT_SUCESS";
 export const CLOSE_REGISTRATION = "user/CLOSE_REGISTRATION";
 export const OPEN_REGISTRATION = "user/OPEN_REGISTRATION";
 export const REGISTRATION_SUCCESS = "user/REGISTRATION_SUCCESS";
@@ -68,6 +69,10 @@ export const doLogin = ({ email, password }) => ({
 
 export const doLogout = () => ({
   type: DO_LOGOUT
+});
+
+export const logoutSuccess = () => ({
+  type: LOGOUT_SUCESS
 });
 
 export const doRegistration = ({ email, password }) => ({

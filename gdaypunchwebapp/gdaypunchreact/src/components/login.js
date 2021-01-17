@@ -48,9 +48,14 @@ class Login extends React.Component {
 
   handleRegisterSubmit() {
     const { email, password } = this.state;
+
+    // Remove space from end of email
+    const emailSanitised =
+      email.charAt(email.length - 1) === " " ? email.slice(0, -1) : email;
+
     if (this.state.subscribeAgree) {
       this.props.register({
-        email,
+        email: emailSanitised,
         password
       });
       this.setState({ subscribeOpen: false });
@@ -138,7 +143,11 @@ class Login extends React.Component {
                 type="checkbox"
                 onChange={() => this.setState({ subscribeAgree: true })}
               />
-              <p>{"I agree to sign up and subscribe to read and receive more, cool manga content!"}</p>
+              <p>
+                {
+                  "I agree to sign up and subscribe to read and receive more, cool manga content!"
+                }
+              </p>
             </div>
           </ConditionsField>
         )}

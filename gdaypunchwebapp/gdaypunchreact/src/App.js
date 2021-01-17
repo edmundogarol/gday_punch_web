@@ -48,8 +48,11 @@ function Root(props) {
     props.checkLogin();
   }, []);
 
-  const gdayPunchIssue =
+  const gdayPunchIssue1 =
     "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf";
+
+  const gdayPunchIssue4 =
+    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/gpmm-4-digital-compressed-s.pdf";
 
   const orientation = "japanese";
 
@@ -58,10 +61,22 @@ function Root(props) {
       <Switch>
         <Route
           exact
-          path="/gpmm/:id"
+          path="/gpmm/1"
           component={() => (
             <Reader
-              file={gdayPunchIssue}
+              file={gdayPunchIssue1}
+              orientation={"english"}
+              pageCount={104}
+              readerOnly
+            />
+          )}
+        />
+        <Route
+          exact
+          path="/gpmm/4"
+          component={() => (
+            <Reader
+              file={gdayPunchIssue4}
               orientation={"english"}
               pageCount={104}
               readerOnly

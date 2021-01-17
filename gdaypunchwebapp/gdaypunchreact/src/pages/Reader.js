@@ -38,6 +38,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 function Reader(props) {
   const {
+    file,
     orientation = "japanese",
     readerOnly,
     manga,
@@ -58,7 +59,7 @@ function Reader(props) {
   const [submittingUsername, setSubmittingUsername] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
   const { id } = useParams();
-  const mangaId = id;
+  const mangaId = parseInt(id);
   const styles = getStyles();
 
   let pageCount;
@@ -114,9 +115,12 @@ function Reader(props) {
   }, [newUsername, submittingUsername]);
 
   useEffect(() => {
-    const { setReadingManga, manga } = props;
+    if (file) return;
 
-    if (manga === undefined) {
+    const { setReadingManga, manga } = props;
+    const newManga = manga?.id !== mangaId;
+
+    if (manga === undefined || newManga) {
       setReadingManga(mangaId);
       getManga(mangaId);
       getComments(mangaId);
@@ -144,7 +148,7 @@ function Reader(props) {
           style={{
             width: `${readerSizeLevels[sizeLevel].container}%`
           }}
-          file={manga ? manga.pdf : null}
+          file={file ? file : manga?.pdf}
           className="pdf-container"
           options={{
             rangeChunkSize: 2000000

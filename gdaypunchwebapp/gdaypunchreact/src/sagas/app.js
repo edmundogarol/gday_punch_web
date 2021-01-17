@@ -7,6 +7,7 @@ import {
   UPDATE_USER_DETAILS,
   doCheckLogin,
   doLogin,
+  logoutSuccess,
   updateUser,
   registrationSuccess,
   updateLoginError,
@@ -119,7 +120,7 @@ export function* logout() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateUser(data));
+    yield put(logoutSuccess());
     yield put(doCheckLogin());
     yield put(doGetFeaturedManga());
   } else {

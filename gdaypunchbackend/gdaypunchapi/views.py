@@ -1,4 +1,5 @@
 from rest_framework import viewsets, permissions, exceptions, authentication, throttling
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
@@ -11,6 +12,7 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django_currentuser.middleware import (get_current_user, get_current_authenticated_user)
 from django_currentuser.db.models import CurrentUserField
+from django.db.utils import IntegrityError
 
 from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer, CommentSerializer, CommentLikeSerializer
 from .models import User, Manga, Like, Comment, CommentLike
@@ -27,10 +29,18 @@ class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
     permission_classes = [permissions.AllowAny]
 
     def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data.data['email'],
-            password=validated_data.data['password'],
-        )
+        user = None
+
+        try:
+            user = User.objects.create_user(
+                email=validated_data.data['email'],
+                password=validated_data.data['password'],
+            )
+        except IntegrityError:
+            content = {
+                'error': 'Duplicate email. User already exists.'
+            }
+            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         user.set_password(validated_data.data['password'])
         user.save()
