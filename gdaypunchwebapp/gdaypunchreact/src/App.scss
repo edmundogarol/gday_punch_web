@@ -323,6 +323,40 @@ nav {
       margin-right: 10pt;
     }
   }
+
+  .reader-container {
+    .left-overlay-clicker-top {
+      position: absolute;
+      left: 0;
+      width: 45%;
+      height: 35%;
+      top: 0;
+    }
+
+    .right-overlay-clicker-top {
+      position: absolute;
+      right: 0;
+      width: 45%;
+      height: 35%;
+      top: 0;
+    }
+
+    .left-overlay-clicker-bottom {
+      position: absolute;
+      left: 0;
+      width: 45%;
+      height: 53%;
+      bottom: 0;
+    }
+
+    .right-overlay-clicker-bottom {
+      position: absolute;
+      right: 0;
+      width: 45%;
+      height: 53%;
+      bottom: 0;
+    }
+  }
 }
 
 .reader-only {

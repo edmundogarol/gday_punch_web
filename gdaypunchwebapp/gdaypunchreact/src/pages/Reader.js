@@ -15,13 +15,13 @@ import {
   doCommentManga,
   doGetComments,
   doLikeComment,
-  doLikeManga
+  doLikeManga,
 } from "actions/manga";
 import { doUpdateUserDetails } from "actions/user";
 import {
   selectLoginViewToggle,
   selectLoggedIn,
-  selectUser
+  selectUser,
 } from "selectors/app";
 import { selectReadingManga, selectComments } from "selectors/manga";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,7 +31,7 @@ import {
   faSearchPlus,
   faSearchMinus,
   faHeart,
-  faHome
+  faHome,
 } from "@fortawesome/free-solid-svg-icons";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -50,7 +50,7 @@ function Reader(props) {
     likeComment,
     likeManga,
     loggedIn,
-    user
+    user,
   } = props;
   const [pageNumber, setPageNumber] = useState(1);
   const [sizeLevel, setSizeLevel] = useState(0);
@@ -77,7 +77,7 @@ function Reader(props) {
   const readerSizeLevels = [
     { container: "60", page: 500 },
     { container: "80", page: 750 },
-    { container: "100", page: 1000 }
+    { container: "100", page: 1000 },
   ];
 
   const updateUsernameConfig = {
@@ -96,7 +96,7 @@ function Reader(props) {
           prefix={<UserOutlined />}
         />
       </>
-    )
+    ),
   };
 
   function handleCommentSubmit() {
@@ -127,31 +127,50 @@ function Reader(props) {
     }
   }, [manga]);
 
+  const leftClick = () =>
+    leftNavigatorDisabled
+      ? (window.location.href = "/")
+      : setPageNumber(japaneseReading ? pageNumber + 1 : pageNumber - 1);
+
+  const rightClick = () =>
+    rightNavigatorDisabled
+      ? (window.location.href = "/")
+      : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1);
+
   return (
     <div
       className={classNames("pdf-reader", {
-        "reader-only": readerOnly
+        "reader-only": readerOnly,
       })}
     >
-      <div style={styles.pdf}>
+      <div className="reader-container" style={styles.pdf}>
+        <div className="left-overlay-clicker-top" onClick={() => leftClick()} />
+        <div
+          className="left-overlay-clicker-bottom"
+          onClick={() => leftClick()}
+        />
+        <div
+          className="right-overlay-clicker-top"
+          onClick={() => rightClick()}
+        />
+        <div
+          className="right-overlay-clicker-bottom"
+          onClick={() => rightClick()}
+        />
         <FontAwesomeIcon
           className="pdf-button"
           style={styles.pdfNavigator("left")}
           icon={leftNavigatorDisabled ? faHome : faChevronCircleLeft}
-          onClick={() =>
-            leftNavigatorDisabled
-              ? (window.location.href = "/")
-              : setPageNumber(japaneseReading ? pageNumber + 1 : pageNumber - 1)
-          }
+          onClick={() => leftClick()}
         />
         <Document
           style={{
-            width: `${readerSizeLevels[sizeLevel].container}%`
+            width: `${readerSizeLevels[sizeLevel].container}%`,
           }}
           file={file ? file : manga?.pdf}
           className="pdf-container"
           options={{
-            rangeChunkSize: 2000000
+            rangeChunkSize: 2000000,
           }}
         >
           <Page
@@ -167,11 +186,7 @@ function Reader(props) {
           className="pdf-button"
           style={styles.pdfNavigator("right")}
           icon={rightNavigatorDisabled ? faHome : faChevronCircleRight}
-          onClick={() =>
-            rightNavigatorDisabled
-              ? (window.location.href = "/")
-              : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1)
-          }
+          onClick={() => rightClick()}
         />
         <FontAwesomeIcon
           className="pdf-button"
@@ -255,7 +270,7 @@ function getStyles() {
       position: "relative",
       paddingBottom: 50,
       gridTemplateColumns: "50px auto 50px",
-      gridTemplateRows: "auto 100px"
+      gridTemplateRows: "auto 100px",
     },
     pdfMagnifier: (position, disabled) => ({
       bottom: 0,
@@ -267,7 +282,7 @@ function getStyles() {
       gridColumnEnd: 2,
       gridRowStart: 2,
       gridRowEnd: 2,
-      justifySelf: "center"
+      justifySelf: "center",
     }),
     pdfNavigator: (position) => ({
       position: "relative",
@@ -279,8 +294,8 @@ function getStyles() {
       gridColumnEnd: position === "left" ? 0 : 3,
       gridRowStart: 1,
       gridRowEnd: 1,
-      justifySelf: "center"
-    })
+      justifySelf: "center",
+    }),
   };
 }
 
@@ -300,7 +315,7 @@ Reader.propTypes = {
   openRegister: PropTypes.func.isRequired,
   suggestRegister: PropTypes.func.isRequired,
   setReadingManga: PropTypes.func.isRequired,
-  getManga: PropTypes.func.isRequired
+  getManga: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
@@ -308,7 +323,7 @@ const mapStateToProps = createStructuredSelector({
   loggedIn: selectLoggedIn,
   loginView: selectLoginViewToggle,
   manga: selectReadingManga,
-  comments: selectComments
+  comments: selectComments,
 });
 
 const mapDispatchToProps = {
@@ -320,7 +335,7 @@ const mapDispatchToProps = {
   commentManga: doCommentManga,
   getComments: doGetComments,
   likeComment: doLikeComment,
-  likeManga: doLikeManga
+  likeManga: doLikeManga,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Reader);

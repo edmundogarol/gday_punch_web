@@ -23,6 +23,7 @@ export const InfoField = styled.div`
     width: 100%;
     height: max-content;
     flex-wrap: wrap;
+    min-width: max-content;
   }
 
   label {
