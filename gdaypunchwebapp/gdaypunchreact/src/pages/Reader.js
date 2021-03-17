@@ -144,18 +144,21 @@ function Reader(props) {
       })}
     >
       <div className="reader-container" style={styles.pdf}>
-        <div className="left-overlay-clicker-top" onClick={() => leftClick()} />
+        <div
+          className="left-overlay-clicker-top"
+          onClick={() => (leftNavigatorDisabled ? null : leftClick())}
+        />
         <div
           className="left-overlay-clicker-bottom"
-          onClick={() => leftClick()}
+          onClick={() => (leftNavigatorDisabled ? null : leftClick())}
         />
         <div
           className="right-overlay-clicker-top"
-          onClick={() => rightClick()}
+          onClick={() => (rightNavigatorDisabled ? null : rightClick())}
         />
         <div
           className="right-overlay-clicker-bottom"
-          onClick={() => rightClick()}
+          onClick={() => (rightNavigatorDisabled ? null : rightClick())}
         />
         <FontAwesomeIcon
           className="pdf-button"

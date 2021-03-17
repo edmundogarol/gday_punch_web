@@ -331,6 +331,7 @@ nav {
       width: 45%;
       height: 35%;
       top: 0;
+      z-index: 2;
     }
 
     .right-overlay-clicker-top {
@@ -339,6 +340,7 @@ nav {
       width: 45%;
       height: 35%;
       top: 0;
+      z-index: 2;
     }
 
     .left-overlay-clicker-bottom {
@@ -347,6 +349,7 @@ nav {
       width: 45%;
       height: 53%;
       bottom: 0;
+      z-index: 2;
     }
 
     .right-overlay-clicker-bottom {
@@ -355,6 +358,7 @@ nav {
       width: 45%;
       height: 53%;
       bottom: 0;
+      z-index: 2;
     }
   }
 }
