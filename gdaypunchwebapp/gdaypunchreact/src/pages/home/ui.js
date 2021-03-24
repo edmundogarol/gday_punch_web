@@ -1,22 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
 import { isEmpty } from "lodash";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeart } from "@fortawesome/free-solid-svg-icons";
-
-import { openRegistration, doSuggestRegister } from "actions/user";
-import { doGetFeaturedManga, doLikeManga } from "actions/manga";
-
-import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
-import { selectFeaturedManga } from "selectors/manga";
 
 import Header from "components/header";
 import Login from "components/login";
 import MangaTile from "components/mangaTile";
 
-class Home extends React.Component {
+import { App, TitleImage } from "./styles";
+
+class Ui extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -32,12 +24,12 @@ class Home extends React.Component {
       openRegister,
       suggestRegister,
       featuredManga,
-      likeManga
+      likeManga,
     } = this.props;
     const styles = getStyles();
 
     return (
-      <div id="top" className="App">
+      <App id="top" className="App">
         <div className="App-header-container app-temp-background">
           <Header loginView={loginView} />
           <Login />
@@ -59,7 +51,11 @@ class Home extends React.Component {
         </div>
         <div style={styles.donateSection}>
           <div style={styles.artistProfile}>
-            <img src={"https://gdaypunch-static.s3-us-west-2.amazonaws.com/yungy.jpg"} style={styles.tile} />
+            <TitleImage
+              src={
+                "https://gdaypunch-static.s3-us-west-2.amazonaws.com/yungy.jpg"
+              }
+            />
           </div>
           <div style={styles.donateContainer}>
             <h3 style={styles.donateHeader}>
@@ -106,24 +102,20 @@ class Home extends React.Component {
             />
           </form>
         </div>
-      </div>
+      </App>
     );
   }
 }
 
 function getStyles() {
   return {
-    tile: {
-      height: "20vh",
-      borderRadius: "100%"
-    },
     donate: {
-      height: "8vh"
+      height: "8vh",
     },
     artistProfile: {
       display: "flex",
       justifyContent: "center",
-      alignItems: "center"
+      alignItems: "center",
     },
     donateSection: {
       display: "flex",
@@ -133,7 +125,7 @@ function getStyles() {
       background: "#dcdcdc",
       flexWrap: "wrap",
       paddingTop: "50px",
-      paddingBottom: "50px"
+      paddingBottom: "50px",
     },
     donateContainer: {
       display: "flex",
@@ -141,21 +133,21 @@ function getStyles() {
       justifyContent: "center",
       alignItems: "start",
       marginRight: 50,
-      marginLeft: 50
+      marginLeft: 50,
     },
     donateHeader: {
       fontSize: "1.6em",
       fontStyle: "italic",
       marginTop: "unset",
       color: "dimgrey",
-      marginBottom: "0.3em"
+      marginBottom: "0.3em",
     },
     donateHeaderTag: {
       fontSize: "0.8em",
       fontStyle: "italic",
       marginTop: "unset",
       color: "whitesmoke",
-      marginBottom: "0.3em"
+      marginBottom: "0.3em",
     },
     donateTitle: {
       fontSize: "1.3em",
@@ -163,28 +155,28 @@ function getStyles() {
       marginTop: "unset",
       letterSpacing: 1,
       color: "#1d1d1d",
-      textAlign: "start"
+      textAlign: "start",
     },
     donateSubTitle: {
       fontSize: "0.7em",
       marginTop: "unset",
       marginBottom: "1em",
       textAlign: "start",
-      color: "#1d1d1d"
+      color: "#1d1d1d",
     },
     donateButton: {
       display: "flex",
-      alignItems: "center"
+      alignItems: "center",
     },
     list: {
       display: "flex",
       justifyContent: "center",
-      flexWrap: "wrap"
-    }
+      flexWrap: "wrap",
+    },
   };
 }
 
-Home.propTypes = {
+Ui.propTypes = {
   // Redux Properties
   loggedIn: PropTypes.bool.isRequired,
   loginView: PropTypes.bool.isRequired,
@@ -193,20 +185,7 @@ Home.propTypes = {
   openRegister: PropTypes.func.isRequired,
   suggestRegister: PropTypes.func.isRequired,
   getFeaturedManga: PropTypes.func.isRequired,
-  likeManga: PropTypes.func.isRequired
+  likeManga: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = createStructuredSelector({
-  loggedIn: selectLoggedIn,
-  loginView: selectLoginViewToggle,
-  featuredManga: selectFeaturedManga
-});
-
-const mapDispatchToProps = {
-  openRegister: openRegistration,
-  suggestRegister: doSuggestRegister,
-  getFeaturedManga: doGetFeaturedManga,
-  likeManga: doLikeManga
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Ui;

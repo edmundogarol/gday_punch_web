@@ -1,3 +1,5 @@
+from django.db.utils import IntegrityError
+
 from rest_framework import viewsets, permissions, exceptions, authentication, throttling
 from rest_framework import status
 from rest_framework.response import Response
@@ -5,20 +7,27 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import UpdateModelMixin
 
-from django.contrib.auth import authenticate, get_user_model, login, logout
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
-from rest_framework.authentication import BasicAuthentication, SessionAuthentication
+from rest_framework.authentication import SessionAuthentication
 from django.shortcuts import get_object_or_404, get_list_or_404
-from django_currentuser.middleware import (get_current_user, get_current_authenticated_user)
-from django_currentuser.db.models import CurrentUserField
-from django.db.utils import IntegrityError
 
-from .serializers import UserSerializer, GroupSerializer, MangaSerializer, LikeSerializer, CommentSerializer, CommentLikeSerializer
-from .models import User, Manga, Like, Comment, CommentLike
+from .models import User, Manga, Like, Comment, CommentLike, Prompt
+from .serializers import (
+    UserSerializer,
+    GroupSerializer,
+    MangaSerializer,
+    LikeSerializer,
+    PromptSerializer,
+    CommentSerializer,
+    CommentLikeSerializer,
+)
+
 
 class PostUserRateThrottle(throttling.UserRateThrottle):
-    scope = 'post_user'
+    scope = "post_user"
+
     def allow_request(self, request, view):
         if request.method == "GET":
             return True
@@ -33,21 +42,19 @@ class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
 
         try:
             user = User.objects.create_user(
-                email=validated_data.data['email'],
-                password=validated_data.data['password'],
+                email=validated_data.data["email"],
+                password=validated_data.data["password"],
             )
         except IntegrityError:
-            content = {
-                'error': 'Duplicate email. User already exists.'
-            }
+            content = {"error": "Duplicate email. User already exists."}
             return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        user.set_password(validated_data.data['password'])
+        user.set_password(validated_data.data["password"])
         user.save()
 
         content = {
-            'user': str(user),
-            'logged_in': True,  # None
+            "user": str(user),
+            "logged_in": True,  # None
         }
 
         return Response(content)
@@ -60,7 +67,7 @@ class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         queryset = User.objects.all()
-        user = queryset.get(pk=kwargs.get('pk'))
+        user = queryset.get(pk=kwargs.get("pk"))
         serializer = UserSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -79,7 +86,7 @@ class LogoutView(APIView):
     def get(self, request, format=None):
         logout(request)
         content = {
-            'logged_in': False,
+            "logged_in": False,
         }
         return Response(content)
 
@@ -89,47 +96,46 @@ class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def get(self, request, format=None):
-        if str(self.request.user) != 'AnonymousUser':
+        if str(self.request.user) != "AnonymousUser":
             user = User.objects.get(email=self.request.user)
             serializer = UserSerializer(user)
             content = {
-                'user': serializer.data,
-                'logged_in': True,
+                "user": serializer.data,
+                "logged_in": True,
             }
             return Response(content)
         else:
             content = {
-                'logged_in': False,
+                "logged_in": False,
             }
             return Response(content)
 
     def post(self, request, format=None):
 
-        email = request.data.get('email', None)
-        password = request.data.get('password', None)
+        email = request.data.get("email", None)
+        password = request.data.get("password", None)
 
         if not email or not password:
-            raise exceptions.AuthenticationFailed('No credentials provided.')
+            raise exceptions.AuthenticationFailed("No credentials provided.")
 
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise exceptions.AuthenticationFailed('User does not exist.')
+            raise exceptions.AuthenticationFailed("User does not exist.")
 
         if user is None or not check_password(password, user.password):
-            raise exceptions.AuthenticationFailed(
-                'Invalid username/password.')
+            raise exceptions.AuthenticationFailed("Invalid username/password.")
         else:
             login(request, user)
 
         if not user.is_active:
-            raise exceptions.AuthenticationFailed('User inactive or deleted.')
+            raise exceptions.AuthenticationFailed("User inactive or deleted.")
 
         user = User.objects.get(email=self.request.user)
         serializer = UserSerializer(user)
         content = {
-            'user': serializer.data,
-            'logged_in': True,
+            "user": serializer.data,
+            "logged_in": True,
         }
         return Response(content)
 
@@ -146,7 +152,18 @@ class CommentLikeViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 
-class CommentViewSet(viewsets.ModelViewSet):    
+class PromptViewSet(viewsets.ModelViewSet):
+    queryset = Prompt.objects.none()
+    serializer_class = PromptSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def list(self, request, *args, **kwargs):
+        queryset = Prompt.objects.all().order_by('?')[:1]
+        serializer = PromptSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
     throttle_classes = [PostUserRateThrottle]
     queryset = Comment.objects.none()
     serializer_class = CommentSerializer
@@ -196,7 +213,7 @@ class MangaDetailView(UpdateModelMixin, viewsets.ViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         queryset = Manga.objects.all()
-        manga = queryset.get(pk=kwargs.get('pk'))
+        manga = queryset.get(pk=kwargs.get("pk"))
         serializer = MangaSerializer(manga, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()

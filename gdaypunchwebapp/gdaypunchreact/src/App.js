@@ -4,7 +4,7 @@ import {
   BrowserRouter as Router,
   Route,
   Switch,
-  Redirect
+  Redirect,
 } from "react-router-dom";
 import { createStore, applyMiddleware, compose } from "redux";
 import { createStructuredSelector } from "reselect";
@@ -19,12 +19,13 @@ import { selectUser, selectLoginCheckFinished } from "selectors/app";
 import Footer from "components/footer";
 import Navigation from "components/navigation";
 
-import Home from "pages/Home";
-import Admin from "pages/Admin";
+import Home from "pages/home";
+import DailyPrompt from "pages/DailyPrompt";
+import Admin from "pages/admin";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
 
-import 'antd/dist/antd.css';
+import "antd/dist/antd.css";
 import "./App.scss";
 /**
  * Set up and run app sagas listening for events
@@ -87,6 +88,7 @@ function Root(props) {
           <Navigation />
           <Switch>
             <Route exact path="/" component={Home} />
+            <Route exact path="/daily-prompt" component={DailyPrompt} />
             {loginCheckFinished && !user.logged_in ? (
               <Redirect to="/" />
             ) : (
@@ -111,11 +113,11 @@ function Root(props) {
 
 const mapStateToProps = createStructuredSelector({
   user: selectUser,
-  loginCheckFinished: selectLoginCheckFinished
+  loginCheckFinished: selectLoginCheckFinished,
 });
 
 const mapDispatchToProps = {
-  checkLogin: doCheckLogin
+  checkLogin: doCheckLogin,
 };
 
 const RootContainer = connect(mapStateToProps, mapDispatchToProps)(Root);

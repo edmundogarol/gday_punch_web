@@ -1,37 +1,20 @@
 import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
 import { NavLink, useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AvatarEditor from "react-avatar-editor";
 import {
   faSearchPlus,
   faSearchMinus,
-  faTrashAlt
+  faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
+import "rc-slider/assets/index.css";
 import Slider from "rc-slider";
 import classNames from "classnames";
-import { doResetTweet } from "actions/admin";
 import { ErrorField } from "components/errorField";
 import { isEqual } from "lodash";
-import {
-  selectTweetLoading,
-  selectEmbeddedTweetCode,
-  selectTweetError,
-  selectPendingTweet
-} from "selectors/admin";
-import "rc-slider/assets/index.css";
 
-import {
-  doTweet,
-  doUpdateTweetImage,
-  doUpdateTweetStatus,
-  doUpdateReTweetUrl,
-  setDeletingTweet
-} from "actions/admin";
-
-function Admin(props) {
+function Ui(props) {
   const {
     tweet,
     resetTweet,
@@ -42,7 +25,7 @@ function Admin(props) {
     tweetState,
     pendingTweet,
     tweetError,
-    deleteTweet
+    deleteTweet,
   } = props;
   const { tweetLoading, tweetSuccess } = tweetState;
   const tweetImage = pendingTweet.image;
@@ -55,6 +38,7 @@ function Admin(props) {
   const {} = props;
   const { app } = useParams();
   const twitter = app === "twitter";
+  const prompts = app === "prompts";
 
   useEffect(() => {
     if (tweetSuccess) {
@@ -162,7 +146,7 @@ function Admin(props) {
       <>
         <AvatarEditor
           className={classNames({
-            loading: tweetLoading
+            loading: tweetLoading,
           })}
           ref={editorRef}
           image={window.URL.createObjectURL(imageUpload)}
@@ -181,25 +165,25 @@ function Admin(props) {
         />
         <div
           className={classNames("avatar-buttons", {
-            loading: tweetLoading
+            loading: tweetLoading,
           })}
         >
           <FontAwesomeIcon
             className={classNames({
-              loading: tweetLoading
+              loading: tweetLoading,
             })}
             icon={faSearchMinus}
           />
           <Slider
             disabled={tweetLoading}
             className={classNames("resize-slider", {
-              loading: tweetLoading
+              loading: tweetLoading,
             })}
             onChange={(value) => setSize(1 + value / 100)}
           />
           <FontAwesomeIcon
             className={classNames({
-              loading: tweetLoading
+              loading: tweetLoading,
             })}
             icon={faSearchPlus}
           />
@@ -212,7 +196,7 @@ function Admin(props) {
           imageUpload ? window.URL.createObjectURL(imageUpload) : undefined
         }
         className={classNames("upload-button", {
-          loading: tweetLoading
+          loading: tweetLoading,
         })}
         disabled={tweetLoading}
         type="file"
@@ -222,76 +206,65 @@ function Admin(props) {
   }
 
   return (
-    <div className="admin">
-      <div className="side-menu">
-        <NavLink to="/">Home</NavLink>
-        <NavLink to="/admin/twitter">Twitter</NavLink>
-        <NavLink to="/admin/instagram">Instagram</NavLink>
-      </div>
-      <div className="admin-dashboard">
-        {twitter && (
-          <div className="twitter">
-            {!!embeddedTweet.id && (
-              <div className="embedded-group">
-                <div dangerouslySetInnerHTML={{ __html: embeddedTweet.html }} />
-                <FontAwesomeIcon
-                  icon={faTrashAlt}
-                  className="delete-icon"
-                  onClick={() => deleteTweet(embeddedTweet.id)}
-                />
-              </div>
-            )}
-            {!retweetUrl && imageRenderer()}
-            {tweetError && (
-              <ErrorField style={{ width: "350px", whiteSpace: "normal" }}>
-                <div>
-                  <label>Error:</label>
-                  {tweetError}
-                </div>
-              </ErrorField>
-            )}
-            {!imageUpload && (
-              <input
-                className={classNames("retweet-url", {
-                  loading: tweetLoading
-                })}
-                value={retweetUrl}
-                disabled={tweetLoading}
-                placeholder="Retweet URL"
-                onChange={handleRetweetChange}
-              />
-            )}
-            <div
-              disabled={tweetLoading}
-              contentEditable
-              suppressContentEditableWarning={true}
-              onKeyDown={() => handleChangeText()}
-              className={classNames("status-area", {
-                loading: tweetLoading
-              })}
-              rows="10"
-              cols="20"
-            >
-              {tweetLoading && <div className="loader"></div>}
-            </div>
-            <button
-              disabled={tweetLoading}
-              onClick={() => handleTweet()}
-              className={classNames("submit-button", {
-                loading: tweetLoading
-              })}
-              type="submit"
-            >
-              Tweet
-            </button>
+    <div className="twitter">
+      {!!embeddedTweet.id && (
+        <div className="embedded-group">
+          <div dangerouslySetInnerHTML={{ __html: embeddedTweet.html }} />
+          <FontAwesomeIcon
+            icon={faTrashAlt}
+            className="delete-icon"
+            onClick={() => deleteTweet(embeddedTweet.id)}
+          />
+        </div>
+      )}
+      {!retweetUrl && imageRenderer()}
+      {tweetError && (
+        <ErrorField style={{ width: "350px", whiteSpace: "normal" }}>
+          <div>
+            <label>Error:</label>
+            {tweetError}
           </div>
-        )}
+        </ErrorField>
+      )}
+      {!imageUpload && (
+        <input
+          className={classNames("retweet-url", {
+            loading: tweetLoading,
+          })}
+          value={retweetUrl}
+          disabled={tweetLoading}
+          placeholder="Retweet URL"
+          onChange={handleRetweetChange}
+        />
+      )}
+      <div
+        disabled={tweetLoading}
+        contentEditable
+        suppressContentEditableWarning={true}
+        onKeyDown={() => handleChangeText()}
+        className={classNames("status-area", {
+          loading: tweetLoading,
+        })}
+        rows="10"
+        cols="20"
+      >
+        {tweetLoading && <div className="loader"></div>}
       </div>
+      <button
+        disabled={tweetLoading}
+        onClick={() => handleTweet()}
+        className={classNames("submit-button", {
+          loading: tweetLoading,
+        })}
+        type="submit"
+      >
+        Tweet
+      </button>
     </div>
   );
 }
 
-Admin.propTypes = {
+Ui.propTypes = {
   tweetLoading: PropTypes.bool,
   tweetSuccess: PropTypes.bool,
   embeddedTweet: PropTypes.object,
@@ -301,23 +274,7 @@ Admin.propTypes = {
   tweet: PropTypes.func,
   updateTweetImage: PropTypes.func,
   updateTweetStatus: PropTypes.func,
-  deleteTweet: PropTypes.func
+  deleteTweet: PropTypes.func,
 };
 
-const mapStateToProps = createStructuredSelector({
-  tweetState: selectTweetLoading,
-  embeddedTweet: selectEmbeddedTweetCode,
-  tweetError: selectTweetError,
-  pendingTweet: selectPendingTweet
-});
-
-const mapDispatchToProps = {
-  tweet: doTweet,
-  updateTweetImage: doUpdateTweetImage,
-  updateTweetStatus: doUpdateTweetStatus,
-  updateReTweetUrl: doUpdateReTweetUrl,
-  resetTweet: doResetTweet,
-  deleteTweet: setDeletingTweet
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Admin);
+export default Ui;

@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 from rest_framework import serializers
 from django.contrib.auth import login
 from rest_framework.response import Response
-from .models import User, Manga, Like, Comment, CommentLike
+from .models import User, Manga, Like, Comment, CommentLike, Prompt
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -25,8 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("first_name", "last_name", "username", "email", "bio", "location",
-                  "birth_date", "roles", "password", "id", "is_staff")
+        fields = ("first_name", "last_name", "username", "email", "bio",
+                  "location", "birth_date", "roles", "password", "id", "is_staff")
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -39,7 +39,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class MangaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manga
-        fields = ("id", "title", "author", "pdf", "cover", "likes", "user_likes", "comments")
+        fields = ("id", "title", "author", "pdf", "cover",
+                  "likes", "user_likes", "comments")
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -57,4 +58,11 @@ class CommentLikeSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ("id", "content", "manga", "user", "user_username", "likes", "user_likes")
+        fields = ("id", "content", "manga", "user",
+                  "user_username", "likes", "user_likes")
+
+
+class PromptSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prompt
+        fields = ("prompt", "meta", "user")

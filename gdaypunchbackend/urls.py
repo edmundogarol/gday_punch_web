@@ -13,12 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from rest_framework_swagger.views import get_swagger_view
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
 from rest_framework import routers
-from .gdaypunchapi.views import UserViewSet, LoginView, LogoutView, MangaDetailView, MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet, CommentLikeViewSet
-from rest_framework_swagger.views import get_swagger_view
+from .gdaypunchapi.views import UserViewSet, LoginView, LogoutView, MangaDetailView, MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet, CommentLikeViewSet, PromptViewSet
 
 schema_view = get_swagger_view(title='Gday Punch Web App API')
 
@@ -30,6 +30,7 @@ router.register(r'like', LikeViewSet, basename="like")
 router.register(r'comment', CommentViewSet, basename="comment")
 router.register(r'comments', MangaCommentsViewSet, basename="comments")
 router.register(r'comment-like', CommentLikeViewSet, basename="comment-like")
+router.register(r'prompts', PromptViewSet, basename="prompts")
 
 urlpatterns = [
     url(r'^docs/', schema_view),

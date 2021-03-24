@@ -14,10 +14,15 @@ code {
 
 .App {
   text-align: center;
+  height: 100%;
 
   p {
     z-index: 1;
   }
+}
+
+.App-header-container {
+  height: 100%;
 }
 
 .navigation-container {
@@ -158,7 +163,7 @@ nav {
 }
 
 .App-header-container {
-  padding-top: 10vh;
+  min-height: 100vh;
 }
 
 .page-not-found {
@@ -626,37 +631,6 @@ nav {
   display: flex;
   flex-direction: row;
   overflow: scroll;
-
-  .side-menu {
-    width: 30vh;
-    padding-top: 10vh;
-    background: #f1f1f1;
-    display: flex;
-    flex-direction: column;
-
-    a {
-      width: 100%;
-      height: 3em;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: #333333;
-      background: #d0d0d0;
-      font-size: 1em;
-    }
-
-    a:hover {
-      color: #f9f9f9;
-      background: #6b6b6b;
-    }
-  }
-
-  .admin-dashboard {
-    width: 100%;
-    padding: 2em;
-    padding-top: 12vh;
-  }
 
   .twitter {
     position: relative;

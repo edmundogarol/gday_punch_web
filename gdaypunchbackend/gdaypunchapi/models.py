@@ -15,8 +15,6 @@ class UserManager(BaseUserManager):
     use_in_migrations = True
 
     def _create_user(self, email, password, **extra_fields):
-        print("CREATING USER ___")
-
         try:
             validate_email(email)
         except ValidationError as e:
@@ -85,7 +83,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    
+
 
 class Manga(models.Model):
     title = models.TextField(max_length=50, blank=False)
@@ -169,5 +167,11 @@ class Collection(models.Model):
     owner = models.ForeignKey(User,  on_delete=models.PROTECT)
     name = models.TextField(max_length=50, blank=False)
     mangas = models.ManyToManyField(Manga, blank=False)
-    collectionType = models.ForeignKey(CollectionType,  on_delete=models.PROTECT)
+    collectionType = models.ForeignKey(
+        CollectionType,  on_delete=models.PROTECT)
 
+
+class Prompt(models.Model):
+    prompt = models.TextField(max_length=50, blank=False)
+    user = models.ForeignKey(User,  on_delete=models.PROTECT, blank=True)
+    meta = models.TextField(max_length=50, blank=False)
