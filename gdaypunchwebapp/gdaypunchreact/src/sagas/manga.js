@@ -5,7 +5,7 @@ import {
   takeLatest,
   takeEvery,
   select,
-  put
+  put,
 } from "redux-saga/effects";
 import {
   DO_GET_MANGA,
@@ -17,7 +17,7 @@ import {
   doGetComments,
   updateManga,
   updateComments,
-  updateComment
+  updateComment,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { selectLikingManga } from "selectors/manga";
@@ -53,7 +53,7 @@ export function* getManga(id) {
   const mangaId = typeof id !== "number" ? id?.payload?.mangaId : id;
 
   const response = yield call(api, `manga/${mangaId}/`, {
-    method: "GET"
+    method: "GET",
   });
 
   if (response && response.ok) {
@@ -73,12 +73,11 @@ export function* likeManga() {
     method: "POST",
     body: {
       manga,
-      user: id
-    }
+      user: id,
+    },
   });
 
   if (response && response.ok) {
-    const data = response.data; // Is this still needed?
     yield call(getManga, manga);
   } else {
     console.log("Like error", JSON.stringify(response));
@@ -93,15 +92,17 @@ export function* commentManga(action) {
     body: {
       content: action.payload.comment,
       manga: action.payload.mangaId,
-      user: id
-    }
+      user: id,
+    },
   });
 
   if (response && response.ok) {
     yield call(getComments, doGetComments(action.payload.mangaId));
   } else {
     if (response.data.detail.includes("throttled")) {
-      message.warn("Whoa there cowpoke! You're commenting too fast. Try again later.");
+      message.warn(
+        "Whoa there cowpoke! You're commenting too fast. Try again later."
+      );
     }
     console.log("Comment error", JSON.stringify(response));
   }
@@ -109,7 +110,7 @@ export function* commentManga(action) {
 
 export function* getComments(action) {
   const response = yield call(api, `comments/${action.payload.mangaId}/`, {
-    method: "GET"
+    method: "GET",
   });
 
   if (response && response.ok) {
@@ -123,7 +124,7 @@ export function* getComments(action) {
 
 export function* getComment(commentId) {
   const response = yield call(api, `comment/${commentId}/`, {
-    method: "GET"
+    method: "GET",
   });
 
   if (response && response.ok) {
@@ -137,7 +138,7 @@ export function* getComment(commentId) {
 export function* likeComment(action) {
   const response = yield call(api, `comment-like/`, {
     method: "POST",
-    body: action.payload
+    body: action.payload,
   });
 
   if (response && response.ok) {
@@ -155,6 +156,6 @@ export default function* mangaSaga() {
     takeEvery(DO_LIKE_MANGA, likeManga),
     takeEvery(DO_COMMENT_MANGA, commentManga),
     takeEvery(DO_GET_COMMENTS, getComments),
-    takeEvery(DO_LIKE_COMMENT, likeComment)
+    takeEvery(DO_LIKE_COMMENT, likeComment),
   ]);
 }

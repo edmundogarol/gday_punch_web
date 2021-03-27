@@ -4,11 +4,17 @@ import {
   SET_DELETING_TWEET,
   startTweetLoading,
   finishedTweet,
-  tweetError
+  tweetError,
+  FETCH_PROMPTS,
+  updatePrompts,
+  startFetchingPrompts,
+  finishFetchingPrompts,
+  CREATE_PROMPT,
+  SELECT_PROMPT,
 } from "actions/admin";
 import {
   selectPendingTweet,
-  selectPendingDeletingTweet
+  selectPendingDeletingTweet,
 } from "selectors/admin";
 import { api } from "utils/api";
 
@@ -21,7 +27,7 @@ export function* tweetStatus(mediaId = undefined) {
     fetchType: "twitter",
     method: "POST",
     mediaId,
-    status
+    status,
   });
 
   if (response && response.ok) {
@@ -38,7 +44,7 @@ export function* retweetStatus() {
     fetchType: "twitter",
     method: "POST",
     retweetUrl,
-    status
+    status,
   });
 
   if (response && response.ok) {
@@ -70,7 +76,7 @@ export function* tweetImage() {
   const response = yield call(api, "media/upload", {
     fetchType: "twitter",
     method: "POST",
-    image
+    image,
   });
 
   if (response && response.ok) {
@@ -88,7 +94,7 @@ export function* tweetImage() {
       return {
         type: ERROR_TALKING_TO_GDAYPUNCH,
         status:
-          "Something went wrong talking to Gday Punch. Check that you are connected to the internet and try again"
+          "Something went wrong talking to Gday Punch. Check that you are connected to the internet and try again",
       };
     }
     return response;
@@ -101,7 +107,7 @@ export function* deleteTweet() {
   const response = yield call(api, "statuses/destroy", {
     fetchType: "twitter",
     method: "POST",
-    statusId
+    statusId,
   });
 
   if (response && response.ok) {
@@ -118,7 +124,7 @@ export function* getEmbeddedTweet(embedId) {
     fetchType: "twitter",
     method: "GET",
     embedId,
-    status
+    status,
   });
 
   if (response && response.ok) {
@@ -164,9 +170,67 @@ export function* callTweet() {
   }
 }
 
+export function* fetchPromptsCall(action) {
+  yield put(startFetchingPrompts());
+  const response = yield call(
+    api,
+    action?.payload?.random ? "prompts-selected/" : "prompts/", // prompts-selected, prompts-random
+    {
+      method: "GET",
+    }
+  );
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    if (!action?.payload?.random) {
+      yield put(updatePrompts(data));
+    } else {
+      yield put(updatePrompts([data]));
+    }
+    yield put(finishFetchingPrompts());
+
+    return data;
+  } else {
+    yield put(finishFetchingPrompts());
+    console.log("Prompts Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* createPromptCall(action) {
+  const response = yield call(api, `prompts/`, {
+    method: "POST",
+    body: {
+      ...action.payload.prompt,
+    },
+  });
+
+  if (response && response.ok) {
+    yield call(fetchPromptsCall);
+  } else {
+    console.log("Create Prompt error", JSON.stringify(response));
+  }
+}
+
+export function* selectPromptCall(action) {
+  const response = yield call(api, `prompts/${action.payload.promptId}/`, {
+    method: "PATCH",
+    body: {},
+  });
+
+  if (response && response.ok) {
+    yield call(fetchPromptsCall);
+  } else {
+    console.log("Select Prompt error", JSON.stringify(response));
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
-    takeLatest(SET_DELETING_TWEET, deleteTweet)
+    takeLatest(SET_DELETING_TWEET, deleteTweet),
+    takeLatest(FETCH_PROMPTS, fetchPromptsCall),
+    takeLatest(CREATE_PROMPT, createPromptCall),
+    takeLatest(SELECT_PROMPT, selectPromptCall),
   ]);
 }

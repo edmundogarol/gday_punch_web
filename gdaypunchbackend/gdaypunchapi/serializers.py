@@ -65,4 +65,4 @@ class CommentSerializer(serializers.ModelSerializer):
 class PromptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prompt
-        fields = ("prompt", "meta", "user")
+        fields = ("id", "prompt", "meta", "user", "promptType", "is_selected")

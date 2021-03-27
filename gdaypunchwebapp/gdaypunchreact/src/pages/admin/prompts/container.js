@@ -1,14 +1,25 @@
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 
+import { selectPrompts, selectPromptStatuses } from "selectors/admin";
+
+import {
+  fetchPrompts as fetchPromptsAction,
+  createPrompt as createPromptAction,
+  selectPrompt as selectPromptAction,
+} from "actions/admin";
+
 import Ui from "./ui";
 
-// import {} from "selectors/prompts";
+const mapState = createStructuredSelector({
+  prompts: selectPrompts,
+  promptStatuses: selectPromptStatuses,
+});
 
-// import {} from "actions/prompts";
-
-const mapState = createStructuredSelector({});
-
-const mapDispatch = {};
+const mapDispatch = {
+  createPrompt: createPromptAction,
+  fetchPrompts: fetchPromptsAction,
+  selectPrompt: selectPromptAction,
+};
 
 export default connect(mapState, mapDispatch)(Ui);

@@ -153,6 +153,29 @@ class CommentLikeViewSet(viewsets.ModelViewSet):
 
 
 class PromptViewSet(viewsets.ModelViewSet):
+    queryset = Prompt.objects.all()
+    serializer_class = PromptSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def list(self, request, *args, **kwargs):
+        queryset = Prompt.objects.all().order_by('id')
+        serializer = PromptSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        promptToUnselect = Prompt.objects.get(is_selected=True)
+        promptToUnselect.is_selected = False
+        promptToUnselect.save()
+
+        queryset = Prompt.objects.all()
+        prompt = queryset.get(pk=kwargs.get("pk"))
+        prompt.is_selected = True
+        prompt.save()
+        serializer = PromptSerializer(prompt)
+        return Response(serializer.data)
+
+
+class PromptRandomViewSet(viewsets.ModelViewSet):
     queryset = Prompt.objects.none()
     serializer_class = PromptSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -160,6 +183,17 @@ class PromptViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = Prompt.objects.all().order_by('?')[:1]
         serializer = PromptSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class PromptSelectedViewSet(viewsets.ModelViewSet):
+    queryset = Prompt.objects.none()
+    serializer_class = PromptSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def list(self, request, *args, **kwargs):
+        queryset = Prompt.objects.get(is_selected=True)
+        serializer = PromptSerializer(queryset)
         return Response(serializer.data)
 
 

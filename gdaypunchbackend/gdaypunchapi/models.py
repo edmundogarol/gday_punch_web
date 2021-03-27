@@ -171,7 +171,26 @@ class Collection(models.Model):
         CollectionType,  on_delete=models.PROTECT)
 
 
+class PromptType(models.Model):
+    SUBJECT = 1
+    PANEL_STYLE = 2
+    PROMPT_TYPES = (
+        (SUBJECT, 'subject'),
+        (PANEL_STYLE, 'panel_style'),
+    )
+
+    id = models.PositiveSmallIntegerField(
+        choices=PROMPT_TYPES, primary_key=True)
+
+    def __str__(self):
+        return self.get_id_display()
+
+
 class Prompt(models.Model):
     prompt = models.TextField(max_length=50, blank=False)
-    user = models.ForeignKey(User,  on_delete=models.PROTECT, blank=True)
+    user = models.ForeignKey(
+        User,  on_delete=models.PROTECT, blank=True, null=True)
     meta = models.TextField(max_length=50, blank=False)
+    is_selected = models.BooleanField(default=False)
+    promptType = models.ForeignKey(
+        PromptType,  on_delete=models.PROTECT)

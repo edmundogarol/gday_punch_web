@@ -6,7 +6,11 @@ import {
   TWEET_LOADING,
   TWEET_FINISHED,
   TWEET_RESET,
-  SET_DELETING_TWEET
+  SET_DELETING_TWEET,
+  UPDATE_PROMPTS,
+  START_FETCHING_PROMPTS,
+  FINISH_FETCHING_PROMPTS,
+  RESET_FETCHING_PROMPTS_STATUS,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -16,13 +20,16 @@ const INITIAL_STATE = {
   pendingTweet: {
     image: undefined,
     status: undefined,
-    retweetUrl: undefined
+    retweetUrl: undefined,
   },
   pendingDeletingTweetId: undefined,
   embeddedTweet: {
     html: undefined,
-    id: undefined
-  }
+    id: undefined,
+  },
+  prompts: [],
+  fetchingPrompts: false,
+  fetchingPromptsSucess: false,
 };
 
 export const adminReducer = (state = INITIAL_STATE, action) => {
@@ -33,12 +40,12 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         tweetLoading: false,
-        tweetError: payload.error
+        tweetError: payload.error,
       };
     case TWEET_LOADING:
       return {
         ...state,
-        tweetLoading: true
+        tweetLoading: true,
       };
     case TWEET_FINISHED:
       return {
@@ -48,42 +55,64 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
         tweetSuccess: true,
         pendingTweet: {
           image: undefined,
-          status: undefined
-        }
+          status: undefined,
+        },
       };
     case TWEET_RESET:
       return {
         ...state,
-        tweetSuccess: false
+        tweetSuccess: false,
       };
     case SET_DELETING_TWEET:
       return {
         ...state,
-        pendingDeletingTweetId: payload.statusId
+        pendingDeletingTweetId: payload.statusId,
       };
     case DO_UPDATE_TWEET_IMAGE:
       return {
         ...state,
         pendingTweet: {
           ...state.pendingTweet,
-          image: payload.image
-        }
+          image: payload.image,
+        },
       };
     case DO_UPDATE_RETWEET_URL:
       return {
         ...state,
         pendingTweet: {
           ...state.pendingTweet,
-          retweetUrl: payload.url
-        }
+          retweetUrl: payload.url,
+        },
       };
     case DO_UPDATE_TWEET_STATUS:
       return {
         ...state,
         pendingTweet: {
           ...state.pendingTweet,
-          status: payload.status
-        }
+          status: payload.status,
+        },
+      };
+    case UPDATE_PROMPTS:
+      return {
+        ...state,
+        ...payload,
+      };
+    case START_FETCHING_PROMPTS:
+      return {
+        ...state,
+        fetchingPrompts: true,
+        fetchingPromptsSucess: false,
+      };
+    case FINISH_FETCHING_PROMPTS:
+      return {
+        ...state,
+        fetchingPrompts: false,
+        fetchingPromptsSucess: true,
+      };
+    case RESET_FETCHING_PROMPTS_STATUS:
+      return {
+        ...state,
+        fetchingPromptsSucess: false,
       };
     default:
       return state;

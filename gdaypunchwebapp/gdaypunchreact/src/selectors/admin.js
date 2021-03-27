@@ -16,7 +16,7 @@ export const selectTweetLoading = createSelector(
   selectDomain,
   ({ tweetLoading, tweetSuccess }) => ({
     tweetLoading,
-    tweetSuccess
+    tweetSuccess,
   })
 );
 
@@ -28,4 +28,17 @@ export const selectPendingDeletingTweet = createSelector(
 export const selectEmbeddedTweetCode = createSelector(
   selectDomain,
   ({ embeddedTweet }) => ({ html: embeddedTweet.html, id: embeddedTweet.id })
+);
+
+export const selectPrompts = createSelector(
+  selectDomain,
+  ({ prompts }) => prompts
+);
+
+export const selectPromptStatuses = createSelector(
+  selectDomain,
+  ({ fetchingPrompts, fetchingPromptsSucess }) => ({
+    fetchingPrompts,
+    fetchingPromptsSucess,
+  })
 );
