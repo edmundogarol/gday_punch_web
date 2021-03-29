@@ -75,7 +75,7 @@ class DailyPrompt extends React.Component {
     } = this.props;
     const { fetchingPrompts, fetchingPromptsSucess } = promptStatuses;
     const {
-      fetchPanelStylePrompt,
+      fetchingPanelStylePrompt,
       fetchingPanelStylePromptSucess,
     } = stylePanelPromptStatuses;
     const prompt = prompts[0];
@@ -145,7 +145,7 @@ class DailyPrompt extends React.Component {
                   <Meta
                     title={stylePrompt.prompt}
                     description={
-                      fetchPanelStylePrompt ? (
+                      fetchingPanelStylePrompt ? (
                         <LoadingOutlined />
                       ) : (
                         `by ${stylePrompt.meta}`
