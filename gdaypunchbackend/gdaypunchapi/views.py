@@ -175,13 +175,13 @@ class PromptViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class PromptRandomViewSet(viewsets.ModelViewSet):
+class PromptRandomStylePanelViewSet(viewsets.ModelViewSet):
     queryset = Prompt.objects.none()
     serializer_class = PromptSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request, *args, **kwargs):
-        queryset = Prompt.objects.all().order_by('?')[:1]
+        queryset = Prompt.objects.filter(promptType=2).order_by('?')[:1]
         serializer = PromptSerializer(queryset, many=True)
         return Response(serializer.data)
 

@@ -35,10 +35,23 @@ export const selectPrompts = createSelector(
   ({ prompts }) => prompts
 );
 
+export const selectPanelStylePrompt = createSelector(
+  selectDomain,
+  ({ panelStylePrompt }) => panelStylePrompt
+);
+
 export const selectPromptStatuses = createSelector(
   selectDomain,
   ({ fetchingPrompts, fetchingPromptsSucess }) => ({
     fetchingPrompts,
     fetchingPromptsSucess,
+  })
+);
+
+export const selectPanelStylePromptStatuses = createSelector(
+  selectDomain,
+  ({ fetchingPanelStylePrompt, fetchingPanelStylePromptSucess }) => ({
+    fetchingPanelStylePrompt,
+    fetchingPanelStylePromptSucess,
   })
 );

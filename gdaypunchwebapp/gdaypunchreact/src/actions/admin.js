@@ -16,6 +16,12 @@ export const CREATE_PROMPT = "admin/CREATE_PROMPT";
 export const SELECT_PROMPT = "admin/SELECT_PROMPT";
 export const RESET_FETCHING_PROMPTS_STATUS =
   "admin/RESET_FETCHING_PROMPTS_STATUS";
+export const FETCH_PANEL_STYLE_PROMPT = "admin/FETCH_PANEL_STYLE_PROMPT";
+export const START_FETCHING_PANEL_STYLE_PROMPT =
+  "admin/START_FETCHING_PANEL_STYLE_PROMPT";
+export const FINISH_FETCHING_PANEL_STYLE_PROMPT =
+  "admin/FINISH_FETCHING_PANEL_STYLE_PROMPT";
+export const UPDATE_PANEL_STYLE_PROMPT = "admin/UPDATE_PANEL_STYLE_PROMPT";
 
 export const doTweet = () => ({
   type: DO_TWEET,
@@ -90,6 +96,25 @@ export const updatePrompts = (prompts) => ({
   type: UPDATE_PROMPTS,
   payload: {
     prompts,
+  },
+});
+
+export const fetchPanelStylePrompt = () => ({
+  type: FETCH_PANEL_STYLE_PROMPT,
+});
+
+export const startFetchingPanelStylePrompt = () => ({
+  type: START_FETCHING_PANEL_STYLE_PROMPT,
+});
+
+export const finishFetchingPanelStylePrompt = () => ({
+  type: FINISH_FETCHING_PANEL_STYLE_PROMPT,
+});
+
+export const updatePanelStylePrompt = (prompt) => ({
+  type: UPDATE_PANEL_STYLE_PROMPT,
+  payload: {
+    prompt,
   },
 });
 

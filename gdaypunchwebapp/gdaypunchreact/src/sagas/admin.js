@@ -11,6 +11,10 @@ import {
   finishFetchingPrompts,
   CREATE_PROMPT,
   SELECT_PROMPT,
+  FETCH_PANEL_STYLE_PROMPT,
+  startFetchingPanelStylePrompt,
+  finishFetchingPanelStylePrompt,
+  updatePanelStylePrompt,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -197,6 +201,26 @@ export function* fetchPromptsCall(action) {
   }
 }
 
+export function* fetchPanelStylePromptCall() {
+  yield put(startFetchingPanelStylePrompt());
+  const response = yield call(api, "prompts-random/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    console.log({ data });
+    yield put(updatePanelStylePrompt(data));
+    yield put(finishFetchingPanelStylePrompt());
+
+    return data;
+  } else {
+    yield put(finishFetchingPanelStylePrompt());
+    console.log("Panel Style Prompt Fetch error", JSON.stringify(response));
+  }
+}
+
 export function* createPromptCall(action) {
   const response = yield call(api, `prompts/`, {
     method: "POST",
@@ -232,5 +256,6 @@ export default function* adminSaga() {
     takeLatest(FETCH_PROMPTS, fetchPromptsCall),
     takeLatest(CREATE_PROMPT, createPromptCall),
     takeLatest(SELECT_PROMPT, selectPromptCall),
+    takeLatest(FETCH_PANEL_STYLE_PROMPT, fetchPanelStylePromptCall),
   ]);
 }

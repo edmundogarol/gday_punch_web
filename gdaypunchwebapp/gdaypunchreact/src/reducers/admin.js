@@ -11,6 +11,9 @@ import {
   START_FETCHING_PROMPTS,
   FINISH_FETCHING_PROMPTS,
   RESET_FETCHING_PROMPTS_STATUS,
+  START_FETCHING_PANEL_STYLE_PROMPT,
+  FINISH_FETCHING_PANEL_STYLE_PROMPT,
+  UPDATE_PANEL_STYLE_PROMPT,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -30,6 +33,9 @@ const INITIAL_STATE = {
   prompts: [],
   fetchingPrompts: false,
   fetchingPromptsSucess: false,
+  panelStylePrompt: undefined,
+  fetchingPanelStylePrompt: false,
+  fetchingPanelStylePromptSucess: false,
 };
 
 export const adminReducer = (state = INITIAL_STATE, action) => {
@@ -108,6 +114,23 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
         ...state,
         fetchingPrompts: false,
         fetchingPromptsSucess: true,
+      };
+    case UPDATE_PANEL_STYLE_PROMPT:
+      return {
+        ...state,
+        panelStylePrompt: action.payload.prompt,
+      };
+    case START_FETCHING_PANEL_STYLE_PROMPT:
+      return {
+        ...state,
+        fetchingPanelStylePrompt: true,
+        fetchingPanelStylePromptSucess: false,
+      };
+    case FINISH_FETCHING_PANEL_STYLE_PROMPT:
+      return {
+        ...state,
+        fetchingPanelStylePrompt: false,
+        fetchingPanelStylePromptSucess: true,
       };
     case RESET_FETCHING_PROMPTS_STATUS:
       return {

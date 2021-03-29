@@ -84,11 +84,11 @@ function Root(props) {
             />
           )}
         />
+        <Route exact path="/daily-prompt" component={DailyPrompt} />
         <Route path="/">
           <Navigation />
           <Switch>
             <Route exact path="/" component={Home} />
-            <Route exact path="/daily-prompt" component={DailyPrompt} />
             {loginCheckFinished && !user.logged_in ? (
               <Redirect to="/" />
             ) : (
