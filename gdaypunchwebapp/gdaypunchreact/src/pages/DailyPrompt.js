@@ -26,7 +26,15 @@ import {
 const { Meta } = Card;
 
 export const DailyPromptCard = styled(Card)`
-  width: max-content;
+  width: 67%;
+  max-width: max-content;
+
+  .ant-card-body {
+    display: flex;
+    flex-wrap: wrap;
+    overflow: auto;
+    justify-content: center;
+  }
 `;
 
 export const DailyPromptSwitch = styled(Switch)`
@@ -110,12 +118,12 @@ class DailyPrompt extends React.Component {
               <Card
                 title="Subject Prompt"
                 bordered={false}
-                style={{ width: 300 }}
+                style={{ width: 250 }}
               >
                 <Meta
                   title={prompt.prompt}
                   description={
-                    fetchingPrompts ? "Loading..." : `by ${prompt.meta}`
+                    fetchingPrompts ? "Loading..." : `by @${prompt.meta}`
                   }
                 />
               </Card>
@@ -138,7 +146,7 @@ class DailyPrompt extends React.Component {
                   bordered={false}
                   style={
                     this.state.showPanelStyle
-                      ? { width: 300 }
+                      ? { width: 250 }
                       : { display: "none" }
                   }
                 >
@@ -148,7 +156,7 @@ class DailyPrompt extends React.Component {
                       fetchingPanelStylePrompt ? (
                         <LoadingOutlined />
                       ) : (
-                        `by ${stylePrompt.meta}`
+                        `by @${stylePrompt.meta}`
                       )
                     }
                   />
