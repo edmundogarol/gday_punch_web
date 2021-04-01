@@ -28,6 +28,7 @@ const { Meta } = Card;
 export const DailyPromptCard = styled(Card)`
   width: 67%;
   max-width: max-content;
+  min-width: min-content;
 
   .ant-card-body {
     display: flex;
