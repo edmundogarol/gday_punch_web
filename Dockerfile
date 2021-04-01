@@ -13,7 +13,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/
 
 #Install yarn
 RUN apt-get update && apt-get -y install sudo
-RUN apt-get install curl
+RUN apt-get -y install curl
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 RUN sudo apt update
