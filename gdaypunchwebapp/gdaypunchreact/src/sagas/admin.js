@@ -210,7 +210,7 @@ export function* fetchPanelStylePromptCall() {
   if (response && response.ok) {
     const data = response.data;
 
-    yield put(updatePanelStylePrompt(data));
+    yield put(updatePanelStylePrompt([data]));
     yield put(finishFetchingPanelStylePrompt());
 
     return data;

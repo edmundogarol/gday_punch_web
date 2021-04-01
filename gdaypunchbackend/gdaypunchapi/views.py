@@ -181,9 +181,18 @@ class PromptRandomStylePanelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request, *args, **kwargs):
-        queryset = Prompt.objects.filter(promptType=2).order_by('?')[:1]
-        serializer = PromptSerializer(queryset, many=True)
-        return Response(serializer.data)
+        style = Prompt.objects.filter(promptType=2).order_by('?')[:1].get()
+        framing = Prompt.objects.filter(promptType=3).order_by('?')[:1].get()
+        style_and_framing = " ".join([framing.prompt, style.prompt])
+
+        contributors = style.meta
+        if framing.meta != style.meta:
+            contributors = " and ".join([framing.meta, style.meta])
+
+        response = {}
+        response['prompt'] = style_and_framing
+        response['meta'] = contributors
+        return Response(response)
 
 
 class PromptSelectedViewSet(viewsets.ModelViewSet):

@@ -19,6 +19,7 @@ const { Title } = Typography;
 const promptTypes = {
   1: "Subject",
   2: "Panel Style",
+  3: "Panel Framing",
 };
 
 function Ui(props) {
@@ -121,6 +122,7 @@ function Ui(props) {
         >
           <Radio value={1}>Subject</Radio>
           <Radio value={2}>Panel Style</Radio>
+          <Radio value={3}>Panel Framing</Radio>
         </Radio.Group>
         <SubmitButton onClick={() => handlePromptSubmit()}>Submit</SubmitButton>
       </PromptCreateContainer>

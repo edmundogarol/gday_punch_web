@@ -158,6 +158,7 @@ class CollectionType(models.Model):
 
     id = models.PositiveSmallIntegerField(
         choices=COLLECTION_TYPES, primary_key=True)
+    name = models.TextField(max_length=20, blank=True)
 
     def __str__(self):
         return self.get_id_display()
@@ -174,13 +175,16 @@ class Collection(models.Model):
 class PromptType(models.Model):
     SUBJECT = 1
     PANEL_STYLE = 2
+    PANEL_FRAMING = 3
     PROMPT_TYPES = (
         (SUBJECT, 'subject'),
         (PANEL_STYLE, 'panel_style'),
+        (PANEL_STYLE, 'panel_framing'),
     )
 
     id = models.PositiveSmallIntegerField(
         choices=PROMPT_TYPES, primary_key=True)
+    name = models.TextField(max_length=20, blank=True)
 
     def __str__(self):
         return self.get_id_display()
