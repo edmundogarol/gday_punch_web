@@ -36,6 +36,14 @@ export const DailyPromptCard = styled(Card)`
     overflow: auto;
     justify-content: center;
   }
+
+  .ant-card-meta {
+    width: 100%;
+  }
+
+  .ant-card-meta-title {
+    white-space: pre-wrap;
+  }
 `;
 
 export const DailyPromptSwitch = styled(Switch)`
