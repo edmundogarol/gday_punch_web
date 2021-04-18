@@ -67,6 +67,7 @@ function Ui(props) {
           <Button onClick={() => selectPrompt(instance.id)}>Select</Button>
         );
       },
+      sorter: (a, b) => b.is_selected - a.is_selected,
     },
   ];
 

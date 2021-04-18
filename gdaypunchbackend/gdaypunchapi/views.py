@@ -158,7 +158,7 @@ class PromptViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request, *args, **kwargs):
-        queryset = Prompt.objects.all().order_by('id')
+        queryset = Prompt.objects.all().order_by('-id')
         serializer = PromptSerializer(queryset, many=True)
         return Response(serializer.data)
 
