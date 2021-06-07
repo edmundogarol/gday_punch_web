@@ -9,3 +9,4 @@ psycopg2-binary
 awscli
 gunicorn
 django-rest-swagger==2.2.0
+stripe==2.58

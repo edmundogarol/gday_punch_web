@@ -6,12 +6,16 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from rest_framework.authentication import SessionAuthentication
 from django.shortcuts import get_object_or_404, get_list_or_404
+
+import stripe
 
 from .models import User, Manga, Like, Comment, CommentLike, Prompt
 from .serializers import (
@@ -23,6 +27,40 @@ from .serializers import (
     CommentSerializer,
     CommentLikeSerializer,
 )
+
+stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
+
+
+# @api_view(('POST',))
+# @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+class PaymentView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, format=None):
+        print("CREATE SESSION")
+
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': 'T-shirt',
+                    },
+                    'unit_amount': 2000,
+                },
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url='https://example.com/success',
+            cancel_url='https://example.com/cancel',
+        )
+
+        content = {
+            "id": session.id,
+        }
+
+        return Response(content)
 
 
 class PostUserRateThrottle(throttling.UserRateThrottle):

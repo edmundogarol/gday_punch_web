@@ -7,6 +7,7 @@ import Login from "components/login";
 import MangaTile from "components/mangaTile";
 
 import { App, TitleImage } from "./styles";
+import PaymentForm from "components/paymentForm";
 
 class Ui extends React.Component {
   constructor(props) {
@@ -102,6 +103,7 @@ class Ui extends React.Component {
             />
           </form>
         </div>
+        <PaymentForm />
       </App>
     );
   }

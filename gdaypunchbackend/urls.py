@@ -17,8 +17,14 @@ from rest_framework_swagger.views import get_swagger_view
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework import routers
-from .gdaypunchapi.views import UserViewSet, LoginView, LogoutView, MangaDetailView, MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet, CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet, PromptSelectedViewSet
+from .gdaypunchapi.views import (
+    UserViewSet, LoginView, LogoutView, MangaDetailView,
+    MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
+    CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
+    PromptSelectedViewSet, PaymentView
+)
 
 schema_view = get_swagger_view(title='Gday Punch Web App API')
 
@@ -36,6 +42,8 @@ router.register(r'prompts-random',
 router.register(r'prompts-selected', PromptSelectedViewSet, basename="prompts")
 
 urlpatterns = [
+    url(r'payments/create-checkout-session/',
+        csrf_exempt(PaymentView.as_view())),
     url(r'^docs/', schema_view),
     url(r'api/login/', LoginView.as_view()),
     url(r'api/logout/', LogoutView.as_view()),

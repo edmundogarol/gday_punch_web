@@ -10,6 +10,9 @@ import { createStore, applyMiddleware, compose } from "redux";
 import { createStructuredSelector } from "reselect";
 import createSagaMiddleware from "redux-saga";
 import { all } from "redux-saga/effects";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
 import appReducer from "reducers/app";
 import appSaga from "sagas/app";
 import mangaSaga from "sagas/manga";
@@ -33,6 +36,8 @@ import "./App.scss";
 function* rootSaga() {
   yield all([appSaga(), mangaSaga(), adminSaga()]);
 }
+
+const stripePromise = loadStripe("pk_test_QgTiwo4w3EXdQS9hOywypRAF");
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const sagaMiddleware = createSagaMiddleware();
@@ -125,7 +130,9 @@ const RootContainer = connect(mapStateToProps, mapDispatchToProps)(Root);
 function App() {
   return (
     <Provider store={store}>
-      <RootContainer />
+      <Elements stripe={stripePromise}>
+        <RootContainer />
+      </Elements>
     </Provider>
   );
 }
