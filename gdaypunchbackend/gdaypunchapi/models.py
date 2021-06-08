@@ -75,6 +75,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     location = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     roles = models.ManyToManyField(Role, blank=True)
+    subscribed = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -198,3 +199,10 @@ class Prompt(models.Model):
     is_selected = models.BooleanField(default=False)
     promptType = models.ForeignKey(
         PromptType,  on_delete=models.PROTECT)
+
+
+class StripeCustomer(models.Model):
+    customer_id = models.TextField(max_length=50, blank=False)
+    user = models.ForeignKey(
+        User,  on_delete=models.PROTECT, blank=True, null=True)
+    stripe_email = models.TextField(max_length=70, blank=False, unique=True)

@@ -1,44 +1,40 @@
 import React from "react";
+import { loadStripe } from "@stripe/stripe-js";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+
+import { gdayfetch } from "utils/gdayfetch";
+
+// const stripePromise = loadStripe("pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf");
+const stripePromise = loadStripe("pk_test_QgTiwo4w3EXdQS9hOywypRAF");
 
 export default function CheckoutForm() {
   const stripe = useStripe();
   const elements = useElements();
 
-  const handleSubmit = async (event) => {
-    // Block native form submission.
-    event.preventDefault();
+  const handleClick = async (event) => {
+    // Get Stripe.js instance
+    const stripe = await stripePromise;
 
-    if (!stripe || !elements) {
-      // Stripe.js has not loaded yet. Make sure to disable
-      // form submission until Stripe.js has loaded.
-      return;
-    }
-
-    // Get a reference to a mounted CardElement. Elements knows how
-    // to find your CardElement because there can only ever be one of
-    // each type of element.
-    const cardElement = elements.getElement(CardElement);
-
-    // Use your card Element with other Stripe.js APIs
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: "card",
-      card: cardElement,
+    // Call your backend to create the Checkout Session
+    const response = await gdayfetch("payments/create-checkout-session/", {
+      method: "POST",
     });
 
-    if (error) {
-      console.log("[error]", error);
-    } else {
-      console.log("[PaymentMethod]", paymentMethod);
+    // When the customer clicks on the button, redirect them to Checkout.
+    const result = await stripe.redirectToCheckout({
+      sessionId: response.data.id,
+    });
+
+    if (result.error) {
+      // If `redirectToCheckout` fails due to a browser or network
+      // error, display the localized error message to your customer
+      // using `result.error.message`.
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <CardElement />
-      <button type="submit" disabled={!stripe}>
-        Pay
-      </button>
-    </form>
+    <button role="link" onClick={handleClick}>
+      Checkout
+    </button>
   );
 }

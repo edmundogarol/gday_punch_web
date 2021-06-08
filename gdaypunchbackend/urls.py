@@ -23,7 +23,7 @@ from .gdaypunchapi.views import (
     UserViewSet, LoginView, LogoutView, MangaDetailView,
     MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
     CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
-    PromptSelectedViewSet, PaymentView
+    PromptSelectedViewSet, PaymentView, PaymentsWebhookHandler
 )
 
 schema_view = get_swagger_view(title='Gday Punch Web App API')
@@ -42,13 +42,14 @@ router.register(r'prompts-random',
 router.register(r'prompts-selected', PromptSelectedViewSet, basename="prompts")
 
 urlpatterns = [
-    url(r'payments/create-checkout-session/',
-        csrf_exempt(PaymentView.as_view())),
     url(r'^docs/', schema_view),
     url(r'api/login/', LoginView.as_view()),
     url(r'api/logout/', LogoutView.as_view()),
     url(r'api/login-check/', LoginView.as_view()),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'api/payments/create-checkout-session/',
+        csrf_exempt(PaymentView.as_view())),
+    url(r'api/payments/webhooks/', csrf_exempt(PaymentsWebhookHandler)),
     url(r'', include('gdaypunchwebapp.urls'))
 ]

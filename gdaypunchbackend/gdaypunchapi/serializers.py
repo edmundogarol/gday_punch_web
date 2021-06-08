@@ -2,7 +2,10 @@ from django.contrib.auth.models import Group
 from rest_framework import serializers
 from django.contrib.auth import login
 from rest_framework.response import Response
-from .models import User, Manga, Like, Comment, CommentLike, Prompt
+from .models import (
+    User, Manga, Like, Comment, CommentLike, Prompt,
+    StripeCustomer
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -66,3 +69,9 @@ class PromptSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prompt
         fields = ("id", "prompt", "meta", "user", "promptType", "is_selected")
+
+
+class StripeCustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prompt
+        fields = ("id", "customer_id", "user", "stripe_email")
