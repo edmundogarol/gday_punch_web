@@ -35,6 +35,7 @@ class Ui extends React.Component {
           <Header loginView={loginView} />
           <Login />
         </div>
+        <PaymentForm />
         <div style={styles.list}>
           {!isEmpty(featuredManga) &&
             featuredManga.map((manga) => {
@@ -103,7 +104,6 @@ class Ui extends React.Component {
             />
           </form>
         </div>
-        <PaymentForm />
       </App>
     );
   }
