@@ -144,3 +144,27 @@ def PaymentsWebhookHandler(request):
             print('Unhandled event type {}'.format(event.type))
 
     return HttpResponse(status=200)
+
+
+class StripeProductsViewSet(APIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get(self, request, format=None):
+
+        product_list = []
+
+        for price in stripe.Price.list(limit=10):
+            price_details = stripe.Price.retrieve(price.id)
+            product_details = stripe.Product.retrieve(price_details.product)
+            product_list.append(
+                {
+                    'price': price_details,
+                    'product': product_details
+                }
+            )
+
+        content = {
+            "results": product_list,
+        }
+
+        return Response(content)

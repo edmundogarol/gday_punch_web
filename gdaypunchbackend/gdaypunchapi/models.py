@@ -206,3 +206,78 @@ class StripeCustomer(models.Model):
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=True, null=True)
     stripe_email = models.TextField(max_length=70, blank=False, unique=True)
+
+
+class ProductType(models.Model):
+    PHYSICAL = 1
+    DIGITAL = 2
+    SUBSCRIPTION = 3
+    PRODUCT_TYPES = (
+        (PHYSICAL, 'physical'),
+        (DIGITAL, 'digital'),
+        (SUBSCRIPTION, 'subscription'),
+    )
+
+    id = models.PositiveSmallIntegerField(
+        choices=PRODUCT_TYPES, primary_key=True)
+    name = models.TextField(max_length=20, blank=True)
+
+    def __str__(self):
+        return self.get_id_display()
+
+
+class Product(models.Model):
+    stripe_product_id = models.TextField(max_length=50, blank=False)
+    description = models.TextField(max_length=500, blank=True)
+    title = models.TextField(max_length=70, blank=True, unique=True)
+    image = models.TextField(max_length=100, blank=True)
+    sale_price = models.IntegerField(blank=True)
+    visible = models.BooleanField(default=False)
+    stock = models.IntegerField(blank=True)
+
+
+class Order(models.Model):
+    product = models.ForeignKey(
+        Product,  on_delete=models.PROTECT, blank=False, null=True)
+    number = models.IntegerField(blank=False)
+    email = models.TextField(max_length=100, blank=False)
+    first_name = models.TextField(max_length=50, blank=False)
+    last_name = models.TextField(max_length=50, blank=False)
+    address_line_1 = models.TextField(max_length=50, blank=False)
+    address_line_2 = models.TextField(max_length=50, blank=True)
+    city = models.TextField(max_length=50, blank=False)
+    state = models.TextField(max_length=50, blank=False)
+    postcode = models.TextField(max_length=50, blank=False)
+    country = models.TextField(max_length=50, blank=False)
+    phone_number = models.IntegerField(blank=False)
+    billing_same_address = models.BooleanField(default=True)
+    billing_first_name = models.TextField(max_length=50, blank=False)
+    billing_last_name = models.TextField(max_length=50, blank=False)
+    billing_address_line_1 = models.TextField(max_length=50, blank=False)
+    billing_address_line_2 = models.TextField(max_length=50, blank=True)
+    billing_city = models.TextField(max_length=50, blank=False)
+    billing_state = models.TextField(max_length=50, blank=False)
+    billing_postcode = models.TextField(max_length=50, blank=False)
+    billing_country = models.TextField(max_length=50, blank=False)
+    billing_number = models.IntegerField(blank=False)
+    last_four = models.IntegerField(blank=False)
+    exp_month = models.IntegerField(blank=False)
+    exp_year = models.IntegerField(blank=False)
+
+
+class ProductSEO(models.Model):
+    permalink = models.TextField(max_length=100, blank=True)
+    title = models.TextField(max_length=100, blank=True)
+    product = models.ForeignKey(
+        Product,  on_delete=models.PROTECT, blank=False, null=True)
+    description = models.TextField(max_length=500, blank=True)
+
+
+class ProductReview(models.Model):
+    name = models.TextField(max_length=50, blank=False)
+    email = models.TextField(max_length=50, blank=False)
+    product = models.ForeignKey(
+        Product,  on_delete=models.PROTECT, blank=False, null=True)
+    rating = models.IntegerField(blank=False)
+    purchase_date = models.DateField(null=True, blank=True)
+    comment = models.TextField(max_length=500, blank=True)

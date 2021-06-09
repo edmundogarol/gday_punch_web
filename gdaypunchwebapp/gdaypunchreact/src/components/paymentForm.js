@@ -20,6 +20,10 @@ export default function CheckoutForm() {
       method: "POST",
     });
 
+    // const response = await gdayfetch("stripe-products", {
+    //   method: "GET",
+    // });
+
     const result = await stripe.redirectToCheckout({
       sessionId: response.data.id,
     });

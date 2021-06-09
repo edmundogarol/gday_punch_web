@@ -13,12 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from rest_framework_swagger.views import get_swagger_view
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
 from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework import routers
+from rest_framework_swagger.views import get_swagger_view
+
 from .gdaypunchapi.views import (
     UserViewSet, LoginView, LogoutView, MangaDetailView,
     MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
@@ -28,6 +30,7 @@ from .gdaypunchapi.views import (
 from .gdaypunchapi.api.stripe import (
     PaymentView,
     PaymentsWebhookHandler,
+    StripeProductsViewSet,
 )
 
 schema_view = get_swagger_view(title='Gday Punch Web App API')
@@ -41,9 +44,12 @@ router.register(r'comment', CommentViewSet, basename="comment")
 router.register(r'comments', MangaCommentsViewSet, basename="comments")
 router.register(r'comment-like', CommentLikeViewSet, basename="comment-like")
 router.register(r'prompts', PromptViewSet, basename="prompts")
-router.register(r'prompts-random',
-                PromptRandomStylePanelViewSet, basename="prompts")
 router.register(r'prompts-selected', PromptSelectedViewSet, basename="prompts")
+router.register(
+    r'prompts-random',
+    PromptRandomStylePanelViewSet,
+    basename="prompts"
+)
 
 urlpatterns = [
     url(r'^docs/', schema_view),
@@ -55,5 +61,6 @@ urlpatterns = [
     url(r'api/payments/create-checkout-session/',
         csrf_exempt(PaymentView.as_view())),
     url(r'api/payments/webhooks/', csrf_exempt(PaymentsWebhookHandler)),
+    url(r'api/stripe-products/', StripeProductsViewSet.as_view()),
     url(r'', include('gdaypunchwebapp.urls'))
 ]
