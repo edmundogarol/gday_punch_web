@@ -23,7 +23,11 @@ from .gdaypunchapi.views import (
     UserViewSet, LoginView, LogoutView, MangaDetailView,
     MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
     CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
-    PromptSelectedViewSet, PaymentView, PaymentsWebhookHandler
+    PromptSelectedViewSet
+)
+from .gdaypunchapi.api.stripe import (
+    PaymentView,
+    PaymentsWebhookHandler,
 )
 
 schema_view = get_swagger_view(title='Gday Punch Web App API')

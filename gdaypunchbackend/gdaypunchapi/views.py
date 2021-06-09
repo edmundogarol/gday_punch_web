@@ -32,8 +32,10 @@ from .serializers import (
     CommentLikeSerializer,
 )
 
-# stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
-stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
+if 'DEVENV' in os.environ:
+    stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
+else:
+    stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
 
 
 class PaymentView(APIView):

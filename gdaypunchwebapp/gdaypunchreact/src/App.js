@@ -37,8 +37,11 @@ function* rootSaga() {
   yield all([appSaga(), mangaSaga(), adminSaga()]);
 }
 
-// const stripePromise = loadStripe("pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf");
-const stripePromise = loadStripe("pk_test_QgTiwo4w3EXdQS9hOywypRAF");
+const stripePromise = loadStripe(
+  process.env.NODE_ENV === "development"
+    ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
+    : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
+);
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const sagaMiddleware = createSagaMiddleware();
