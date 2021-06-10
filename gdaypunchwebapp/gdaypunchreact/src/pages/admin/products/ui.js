@@ -45,10 +45,6 @@ function Ui(props) {
     },
   ];
 
-  // useEffect(() => {
-  //   if (!fetchingPromptsSucess && !fetchingPrompts) fetchPrompts();
-  // }, [fetchingPromptsSucess]);
-
   return (
     <ProductsContainer>
       <Title level={4}>
@@ -60,11 +56,6 @@ function Ui(props) {
   );
 }
 
-Ui.propTypes = {
-  // tweetSuccess: PropTypes.bool,
-  // embeddedTweet: PropTypes.object,
-  // tweetError: PropTypes.string,
-  // tweet: PropTypes.func,
-};
+Ui.propTypes = {};
 
 export default Ui;

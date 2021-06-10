@@ -20,6 +20,42 @@ if 'DEVENV' in os.environ:
 else:
     stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
 
+# price_type: one_time, recurring
+
+
+def StripePriceCreator(price):
+    prices = []
+    name = price.get("name", None)
+    unit_amount = price.get("unit_amount", None)
+    price_type = price.get("type", None)
+    stripe_ids = price.get("stripe_ids", None)
+
+    if name is not None:
+        prices.append({
+            'price': stripe.Price.create(
+                unit_amount=int(float(unit_amount)*100),
+                currency="aud",
+                recurring={
+                    "interval": "month",
+                    "interval_count": 2,
+                    "usage_type": "metered"
+                } if price_type == "recurring" else None,
+                product_data={
+                    "name": name,
+                }),
+            'quantity': 1 if price_type == "one_time" else None
+        })
+    else:
+        for stripe_id in stripe_ids:
+            stripe_price = stripe.Price.retrieve(stripe_id)
+            prices.append({
+                'price': stripe_id,
+                'quantity': 1 if stripe_price.type == "one_time" else None
+            })
+
+    print(prices)
+    return prices
+
 
 class PaymentView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -42,36 +78,17 @@ class PaymentView(APIView):
             except StripeCustomer.DoesNotExist:
                 print("User id not associated with Stripe customer")
 
-        subscriptionPrice = stripe.Price.create(
-            unit_amount=2333,
-            currency="aud",
-            recurring={
-                "interval": "month",
-                "interval_count": 2,
-                "usage_type": "metered"
-            },
-            product_data={
-                "name": "Gday Punch Subscription",
-            },
-        )
-        nextIssuePrice = stripe.Price.create(
-            unit_amount=2333,
-            currency="aud",
-            product_data={
-                "name": "Gday Punch Next Issue Pre-Order",
-            },
-        )
+        prices = StripePriceCreator(request.data)
+        subscriptionMode = request.data.get("type", None) == "recurring"
 
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             customer=stripe_customer.customer_id if stripe_customer else None,
-            line_items=[
-                {'price': subscriptionPrice},
-                {'price': nextIssuePrice, 'quantity': 1}
-            ],
-            mode='subscription',
+            line_items=prices,
+            mode='subscription' if subscriptionMode else 'payment',
             success_url='http://localhost:8000/admin',
-            cancel_url='https://example.com/cancel',
+            cancel_url=request.data.get(
+                "previous_url", 'http://localhost:8000'),
         )
 
         content = {
@@ -163,8 +180,4 @@ class StripeProductsViewSet(APIView):
                 }
             )
 
-        content = {
-            "results": product_list,
-        }
-
-        return Response(content)
+        return Response(product_list)

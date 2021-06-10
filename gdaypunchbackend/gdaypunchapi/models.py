@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from rest_framework import exceptions
 from django.db.models import Count
+from django.contrib.postgres.fields import ArrayField
 from django_currentuser.middleware import (
     get_current_user, get_current_authenticated_user)
 from django_currentuser.db.models import CurrentUserField
@@ -227,13 +228,17 @@ class ProductType(models.Model):
 
 
 class Product(models.Model):
-    stripe_product_id = models.TextField(max_length=50, blank=False)
     description = models.TextField(max_length=500, blank=True)
     title = models.TextField(max_length=70, blank=True, unique=True)
     image = models.TextField(max_length=100, blank=True)
     sale_price = models.IntegerField(blank=True)
     visible = models.BooleanField(default=False)
     stock = models.IntegerField(blank=True)
+
+
+class ProductStripePrices(models.Model):
+    product = models.ForeignKey(Product,  on_delete=models.PROTECT)
+    stripe_price = models.TextField(max_length=50, blank=False)
 
 
 class Order(models.Model):

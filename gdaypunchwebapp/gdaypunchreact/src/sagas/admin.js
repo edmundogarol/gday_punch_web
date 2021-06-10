@@ -1,26 +1,30 @@
 import { call, all, takeLatest, select, put } from "redux-saga/effects";
+import { api } from "utils/api";
 import {
   DO_TWEET,
   SET_DELETING_TWEET,
+  CREATE_PROMPT,
+  SELECT_PROMPT,
+  FETCH_PROMPTS,
+  FETCH_PANEL_STYLE_PROMPT,
+  FETCH_STRIPE_PRODUCTS,
   startTweetLoading,
   finishedTweet,
   tweetError,
-  FETCH_PROMPTS,
   updatePrompts,
   startFetchingPrompts,
   finishFetchingPrompts,
-  CREATE_PROMPT,
-  SELECT_PROMPT,
-  FETCH_PANEL_STYLE_PROMPT,
   startFetchingPanelStylePrompt,
   finishFetchingPanelStylePrompt,
   updatePanelStylePrompt,
+  fetchingStripeProducts,
+  finishedFetchingStripeProducts,
+  updateStripeProducts,
 } from "actions/admin";
 import {
   selectPendingTweet,
   selectPendingDeletingTweet,
 } from "selectors/admin";
-import { api } from "utils/api";
 
 const NO_MEDIA = "admin-sagas/NO_MEDIA";
 const ERROR_TALKING_TO_GDAYPUNCH = "admin-sagas/ERROR_TALKING_TO_GDAYPUNCH";
@@ -248,6 +252,24 @@ export function* selectPromptCall(action) {
   }
 }
 
+export function* fetchStripeProductsCall() {
+  yield put(fetchingStripeProducts());
+  const response = yield call(api, "stripe-products/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(updateStripeProducts(data));
+    yield put(finishedFetchingStripeProducts());
+    return data;
+  } else {
+    yield put(finishedFetchingStripeProducts());
+    console.log("Stripe Products Fetch error", JSON.stringify(response));
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -256,5 +278,6 @@ export default function* adminSaga() {
     takeLatest(CREATE_PROMPT, createPromptCall),
     takeLatest(SELECT_PROMPT, selectPromptCall),
     takeLatest(FETCH_PANEL_STYLE_PROMPT, fetchPanelStylePromptCall),
+    takeLatest(FETCH_STRIPE_PRODUCTS, fetchStripeProductsCall),
   ]);
 }

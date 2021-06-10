@@ -14,6 +14,9 @@ import {
   START_FETCHING_PANEL_STYLE_PROMPT,
   FINISH_FETCHING_PANEL_STYLE_PROMPT,
   UPDATE_PANEL_STYLE_PROMPT,
+  UPDATE_STRIPE_PRODUCTS,
+  FETCHING_STRIPE_PRODUCTS,
+  FINISHED_FETCHING_STRIPE_PRODUCTS,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -30,12 +33,20 @@ const INITIAL_STATE = {
     html: undefined,
     id: undefined,
   },
+
   prompts: [],
   fetchingPrompts: false,
   fetchingPromptsSucess: false,
   panelStylePrompt: undefined,
   fetchingPanelStylePrompt: false,
   fetchingPanelStylePromptSucess: false,
+
+  products: {
+    productList: [],
+    stripeProductList: [],
+    fetchingStripeProducts: false,
+    finishedFetchingStripeProducts: false,
+  },
 };
 
 export const adminReducer = (state = INITIAL_STATE, action) => {
@@ -136,6 +147,32 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         fetchingPromptsSucess: false,
+      };
+    case UPDATE_STRIPE_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          stripeProductList: payload.products,
+        },
+      };
+    case FETCHING_STRIPE_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchingStripeProducts: true,
+          finishedFetchingStripeProducts: false,
+        },
+      };
+    case FINISHED_FETCHING_STRIPE_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchingStripeProducts: false,
+          finishedFetchingStripeProducts: true,
+        },
       };
     default:
       return state;

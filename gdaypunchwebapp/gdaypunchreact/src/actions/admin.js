@@ -14,14 +14,25 @@ export const START_FETCHING_PROMPTS = "admin/START_FETCHING_PROMPTS";
 export const FINISH_FETCHING_PROMPTS = "admin/FINISH_FETCHING_PROMPTS";
 export const CREATE_PROMPT = "admin/CREATE_PROMPT";
 export const SELECT_PROMPT = "admin/SELECT_PROMPT";
+export const UPDATE_PANEL_STYLE_PROMPT = "admin/UPDATE_PANEL_STYLE_PROMPT";
+export const FETCH_PANEL_STYLE_PROMPT = "admin/FETCH_PANEL_STYLE_PROMPT";
 export const RESET_FETCHING_PROMPTS_STATUS =
   "admin/RESET_FETCHING_PROMPTS_STATUS";
-export const FETCH_PANEL_STYLE_PROMPT = "admin/FETCH_PANEL_STYLE_PROMPT";
 export const START_FETCHING_PANEL_STYLE_PROMPT =
   "admin/START_FETCHING_PANEL_STYLE_PROMPT";
 export const FINISH_FETCHING_PANEL_STYLE_PROMPT =
   "admin/FINISH_FETCHING_PANEL_STYLE_PROMPT";
-export const UPDATE_PANEL_STYLE_PROMPT = "admin/UPDATE_PANEL_STYLE_PROMPT";
+
+export const FETCH_ADMIN_PRODUCTS = "admin/FETCH_ADMIN_PRODUCTS";
+export const FETCHING_ADMIN_PRODUCTS = "admin/FETCH_ADMIN_PRODUCTS";
+export const FINISHED_FETCHING_ADMIN_PRODUCTS =
+  "admin/FINISHED_FETCHING_ADMIN_PRODUCTS";
+export const UPDATE_ADMIN_PRODUCTS = "admin/UPDATE_ADMIN_PRODUCTS";
+export const FETCH_STRIPE_PRODUCTS = "admin/FETCH_STRIPE_PRODUCTS";
+export const FETCHING_STRIPE_PRODUCTS = "admin/FETCHING_STRIPE_PRODUCTS";
+export const FINISHED_FETCHING_STRIPE_PRODUCTS =
+  "admin/FINISHED_FETCHING_STRIPE_PRODUCTS";
+export const UPDATE_STRIPE_PRODUCTS = "admin/UPDATE_STRIPE_PRODUCTS";
 
 export const doTweet = () => ({
   type: DO_TWEET,
@@ -133,5 +144,43 @@ export const selectPrompt = (promptId) => ({
   type: SELECT_PROMPT,
   payload: {
     promptId,
+  },
+});
+
+export const fetchAdminProducts = () => ({
+  type: FETCH_ADMIN_PRODUCTS,
+});
+
+export const fetchStripeProducts = () => ({
+  type: FETCH_STRIPE_PRODUCTS,
+});
+
+export const fetchingAdminProducts = () => ({
+  type: FETCHING_ADMIN_PRODUCTS,
+});
+
+export const fetchingStripeProducts = () => ({
+  type: FETCHING_STRIPE_PRODUCTS,
+});
+
+export const finishedFetchingAdminProducts = () => ({
+  type: FINISHED_FETCHING_ADMIN_PRODUCTS,
+});
+
+export const finishedFetchingStripeProducts = () => ({
+  type: FINISHED_FETCHING_STRIPE_PRODUCTS,
+});
+
+export const updateAdminProducts = (products) => ({
+  type: UPDATE_ADMIN_PRODUCTS,
+  payload: {
+    products,
+  },
+});
+
+export const updateStripeProducts = (products) => ({
+  type: UPDATE_STRIPE_PRODUCTS,
+  payload: {
+    products,
   },
 });

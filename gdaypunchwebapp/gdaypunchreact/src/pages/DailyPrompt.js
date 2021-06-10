@@ -91,10 +91,8 @@ class DailyPrompt extends React.Component {
       stylePanelPromptStatuses,
     } = this.props;
     const { fetchingPrompts, fetchingPromptsSucess } = promptStatuses;
-    const {
-      fetchingPanelStylePrompt,
-      fetchingPanelStylePromptSucess,
-    } = stylePanelPromptStatuses;
+    const { fetchingPanelStylePrompt, fetchingPanelStylePromptSucess } =
+      stylePanelPromptStatuses;
     const prompt = prompts[0];
     const stylePrompt = stylePanelPrompt ? stylePanelPrompt[0] : {};
 

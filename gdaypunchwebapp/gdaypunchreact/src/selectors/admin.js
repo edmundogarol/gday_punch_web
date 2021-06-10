@@ -55,3 +55,8 @@ export const selectPanelStylePromptStatuses = createSelector(
     fetchingPanelStylePromptSucess,
   })
 );
+
+export const selectProductsState = createSelector(
+  selectDomain,
+  ({ products }) => products
+);
