@@ -149,7 +149,7 @@ function Ui(props) {
           placeholder="Enter Product Name"
           prefix={<ShoppingOutlined className="site-form-item-icon" />}
           suffix={
-            <Tooltip title="Prompt description">
+            <Tooltip title="Product description">
               <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
             </Tooltip>
           }
