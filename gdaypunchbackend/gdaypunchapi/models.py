@@ -67,6 +67,30 @@ class Role(models.Model):
         return self.get_id_display()
 
 
+class Privileges(models.Model):
+    SUPER = 1
+    ADMIN = 2
+    PROMPTS = 3
+    PRODUCTS = 4
+    TWITTER = 5
+    INSTAGRAM = 6
+    PRIVILEGES = (
+        (SUPER, 'super'),
+        (ADMIN, 'admin'),
+        (PROMPTS, 'prompts'),
+        (PRODUCTS, 'products'),
+        (TWITTER, 'twitter'),
+        (INSTAGRAM, 'instagram'),
+    )
+
+    id = models.PositiveSmallIntegerField(
+        choices=PRIVILEGES, primary_key=True)
+    name = models.TextField(max_length=20, blank=True)
+
+    def __str__(self):
+        return self.get_id_display()
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.TextField(max_length=50, blank=False, unique=True)
     first_name = models.TextField(max_length=50, blank=True)
@@ -81,6 +105,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(null=True)
+    privileges = models.ManyToManyField(Privileges, blank=True)
 
     objects = UserManager()
 
