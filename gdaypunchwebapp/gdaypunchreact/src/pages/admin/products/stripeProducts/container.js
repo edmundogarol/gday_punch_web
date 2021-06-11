@@ -3,10 +3,7 @@ import { createStructuredSelector } from "reselect";
 
 import { selectProductsState } from "selectors/admin";
 
-import {
-  fetchAdminProducts as fetchAdminProductsAction,
-  fetchStripeProducts as fetchStripeProductsAction,
-} from "actions/admin";
+import { fetchStripeProducts as fetchStripeProductsAction } from "actions/admin";
 
 import Ui from "./ui";
 
@@ -15,7 +12,6 @@ const mapState = createStructuredSelector({
 });
 
 const mapDispatch = {
-  fetchProducts: fetchAdminProductsAction,
   fetchStripeProducts: fetchStripeProductsAction,
 };
 

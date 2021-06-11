@@ -8,6 +8,7 @@ import {
   FETCH_PROMPTS,
   FETCH_PANEL_STYLE_PROMPT,
   FETCH_STRIPE_PRODUCTS,
+  FETCH_ADMIN_PRODUCTS,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -20,6 +21,10 @@ import {
   fetchingStripeProducts,
   finishedFetchingStripeProducts,
   updateStripeProducts,
+  fetchingAdminProducts,
+  finishedFetchingAdminProducts,
+  updateAdminProducts,
+  CREATE_ADMIN_PRODUCT,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -270,6 +275,39 @@ export function* fetchStripeProductsCall() {
   }
 }
 
+export function* fetchAdminProductsCall() {
+  yield put(fetchingAdminProducts());
+  const response = yield call(api, "products/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateAdminProducts(data));
+    yield put(finishedFetchingAdminProducts());
+
+    return data;
+  } else {
+    yield put(finishedFetchingAdminProducts());
+    console.log("Admin Products Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* createProductCall(action) {
+  const response = yield call(api, `products/`, {
+    method: "POST",
+    body: {
+      ...action.payload.product,
+    },
+  });
+
+  if (response && response.ok) {
+    yield call(fetchAdminProductsCall);
+  } else {
+    console.log("Create Product error", JSON.stringify(response));
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -279,5 +317,7 @@ export default function* adminSaga() {
     takeLatest(SELECT_PROMPT, selectPromptCall),
     takeLatest(FETCH_PANEL_STYLE_PROMPT, fetchPanelStylePromptCall),
     takeLatest(FETCH_STRIPE_PRODUCTS, fetchStripeProductsCall),
+    takeLatest(FETCH_ADMIN_PRODUCTS, fetchAdminProductsCall),
+    takeLatest(CREATE_ADMIN_PRODUCT, createProductCall),
   ]);
 }

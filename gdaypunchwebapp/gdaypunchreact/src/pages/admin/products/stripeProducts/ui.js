@@ -40,7 +40,7 @@ const productType = {
 };
 
 function Ui(props) {
-  const { productsState, fetchStripeProducts, createStripeProduct } = props;
+  const { productsState, fetchStripeProducts } = props;
   const {
     stripeProductList,
     fetchingStripeProducts,
@@ -149,7 +149,7 @@ function Ui(props) {
           placeholder="Enter Product Name"
           prefix={<ShoppingOutlined className="site-form-item-icon" />}
           suffix={
-            <Tooltip title="Product description">
+            <Tooltip title="Prompt description">
               <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
             </Tooltip>
           }

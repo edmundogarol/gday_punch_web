@@ -17,6 +17,9 @@ import {
   UPDATE_STRIPE_PRODUCTS,
   FETCHING_STRIPE_PRODUCTS,
   FINISHED_FETCHING_STRIPE_PRODUCTS,
+  UPDATE_ADMIN_PRODUCTS,
+  FETCHING_ADMIN_PRODUCTS,
+  FINISHED_FETCHING_ADMIN_PRODUCTS,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -42,10 +45,12 @@ const INITIAL_STATE = {
   fetchingPanelStylePromptSucess: false,
 
   products: {
-    productList: [],
+    adminProductList: [],
     stripeProductList: [],
     fetchingStripeProducts: false,
     finishedFetchingStripeProducts: false,
+    fetchingAdminProducts: false,
+    finishedFetchingAdminProducts: false,
   },
 };
 
@@ -172,6 +177,32 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
           ...state.products,
           fetchingStripeProducts: false,
           finishedFetchingStripeProducts: true,
+        },
+      };
+    case UPDATE_ADMIN_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          adminProductList: payload.products,
+        },
+      };
+    case FETCHING_ADMIN_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchingAdminProducts: true,
+          finishedFetchingAdminProducts: false,
+        },
+      };
+    case FINISHED_FETCHING_ADMIN_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchingAdminProducts: false,
+          finishedFetchingAdminProducts: true,
         },
       };
     default:

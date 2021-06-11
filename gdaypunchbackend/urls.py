@@ -27,6 +27,9 @@ from .gdaypunchapi.views import (
     CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
     PromptSelectedViewSet
 )
+from .gdaypunchapi.api.products import (
+    ProductViewSet
+)
 from .gdaypunchapi.api.stripe import (
     PaymentView,
     PaymentsWebhookHandler,
@@ -50,6 +53,7 @@ router.register(
     PromptRandomStylePanelViewSet,
     basename="prompts"
 )
+router.register(r'products', ProductViewSet, basename="products")
 
 urlpatterns = [
     url(r'^docs/', schema_view),

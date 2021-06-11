@@ -24,10 +24,12 @@ export const FINISH_FETCHING_PANEL_STYLE_PROMPT =
   "admin/FINISH_FETCHING_PANEL_STYLE_PROMPT";
 
 export const FETCH_ADMIN_PRODUCTS = "admin/FETCH_ADMIN_PRODUCTS";
-export const FETCHING_ADMIN_PRODUCTS = "admin/FETCH_ADMIN_PRODUCTS";
+export const FETCHING_ADMIN_PRODUCTS = "admin/FETCHING_ADMIN_PRODUCTS";
 export const FINISHED_FETCHING_ADMIN_PRODUCTS =
   "admin/FINISHED_FETCHING_ADMIN_PRODUCTS";
 export const UPDATE_ADMIN_PRODUCTS = "admin/UPDATE_ADMIN_PRODUCTS";
+export const CREATE_ADMIN_PRODUCT = "admin/CREATE_ADMIN_PRODUCT";
+
 export const FETCH_STRIPE_PRODUCTS = "admin/FETCH_STRIPE_PRODUCTS";
 export const FETCHING_STRIPE_PRODUCTS = "admin/FETCHING_STRIPE_PRODUCTS";
 export const FINISHED_FETCHING_STRIPE_PRODUCTS =
@@ -182,5 +184,12 @@ export const updateStripeProducts = (products) => ({
   type: UPDATE_STRIPE_PRODUCTS,
   payload: {
     products,
+  },
+});
+
+export const createAdminProduct = (product) => ({
+  type: CREATE_ADMIN_PRODUCT,
+  payload: {
+    product,
   },
 });

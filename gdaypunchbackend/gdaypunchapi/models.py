@@ -231,9 +231,23 @@ class Product(models.Model):
     description = models.TextField(max_length=500, blank=True)
     title = models.TextField(max_length=70, blank=True, unique=True)
     image = models.TextField(max_length=100, blank=True)
-    sale_price = models.IntegerField(blank=True)
+    sale_price = models.FloatField(blank=True)
     visible = models.BooleanField(default=False)
     stock = models.IntegerField(blank=True)
+    product_type = models.ForeignKey(
+        ProductType,  on_delete=models.PROTECT)
+
+    @property
+    def stripe_ids(self):
+        stripe_prices = []
+        product_prices = ProductStripePrices.objects.all().filter(product=self.id)
+
+        for price in product_prices:
+            stripe_prices.append(price.stripe_price)
+
+        print(stripe_prices)
+
+        return stripe_prices
 
 
 class ProductStripePrices(models.Model):

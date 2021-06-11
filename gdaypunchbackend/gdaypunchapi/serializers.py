@@ -4,7 +4,7 @@ from django.contrib.auth import login
 from rest_framework.response import Response
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
-    StripeCustomer
+    StripeCustomer, Product
 )
 
 
@@ -73,5 +73,12 @@ class PromptSerializer(serializers.ModelSerializer):
 
 class StripeCustomerSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Prompt
+        model = StripeCustomer
         fields = ("id", "customer_id", "user", "stripe_email")
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ("id", "title", "description", "image", "product_type",
+                  "sale_price", "visible", "stock", "stripe_ids")
