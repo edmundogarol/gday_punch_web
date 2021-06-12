@@ -9,6 +9,8 @@ import {
   FETCH_PANEL_STYLE_PROMPT,
   FETCH_STRIPE_PRODUCTS,
   FETCH_ADMIN_PRODUCTS,
+  CREATE_ADMIN_PRODUCT,
+  DELETE_ADMIN_PRODUCT,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -24,12 +26,12 @@ import {
   fetchingAdminProducts,
   finishedFetchingAdminProducts,
   updateAdminProducts,
-  CREATE_ADMIN_PRODUCT,
 } from "actions/admin";
 import {
   selectPendingTweet,
   selectPendingDeletingTweet,
 } from "selectors/admin";
+import { message } from "antd";
 
 const NO_MEDIA = "admin-sagas/NO_MEDIA";
 const ERROR_TALKING_TO_GDAYPUNCH = "admin-sagas/ERROR_TALKING_TO_GDAYPUNCH";
@@ -305,6 +307,36 @@ export function* createProductCall(action) {
     yield call(fetchAdminProductsCall);
   } else {
     console.log("Create Product error", JSON.stringify(response));
+    Object.values(response.data).map((error) =>
+      message.warn({
+        content: error,
+        className: "antd-message-capitalize",
+        style: {
+          textTransform: "capitalize",
+        },
+      })
+    );
+  }
+}
+
+export function* deleteProductCall(action) {
+  const response = yield call(api, `products/${action.payload.productId}/`, {
+    method: "DELETE",
+  });
+
+  if (response && response.ok) {
+    yield call(fetchAdminProductsCall);
+  } else {
+    console.log("Delete Product error", JSON.stringify(response));
+    Object.values(response.data).map((error) =>
+      message.warn({
+        content: error,
+        className: "antd-message-capitalize",
+        style: {
+          textTransform: "capitalize",
+        },
+      })
+    );
   }
 }
 
@@ -319,5 +351,6 @@ export default function* adminSaga() {
     takeLatest(FETCH_STRIPE_PRODUCTS, fetchStripeProductsCall),
     takeLatest(FETCH_ADMIN_PRODUCTS, fetchAdminProductsCall),
     takeLatest(CREATE_ADMIN_PRODUCT, createProductCall),
+    takeLatest(DELETE_ADMIN_PRODUCT, deleteProductCall),
   ]);
 }

@@ -270,8 +270,6 @@ class Product(models.Model):
         for price in product_prices:
             stripe_prices.append(price.stripe_price)
 
-        print(stripe_prices)
-
         return stripe_prices
 
 

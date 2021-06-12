@@ -9,12 +9,14 @@ import {
   Radio,
   Button,
   Checkbox,
+  Popconfirm,
 } from "antd";
 import {
   InfoCircleOutlined,
   DollarOutlined,
   ShoppingOutlined,
   StockOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -33,7 +35,12 @@ const productType = {
 };
 
 function Ui(props) {
-  const { productsState, fetchProducts, createAdminProduct } = props;
+  const {
+    productsState,
+    fetchProducts,
+    createAdminProduct,
+    deleteAdminProduct,
+  } = props;
   const {
     adminProductList,
     fetchingAdminProducts,
@@ -90,7 +97,22 @@ function Ui(props) {
     {
       title: "Edit",
       render: (value, instance) => (
-        <Button onClick={() => console.log("Edit", instance)}>Edit</Button>
+        <>
+          <Button onClick={() => console.log("Edit", instance)}>Edit</Button>
+          <Popconfirm
+            title="Are you sure to delete this Product?"
+            onConfirm={() => deleteAdminProduct(instance.id)}
+            onCancel={() => {}}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button>
+              <Tooltip title="Delete Product">
+                <DeleteOutlined className="site-form-item-icon" />
+              </Tooltip>
+            </Button>
+          </Popconfirm>
+        </>
       ),
     },
   ];
