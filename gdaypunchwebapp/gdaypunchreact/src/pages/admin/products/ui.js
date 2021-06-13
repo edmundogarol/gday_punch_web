@@ -194,7 +194,7 @@ function Ui(props) {
       </ProductCreateContainer>
       <Title level={4}>
         {`Products | `}
-        <NavLink to="/admin/stripe-products">Products</NavLink>
+        <NavLink to="/admin/stripe-products">Stripe Products</NavLink>
       </Title>
       <Table dataSource={dataSource} columns={columns} />
     </ProductsContainer>

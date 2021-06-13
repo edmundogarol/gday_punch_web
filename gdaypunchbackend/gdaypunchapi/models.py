@@ -252,6 +252,10 @@ class ProductType(models.Model):
         return self.get_id_display()
 
 
+class StripePrice(models.Model):
+    price = models.TextField(max_length=50, blank=False)
+
+
 class Product(models.Model):
     description = models.TextField(max_length=500, blank=True)
     title = models.TextField(max_length=70, blank=True, unique=True)
@@ -261,21 +265,7 @@ class Product(models.Model):
     stock = models.IntegerField(blank=True)
     product_type = models.ForeignKey(
         ProductType,  on_delete=models.PROTECT)
-
-    @property
-    def stripe_ids(self):
-        stripe_prices = []
-        product_prices = ProductStripePrices.objects.all().filter(product=self.id)
-
-        for price in product_prices:
-            stripe_prices.append(price.stripe_price)
-
-        return stripe_prices
-
-
-class ProductStripePrices(models.Model):
-    product = models.ForeignKey(Product,  on_delete=models.PROTECT)
-    stripe_price = models.TextField(max_length=50, blank=False)
+    stripe_prices = models.ManyToManyField(StripePrice, blank=True)
 
 
 class Order(models.Model):
