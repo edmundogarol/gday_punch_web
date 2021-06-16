@@ -5,8 +5,3 @@ export const App = styled.div`
     min-height: 75vh;
   }
 `;
-
-export const TitleImage = styled.img`
-  height: 20vh;
-  border-radius: 100%;
-`;

@@ -7,12 +7,22 @@ import StripeProducts from "./products/stripeProducts";
 
 import { AdminNav, AdminContentContainer } from "./styles";
 
-function Ui() {
+function Ui(props) {
+  const { user } = props;
   const { app } = useParams();
   const twitter = app === "twitter";
   const prompts = app === "prompts";
   const products = app === "products";
   const stripeProducts = app === "stripe-products";
+
+  function hasPrivilege(privilege) {
+    if (!user) return true;
+
+    const superUser = user.privileges.includes("super");
+    if (superUser) return true;
+
+    return user.privileges.includes(privilege);
+  }
 
   return (
     <div className="admin">
@@ -20,10 +30,18 @@ function Ui() {
         <NavLink exact to="/">
           Home
         </NavLink>
-        <NavLink to="/admin/twitter">Twitter</NavLink>
-        <NavLink to="/admin/instagram">Instagram</NavLink>
-        <NavLink to="/admin/prompts">Prompts</NavLink>
-        <NavLink to="/admin/products">Products</NavLink>
+        {hasPrivilege("twitter") && (
+          <NavLink to="/admin/twitter">Twitter</NavLink>
+        )}
+        {hasPrivilege("instagram") && (
+          <NavLink to="/admin/instagram">Instagram</NavLink>
+        )}
+        {hasPrivilege("admin") && (
+          <NavLink to="/admin/prompts">Prompts</NavLink>
+        )}
+        {hasPrivilege("admin") && (
+          <NavLink to="/admin/products">Products</NavLink>
+        )}
       </AdminNav>
       <AdminContentContainer>
         {twitter && <Twitter />}

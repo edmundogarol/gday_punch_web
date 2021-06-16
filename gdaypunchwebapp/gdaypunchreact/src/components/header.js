@@ -42,22 +42,22 @@ export default function Header(props) {
 
 Header.propTypes = {
   // Redux Properties
-  loginView: PropTypes.bool.isRequired
+  loginView: PropTypes.bool.isRequired,
 };
 
 function getStyles() {
   return {
     mangaka: {
       color: "#bbbb21",
-      filter: "saturate(0.5)"
+      filter: "saturate(0.5)",
     },
     readers: {
       color: "#bb5c26",
-      filter: "saturate(0.5)"
+      filter: "saturate(0.5)",
     },
     editors: {
       color: "#b83027",
-      filter: "saturate(0.5)"
-    }
+      filter: "saturate(0.5)",
+    },
   };
 }

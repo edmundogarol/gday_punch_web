@@ -4,16 +4,18 @@ import {
   faFacebook,
   faInstagram,
   faYoutube,
-  faTwitter
+  faTwitter,
 } from "@fortawesome/free-brands-svg-icons";
 
 export default function Footer() {
   return (
     <div className="footer">
       <div className="contact-us">
-        <p>For more information contact:</p>
+        <p>+61 484 575 754</p>
         <p>info@gdaypunch.com</p>
-        <a href="http://gdaypunch.com/"><p className="website">www.gdaypunch.com</p></a>
+        <a href="https://www.gdaypunch.com/return-and-refund-policy.html">
+          <p className="website">Refunds & Returns Policy</p>
+        </a>
       </div>
       <div className="socials">
         <a className="fb-hover" href="https://www.facebook.com/gdaypunch/">
@@ -22,7 +24,10 @@ export default function Footer() {
         <a className="ig-hover" href="https://instagram.com/gdaypunch">
           <FontAwesomeIcon icon={faInstagram} />
         </a>
-        <a className="yt-hover" href="https://www.youtube.com/channel/UCB-PQXOoSCUzhOAkOUu_QQQ">
+        <a
+          className="yt-hover"
+          href="https://www.youtube.com/channel/UCB-PQXOoSCUzhOAkOUu_QQQ"
+        >
           <FontAwesomeIcon icon={faYoutube} />
         </a>
         <a className="tw-hover" href="https://twitter.com/gdaymanga">
@@ -30,7 +35,7 @@ export default function Footer() {
         </a>
       </div>
       <div className="copyright">
-        © COPYRIGHT 2019 GDAY PUNCH. ALL RIGHTS RESERVED.
+        © COPYRIGHT 2021 GDAY PUNCH. ALL RIGHTS RESERVED.
       </div>
     </div>
   );

@@ -53,7 +53,6 @@ def StripePriceCreator(price):
                 'quantity': 1 if stripe_price.type == "one_time" else None
             })
 
-    print(prices)
     return prices
 
 

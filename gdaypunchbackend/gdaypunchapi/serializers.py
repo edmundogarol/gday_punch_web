@@ -4,11 +4,22 @@ from django.contrib.auth import login
 from rest_framework.response import Response
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
-    StripeCustomer, Product
+    StripeCustomer, Product, Privileges
 )
 
 
+class PrivilegeSerializer(serializers.ModelSerializer):
+
+    def to_representation(self, value):
+        return value.name
+
+    class Meta:
+        model = Privileges
+        fields = ['id', 'name']
+
+
 class UserSerializer(serializers.ModelSerializer):
+    privileges = PrivilegeSerializer(many=True)
 
     def create(self, validated_data):
         user = User.objects.create_user(

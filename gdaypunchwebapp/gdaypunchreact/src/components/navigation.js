@@ -6,7 +6,7 @@ import { doLogout, openRegistration, closeRegistration } from "actions/user";
 import {
   selectUser,
   selectLoginViewToggle,
-  selectLoggedIn
+  selectLoggedIn,
 } from "selectors/app";
 import { getImageModule } from "utils/utils";
 import { connect } from "react-redux";
@@ -19,17 +19,26 @@ class Navigation extends React.Component {
   }
 
   render() {
-    const {
-      user,
-      loggedIn,
-      loginView,
-      closeRegister,
-      openRegister,
-      logout
-    } = this.props;
+    const { user, loggedIn, loginView, closeRegister, openRegister, logout } =
+      this.props;
+
+    window.onscroll = () => scrollFunction();
+
+    function scrollFunction() {
+      if (
+        document.body.scrollTop > 50 ||
+        document.documentElement.scrollTop > 50
+      ) {
+        document.getElementById("nav-container").style.fontSize = "11px";
+        document.getElementById("nav-container").style.minHeight = "8vh";
+      } else {
+        document.getElementById("nav-container").style.fontSize = "15px";
+        document.getElementById("nav-container").style.minHeight = "10vh";
+      }
+    }
 
     return (
-      <div className="navigation-container">
+      <div className="navigation-container" id="nav-container">
         <nav>
           <div className="nav-logo">
             <NavLink className="logo-link" to="/">
@@ -37,7 +46,11 @@ class Navigation extends React.Component {
             </NavLink>
           </div>
           <div className="nav-links">
-            <p>{user.username && user.username.length ? user.username : user.email}</p>
+            <p>
+              {user.username && user.username.length
+                ? user.username
+                : user.email}
+            </p>
             {user.is_staff && <Link to="/admin">{"Admin"}</Link>}
             {!loggedIn && (
               <a
@@ -69,19 +82,19 @@ Navigation.propTypes = {
   // Redux Functions
   logout: PropTypes.func.isRequired,
   openRegister: PropTypes.func.isRequired,
-  closeRegister: PropTypes.func.isRequired
+  closeRegister: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = createStructuredSelector({
   user: selectUser,
   loggedIn: selectLoggedIn,
-  loginView: selectLoginViewToggle
+  loginView: selectLoginViewToggle,
 });
 
 const mapDispatchToProps = {
   logout: doLogout,
   openRegister: openRegistration,
-  closeRegister: closeRegistration
+  closeRegister: closeRegistration,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Navigation);

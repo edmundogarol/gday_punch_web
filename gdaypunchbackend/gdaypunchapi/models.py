@@ -88,7 +88,7 @@ class Privileges(models.Model):
     name = models.TextField(max_length=20, blank=True)
 
     def __str__(self):
-        return self.get_id_display()
+        return self.get_name_display()
 
 
 class User(AbstractBaseUser, PermissionsMixin):

@@ -6,7 +6,7 @@ import Header from "components/header";
 import Login from "components/login";
 import MangaTile from "components/mangaTile";
 
-import { App, TitleImage } from "./styles";
+import { App } from "./styles";
 import PaymentForm from "components/paymentForm";
 
 class Ui extends React.Component {
@@ -35,7 +35,6 @@ class Ui extends React.Component {
           <Header loginView={loginView} />
           <Login />
         </div>
-        <PaymentForm />
         <div style={styles.list}>
           {!isEmpty(featuredManga) &&
             featuredManga.map((manga) => {
@@ -50,59 +49,6 @@ class Ui extends React.Component {
                 />
               ) : null;
             })}
-        </div>
-        <div style={styles.donateSection}>
-          <div style={styles.artistProfile}>
-            <TitleImage
-              src={
-                "https://gdaypunch-static.s3-us-west-2.amazonaws.com/yungy.jpg"
-              }
-            />
-          </div>
-          <div style={styles.donateContainer}>
-            <h3 style={styles.donateHeader}>
-              Yungy <span style={styles.donateHeaderTag}>@yungy.art</span>
-            </h3>
-            <h3 style={styles.donateTitle}>Support Yungy's Manga</h3>
-            <h5 style={styles.donateSubTitle}>
-              So he can create bigger and better projects!
-            </h5>
-          </div>
-          <form
-            action="https://www.paypal.com/donate"
-            method="post"
-            target="_top"
-            style={styles.donateButton}
-          >
-            <input type="hidden" name="cmd" value="_donations" />
-            <input
-              type="hidden"
-              name="business"
-              value="edmundo.a.garol@outlook.com"
-            />
-            <input
-              type="hidden"
-              name="item_name"
-              value="Supporting Yungy's Manga"
-            />
-            <input type="hidden" name="currency_code" value="USD" />
-            <input
-              type="image"
-              src="https://www.paypalobjects.com/en_AU/i/btn/btn_donateCC_LG.gif"
-              border="0"
-              name="submit"
-              title="PayPal - The safer, easier way to pay online!"
-              alt="Donate with PayPal button"
-              style={styles.donate}
-            />
-            <img
-              alt=""
-              border="0"
-              src="https://www.paypal.com/en_AU/i/scr/pixel.gif"
-              width="1"
-              height="1"
-            />
-          </form>
         </div>
       </App>
     );
