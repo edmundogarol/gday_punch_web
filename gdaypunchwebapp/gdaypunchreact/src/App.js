@@ -107,6 +107,7 @@ function Root(props) {
               <Switch>
                 <Route exact path="/admin" component={Admin} />
                 <Route exact path="/admin/:app" component={Admin} />
+                <Route exact path="/admin/:app/:productId" component={Admin} />
               </Switch>
             ) : (
               <Redirect to="/" />

@@ -20,6 +20,7 @@ import {
   UPDATE_ADMIN_PRODUCTS,
   FETCHING_ADMIN_PRODUCTS,
   FINISHED_FETCHING_ADMIN_PRODUCTS,
+  SET_EDITING_PRODUCT,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -51,6 +52,7 @@ const INITIAL_STATE = {
     finishedFetchingStripeProducts: false,
     fetchingAdminProducts: false,
     finishedFetchingAdminProducts: false,
+    editingProduct: undefined,
   },
 };
 
@@ -203,6 +205,14 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
           ...state.products,
           fetchingAdminProducts: false,
           finishedFetchingAdminProducts: true,
+        },
+      };
+    case SET_EDITING_PRODUCT:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          editingProduct: action.payload.productId,
         },
       };
     default:

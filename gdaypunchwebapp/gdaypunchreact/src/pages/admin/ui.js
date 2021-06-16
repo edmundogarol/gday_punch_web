@@ -4,6 +4,7 @@ import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
 import StripeProducts from "./products/stripeProducts";
+import ProductDetail from "./products/productDetails";
 
 import { AdminNav, AdminContentContainer } from "./styles";
 
@@ -14,6 +15,7 @@ function Ui(props) {
   const prompts = app === "prompts";
   const products = app === "products";
   const stripeProducts = app === "stripe-products";
+  const productDetail = app === "product-detail";
 
   function hasPrivilege(privilege) {
     if (!user) return true;
@@ -48,6 +50,7 @@ function Ui(props) {
         {prompts && <Prompts />}
         {products && <Products />}
         {stripeProducts && <StripeProducts />}
+        {productDetail && <ProductDetail />}
       </AdminContentContainer>
     </div>
   );

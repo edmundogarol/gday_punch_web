@@ -14,7 +14,7 @@ function MangaTile(props) {
   function handleMangaClick(destination, clickType) {
     const clickTypeMessages = {
       manga: "Info: Sign up or Log in to read this manga!",
-      like: "Info: Sign up or Log in to like this manga!"
+      like: "Info: Sign up or Log in to like this manga!",
     };
 
     if (clickType === "manga") {
@@ -23,7 +23,6 @@ function MangaTile(props) {
         openRegister();
         suggestRegister(clickTypeMessages[clickType]);
       } else {
-        // window.location.href = destination;
         props.history.push(destination);
       }
     } else if (clickType === "like") {
@@ -73,24 +72,24 @@ function getStyles() {
       height: "30vh",
       margin: "15vh",
       marginTop: "10vh",
-      marginBottom: "unset"
+      marginBottom: "unset",
     },
     removeLinkStyle: {
       textDecoration: "none",
-      color: "black"
+      color: "black",
     },
     mangaTitle: {
-      fontSize: "1em"
+      fontSize: "1em",
     },
     mangaArtist: {
-      fontSize: "0.8em"
-    }
+      fontSize: "0.8em",
+    },
   };
 }
 
 MangaTile.propTypes = {
   // Component Properites
-  manga: PropTypes.object
+  manga: PropTypes.object,
   // Redux Properties
   // Redux Functions
 };

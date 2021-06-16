@@ -40,6 +40,7 @@ function Ui(props) {
     fetchProducts,
     createAdminProduct,
     deleteAdminProduct,
+    setEditProduct,
   } = props;
   const {
     adminProductList,
@@ -98,7 +99,14 @@ function Ui(props) {
       title: "Edit",
       render: (value, instance) => (
         <>
-          <Button onClick={() => console.log("Edit", instance)}>Edit</Button>
+          <Button
+            onClick={() => {
+              setEditProduct(instance.id);
+              props.history.push(`product-detail/${instance.id}/`);
+            }}
+          >
+            Edit
+          </Button>
           <Popconfirm
             title="Are you sure to delete this Product?"
             onConfirm={() => deleteAdminProduct(instance.id)}

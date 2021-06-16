@@ -37,6 +37,8 @@ export const FINISHED_FETCHING_STRIPE_PRODUCTS =
   "admin/FINISHED_FETCHING_STRIPE_PRODUCTS";
 export const UPDATE_STRIPE_PRODUCTS = "admin/UPDATE_STRIPE_PRODUCTS";
 
+export const SET_EDITING_PRODUCT = "admin/SET_EDITING_PRODUCT";
+
 export const doTweet = () => ({
   type: DO_TWEET,
 });
@@ -197,6 +199,13 @@ export const createAdminProduct = (product) => ({
 
 export const deleteAdminProduct = (productId) => ({
   type: DELETE_ADMIN_PRODUCT,
+  payload: {
+    productId,
+  },
+});
+
+export const setEditProduct = (productId) => ({
+  type: SET_EDITING_PRODUCT,
   payload: {
     productId,
   },
