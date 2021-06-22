@@ -10,3 +10,4 @@ awscli
 gunicorn
 django-rest-swagger==2.2.0
 stripe==2.58
+django-next-prev==1.1.0

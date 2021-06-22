@@ -225,6 +225,7 @@ class Prompt(models.Model):
     is_selected = models.BooleanField(default=False)
     promptType = models.ForeignKey(
         PromptType,  on_delete=models.PROTECT)
+    last_selected = models.DateField(null=True, blank=True)
 
 
 class StripeCustomer(models.Model):

@@ -1,4 +1,6 @@
 import os
+import datetime
+from next_prev import next_in_order, prev_in_order
 
 from rest_framework import viewsets, permissions, exceptions, authentication, throttling
 from rest_framework import status
@@ -175,6 +177,7 @@ class PromptViewSet(viewsets.ModelViewSet):
         queryset = Prompt.objects.all()
         prompt = queryset.get(pk=kwargs.get("pk"))
         prompt.is_selected = True
+        prompt.last_selected = datetime.datetime.now()
         prompt.save()
         serializer = PromptSerializer(prompt)
         return Response(serializer.data)
@@ -206,9 +209,33 @@ class PromptSelectedViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def list(self, request, *args, **kwargs):
-        queryset = Prompt.objects.get(is_selected=True)
-        serializer = PromptSerializer(queryset)
-        return Response(serializer.data)
+        today = datetime.datetime.now()
+        prompt = Prompt.objects.get(is_selected=True)
+
+        try:
+            prompt.last_selected.day
+        except AttributeError:
+            prompt.last_selected = datetime.datetime.now()
+            prompt.save()
+
+        if today.day == prompt.last_selected.day:
+            serializer = PromptSerializer(prompt)
+            return Response(serializer.data)
+        else:
+            prompt.is_selected = False
+            prompt.save()
+
+            next_prompt = next_in_order(prompt)
+
+            if next_prompt is None:
+                next_prompt = Prompt.objects.first()
+
+            next_prompt.is_selected = True
+            next_prompt.last_selected = datetime.datetime.now()
+            next_prompt.save()
+
+            serializer = PromptSerializer(next_prompt)
+            return Response(serializer.data)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
