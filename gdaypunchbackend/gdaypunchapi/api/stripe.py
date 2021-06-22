@@ -172,11 +172,13 @@ class StripeProductsViewSet(APIView):
         for price in stripe.Price.list(limit=10):
             price_details = stripe.Price.retrieve(price.id)
             product_details = stripe.Product.retrieve(price_details.product)
-            product_list.append(
-                {
-                    'price': price_details,
-                    'product': product_details
-                }
-            )
+
+            if product_details.active:
+                product_list.append(
+                    {
+                        'price': price_details,
+                        'product': product_details
+                    }
+                )
 
         return Response(product_list)
