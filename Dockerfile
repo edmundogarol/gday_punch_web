@@ -44,6 +44,7 @@ RUN pip install -r requirements.txt
 ARG CACHEBUST=1
 RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
 RUN cat gday-db-config.json
+RUN python manage.py makemigration --noinput
 RUN python manage.py migrate --noinput
 
 #Collect Static
