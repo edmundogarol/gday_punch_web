@@ -254,7 +254,8 @@ class ProductType(models.Model):
 
 
 class StripePrice(models.Model):
-    price = models.TextField(max_length=50, blank=False)
+    price_amount = models.FloatField(blank=False)
+    price_id = models.TextField(max_length=50, blank=False)
 
 
 class Product(models.Model):
@@ -267,6 +268,10 @@ class Product(models.Model):
     product_type = models.ForeignKey(
         ProductType,  on_delete=models.PROTECT)
     stripe_prices = models.ManyToManyField(StripePrice, blank=True)
+
+    @property
+    def price(self):
+        print(self.stripe_prices)
 
 
 class Order(models.Model):

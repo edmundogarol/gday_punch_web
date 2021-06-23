@@ -34,6 +34,7 @@ from .gdaypunchapi.api.stripe import (
     PaymentView,
     PaymentsWebhookHandler,
     StripeProductsViewSet,
+    StripePriceViewSet,
 )
 
 schema_view = get_swagger_view(title='Gday Punch Web App API')
@@ -66,5 +67,6 @@ urlpatterns = [
         csrf_exempt(PaymentView.as_view())),
     url(r'api/payments/webhooks/', csrf_exempt(PaymentsWebhookHandler)),
     url(r'api/stripe-products/', StripeProductsViewSet.as_view()),
+    url(r'api/stripe-prices/', StripePriceViewSet.as_view({'post': 'create'})),
     url(r'', include('gdaypunchwebapp.urls'))
 ]

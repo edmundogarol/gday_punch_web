@@ -1,7 +1,6 @@
 import os
 
-from rest_framework import permissions
-from rest_framework import status
+from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -11,7 +10,11 @@ from django.http import HttpResponse
 import stripe
 
 from ..models import (
-    User, StripeCustomer
+    User, StripeCustomer, StripePrice
+)
+
+from ..serializers import (
+    StripePriceSerializer
 )
 
 if 'DEVENV' in os.environ:
@@ -173,12 +176,21 @@ class StripeProductsViewSet(APIView):
             price_details = stripe.Price.retrieve(price.id)
             product_details = stripe.Product.retrieve(price_details.product)
 
+            stripe_price = StripePrice.objects.filter(price_id=price.id)
+
             if product_details.active:
                 product_list.append(
                     {
                         'price': price_details,
-                        'product': product_details
+                        'product': product_details,
+                        'registered': False if not stripe_price else True
                     }
                 )
 
         return Response(product_list)
+
+
+class StripePriceViewSet(viewsets.ModelViewSet):
+    queryset = StripePrice.objects.all()
+    serializer_class = StripePriceSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]

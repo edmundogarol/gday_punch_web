@@ -11,6 +11,7 @@ import {
   FETCH_ADMIN_PRODUCTS,
   CREATE_ADMIN_PRODUCT,
   DELETE_ADMIN_PRODUCT,
+  REGISTER_STRIPE_PRICE,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -340,6 +341,30 @@ export function* deleteProductCall(action) {
   }
 }
 
+export function* registerStripePriceCall(action) {
+  const response = yield call(api, `stripe-prices/`, {
+    method: "POST",
+    body: {
+      ...action.payload.stripePrice,
+    },
+  });
+
+  if (response && response.ok) {
+    yield call(fetchStripeProductsCall);
+  } else {
+    console.log("Register Stripe Price error", JSON.stringify(response));
+    Object.values(response.data).map((error) =>
+      message.warn({
+        content: error,
+        className: "antd-message-capitalize",
+        style: {
+          textTransform: "capitalize",
+        },
+      })
+    );
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -352,5 +377,6 @@ export default function* adminSaga() {
     takeLatest(FETCH_ADMIN_PRODUCTS, fetchAdminProductsCall),
     takeLatest(CREATE_ADMIN_PRODUCT, createProductCall),
     takeLatest(DELETE_ADMIN_PRODUCT, deleteProductCall),
+    takeLatest(REGISTER_STRIPE_PRICE, registerStripePriceCall),
   ]);
 }

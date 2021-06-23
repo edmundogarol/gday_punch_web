@@ -36,6 +36,7 @@ export const FETCHING_STRIPE_PRODUCTS = "admin/FETCHING_STRIPE_PRODUCTS";
 export const FINISHED_FETCHING_STRIPE_PRODUCTS =
   "admin/FINISHED_FETCHING_STRIPE_PRODUCTS";
 export const UPDATE_STRIPE_PRODUCTS = "admin/UPDATE_STRIPE_PRODUCTS";
+export const REGISTER_STRIPE_PRICE = "admin/REGISTER_STRIPE_PRICE";
 
 export const SET_EDITING_PRODUCT = "admin/SET_EDITING_PRODUCT";
 
@@ -208,5 +209,12 @@ export const setEditProduct = (productId) => ({
   type: SET_EDITING_PRODUCT,
   payload: {
     productId,
+  },
+});
+
+export const registerStripePrice = (stripePrice) => ({
+  type: REGISTER_STRIPE_PRICE,
+  payload: {
+    stripePrice,
   },
 });

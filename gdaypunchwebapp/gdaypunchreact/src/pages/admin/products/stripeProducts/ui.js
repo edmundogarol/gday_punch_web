@@ -40,7 +40,7 @@ const productType = {
 };
 
 function Ui(props) {
-  const { productsState, fetchStripeProducts } = props;
+  const { productsState, fetchStripeProducts, registerStripePrice } = props;
   const {
     stripeProductList,
     fetchingStripeProducts,
@@ -63,6 +63,7 @@ function Ui(props) {
       stripeId: stripeProduct.price.id,
       type: productType[stripeProduct.price.type],
       price: stripeProduct.price.unit_amount / 100,
+      registered: stripeProduct.registered,
     }));
   };
 
@@ -130,9 +131,34 @@ function Ui(props) {
       render: (value) => `$${value}`,
     },
     {
-      title: "Edit",
+      title: (
+        <Tooltip title="Activate Stripe Price in Gday Punch">Register</Tooltip>
+      ),
       render: (value, instance) => (
-        <Button onClick={() => console.log("Edit")}>Edit</Button>
+        <Tooltip
+          title={
+            instance.registered
+              ? "Product already active"
+              : "Activate Stripe Price in Gday Punch"
+          }
+        >
+          <Button
+            style={
+              instance.registered
+                ? { background: "#c8ffab", color: "green" }
+                : null
+            }
+            disabled={instance.registered}
+            onClick={() =>
+              registerStripePrice({
+                price_id: instance.stripeId,
+                price_amount: instance.price,
+              })
+            }
+          >
+            {instance.registered ? "Active" : "Register"}
+          </Button>
+        </Tooltip>
       ),
     },
   ];
