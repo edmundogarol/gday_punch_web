@@ -256,6 +256,7 @@ class ProductType(models.Model):
 class StripePrice(models.Model):
     price_amount = models.FloatField(blank=False)
     price_id = models.TextField(max_length=50, blank=False)
+    price_title = models.TextField(max_length=50, blank=False)
 
 
 class Product(models.Model):
@@ -271,7 +272,14 @@ class Product(models.Model):
 
     @property
     def price(self):
-        print(self.stripe_prices)
+        product = Product.objects.get(id=self.id)
+        stripe_prices = product.stripe_prices.all()
+
+        price = 0
+        for stripe_price in stripe_prices:
+            price += StripePrice.objects.get(id=stripe_price.id).price_amount
+
+        return price
 
 
 class Order(models.Model):

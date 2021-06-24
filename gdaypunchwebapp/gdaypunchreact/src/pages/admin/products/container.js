@@ -9,6 +9,7 @@ import {
   createAdminProduct as createAdminProductAction,
   deleteAdminProduct as deleteAdminProductAction,
   setEditProduct as setEditProductAction,
+  fetchStripePrices as fetchStripePricesAction,
 } from "actions/admin";
 
 import Ui from "./ui";
@@ -22,6 +23,7 @@ const mapDispatch = {
   createAdminProduct: createAdminProductAction,
   deleteAdminProduct: deleteAdminProductAction,
   setEditProduct: setEditProductAction,
+  fetchStripePrices: fetchStripePricesAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));

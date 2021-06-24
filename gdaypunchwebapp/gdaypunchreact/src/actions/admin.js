@@ -30,15 +30,20 @@ export const FINISHED_FETCHING_ADMIN_PRODUCTS =
 export const UPDATE_ADMIN_PRODUCTS = "admin/UPDATE_ADMIN_PRODUCTS";
 export const CREATE_ADMIN_PRODUCT = "admin/CREATE_ADMIN_PRODUCT";
 export const DELETE_ADMIN_PRODUCT = "admin/DELETE_ADMIN_PRODUCT";
+export const SET_EDITING_PRODUCT = "admin/SET_EDITING_PRODUCT";
 
 export const FETCH_STRIPE_PRODUCTS = "admin/FETCH_STRIPE_PRODUCTS";
 export const FETCHING_STRIPE_PRODUCTS = "admin/FETCHING_STRIPE_PRODUCTS";
 export const FINISHED_FETCHING_STRIPE_PRODUCTS =
   "admin/FINISHED_FETCHING_STRIPE_PRODUCTS";
 export const UPDATE_STRIPE_PRODUCTS = "admin/UPDATE_STRIPE_PRODUCTS";
-export const REGISTER_STRIPE_PRICE = "admin/REGISTER_STRIPE_PRICE";
 
-export const SET_EDITING_PRODUCT = "admin/SET_EDITING_PRODUCT";
+export const FETCH_STRIPE_PRICES = "admin/FETCH_STRIPE_PRICES";
+export const REGISTER_STRIPE_PRICE = "admin/REGISTER_STRIPE_PRICE";
+export const FETCHING_STRIPE_PRICES = "admin/FETCHING_STRIPE_PRICES";
+export const FINISHED_FETCHING_STRIPE_PRICES =
+  "admin/FINISHED_FETCHING_STRIPE_PRICES";
+export const UPDATE_STRIPE_PRICES = "admin/UPDATE_STRIPE_PRICES";
 
 export const doTweet = () => ({
   type: DO_TWEET,
@@ -216,5 +221,24 @@ export const registerStripePrice = (stripePrice) => ({
   type: REGISTER_STRIPE_PRICE,
   payload: {
     stripePrice,
+  },
+});
+
+export const fetchStripePrices = () => ({
+  type: FETCH_STRIPE_PRICES,
+});
+
+export const fetchingStripePrices = () => ({
+  type: FETCHING_STRIPE_PRICES,
+});
+
+export const finishedFetchingStripePrices = () => ({
+  type: FINISHED_FETCHING_STRIPE_PRICES,
+});
+
+export const updateStripePrices = (prices) => ({
+  type: UPDATE_STRIPE_PRICES,
+  payload: {
+    prices,
   },
 });

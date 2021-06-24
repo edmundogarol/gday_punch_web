@@ -12,6 +12,7 @@ import {
   CREATE_ADMIN_PRODUCT,
   DELETE_ADMIN_PRODUCT,
   REGISTER_STRIPE_PRICE,
+  FETCH_STRIPE_PRICES,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -27,6 +28,9 @@ import {
   fetchingAdminProducts,
   finishedFetchingAdminProducts,
   updateAdminProducts,
+  fetchingStripePrices,
+  finishedFetchingStripePrices,
+  updateStripePrices,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -365,6 +369,24 @@ export function* registerStripePriceCall(action) {
   }
 }
 
+export function* fetchStripePricesCall() {
+  yield put(fetchingStripePrices());
+  const response = yield call(api, "stripe-prices/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateStripePrices(data.results));
+    yield put(finishedFetchingStripePrices());
+
+    return data;
+  } else {
+    yield put(finishedFetchingStripePrices());
+    console.log("Stripe Prices Fetch error", JSON.stringify(response));
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -378,5 +400,6 @@ export default function* adminSaga() {
     takeLatest(CREATE_ADMIN_PRODUCT, createProductCall),
     takeLatest(DELETE_ADMIN_PRODUCT, deleteProductCall),
     takeLatest(REGISTER_STRIPE_PRICE, registerStripePriceCall),
+    takeLatest(FETCH_STRIPE_PRICES, fetchStripePricesCall),
   ]);
 }

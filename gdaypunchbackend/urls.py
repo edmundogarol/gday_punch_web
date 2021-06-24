@@ -67,6 +67,7 @@ urlpatterns = [
         csrf_exempt(PaymentView.as_view())),
     url(r'api/payments/webhooks/', csrf_exempt(PaymentsWebhookHandler)),
     url(r'api/stripe-products/', StripeProductsViewSet.as_view()),
-    url(r'api/stripe-prices/', StripePriceViewSet.as_view({'post': 'create'})),
+    url(r'api/stripe-prices/',
+        StripePriceViewSet.as_view({'post': 'create', 'get': 'list'})),
     url(r'', include('gdaypunchwebapp.urls'))
 ]

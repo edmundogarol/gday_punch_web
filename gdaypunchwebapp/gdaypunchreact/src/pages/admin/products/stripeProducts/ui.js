@@ -153,6 +153,7 @@ function Ui(props) {
               registerStripePrice({
                 price_id: instance.stripeId,
                 price_amount: instance.price,
+                price_title: instance.name,
               })
             }
           >

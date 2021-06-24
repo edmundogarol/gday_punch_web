@@ -98,4 +98,4 @@ class ProductSerializer(serializers.ModelSerializer):
 class StripePriceSerializer(serializers.ModelSerializer):
     class Meta:
         model = StripePrice
-        fields = ("id", "price_id", "price_amount")
+        fields = ("id", "price_id", "price_amount", "price_title")

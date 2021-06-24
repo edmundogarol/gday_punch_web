@@ -21,6 +21,9 @@ import {
   FETCHING_ADMIN_PRODUCTS,
   FINISHED_FETCHING_ADMIN_PRODUCTS,
   SET_EDITING_PRODUCT,
+  UPDATE_STRIPE_PRICES,
+  FETCHING_STRIPE_PRICES,
+  FINISHED_FETCHING_STRIPE_PRICES,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -48,11 +51,15 @@ const INITIAL_STATE = {
   products: {
     adminProductList: [],
     stripeProductList: [],
+    stripePrices: [],
+    stripePriceIds: [],
     fetchingStripeProducts: false,
     finishedFetchingStripeProducts: false,
     fetchingAdminProducts: false,
     finishedFetchingAdminProducts: false,
     editingProduct: undefined,
+    fetchingStripePrices: false,
+    finishedFetchingStripePrices: false,
   },
 };
 
@@ -213,6 +220,33 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
         products: {
           ...state.products,
           editingProduct: action.payload.productId,
+        },
+      };
+    case UPDATE_STRIPE_PRICES:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          stripePrices: action.payload.prices,
+          stripePriceIds: action.payload.prices.map((price) => price.id),
+        },
+      };
+    case FETCHING_STRIPE_PRICES:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchingStripePrices: true,
+          finishedFetchingStripePrices: false,
+        },
+      };
+    case FINISHED_FETCHING_STRIPE_PRICES:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchingStripePrices: false,
+          finishedFetchingStripePrices: true,
         },
       };
     default:

@@ -10,6 +10,7 @@ import {
   Button,
   Checkbox,
   Popconfirm,
+  Transfer,
 } from "antd";
 import {
   InfoCircleOutlined,
@@ -22,6 +23,8 @@ import {
 import {
   ProductsContainer,
   ProductCreateContainer,
+  ProductLeftContainer,
+  ProductRightContainer,
   SubmitButton,
 } from "./styles";
 
@@ -41,13 +44,21 @@ function Ui(props) {
     createAdminProduct,
     deleteAdminProduct,
     setEditProduct,
+    fetchStripePrices,
   } = props;
   const {
+    stripePrices,
+    stripePriceIds,
     adminProductList,
     fetchingAdminProducts,
     finishedFetchingAdminProducts,
+    fetchingStripePrices,
+    finishedFetchingStripePrices,
   } = productsState;
 
+  const [selectedKeys, setSelectedKeys] = useState([]);
+  const [productPrices, updateProductPrices] = useState([]);
+  const [transferStripePrices, updateTransferStripePrices] = useState([]);
   const [newProduct, updateNewProduct] = useState({
     title: undefined,
     description: undefined,
@@ -56,6 +67,8 @@ function Ui(props) {
     visible: false,
     stock: undefined,
     product_type: 1,
+    price: 0,
+    stripe_prices: productPrices,
   });
 
   useEffect(() => {
@@ -64,7 +77,47 @@ function Ui(props) {
     }
   }, [fetchingAdminProducts, finishedFetchingAdminProducts]);
 
+  useEffect(() => {
+    if (!fetchingStripePrices && !finishedFetchingStripePrices) {
+      fetchStripePrices();
+    }
+  }, [fetchingStripePrices, finishedFetchingStripePrices]);
+
+  useEffect(() => {
+    updateTransferStripePrices(stripePriceIds);
+  }, [stripePriceIds]);
+
+  useEffect(() => {
+    let createProductPrice = 0;
+    productPrices.map((price) => {
+      createProductPrice += stripePrices.find(
+        (e) => e.id === price
+      ).price_amount;
+    });
+    updateNewProduct({
+      ...newProduct,
+      price: createProductPrice,
+      stripe_prices: productPrices,
+    });
+  }, [productPrices]);
+
   const handleCreate = () => createAdminProduct(newProduct);
+
+  const onSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
+    setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
+  };
+
+  const onChange = (nextTargetKeys, direction, moveKeys) => {
+    if (direction === "left") {
+      updateProductPrices([...productPrices, ...moveKeys]);
+    } else {
+      const newPrices = productPrices.filter((elem) => {
+        return moveKeys.indexOf(elem) < 0;
+      });
+      updateProductPrices(newPrices);
+    }
+    updateTransferStripePrices(nextTargetKeys);
+  };
 
   const columns = [
     {
@@ -77,6 +130,11 @@ function Ui(props) {
       title: "Title",
       dataIndex: "title",
       key: "title",
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
     },
     {
       title: "Visible",
@@ -130,75 +188,96 @@ function Ui(props) {
     ...product,
   }));
 
+  const stripePricesForTransfer = stripePrices.map((price) => ({
+    key: price.id,
+    title: `$${price.price_amount} ${price.price_title}`,
+  }));
+
   return (
     <ProductsContainer>
       <Title level={4}>Create Product</Title>
       <ProductCreateContainer>
-        <Input
-          value={newProduct.title}
-          onChange={(e) =>
-            updateNewProduct({ ...newProduct, title: e.target.value })
-          }
-          placeholder="Enter Product Title"
-          prefix={<ShoppingOutlined className="site-form-item-icon" />}
-          suffix={
-            <Tooltip title="Product Title">
-              <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
-            </Tooltip>
-          }
-        />
-        <TextArea
-          rows={4}
-          value={newProduct.description}
-          onChange={(e) =>
-            updateNewProduct({ ...newProduct, description: e.target.value })
-          }
-          placeholder="Enter Product Description"
-        />
-        <Input
-          value={newProduct.sale_price}
-          onChange={(e) =>
-            updateNewProduct({ ...newProduct, sale_price: e.target.value })
-          }
-          placeholder="Enter product sale price"
-          prefix={<DollarOutlined className="site-form-item-icon" />}
-          suffix={
-            <Tooltip title="Product sale price in AUD$(00.00)">
-              <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
-            </Tooltip>
-          }
-        />
-        <Input
-          value={newProduct.stock}
-          onChange={(e) =>
-            updateNewProduct({ ...newProduct, stock: e.target.value })
-          }
-          placeholder="Enter product stock"
-          prefix={<StockOutlined className="site-form-item-icon" />}
-          suffix={
-            <Tooltip title="Product stock">
-              <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
-            </Tooltip>
-          }
-        />
-        <Radio.Group
-          onChange={(e) =>
-            updateNewProduct({ ...newProduct, product_type: e.target.value })
-          }
-          value={newProduct.product_type}
-        >
-          <Radio value={1}>Physical</Radio>
-          <Radio value={2}>Digital</Radio>
-          <Radio value={3}>Subscription</Radio>
-        </Radio.Group>
-        <Checkbox
-          onChange={(e) =>
-            updateNewProduct({ ...newProduct, visible: e.target.checked })
-          }
-        >
-          Visible
-        </Checkbox>
-        <SubmitButton onClick={() => handleCreate()}>Create</SubmitButton>
+        <ProductLeftContainer>
+          <Input
+            value={newProduct.title}
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, title: e.target.value })
+            }
+            placeholder="Enter Product Title"
+            prefix={<ShoppingOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Product Title">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
+          <TextArea
+            rows={4}
+            value={newProduct.description}
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, description: e.target.value })
+            }
+            placeholder="Enter Product Description"
+          />
+          <Input
+            value={newProduct.sale_price}
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, sale_price: e.target.value })
+            }
+            placeholder="Enter product sale price"
+            prefix={<DollarOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Product sale price in AUD$(00.00)">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
+          <Input
+            value={newProduct.stock}
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, stock: e.target.value })
+            }
+            placeholder="Enter product stock"
+            prefix={<StockOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Product stock">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
+          <Radio.Group
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, product_type: e.target.value })
+            }
+            value={newProduct.product_type}
+          >
+            <Radio value={1}>Physical</Radio>
+            <Radio value={2}>Digital</Radio>
+            <Radio value={3}>Subscription</Radio>
+          </Radio.Group>
+          <Checkbox
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, visible: e.target.checked })
+            }
+          >
+            Visible
+          </Checkbox>
+          <SubmitButton onClick={() => handleCreate()}>Create</SubmitButton>
+        </ProductLeftContainer>
+        <ProductRightContainer>
+          <Transfer
+            dataSource={stripePricesForTransfer}
+            titles={["Product Prices", "Stripe Prices"]}
+            targetKeys={transferStripePrices}
+            selectedKeys={selectedKeys}
+            onChange={onChange}
+            onSelectChange={onSelectChange}
+            render={(item) => item.title}
+            listStyle={{ direction: "left", width: "200px" }}
+            showSelectAll={false}
+          />
+          <Title level={4}>{`Price: $${newProduct.price}`}</Title>
+        </ProductRightContainer>
       </ProductCreateContainer>
       <Title level={4}>
         {`Products | `}
