@@ -60,3 +60,10 @@ export const selectProductsState = createSelector(
   selectDomain,
   ({ products }) => products
 );
+
+export const selectCurrentProduct = createSelector(
+  selectDomain,
+  ({ products: { editingProduct, adminProductList } }) => adminProductList.find(
+    (product) => product.id == editingProduct
+  )
+);

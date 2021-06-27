@@ -160,7 +160,7 @@ function Ui(props) {
           <Button
             onClick={() => {
               setEditProduct(instance.id);
-              props.history.push(`product-detail/${instance.id}/`);
+              props.history.push(`/admin/product-detail/${instance.id}/`);
             }}
           >
             Edit

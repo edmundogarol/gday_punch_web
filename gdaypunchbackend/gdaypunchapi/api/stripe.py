@@ -123,8 +123,6 @@ def PaymentsWebhookHandler(request):
     if event['type'] == 'checkout.session.completed':
         session = event['data']['object']
 
-        print("checkout.session.completed")
-
         customer_id = session.customer
         customer_email = session.customer_details.email
         stripe_customer = None

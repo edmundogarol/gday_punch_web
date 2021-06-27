@@ -31,6 +31,7 @@ export const UPDATE_ADMIN_PRODUCTS = "admin/UPDATE_ADMIN_PRODUCTS";
 export const CREATE_ADMIN_PRODUCT = "admin/CREATE_ADMIN_PRODUCT";
 export const DELETE_ADMIN_PRODUCT = "admin/DELETE_ADMIN_PRODUCT";
 export const SET_EDITING_PRODUCT = "admin/SET_EDITING_PRODUCT";
+export const UPDATE_ADMIN_PRODUCT = "admin/UPDATE_ADMIN_PRODUCT";
 
 export const FETCH_STRIPE_PRODUCTS = "admin/FETCH_STRIPE_PRODUCTS";
 export const FETCHING_STRIPE_PRODUCTS = "admin/FETCHING_STRIPE_PRODUCTS";
@@ -200,6 +201,14 @@ export const createAdminProduct = (product) => ({
   type: CREATE_ADMIN_PRODUCT,
   payload: {
     product,
+  },
+});
+
+export const updateAdminProduct = (product, history) => ({
+  type: UPDATE_ADMIN_PRODUCT,
+  payload: {
+    product,
+    history,
   },
 });
 

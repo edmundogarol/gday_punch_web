@@ -13,6 +13,7 @@ import {
   DELETE_ADMIN_PRODUCT,
   REGISTER_STRIPE_PRICE,
   FETCH_STRIPE_PRICES,
+  UPDATE_ADMIN_PRODUCT,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -324,6 +325,31 @@ export function* createProductCall(action) {
   }
 }
 
+export function* updateProductCall(action) {
+  const response = yield call(api, `product/${action.payload.product.id}/`, {
+    method: "PATCH",
+    body: {
+      ...action.payload.product,
+    },
+  });
+
+  if (response && response.ok) {
+    yield call(fetchAdminProductsCall);
+    action.payload.history.push('/admin/products/')
+  } else {
+    console.log("Update Product error", JSON.stringify(response));
+    Object.values(response.data).map((error) =>
+      message.warn({
+        content: error,
+        className: "antd-message-capitalize",
+        style: {
+          textTransform: "capitalize",
+        },
+      })
+    );
+  }
+}
+
 export function* deleteProductCall(action) {
   const response = yield call(api, `products/${action.payload.productId}/`, {
     method: "DELETE",
@@ -401,5 +427,6 @@ export default function* adminSaga() {
     takeLatest(DELETE_ADMIN_PRODUCT, deleteProductCall),
     takeLatest(REGISTER_STRIPE_PRICE, registerStripePriceCall),
     takeLatest(FETCH_STRIPE_PRICES, fetchStripePricesCall),
+    takeLatest(UPDATE_ADMIN_PRODUCT, updateProductCall),
   ]);
 }
