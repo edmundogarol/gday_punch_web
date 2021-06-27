@@ -18,9 +18,7 @@ import { device } from "utils/styles";
 class Navigation extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      shrink: false,
-    };
+    this.state = {};
   }
 
   render() {
