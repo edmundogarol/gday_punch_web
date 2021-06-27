@@ -98,6 +98,9 @@ function Root(props) {
           <Navigation />
           <Switch>
             <Route exact path="/" component={Home} />
+            <Route exact path="/shop" component={Home} />
+            <Route exact path="/contact" component={Home} />
+            <Route exact path="/about" component={Home} />
             {loginCheckFinished && !user.logged_in ? (
               <Redirect to="/" />
             ) : (

@@ -21,7 +21,7 @@ export default function Header(props) {
           alt="Gday Punch Logo"
         />
       </a>
-      <p>New Web App Launching in 2021!</p>
+      {/* <p>New Web App Launching in 2021!</p> */}
       <div className="feature-content">
         <div className="feature">
           <FontAwesomeIcon icon={faPenNib} style={styles.mangaka} />

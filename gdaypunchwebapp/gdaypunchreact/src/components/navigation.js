@@ -18,7 +18,9 @@ import { device } from "utils/styles";
 class Navigation extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      shrink: false,
+    };
   }
 
   render() {
@@ -27,21 +29,21 @@ class Navigation extends React.Component {
 
     window.onscroll = () => scrollFunction();
 
-    function scrollFunction() {
+    const scrollFunction = () => {
       if (
         document.body.scrollTop > 50 ||
         document.documentElement.scrollTop > 50
       ) {
-        document.getElementById("nav-container").style.fontSize = "11px";
-        document.getElementById("nav-container").style.minHeight = "8vh";
+        document.getElementById("navbar").style.minHeight = "8vh";
+        document.getElementById("navbar").style.fontSize = "14px";
       } else {
-        document.getElementById("nav-container").style.fontSize = "15px";
-        document.getElementById("nav-container").style.minHeight = "10vh";
+        document.getElementById("navbar").style.minHeight = "11.5vh";
+        document.getElementById("navbar").style.fontSize = "15px";
       }
-    }
+    };
 
     return (
-      <NavigationContainer id="nav-container">
+      <NavigationContainer id="navbar">
         <NavSection>
           <NavLogoContainer>
             <NavLink to="/">
@@ -88,16 +90,17 @@ class Navigation extends React.Component {
 
 export const NavigationContainer = styled.div`
   background-color: #ffffff;
-  min-height: 10vh;
+  min-height: 11.5vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(5px + 1.5vmin);
+  font-size: 15px;
   position: fixed;
   width: 100%;
   z-index: 10;
-  transition: 0.2s;
+  transition: 0.2s ease;
+  border-bottom: 1px #c7c7c7 solid;
 `;
 
 export const NavSection = styled.div`

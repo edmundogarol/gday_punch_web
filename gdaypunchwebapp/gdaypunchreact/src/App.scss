@@ -55,6 +55,7 @@ code {
   background-image: url("/static/images/launch-background.png");
   background-position: center;
   background-size: contain;
+  background-blend-mode: color-burn;
 }
 
 @keyframes shine {
@@ -482,11 +483,18 @@ code {
   h2 {
     color: #d2d2d2;
     font-size: 1em;
+    margin-bottom: unset;
   }
 
   .svg-inline--fa {
     height: 2em;
     width: 4em;
+  }
+
+  .feature {
+    background: #000000c7;
+    padding: 7pt;
+    border-radius: 15%;
   }
 }
 
