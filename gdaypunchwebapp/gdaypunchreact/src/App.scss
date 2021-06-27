@@ -25,56 +25,6 @@ code {
   height: 100%;
 }
 
-.navigation-container {
-  background-color: #1d1d1d;
-  min-height: 10vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(5px + 1.5vmin);
-  color: rgb(179, 179, 179);
-  position: fixed;
-  width: 100%;
-  z-index: 10;
-  transition: 0.2s;
-}
-
-nav {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-
-  img {
-    width: 3em;
-  }
-
-  .nav-logo {
-    margin-left: 1em;
-  }
-
-  .nav-links {
-    margin-right: 1em;
-    width: 50%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
-
-  a:not(.logo-link) {
-    text-decoration: none;
-    color: #cecece;
-    font-size: 1em;
-    text-transform: uppercase;
-    letter-spacing: 2pt;
-    margin-left: 2em;
-  }
-
-  p {
-    margin: unset;
-  }
-}
-
 .App-header-container .home-logo {
   display: flex;
   align-items: center;
@@ -105,17 +55,6 @@ nav {
   background-image: url("/static/images/launch-background.png");
   background-position: center;
   background-size: contain;
-}
-
-.login-button-animation {
-  overflow: hidden;
-  background: linear-gradient(90deg, #000, #fff, #000);
-  background-repeat: no-repeat;
-  background-size: 80%;
-  animation: shine 1.5s ease-out;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: rgba(182, 182, 182, 0.815);
 }
 
 @keyframes shine {

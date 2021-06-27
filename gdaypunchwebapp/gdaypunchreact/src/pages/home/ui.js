@@ -6,7 +6,7 @@ import Header from "components/header";
 import Login from "components/login";
 import MangaTile from "components/mangaTile";
 
-import { App } from "./styles";
+import { App, FeaturedMangaSection } from "./styles";
 import PaymentForm from "components/paymentForm";
 
 class Ui extends React.Component {
@@ -27,7 +27,6 @@ class Ui extends React.Component {
       featuredManga,
       likeManga,
     } = this.props;
-    const styles = getStyles();
 
     return (
       <App id="top" className="App">
@@ -35,7 +34,7 @@ class Ui extends React.Component {
           <Header loginView={loginView} />
           <Login />
         </div>
-        <div style={styles.list}>
+        <FeaturedMangaSection>
           {!isEmpty(featuredManga) &&
             featuredManga.map((manga) => {
               return manga ? (
@@ -49,79 +48,10 @@ class Ui extends React.Component {
                 />
               ) : null;
             })}
-        </div>
+        </FeaturedMangaSection>
       </App>
     );
   }
-}
-
-function getStyles() {
-  return {
-    donate: {
-      height: "8vh",
-    },
-    artistProfile: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    donateSection: {
-      display: "flex",
-      flexDirection: "row",
-      height: "max-content",
-      justifyContent: "center",
-      background: "#dcdcdc",
-      flexWrap: "wrap",
-      paddingTop: "50px",
-      paddingBottom: "50px",
-    },
-    donateContainer: {
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "start",
-      marginRight: 50,
-      marginLeft: 50,
-    },
-    donateHeader: {
-      fontSize: "1.6em",
-      fontStyle: "italic",
-      marginTop: "unset",
-      color: "dimgrey",
-      marginBottom: "0.3em",
-    },
-    donateHeaderTag: {
-      fontSize: "0.8em",
-      fontStyle: "italic",
-      marginTop: "unset",
-      color: "whitesmoke",
-      marginBottom: "0.3em",
-    },
-    donateTitle: {
-      fontSize: "1.3em",
-      marginBottom: "unset",
-      marginTop: "unset",
-      letterSpacing: 1,
-      color: "#1d1d1d",
-      textAlign: "start",
-    },
-    donateSubTitle: {
-      fontSize: "0.7em",
-      marginTop: "unset",
-      marginBottom: "1em",
-      textAlign: "start",
-      color: "#1d1d1d",
-    },
-    donateButton: {
-      display: "flex",
-      alignItems: "center",
-    },
-    list: {
-      display: "flex",
-      justifyContent: "center",
-      flexWrap: "wrap",
-    },
-  };
 }
 
 Ui.propTypes = {

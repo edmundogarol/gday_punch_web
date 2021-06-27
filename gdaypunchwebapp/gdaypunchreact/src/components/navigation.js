@@ -1,6 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
+import { connect } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import styled from "styled-components";
 
 import { doLogout, openRegistration, closeRegistration } from "actions/user";
 import {
@@ -9,8 +12,7 @@ import {
   selectLoggedIn,
 } from "selectors/app";
 import { getImageModule } from "utils/utils";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
+import { device } from "utils/styles";
 
 class Navigation extends React.Component {
   constructor(props) {
@@ -38,52 +40,123 @@ class Navigation extends React.Component {
     }
 
     return (
-      <div className="navigation-container" id="nav-container">
-        <nav>
-          <div className="nav-logo">
-            <NavLink className="logo-link" to="/">
-              <img src={getImageModule("gday.png")} alt="Gday Punch Logo" />
+      <NavigationContainer id="nav-container">
+        <NavSection>
+          <NavLogoContainer>
+            <NavLink to="/">
+              <NavLogo
+                src={getImageModule("gday_header.png")}
+                alt="Gday Punch Logo"
+              />
             </NavLink>
-          </div>
-          <div className="nav-links">
-            <p>
+          </NavLogoContainer>
+          <NavLinksMiddle>
+            <HeaderLink to="/shop">{"Shop"}</HeaderLink>
+            <HeaderLink to="/about">{"About"}</HeaderLink>
+            <HeaderLink to="/contact">{"Contact"}</HeaderLink>
+          </NavLinksMiddle>
+          <NavLinksRight>
+            <UserProfile>
               {user.username && user.username.length
                 ? user.username
                 : user.email}
-            </p>
-            {user.is_staff && <Link to="/admin">{"Admin"}</Link>}
+            </UserProfile>
+            {user.is_staff && <HeaderLink to="/admin">{"Admin"}</HeaderLink>}
             {!loggedIn && (
-              <a
-                className="login-button"
+              <HeaderALink
                 href="#"
                 onClick={() => (loginView ? closeRegister() : openRegister())}
               >
                 {loginView ? "Home" : "Login"}
-              </a>
+              </HeaderALink>
             )}
             {loggedIn && (
-              <a href="#" onClick={() => logout()}>
+              <HeaderALink href="#" onClick={() => logout()}>
                 Logout
-              </a>
+              </HeaderALink>
             )}
-          </div>
-        </nav>
-      </div>
+          </NavLinksRight>
+        </NavSection>
+      </NavigationContainer>
     );
   }
 }
 
-Navigation.propTypes = {
-  // Redux Properties
-  user: PropTypes.object.isRequired,
-  loggedIn: PropTypes.bool.isRequired,
-  loginView: PropTypes.bool.isRequired,
+export const NavigationContainer = styled.div`
+  background-color: #ffffff;
+  min-height: 10vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(5px + 1.5vmin);
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  transition: 0.2s;
+`;
 
-  // Redux Functions
-  logout: PropTypes.func.isRequired,
-  openRegister: PropTypes.func.isRequired,
-  closeRegister: PropTypes.func.isRequired,
-};
+export const NavSection = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+
+  p {
+    margin: unset;
+  }
+`;
+
+export const NavLogo = styled.img`
+  width: 6em;
+`;
+
+export const NavLogoContainer = styled.div`
+  margin-left: 1em;
+`;
+
+export const NavLinksMiddle = styled.div`
+  margin-right: 1em;
+  width: 129%;
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  @media ${device.laptop} {
+    display: flex;
+  }
+`;
+
+export const NavLinksRight = styled.div`
+  margin-right: 1em;
+  width: 50%;
+  display: none;
+  justify-content: flex-end;
+  align-items: center;
+
+  @media ${device.laptop} {
+    display: flex;
+  }
+`;
+
+export const UserProfile = styled.p`
+  color: #cecece;
+`;
+
+export const HeaderALink = styled.a`
+  text-decoration: none;
+  color: #565656;
+  font-size: 1em;
+  letter-spacing: 2pt;
+  margin-left: 2em;
+`;
+
+export const HeaderLink = styled(Link)`
+  text-decoration: none;
+  color: #565656;
+  font-size: 1em;
+  letter-spacing: 2pt;
+  margin-left: 2em;
+`;
 
 const mapStateToProps = createStructuredSelector({
   user: selectUser,
