@@ -4,6 +4,7 @@ import { Link, NavLink } from "react-router-dom";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import styled from "styled-components";
+import { MenuOutlined } from "@ant-design/icons";
 
 import { doLogout, openRegistration, closeRegistration } from "actions/user";
 import {
@@ -76,6 +77,9 @@ class Navigation extends React.Component {
               </HeaderALink>
             )}
           </NavLinksRight>
+          <NavDropDownButton>
+            <MenuOutlined className="site-form-item-icon" />
+          </NavDropDownButton>
         </NavSection>
       </NavigationContainer>
     );
@@ -123,6 +127,32 @@ export const NavLinksMiddle = styled.div`
 
   @media ${device.laptop} {
     display: flex;
+  }
+`;
+
+export const NavDropDownButton = styled.div`
+  display: flex;
+  width: 70px;
+  justify-content: center;
+  align-items: center;
+
+  @media ${device.laptop} {
+    display: none;
+  }
+
+  svg {
+    width: 2em;
+    height: 2em;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    svg {
+      width: 2.2em;
+      height: 2.2em;
+      transition-duration: 0.1s;
+    }
   }
 `;
 
