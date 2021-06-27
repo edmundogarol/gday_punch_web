@@ -10,3 +10,7 @@ export function getImageModule(url) {
 export function getCoverImage(url) {
   return require(`../../public/${url}`).default;
 }
+
+export function getGdayPunchStaticUrl(url) {
+  return `https://gdaypunch-static.s3.us-west-2.amazonaws.com/${url}`;
+}

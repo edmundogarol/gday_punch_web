@@ -11,6 +11,7 @@ import {
   Checkbox,
   Popconfirm,
   Transfer,
+  Image,
 } from "antd";
 import {
   InfoCircleOutlined,
@@ -27,6 +28,8 @@ import {
   ProductRightContainer,
   SubmitButton,
 } from "./styles";
+
+import { getGdayPunchStaticUrl } from "utils/utils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
@@ -124,7 +127,8 @@ function Ui(props) {
       title: "Image",
       dataIndex: "image",
       key: "image",
-      render: (value) => (value ? value : "-"),
+      render: (value) =>
+        value ? <Image width={40} src={getGdayPunchStaticUrl(value)} /> : "-",
     },
     {
       title: "Title",
@@ -212,12 +216,14 @@ function Ui(props) {
             }
           />
           <TextArea
-            rows={4}
+            rows={5}
             value={newProduct.description}
             onChange={(e) =>
               updateNewProduct({ ...newProduct, description: e.target.value })
             }
             placeholder="Enter Product Description"
+            maxLength={1000}
+            showCount
           />
           <Input
             value={newProduct.sale_price}

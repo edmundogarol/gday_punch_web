@@ -260,7 +260,7 @@ class StripePrice(models.Model):
 
 
 class Product(models.Model):
-    description = models.TextField(max_length=500, blank=True)
+    description = models.TextField(max_length=1000, blank=True)
     title = models.TextField(max_length=70, blank=True, unique=True)
     image = models.TextField(max_length=100, blank=True)
     sale_price = models.FloatField(blank=True)

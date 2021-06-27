@@ -1,20 +1,13 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import {
-  Input,
-  Tooltip,
-  Typography,
-  Radio,
-  Checkbox,
-  Transfer,
-} from "antd";
+import { Input, Tooltip, Typography, Radio, Checkbox, Transfer } from "antd";
 import {
   InfoCircleOutlined,
   DollarOutlined,
   ShoppingOutlined,
   StockOutlined,
-  DeleteOutlined,
 } from "@ant-design/icons";
+import { isEqual } from "lodash";
 
 import {
   ProductsContainer,
@@ -22,20 +15,33 @@ import {
   SubmitButton,
   ProductDetailLeftContainer,
   ProductDetailRightContainer,
+  ProductImage,
+  ProductPriceTransfer,
 } from "./styles";
+
+import { getGdayPunchStaticUrl } from "utils/utils";
 
 const { TextArea } = Input;
 const { Title } = Typography;
 
 function Ui(props) {
-  const { productsState, fetchStripePrices, currentProduct, updateAdminProduct, history } = props;
-  const { stripePrices,
+  const {
+    productsState,
+    fetchStripePrices,
+    currentProduct,
+    updateAdminProduct,
+    history,
+  } = props;
+  const {
+    stripePrices,
     stripePriceIds,
     fetchingStripePrices,
     finishedFetchingStripePrices,
   } = productsState;
   const [selectedKeys, setSelectedKeys] = useState([]);
-  const [productPrices, updateProductPrices] = useState(currentProduct ? currentProduct.stripe_prices : []);
+  const [productPrices, updateProductPrices] = useState(
+    currentProduct ? currentProduct.stripe_prices : []
+  );
   const [transferStripePrices, updateTransferStripePrices] = useState([]);
 
   const [product, updateProduct] = useState({
@@ -65,7 +71,9 @@ function Ui(props) {
   useEffect(() => {
     const currentProductPriceIds = currentProduct.stripe_prices;
 
-    updateTransferStripePrices(stripePriceIds.filter(id => !currentProductPriceIds.includes(id)));
+    updateTransferStripePrices(
+      stripePriceIds.filter((id) => !currentProductPriceIds.includes(id))
+    );
   }, [stripePriceIds]);
 
   const onSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
@@ -98,7 +106,9 @@ function Ui(props) {
         <ProductDetailLeftContainer>
           <Input
             value={product.title}
-            onChange={(e) => updateProduct({ ...product, title: e.target.value })}
+            onChange={(e) =>
+              updateProduct({ ...product, title: e.target.value })
+            }
             placeholder="Enter Product Title"
             prefix={<ShoppingOutlined className="site-form-item-icon" />}
             suffix={
@@ -108,7 +118,9 @@ function Ui(props) {
             }
           />
           <TextArea
-            rows={4}
+            rows={10}
+            showCount
+            maxLength={1000}
             value={product.description}
             onChange={(e) =>
               updateProduct({ ...product, description: e.target.value })
@@ -130,7 +142,9 @@ function Ui(props) {
           />
           <Input
             value={product.stock}
-            onChange={(e) => updateProduct({ ...product, stock: e.target.value })}
+            onChange={(e) =>
+              updateProduct({ ...product, stock: e.target.value })
+            }
             placeholder="Enter product stock"
             prefix={<StockOutlined className="site-form-item-icon" />}
             suffix={
@@ -157,10 +171,16 @@ function Ui(props) {
           >
             Visible
           </Checkbox>
-          <SubmitButton onClick={() => handleUpdate()}>Update</SubmitButton>
-          </ProductDetailLeftContainer>
+          <SubmitButton
+            disabled={isEqual(currentProduct, product)}
+            onClick={() => handleUpdate()}
+          >
+            Update
+          </SubmitButton>
+        </ProductDetailLeftContainer>
         <ProductDetailRightContainer>
-          <Transfer
+          <ProductImage src={getGdayPunchStaticUrl(product.image)} />
+          <ProductPriceTransfer
             dataSource={stripePricesForTransfer}
             titles={["Product Prices", "Stripe Prices"]}
             targetKeys={transferStripePrices}
@@ -168,7 +188,7 @@ function Ui(props) {
             onChange={onChange}
             onSelectChange={onSelectChange}
             render={(item) => item.title}
-            listStyle={{ direction: "left", width: "200px" }}
+            listStyle={{ direction: "left", width: "250px" }}
             showSelectAll={false}
           />
           <Title level={4}>{`Price: $${product.price}`}</Title>
