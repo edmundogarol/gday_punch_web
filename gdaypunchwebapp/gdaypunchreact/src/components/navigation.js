@@ -121,7 +121,7 @@ export const NavLogoContainer = styled.div`
 
 export const NavLinksMiddle = styled.div`
   margin-right: 1em;
-  width: 129%;
+  width: max-content;
   display: none;
   justify-content: center;
   align-items: center;
@@ -159,7 +159,7 @@ export const NavDropDownButton = styled.div`
 
 export const NavLinksRight = styled.div`
   margin-right: 1em;
-  width: 50%;
+  width: min-content;
   display: none;
   justify-content: flex-end;
   align-items: center;

@@ -1,34 +1,30 @@
 import React from "react";
 import PropTypes from "prop-types";
-import {
-  doLogin,
-  doLogout,
-  doRegistration,
-  openRegistration,
-  closeRegistration
-} from "actions/user";
-import {
-  selectLoginViewToggle,
-  selectLoginError,
-  selectRegistrationError,
-  selectSuggestRegistration,
-  selectLoggedIn
-} from "selectors/app";
-import { ErrorField } from "components/errorField";
-import { InfoField } from "components/infoField";
-import { ConditionsField } from "components/conditionsField";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { isEmpty } from "lodash";
 
-class Login extends React.Component {
+import { ErrorField } from "components/errorField";
+import { InfoField } from "components/infoField";
+import { ConditionsField } from "components/conditionsField";
+
+import {
+  RegistrationContainerHidden,
+  RegistrationContainerVisible,
+  RegistrationInputsContainer,
+  InputGroupContainer,
+  AccountActionButtons,
+  SignUpButton,
+} from "./styles";
+
+class Ui extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       email: "",
       password: "",
       subscribeOpen: false,
-      subscribeAgree: false
+      subscribeAgree: false,
     };
   }
 
@@ -42,7 +38,7 @@ class Login extends React.Component {
     const { email, password } = this.state;
     this.props.login({
       email,
-      password
+      password,
     });
   }
 
@@ -56,7 +52,7 @@ class Login extends React.Component {
     if (this.state.subscribeAgree) {
       this.props.register({
         email: emailSanitised,
-        password
+        password,
       });
       this.setState({ subscribeOpen: false });
       this.setState({ subscribeAgree: false });
@@ -81,17 +77,16 @@ class Login extends React.Component {
   }
 
   render() {
-    const {
-      loginView,
-      loginError,
-      registrationError,
-      suggestRegistration
-    } = this.props;
+    const { loginView, loginError, registrationError, suggestRegistration } =
+      this.props;
 
+    const RegistrationContainer = loginView
+      ? RegistrationContainerVisible
+      : RegistrationContainerHidden;
     return (
-      <div className={`registration ${loginView ? "show" : ""}`}>
-        <div className="registration-inputs">
-          <div className="input-group">
+      <RegistrationContainer>
+        <RegistrationInputsContainer>
+          <InputGroupContainer>
             <label htmlFor="email">Email</label>
             <div>
               <input
@@ -102,14 +97,9 @@ class Login extends React.Component {
                 onKeyDown={(e) => this.handleKeyDown(e, "login")}
                 placeholder="Enter Email"
               />
-              {/* {registrationError && registrationError.email && (
-                <ErrorField>
-                  <div>{registrationError.email}</div>
-                </ErrorField>
-              )} */}
             </div>
-          </div>
-          <div className="input-group">
+          </InputGroupContainer>
+          <InputGroupContainer>
             <label htmlFor="email">Password</label>
             <div>
               <input
@@ -120,14 +110,9 @@ class Login extends React.Component {
                 value={this.state.password}
                 placeholder="Enter Password"
               />
-              {/* {registrationError && registrationError.password && (
-                <ErrorField>
-                  <div>{registrationError.password}</div>
-                </ErrorField>
-              )} */}
             </div>
-          </div>
-        </div>
+          </InputGroupContainer>
+        </RegistrationInputsContainer>
         {loginError && (
           <ErrorField>
             <div>
@@ -169,58 +154,21 @@ class Login extends React.Component {
             <div>{suggestRegistration}</div>
           </InfoField>
         )}
-        <div className="account-buttons">
-          <button
+        <AccountActionButtons>
+          <SignUpButton
             onClick={() => this.handleRegisterSubmit()}
-            className="sign-up-button"
             type="submit"
           >
             Sign Up
-          </button>
+          </SignUpButton>
           <span></span>
-          <button
-            onClick={() => this.handleLoginSubmit()}
-            className="sign-up-button"
-            type="submit"
-          >
+          <SignUpButton onClick={() => this.handleLoginSubmit()} type="submit">
             Login
-          </button>
-        </div>
-      </div>
+          </SignUpButton>
+        </AccountActionButtons>
+      </RegistrationContainer>
     );
   }
 }
 
-Login.propTypes = {
-  // Redux Properties
-  loggedIn: PropTypes.bool.isRequired,
-  loginView: PropTypes.bool.isRequired,
-  loginError: PropTypes.object,
-  registrationError: PropTypes.object,
-  suggestRegistration: PropTypes.string.isRequired,
-
-  // Redux Functions
-  login: PropTypes.func.isRequired,
-  logout: PropTypes.func.isRequired,
-  register: PropTypes.func.isRequired,
-  openRegister: PropTypes.func.isRequired,
-  closeRegister: PropTypes.func.isRequired
-};
-
-const mapStateToProps = createStructuredSelector({
-  loggedIn: selectLoggedIn,
-  loginView: selectLoginViewToggle,
-  loginError: selectLoginError,
-  registrationError: selectRegistrationError,
-  suggestRegistration: selectSuggestRegistration
-});
-
-const mapDispatchToProps = {
-  login: doLogin,
-  logout: doLogout,
-  register: doRegistration,
-  openRegister: openRegistration,
-  closeRegister: closeRegistration
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default Ui;

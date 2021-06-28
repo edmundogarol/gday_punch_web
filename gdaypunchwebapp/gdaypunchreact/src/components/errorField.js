@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const ErrorField = styled.div`
   text-transform: initial;
-  font-size: 0.8em;
+  font-size: 0.7em;
   width: 100%;
   display: flex;
   justify-content: center;

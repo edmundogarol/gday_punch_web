@@ -22,7 +22,7 @@ export default function Header(props) {
         />
       </a>
       {/* <p>New Web App Launching in 2021!</p> */}
-      <div className="feature-content">
+      {/* <div className="feature-content">
         <div className="feature">
           <FontAwesomeIcon icon={faPenNib} style={styles.mangaka} />
           <h2>Mangaka</h2>
@@ -35,7 +35,7 @@ export default function Header(props) {
           <FontAwesomeIcon icon={faEye} style={styles.editors} />
           <h2>Editors</h2>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

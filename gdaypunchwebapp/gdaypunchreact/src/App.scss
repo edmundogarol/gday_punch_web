@@ -25,21 +25,14 @@ code {
   height: 100%;
 }
 
-.App-header-container .home-logo {
-  display: flex;
-  align-items: center;
-  height: 100px;
-  margin-top: 90pt;
-}
-
 .App-logo {
-  height: 30vmin;
+  height: 25vmin;
   pointer-events: none;
   margin-left: -87px;
 }
 
 .App-logo-big {
-  height: 16vmin;
+  height: 13vmin;
   pointer-events: none;
   z-index: 1;
 }
@@ -54,8 +47,14 @@ code {
 .app-temp-background {
   background-image: url("/static/images/launch-background.png");
   background-position: center;
-  background-size: contain;
+  background-size: 136%;
   background-blend-mode: color-burn;
+}
+
+@media (min-width: 1024px) {
+  .app-temp-background {
+    background-size: 88%;
+  }
 }
 
 @keyframes shine {
@@ -103,10 +102,6 @@ code {
   }
 }
 
-.App-header-container {
-  min-height: 67vh;
-}
-
 .page-not-found {
   height: 100vh;
   font-size: 2em;
@@ -121,85 +116,9 @@ code {
   }
 }
 
-.registration {
-  width: 20em;
-  font-size: 1em;
-  text-transform: uppercase;
-  letter-spacing: 1pt;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-end;
-  min-height: 9em;
-
-  .registration-inputs {
-    min-width: 20em;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    min-height: 5em;
-  }
-
-  .input-group {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    label {
-      font-size: 0.8em;
-    }
-
-    input {
-      width: 15em;
-      height: 3em;
-      border-radius: 5px;
-      font-size: 0.8em;
-      color: black;
-      padding-left: 10px;
-    }
-  }
-
-  .account-buttons {
-    display: flex;
-    justify-content: space-evenly;
-    width: 100%;
-
-    span {
-      width: 1px;
-      border: 1px solid black;
-      background: #ffffff;
-    }
-  }
-
-  .sign-up-button {
-    width: 10em;
-    min-height: 2em;
-    border-radius: 5px;
-    font-size: 0.7em;
-    padding: 0.7em;
-    text-transform: uppercase;
-    color: #ffffff;
-    letter-spacing: 2pt;
-    background: #e0811f;
-    border: none;
-  }
-}
-
-.registration {
-  display: none;
-  animation: 0.5s ease-in 0s 1 slideOutToRight;
-}
-
 .exit {
   animation: 0.6s ease-in 0s 1 slideOutToLeft;
   transform: translateX(-100%);
-}
-
-.show {
-  display: flex;
-  visibility: visible;
-  animation: 0.5s ease-in 0s 1 slideInFromRight;
-  transform: translateX(0%);
 }
 
 @keyframes slideInFromLeft {
