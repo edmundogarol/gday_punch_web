@@ -4,7 +4,6 @@ export const RegistrationContainerHidden = styled.div`
   width: 20em;
   font-size: 1em;
   margin-top: 4em;
-  text-transform: uppercase;
   letter-spacing: 1pt;
   display: flex;
   flex-direction: column;
@@ -36,6 +35,7 @@ export const InputGroupContainer = styled.div`
   justify-content: space-between;
 
   label {
+    text-transform: uppercase;
     font-size: 0.7em;
     color: white;
   }
@@ -69,7 +69,6 @@ export const SignUpButton = styled.button`
   border-radius: 5px;
   font-size: 0.7em;
   padding: 0.7em;
-  text-transform: uppercase;
   color: #ffffff;
   letter-spacing: 2pt;
   background: #e0811f;
