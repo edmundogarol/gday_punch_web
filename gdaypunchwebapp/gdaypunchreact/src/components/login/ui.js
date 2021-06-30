@@ -1,7 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { createStructuredSelector } from "reselect";
 import { isEmpty } from "lodash";
 
 import { ErrorField } from "components/errorField";
@@ -17,158 +15,156 @@ import {
   SignUpButton,
 } from "./styles";
 
-class Ui extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: "",
-      password: "",
-      subscribeOpen: false,
-      subscribeAgree: false,
-    };
-  }
+function Ui(props) {
+  const {
+    loggedIn,
+    loginView,
+    loginError,
+    registrationError,
+    suggestRegistration,
+    login,
+    register,
+  } = props;
+  const [subscribeOpen, setSubscribeOpen] = useState(false);
+  const [subscribeAgree, setSubscribeAgree] = useState(false);
+  const [loginDetails, setLoginDetails] = useState({
+    email: "",
+    password: "",
+  });
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.loggedIn === false && this.props.loggedIn) {
-      this.setState({ email: "", password: "" });
+  useEffect(() => {
+    if (loggedIn) {
+      setLoginDetails({ email: "", password: "" });
     }
-  }
+  }, [loggedIn]);
 
-  handleLoginSubmit() {
-    const { email, password } = this.state;
-    this.props.login({
-      email,
-      password,
-    });
-  }
+  const handleLoginSubmit = () => {
+    login(loginDetails);
+  };
 
-  handleRegisterSubmit() {
-    const { email, password } = this.state;
+  const handleRegisterSubmit = () => {
+    const { email, password } = loginDetails;
 
+    console.log({ email });
     // Remove space from end of email
     const emailSanitised =
       email.charAt(email.length - 1) === " " ? email.slice(0, -1) : email;
 
-    if (this.state.subscribeAgree) {
-      this.props.register({
+    if (subscribeAgree) {
+      register({
         email: emailSanitised,
         password,
       });
-      this.setState({ subscribeOpen: false });
-      this.setState({ subscribeAgree: false });
-    } else {
-      this.setState({ subscribeOpen: true });
-    }
-  }
 
-  handleKeyDown(e, type) {
+      setSubscribeOpen(false);
+      setSubscribeAgree(false);
+    } else {
+      setSubscribeOpen(true);
+    }
+  };
+
+  const handleKeyDown = (e, type) => {
     if (e.key === "Enter") {
       switch (type) {
         case "signup":
-          this.handleRegisterSubmit();
+          handleRegisterSubmit();
           break;
         case "login":
-          this.handleLoginSubmit();
+          handleLoginSubmit();
           break;
         default:
           break;
       }
     }
-  }
+  };
 
-  render() {
-    const { loginView, loginError, registrationError, suggestRegistration } =
-      this.props;
+  const RegistrationContainer = loginView
+    ? RegistrationContainerVisible
+    : RegistrationContainerHidden;
 
-    const RegistrationContainer = loginView
-      ? RegistrationContainerVisible
-      : RegistrationContainerHidden;
-    return (
-      <RegistrationContainer>
-        <RegistrationInputsContainer>
-          <InputGroupContainer>
-            <label htmlFor="email">Email</label>
-            <div>
-              <input
-                type="text"
-                name="email"
-                onChange={(e) => this.setState({ email: e.target.value })}
-                value={this.state.email}
-                onKeyDown={(e) => this.handleKeyDown(e, "login")}
-                placeholder="Enter Email"
-              />
-            </div>
-          </InputGroupContainer>
-          <InputGroupContainer>
-            <label htmlFor="email">Password</label>
-            <div>
-              <input
-                type="password"
-                name="password"
-                onChange={(e) => this.setState({ password: e.target.value })}
-                onKeyDown={(e) => this.handleKeyDown(e, "login")}
-                value={this.state.password}
-                placeholder="Enter Password"
-              />
-            </div>
-          </InputGroupContainer>
-        </RegistrationInputsContainer>
-        {loginError && (
-          <ErrorField>
-            <div>
-              <label>Error:</label>
-              {loginError.detail}
-            </div>
-          </ErrorField>
-        )}
-        {this.state.subscribeOpen && (
-          <ConditionsField>
-            <div>
-              <input
-                type="checkbox"
-                onChange={() => this.setState({ subscribeAgree: true })}
-              />
-              <p>
-                {
-                  "I agree to sign up and subscribe to read and receive more, cool manga content!"
-                }
+  return (
+    <RegistrationContainer>
+      <RegistrationInputsContainer>
+        <InputGroupContainer>
+          <label htmlFor="email">Emails</label>
+          <div>
+            <input
+              type="text"
+              name="email"
+              onChange={(e) =>
+                setLoginDetails({ ...loginDetails, email: e.target.value })
+              }
+              value={loginDetails.email}
+              onKeyDown={(e) => handleKeyDown(e, "login")}
+              placeholder="Enter Email"
+            />
+          </div>
+        </InputGroupContainer>
+        <InputGroupContainer>
+          <label htmlFor="email">Password</label>
+          <div>
+            <input
+              type="password"
+              name="password"
+              onChange={(e) =>
+                setLoginDetails({ ...loginDetails, password: e.target.value })
+              }
+              onKeyDown={(e) => handleKeyDown(e, "login")}
+              value={loginDetails.password}
+              placeholder="Enter Password"
+            />
+          </div>
+        </InputGroupContainer>
+      </RegistrationInputsContainer>
+      {loginError && (
+        <ErrorField>
+          <div>
+            <label>Error:</label>
+            {loginError.detail}
+          </div>
+        </ErrorField>
+      )}
+      {subscribeOpen && (
+        <ConditionsField>
+          <div>
+            <input type="checkbox" onChange={() => setSubscribeAgree(true)} />
+            <p>
+              {
+                "I agree to sign up and subscribe to read and receive more, cool manga content!"
+              }
+            </p>
+          </div>
+        </ConditionsField>
+      )}
+      {registrationError && (
+        <ErrorField>
+          <div>
+            {Object.keys(registrationError).map((field) => (
+              <p key={field}>
+                <span>{field} - </span>
+                {registrationError[field]}
+                &nbsp;
               </p>
-            </div>
-          </ConditionsField>
-        )}
-        {registrationError && (
-          <ErrorField>
-            <div>
-              {Object.keys(registrationError).map((field) => (
-                <p key={field}>
-                  <span>{field} - </span>
-                  {registrationError[field]}
-                  &nbsp;
-                </p>
-              ))}
-            </div>
-          </ErrorField>
-        )}
-        {!isEmpty(suggestRegistration) && (
-          <InfoField>
-            <div>{suggestRegistration}</div>
-          </InfoField>
-        )}
-        <AccountActionButtons>
-          <SignUpButton
-            onClick={() => this.handleRegisterSubmit()}
-            type="submit"
-          >
-            Sign Up
-          </SignUpButton>
-          <span></span>
-          <SignUpButton onClick={() => this.handleLoginSubmit()} type="submit">
-            Login
-          </SignUpButton>
-        </AccountActionButtons>
-      </RegistrationContainer>
-    );
-  }
+            ))}
+          </div>
+        </ErrorField>
+      )}
+      {!isEmpty(suggestRegistration) && (
+        <InfoField>
+          <div>{suggestRegistration}</div>
+        </InfoField>
+      )}
+      <AccountActionButtons>
+        <SignUpButton onClick={() => handleRegisterSubmit()} type="submit">
+          Sign Up
+        </SignUpButton>
+        <span></span>
+        <SignUpButton onClick={() => handleLoginSubmit()} type="submit">
+          Login
+        </SignUpButton>
+      </AccountActionButtons>
+    </RegistrationContainer>
+  );
 }
 
 export default Ui;

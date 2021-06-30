@@ -1,0 +1,106 @@
+import styled from "styled-components";
+import { Link } from "react-router-dom";
+import { device } from "utils/styles";
+
+export const NavigationContainer = styled.div`
+  background-color: #ffffff;
+  min-height: 11.5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+  transition: 0.2s ease;
+  border-bottom: 1px #c7c7c7 solid;
+`;
+
+export const NavSection = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+
+  p {
+    margin: unset;
+  }
+`;
+
+export const NavLogo = styled.img`
+  width: 6em;
+`;
+
+export const NavLogoContainer = styled.div`
+  margin-left: 1em;
+`;
+
+export const NavLinksMiddle = styled.div`
+  margin-right: 1em;
+  width: max-content;
+  display: none;
+  justify-content: center;
+  align-items: center;
+
+  @media ${device.laptop} {
+    display: flex;
+  }
+`;
+
+export const NavDropDownButton = styled.div`
+  display: flex;
+  width: 70px;
+  justify-content: center;
+  align-items: center;
+
+  @media ${device.laptop} {
+    display: none;
+  }
+
+  svg {
+    width: 2em;
+    height: 2em;
+  }
+
+  &:hover {
+    cursor: pointer;
+
+    svg {
+      width: 2.2em;
+      height: 2.2em;
+      transition-duration: 0.1s;
+    }
+  }
+`;
+
+export const NavLinksRight = styled.div`
+  margin-right: 1em;
+  width: min-content;
+  display: none;
+  justify-content: flex-end;
+  align-items: center;
+
+  @media ${device.laptop} {
+    display: flex;
+  }
+`;
+
+export const UserProfile = styled.p`
+  color: #cecece;
+`;
+
+export const HeaderALink = styled.a`
+  text-decoration: none;
+  color: #565656;
+  font-size: 1em;
+  letter-spacing: 2pt;
+  margin-left: 2em;
+`;
+
+export const HeaderLink = styled(Link)`
+  text-decoration: none;
+  color: #565656;
+  font-size: 1em;
+  letter-spacing: 2pt;
+  margin-left: 2em;
+`;

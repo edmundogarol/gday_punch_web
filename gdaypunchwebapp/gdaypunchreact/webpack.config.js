@@ -1,4 +1,5 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const path = require("path");
 
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -10,16 +11,19 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader"
-        }
+          loader: require.resolve("babel-loader"),
+          options: {
+            plugins: [require.resolve("react-refresh/babel")],
+          },
+        },
       },
       {
         test: /\.(gif|svg|jpg|png)$/,
-        loader: "url-loader"
+        loader: "url-loader",
       },
       {
         test: /\.(css|less)$/,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", "css-loader"],
       },
       {
         test: /\.(pdf)$/,
@@ -27,10 +31,10 @@ module.exports = {
           {
             loader: "file-loader",
             options: {
-              name: "[name].[ext]"
-            }
-          }
-        ]
+              name: "[name].[ext]",
+            },
+          },
+        ],
       },
       {
         test: /\.s(a|c)ss$/,
@@ -40,16 +44,16 @@ module.exports = {
           {
             loader: "sass-loader",
             options: {
-              sourceMap: isDevelopment
-            }
-          }
-        ]
-      }
-    ]
+              sourceMap: isDevelopment,
+            },
+          },
+        ],
+      },
+    ],
   },
   output: {
     path: "../../gdaypunchbackend/static/[hash].worker.js",
-    publicPath: `/static/`
+    publicPath: `/static/`,
   },
   context: path.resolve(__dirname, "./"),
   resolve: {
@@ -63,13 +67,14 @@ module.exports = {
       selectors: path.resolve(__dirname, "src/selectors/"),
       reducers: path.resolve(__dirname, "src/reducers/"),
       utils: path.resolve(__dirname, "src/utils/"),
-      static: path.resolve(__dirname, "public/static/")
-    }
+      static: path.resolve(__dirname, "public/static/"),
+    },
   },
   plugins: [
     new MiniCssExtractPlugin({
       filename: "main.css",
-      chunkFilename: "main.css"
+      chunkFilename: "main.css",
     }),
-  ]
+    new ReactRefreshWebpackPlugin(),
+  ],
 };
