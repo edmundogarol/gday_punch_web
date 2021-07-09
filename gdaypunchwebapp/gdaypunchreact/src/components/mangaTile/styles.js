@@ -20,17 +20,20 @@ export const MangaTile = styled.div`
 `;
 
 export const MangaImage = styled.img`
-  height: 17em;
+  height: auto;
+  max-width: 12em;
 `;
 
 export const MangaTitle = styled.h2`
   font-size: 1em;
   margin: unset;
+  max-width: 12em;
 `;
 
 export const MangaArtist = styled.h4`
   font-size: 0.8em;
   margin: unset;
+  max-width: 12em;
 `;
 
 export const MangaDetails = styled.div`

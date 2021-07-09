@@ -20,9 +20,10 @@ from ..serializers import (
 if 'DEVENV' in os.environ:
     stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
     endpoint_secret = 'whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal'
+    domain = "http://localhost:8000"
 else:
     stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
-
+    domain = "https://www.beta-gdaypunch:com"
 # price_type: one_time, recurring
 
 
@@ -32,6 +33,7 @@ def StripePriceCreator(price):
     unit_amount = price.get("unit_amount", None)
     price_type = price.get("type", None)
     stripe_ids = price.get("stripe_ids", None)
+    has_subscription = False
 
     if name is not None:
         prices.append({
@@ -48,15 +50,20 @@ def StripePriceCreator(price):
                 }),
             'quantity': 1 if price_type == "one_time" else None
         })
-    else:
+    elif stripe_ids is not None:
         for stripe_id in stripe_ids:
-            stripe_price = stripe.Price.retrieve(stripe_id)
+            gday_stripe_price = StripePrice.objects.get(id=stripe_id)
+            stripe_price = stripe.Price.retrieve(gday_stripe_price.price_id)
+
+            if stripe_price.type == "recurring":
+                has_subscription = True
+
             prices.append({
-                'price': stripe_id,
+                'price': gday_stripe_price.price_id,
                 'quantity': 1 if stripe_price.type == "one_time" else None
             })
 
-    return prices
+    return {"prices": prices, "type":  has_subscription}
 
 
 class PaymentView(APIView):
@@ -80,17 +87,18 @@ class PaymentView(APIView):
             except StripeCustomer.DoesNotExist:
                 print("User id not associated with Stripe customer")
 
-        prices = StripePriceCreator(request.data)
-        subscriptionMode = request.data.get("type", None) == "recurring"
+        price_creator = StripePriceCreator(request.data)
+        subscriptionMode = (request.data.get(
+            "type", None) == "recurring") or price_creator["type"]
 
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             customer=stripe_customer.customer_id if stripe_customer else None,
-            line_items=prices,
+            line_items=price_creator["prices"],
             mode='subscription' if subscriptionMode else 'payment',
-            success_url='http://localhost:8000/admin',
+            success_url=domain+'/admin',
             cancel_url=request.data.get(
-                "previous_url", 'http://localhost:8000'),
+                "previous_url", domain),
         )
 
         content = {

@@ -30,7 +30,6 @@ export function* getProduct(productId) {
 
   if (response && response.ok) {
     const data = response.data;
-    console.log(data);
     return data;
   } else {
     console.log("Products fetch error", JSON.stringify(response));

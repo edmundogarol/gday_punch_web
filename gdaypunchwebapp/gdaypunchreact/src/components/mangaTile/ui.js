@@ -2,6 +2,8 @@ import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { loadStripe } from "@stripe/stripe-js";
+import { gdayfetch } from "utils/gdayfetch";
 
 import {
   MangaTile,
@@ -11,8 +13,27 @@ import {
   MangaDetails,
 } from "./styles";
 
+import { getGdayPunchStaticUrl } from "utils/utils";
+
+const stripePromise = loadStripe(
+  process.env.NODE_ENV === "development"
+    ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
+    : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
+);
+
 function Ui(props) {
   const { loggedIn, manga, likeManga, openRegister, suggestRegister } = props;
+  const {
+    id,
+    cover,
+    title,
+    user_likes,
+    likes,
+    author_name,
+    image,
+    price,
+    stripe_prices,
+  } = manga;
 
   function handleMangaClick(destination, clickType) {
     const clickTypeMessages = {
@@ -41,23 +62,50 @@ function Ui(props) {
     }
   }
 
+  const handlePurchaseClick = async (event) => {
+    const stripe = await stripePromise;
+    const response = await gdayfetch("payments/create-checkout-session/", {
+      method: "POST",
+      body: {
+        stripe_ids: stripe_prices,
+      },
+    });
+
+    const result = await stripe.redirectToCheckout({
+      sessionId: response.data.id,
+    });
+
+    if (result.error) {
+      alert(result.error.message);
+    }
+  };
+
   return (
     <MangaTile>
-      <a onClick={() => handleMangaClick(`/manga/${manga.id}`, "manga")}>
-        <MangaImage src={manga.cover} />
+      <a
+        onClick={() =>
+          stripe_prices
+            ? handlePurchaseClick()
+            : handleMangaClick(`/manga/${id}`, "manga")
+        }
+      >
+        <MangaImage src={image ? getGdayPunchStaticUrl(image) : cover} />
       </a>
       <MangaDetails>
-        <a onClick={() => handleMangaClick(`/manga/${manga.id}`, "manga")}>
-          <MangaTitle>{manga.title}</MangaTitle>
-          <MangaArtist>by Edmundo (Yungy) Garol</MangaArtist>
+        <a onClick={() => handleMangaClick(`/manga/${id}`, "manga")}>
+          <MangaTitle>{title}</MangaTitle>
+          <MangaArtist>{author_name}</MangaArtist>
+          {price && <p>{`A$${price}`}</p>}
         </a>
-        <a onClick={() => handleMangaClick(undefined, "like")}>
-          <FontAwesomeIcon
-            icon={faHeart}
-            style={manga && manga.user_likes ? { color: "red" } : null}
-          />
-          {`(${manga ? manga.likes : 0})`}
-        </a>
+        {manga && likes && (
+          <a onClick={() => handleMangaClick(undefined, "like")}>
+            <FontAwesomeIcon
+              icon={faHeart}
+              style={manga && user_likes ? { color: "red" } : null}
+            />
+            {`(${likes || 0})`}
+          </a>
+        )}
       </MangaDetails>
     </MangaTile>
   );

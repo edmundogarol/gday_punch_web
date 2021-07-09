@@ -7,14 +7,14 @@ export const App = styled.div`
   }
 `;
 
-export const FeaturedMangaSection = styled.div`
+export const FeaturedSection = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   flex-direction: column;
 `;
 
-export const FeaturedMangaList = styled.div`
+export const FeaturedList = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;

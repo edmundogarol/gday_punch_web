@@ -208,7 +208,7 @@ function Reader(props) {
       {!readerOnly && manga && (
         <div className="pdf-details">
           <h2 style={styles.mangaTitle}>{manga.title}</h2>
-          <h4 style={styles.mangaArtist}>by Edmundo (Yungy) Garol</h4>
+          <h4 style={styles.mangaArtist}>{manga.author_name}</h4>
           <a onClick={() => (!manga.user_likes ? likeManga(manga.id) : null)}>
             <FontAwesomeIcon
               icon={faHeart}

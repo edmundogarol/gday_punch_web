@@ -6,12 +6,7 @@ import Header from "components/header";
 import Login from "components/login";
 import MangaTile from "components/mangaTile";
 
-import {
-  App,
-  FeaturedMangaSection,
-  FeaturedMangaList,
-  SectionTitle,
-} from "./styles";
+import { App, FeaturedSection, FeaturedList, SectionTitle } from "./styles";
 import PaymentForm from "components/paymentForm";
 
 const featuredProductIds = [10, 11];
@@ -43,16 +38,33 @@ function Ui(props) {
     }
   }, [productList]);
 
-  console.log({ productList });
   return (
     <App id="top" className="App">
       <div className="App-header-container app-temp-background">
         <Header loginView={loginView} />
         <Login />
       </div>
-      <FeaturedMangaSection>
+      <FeaturedSection>
+        <SectionTitle>Store</SectionTitle>
+        <FeaturedList>
+          {!isEmpty(productList) &&
+            productList.map((product) => {
+              return product ? (
+                <MangaTile
+                  key={product.id}
+                  manga={product}
+                  loggedIn={loggedIn}
+                  likeManga={() => {}}
+                  openRegister={openRegister}
+                  suggestRegister={suggestRegister}
+                />
+              ) : null;
+            })}
+        </FeaturedList>
+      </FeaturedSection>
+      <FeaturedSection>
         <SectionTitle>Free Manga</SectionTitle>
-        <FeaturedMangaList>
+        <FeaturedList>
           {!isEmpty(featuredManga) &&
             featuredManga.map((manga) => {
               return manga ? (
@@ -66,8 +78,8 @@ function Ui(props) {
                 />
               ) : null;
             })}
-        </FeaturedMangaList>
-      </FeaturedMangaSection>
+        </FeaturedList>
+      </FeaturedSection>
     </App>
   );
 }
