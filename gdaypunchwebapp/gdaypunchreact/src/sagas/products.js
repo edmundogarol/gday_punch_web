@@ -8,23 +8,35 @@ import {
 } from "redux-saga/effects";
 import { message } from "antd";
 
+import { FETCH_HOME_PRODUCTS, updateHomeProducts } from "actions/home";
 import { api } from "utils/api";
-import { FETCH_PRODUCTS, fetchProducts } from "actions/products";
 
-export function* fetchProductsCall() {
-  const response = yield call(api, `stripe-products/`, {
+export function* fetchProductsCall(action) {
+  const fetchedProducts = yield all(
+    action.payload.productIds.map((productId) => call(getProduct, productId))
+  );
+
+  switch (action.type) {
+    case FETCH_HOME_PRODUCTS: {
+      yield put(updateHomeProducts(fetchedProducts));
+    }
+  }
+}
+
+export function* getProduct(productId) {
+  const response = yield call(api, `products/${productId}/`, {
     method: "GET",
   });
 
   if (response && response.ok) {
     const data = response.data;
-    consoe.log(data);
+    console.log(data);
     return data;
   } else {
     console.log("Products fetch error", JSON.stringify(response));
   }
 }
 
-export default function* productsSaga() {
-  yield all([takeLatest(FETCH_PRODUCTS, fetchProductsCall)]);
+export default function* productSaga() {
+  yield all([takeLatest(FETCH_HOME_PRODUCTS, fetchProductsCall)]);
 }

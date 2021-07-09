@@ -53,9 +53,9 @@ function Ui(props) {
           <HeaderLink to="/contact">{"Contact"}</HeaderLink>
         </NavLinksMiddle>
         <NavLinksRight>
-          <UserProfile>
+          {/* <UserProfile>
             {user.username && user.username.length ? user.username : user.email}
-          </UserProfile>
+          </UserProfile> */}
           {user.is_staff && <HeaderLink to="/admin">{"Admin"}</HeaderLink>}
           {!loggedIn && (
             <HeaderALink

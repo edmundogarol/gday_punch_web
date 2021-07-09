@@ -11,4 +11,20 @@ export const FeaturedMangaSection = styled.div`
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+  flex-direction: column;
+`;
+
+export const FeaturedMangaList = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+`;
+
+export const SectionTitle = styled.h3`
+  font-size: 2em;
+  text-transform: uppercase;
+  margin: 1em;
+  letter-spacing: 1pt;
+  color: #909090;
+  font-weight: bolder;
 `;

@@ -13,14 +13,16 @@ import { all } from "redux-saga/effects";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 
-import appReducer from "reducers/app";
 import appSaga from "sagas/app";
 import mangaSaga from "sagas/manga";
 import adminSaga from "sagas/admin";
+import productSaga from "./sagas/products";
+
+import appReducer from "reducers/app";
+
 import { doCheckLogin } from "actions/user";
+
 import { selectUser, selectLoginCheckFinished } from "selectors/app";
-import Footer from "components/footer";
-import Navigation from "components/navigation";
 
 import Home from "pages/home";
 import DailyPrompt from "pages/DailyPrompt";
@@ -28,13 +30,16 @@ import Admin from "pages/admin";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
 
+import Footer from "components/footer";
+import Navigation from "components/navigation";
+
 import "antd/dist/antd.css";
 import "./App.scss";
 /**
  * Set up and run app sagas listening for events
  */
 function* rootSaga() {
-  yield all([appSaga(), mangaSaga(), adminSaga()]);
+  yield all([appSaga(), mangaSaga(), adminSaga(), productSaga()]);
 }
 
 const stripePromise = loadStripe(

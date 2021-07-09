@@ -5,9 +5,7 @@ import * as serviceWorker from "./serviceWorker";
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
-console.log(module.hot);
 if (module.hot) {
-  console.log("Hot and accepting App.js");
   module.hot.accept("./App.js", function () {
     console.log("Accepting the updated App module!");
   });

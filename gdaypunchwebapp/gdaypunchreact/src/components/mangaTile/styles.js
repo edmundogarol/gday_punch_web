@@ -1,0 +1,65 @@
+import styled from "styled-components";
+
+export const MangaTile = styled.div`
+  margin: 20pt;
+
+  a {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  img {
+    &:hover {
+      transition-duration: 0.3s;
+      box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.5);
+      -webkit-transform: scale(1.1);
+      transform: scale(1.05);
+    }
+  }
+`;
+
+export const MangaImage = styled.img`
+  height: 17em;
+`;
+
+export const MangaTitle = styled.h2`
+  font-size: 1em;
+  margin: unset;
+`;
+
+export const MangaArtist = styled.h4`
+  font-size: 0.8em;
+  margin: unset;
+`;
+
+export const MangaDetails = styled.div`
+  display: flex;
+  flex-direction: row;
+  text-align: start;
+  margin-left: auto;
+  margin-right: auto;
+  width: max-content;
+  margin-top: 10pt;
+  margin-bottom: 10pt;
+  align-items: flex-end;
+  margin-bottom: 5vh;
+
+  a {
+    text-decoration: none;
+    color: black;
+  }
+
+  svg {
+    margin-left: 20pt;
+    height: 1em;
+
+    &:hover {
+      cursor: pointer;
+      transition-duration: 0.3s;
+      box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.5);
+      -webkit-transform: scale(1.02);
+      transform: scale(1.1);
+    }
+  }
+`;

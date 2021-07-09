@@ -6,8 +6,15 @@ import Header from "components/header";
 import Login from "components/login";
 import MangaTile from "components/mangaTile";
 
-import { App, FeaturedMangaSection } from "./styles";
+import {
+  App,
+  FeaturedMangaSection,
+  FeaturedMangaList,
+  SectionTitle,
+} from "./styles";
 import PaymentForm from "components/paymentForm";
+
+const featuredProductIds = [10, 11];
 
 function Ui(props) {
   const {
@@ -18,7 +25,11 @@ function Ui(props) {
     featuredManga,
     likeManga,
     getFeaturedManga,
+    products,
+    fetchAdminProducts,
   } = props;
+
+  const { productList } = products;
 
   useEffect(() => {
     if (isEmpty(featuredManga) || !featuredManga[0]) {
@@ -26,6 +37,13 @@ function Ui(props) {
     }
   }, [featuredManga]);
 
+  useEffect(() => {
+    if (isEmpty(productList)) {
+      fetchAdminProducts(featuredProductIds);
+    }
+  }, [productList]);
+
+  console.log({ productList });
   return (
     <App id="top" className="App">
       <div className="App-header-container app-temp-background">
@@ -33,19 +51,22 @@ function Ui(props) {
         <Login />
       </div>
       <FeaturedMangaSection>
-        {!isEmpty(featuredManga) &&
-          featuredManga.map((manga) => {
-            return manga ? (
-              <MangaTile
-                key={manga.id}
-                manga={manga}
-                loggedIn={loggedIn}
-                likeManga={likeManga}
-                openRegister={openRegister}
-                suggestRegister={suggestRegister}
-              />
-            ) : null;
-          })}
+        <SectionTitle>Free Manga</SectionTitle>
+        <FeaturedMangaList>
+          {!isEmpty(featuredManga) &&
+            featuredManga.map((manga) => {
+              return manga ? (
+                <MangaTile
+                  key={manga.id}
+                  manga={manga}
+                  loggedIn={loggedIn}
+                  likeManga={likeManga}
+                  openRegister={openRegister}
+                  suggestRegister={suggestRegister}
+                />
+              ) : null;
+            })}
+        </FeaturedMangaList>
       </FeaturedMangaSection>
     </App>
   );

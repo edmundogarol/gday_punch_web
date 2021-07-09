@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import { mangaReducer } from "./manga";
 import { adminReducer } from "./admin";
+import { homeReducer } from "./home";
 import {
   DO_LOGIN,
   LOGOUT_SUCESS,
@@ -11,7 +12,7 @@ import {
   OPEN_REGISTRATION,
   REGISTRATION_SUCCESS,
   SUGGEST_REGISTER_TO_CONTINUE,
-  UPDATE_USER
+  UPDATE_USER,
 } from "actions/user";
 
 const INITIAL_STATE = {
@@ -26,7 +27,7 @@ const INITIAL_STATE = {
     birth_date: undefined,
     logged_in: false,
     is_staff: false,
-    roles: []
+    roles: [],
   },
   loginView: false,
   loginCheckFinished: false,
@@ -35,7 +36,7 @@ const INITIAL_STATE = {
   pendingLogin: {},
   pendingRegistration: {},
 
-  suggestRegistration: undefined
+  suggestRegistration: undefined,
 };
 
 const appReducer = (state = INITIAL_STATE, action) => {
@@ -43,49 +44,49 @@ const appReducer = (state = INITIAL_STATE, action) => {
     case DO_LOGIN:
       return {
         ...state,
-        pendingLogin: action.payload
+        pendingLogin: action.payload,
       };
     case UPDATE_LOGIN_ERROR:
       return {
         ...state,
         registrationError: undefined,
         suggestRegistration: undefined,
-        loginError: action.payload.error
+        loginError: action.payload.error,
       };
     case UPDATE_REGISTRATION_ERROR:
       return {
         ...state,
         loginError: undefined,
         suggestRegistration: undefined,
-        registrationError: action.payload.error
+        registrationError: action.payload.error,
       };
     case OPEN_REGISTRATION:
       return {
         ...state,
-        loginView: true
+        loginView: true,
       };
     case DO_REGISTRATION:
       return {
         ...state,
-        pendingRegistration: action.payload
+        pendingRegistration: action.payload,
       };
     case CLOSE_REGISTRATION:
       return {
         ...state,
-        loginView: false
+        loginView: false,
       };
     case SUGGEST_REGISTER_TO_CONTINUE:
       return {
         ...state,
         loginError: undefined,
         registrationError: undefined,
-        suggestRegistration: action.payload.message
+        suggestRegistration: action.payload.message,
       };
     case REGISTRATION_SUCCESS:
       return {
         ...state,
         pendingLogin: {},
-        pendingRegistration: {}
+        pendingRegistration: {},
       };
     case UPDATE_USER:
       return {
@@ -94,8 +95,8 @@ const appReducer = (state = INITIAL_STATE, action) => {
         registrationError: undefined,
         suggestRegistration: undefined,
         loginView: false,
-        user: {...state.user, ...action.payload.user},
-        loginCheckFinished: true
+        user: { ...state.user, ...action.payload.user },
+        loginCheckFinished: true,
       };
     case LOGOUT_SUCESS:
       return {
@@ -105,7 +106,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         suggestRegistration: undefined,
         loginView: false,
         user: INITIAL_STATE.user,
-        loginCheckFinished: true
+        loginCheckFinished: true,
       };
     default:
       return state;
@@ -115,5 +116,6 @@ const appReducer = (state = INITIAL_STATE, action) => {
 export default combineReducers({
   app: appReducer,
   manga: mangaReducer,
-  admin: adminReducer
+  admin: adminReducer,
+  home: homeReducer,
 });
