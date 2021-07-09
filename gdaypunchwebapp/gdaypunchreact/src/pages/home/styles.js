@@ -12,6 +12,7 @@ export const FeaturedSection = styled.div`
   justify-content: center;
   flex-wrap: wrap;
   flex-direction: column;
+  background: ${(props) => (props.idx === 1 ? "#f1f1f1" : "#ffffff")};
 `;
 
 export const FeaturedList = styled.div`

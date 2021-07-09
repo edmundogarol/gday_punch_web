@@ -92,7 +92,13 @@ function Ui(props) {
         <MangaImage src={image ? getGdayPunchStaticUrl(image) : cover} />
       </a>
       <MangaDetails>
-        <a onClick={() => handleMangaClick(`/manga/${id}`, "manga")}>
+        <a
+          onClick={() =>
+            stripe_prices
+              ? handlePurchaseClick()
+              : handleMangaClick(`/manga/${id}`, "manga")
+          }
+        >
           <MangaTitle>{title}</MangaTitle>
           <MangaArtist>{author_name}</MangaArtist>
           {price && <p>{`A$${price}`}</p>}

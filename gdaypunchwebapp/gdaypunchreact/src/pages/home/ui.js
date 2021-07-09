@@ -45,7 +45,7 @@ function Ui(props) {
         <Login />
       </div>
       <FeaturedSection>
-        <SectionTitle>Store</SectionTitle>
+        <SectionTitle>Products</SectionTitle>
         <FeaturedList>
           {!isEmpty(productList) &&
             productList.map((product) => {
@@ -62,7 +62,7 @@ function Ui(props) {
             })}
         </FeaturedList>
       </FeaturedSection>
-      <FeaturedSection>
+      <FeaturedSection idx={1}>
         <SectionTitle>Free Manga</SectionTitle>
         <FeaturedList>
           {!isEmpty(featuredManga) &&
