@@ -48,6 +48,7 @@ function Ui(props) {
           </NavLink>
         </NavLogoContainer>
         <NavLinksMiddle>
+          <HeaderLink to="/">{"Home"}</HeaderLink>
           <HeaderLink to="/shop">{"Shop"}</HeaderLink>
           <HeaderLink to="/about">{"About"}</HeaderLink>
           <HeaderLink to="/contact">{"Contact"}</HeaderLink>

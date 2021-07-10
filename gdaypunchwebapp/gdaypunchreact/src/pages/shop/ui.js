@@ -2,19 +2,22 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { isEmpty } from "lodash";
 
-import Header from "components/header";
-import Login from "components/login";
-import MangaTile from "components/mangaTile";
 import PaymentForm from "components/paymentForm";
+import MangaTile from "components/mangaTile";
 
-import { App, FeaturedSection, FeaturedList, SectionTitle } from "./styles";
+import {
+  App,
+  TopFeaturedSection,
+  FeaturedSection,
+  FeaturedList,
+  SectionTitle,
+} from "./styles";
 
 const featuredProductIds = [10, 11];
 
 function Ui(props) {
   const {
     loggedIn,
-    loginView,
     openRegister,
     suggestRegister,
     featuredManga,
@@ -40,11 +43,7 @@ function Ui(props) {
 
   return (
     <App id="top" className="App">
-      <div className="App-header-container app-temp-background">
-        <Header loginView={loginView} />
-        <Login />
-      </div>
-      <FeaturedSection>
+      <TopFeaturedSection>
         <SectionTitle>Products</SectionTitle>
         <FeaturedList>
           {!isEmpty(productList) &&
@@ -61,7 +60,7 @@ function Ui(props) {
               ) : null;
             })}
         </FeaturedList>
-      </FeaturedSection>
+      </TopFeaturedSection>
       <FeaturedSection idx={1}>
         <SectionTitle>Free Manga</SectionTitle>
         <FeaturedList>
