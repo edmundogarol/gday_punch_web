@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { useParams } from "react-router-dom";
 import { Input, Tooltip, Typography, Radio, Checkbox, Transfer } from "antd";
 import {
   InfoCircleOutlined,
   DollarOutlined,
   ShoppingOutlined,
   StockOutlined,
+  FileImageOutlined,
 } from "@ant-design/icons";
 import { isEqual } from "lodash";
 
@@ -16,6 +18,7 @@ import {
   ProductDetailLeftContainer,
   ProductDetailRightContainer,
   ProductImage,
+  ProductTempImageFilenameInput,
   ProductPriceTransfer,
 } from "./styles";
 
@@ -30,6 +33,7 @@ function Ui(props) {
     fetchStripePrices,
     currentProduct,
     updateAdminProduct,
+    createAdminProduct,
     history,
   } = props;
   const {
@@ -38,6 +42,8 @@ function Ui(props) {
     fetchingStripePrices,
     finishedFetchingStripePrices,
   } = productsState;
+  const { productId } = useParams();
+  const creatingProduct = productId && productId.includes("copy");
   const [selectedKeys, setSelectedKeys] = useState([]);
   const [productPrices, updateProductPrices] = useState(
     currentProduct ? currentProduct.stripe_prices : []
@@ -46,6 +52,7 @@ function Ui(props) {
 
   const [product, updateProduct] = useState({
     ...currentProduct,
+    title: `${currentProduct.title}${creatingProduct ? " COPY" : ""}`,
   });
 
   useEffect(() => {
@@ -94,6 +101,8 @@ function Ui(props) {
 
   const handleUpdate = () => updateAdminProduct(product, history);
 
+  const handleCreate = () => createAdminProduct(product, history);
+
   const stripePricesForTransfer = stripePrices.map((price) => ({
     key: price.id,
     title: `$${price.price_amount} ${price.price_title}`,
@@ -101,7 +110,9 @@ function Ui(props) {
 
   return (
     <ProductsContainer>
-      <Title level={4}>Edit Product</Title>
+      <Title level={4}>
+        {creatingProduct ? "Create Product" : "Edit Product"}
+      </Title>
       <ProductDetailContainer>
         <ProductDetailLeftContainer>
           <Input
@@ -173,13 +184,26 @@ function Ui(props) {
           </Checkbox>
           <SubmitButton
             disabled={isEqual(currentProduct, product)}
-            onClick={() => handleUpdate()}
+            onClick={() => (creatingProduct ? handleCreate() : handleUpdate())}
           >
-            Update
+            {creatingProduct ? "Create" : "Update"}
           </SubmitButton>
         </ProductDetailLeftContainer>
         <ProductDetailRightContainer>
           <ProductImage src={getGdayPunchStaticUrl(product.image)} />
+          <ProductTempImageFilenameInput
+            value={product.image}
+            onChange={(e) =>
+              updateProduct({ ...product, image: e.target.value })
+            }
+            placeholder="Enter product image filename"
+            prefix={<FileImageOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Temporary product image filename applier">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
           <ProductPriceTransfer
             dataSource={stripePricesForTransfer}
             titles={["Product Prices", "Stripe Prices"]}

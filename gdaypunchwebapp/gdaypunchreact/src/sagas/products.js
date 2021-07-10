@@ -32,10 +32,23 @@ export function* getProduct(productId) {
     const data = response.data;
     return data;
   } else {
-    console.log("Products fetch error", JSON.stringify(response));
+    console.log("Product fetch error", JSON.stringify(response));
+  }
+}
+
+export function* fetchAllProductsCall() {
+  const response = yield call(api, `products/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateHomeProducts(data));
+  } else {
+    console.log("All Products fetch error", JSON.stringify(response));
   }
 }
 
 export default function* productSaga() {
-  yield all([takeLatest(FETCH_HOME_PRODUCTS, fetchProductsCall)]);
+  yield all([takeLatest(FETCH_HOME_PRODUCTS, fetchAllProductsCall)]);
 }

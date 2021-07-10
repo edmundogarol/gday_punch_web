@@ -197,10 +197,11 @@ export const updateStripeProducts = (products) => ({
   },
 });
 
-export const createAdminProduct = (product) => ({
+export const createAdminProduct = (product, history) => ({
   type: CREATE_ADMIN_PRODUCT,
   payload: {
     product,
+    history,
   },
 });
 

@@ -6,7 +6,8 @@ import { selectProductsState, selectCurrentProduct } from "selectors/admin";
 
 import {
   fetchStripePrices as fetchStripePricesAction,
-  updateAdminProduct as updateAdminProductAction
+  createAdminProduct as createAdminProductAction,
+  updateAdminProduct as updateAdminProductAction,
 } from "actions/admin";
 
 import Ui from "./ui";
@@ -19,6 +20,7 @@ const mapState = createStructuredSelector({
 const mapDispatch = {
   fetchStripePrices: fetchStripePricesAction,
   updateAdminProduct: updateAdminProductAction,
+  createAdminProduct: createAdminProductAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));

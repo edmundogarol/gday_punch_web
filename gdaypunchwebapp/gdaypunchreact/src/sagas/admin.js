@@ -311,6 +311,10 @@ export function* createProductCall(action) {
 
   if (response && response.ok) {
     yield call(fetchAdminProductsCall);
+
+    if (action.payload.history) {
+      action.payload.history.push("/admin/products/");
+    }
   } else {
     console.log("Create Product error", JSON.stringify(response));
     Object.values(response.data).map((error) =>
@@ -335,7 +339,7 @@ export function* updateProductCall(action) {
 
   if (response && response.ok) {
     yield call(fetchAdminProductsCall);
-    action.payload.history.push('/admin/products/')
+    action.payload.history.push("/admin/products/");
   } else {
     console.log("Update Product error", JSON.stringify(response));
     Object.values(response.data).map((error) =>

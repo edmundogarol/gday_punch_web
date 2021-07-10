@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Button, Image, Transfer } from "antd";
+import { Button, Image, Transfer, Input } from "antd";
 
 export const ProductsContainer = styled.div``;
 
@@ -41,6 +41,10 @@ export const ProductImage = styled(Image)`
     width: auto;
     height: auto;
   }
+`;
+
+export const ProductTempImageFilenameInput = styled(Input)`
+  margin-bottom: 1em;
 `;
 
 export const ProductPriceTransfer = styled(Transfer)`

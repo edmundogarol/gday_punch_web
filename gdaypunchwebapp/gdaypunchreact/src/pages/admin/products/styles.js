@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Button } from "antd";
+import { Button, Input } from "antd";
 
 export const ProductsContainer = styled.div``;
 
@@ -28,4 +28,8 @@ export const ProductRightContainer = styled.div`
   width: 50%;
   padding-top: 1em;
   margin-left: 2em;
+`;
+
+export const ProductTempImageFilenameInput = styled(Input)`
+  margin-bottom: 1em;
 `;

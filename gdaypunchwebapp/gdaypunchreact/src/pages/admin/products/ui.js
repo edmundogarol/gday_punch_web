@@ -19,6 +19,8 @@ import {
   ShoppingOutlined,
   StockOutlined,
   DeleteOutlined,
+  CopyOutlined,
+  FileImageOutlined,
 } from "@ant-design/icons";
 
 import {
@@ -27,6 +29,7 @@ import {
   ProductLeftContainer,
   ProductRightContainer,
   SubmitButton,
+  ProductTempImageFilenameInput,
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
@@ -161,14 +164,28 @@ function Ui(props) {
       title: "Edit",
       render: (value, instance) => (
         <>
-          <Button
-            onClick={() => {
-              setEditProduct(instance.id);
-              props.history.push(`/admin/product-detail/${instance.id}/`);
-            }}
-          >
-            Edit
-          </Button>
+          <Tooltip title="Edit Product">
+            <Button
+              onClick={() => {
+                setEditProduct(instance.id);
+                props.history.push(`/admin/product-detail/${instance.id}/`);
+              }}
+            >
+              Edit
+            </Button>
+          </Tooltip>
+          <Tooltip title="Copy Product">
+            <Button
+              onClick={() => {
+                setEditProduct(instance.id);
+                props.history.push(
+                  `/admin/product-detail/${instance.id}-copy/`
+                );
+              }}
+            >
+              <CopyOutlined className="site-form-item-icon" />
+            </Button>
+          </Tooltip>
           <Popconfirm
             title="Are you sure to delete this Product?"
             onConfirm={() => deleteAdminProduct(instance.id)}
@@ -176,11 +193,11 @@ function Ui(props) {
             okText="Yes"
             cancelText="No"
           >
-            <Button>
-              <Tooltip title="Delete Product">
+            <Tooltip title="Delete Product">
+              <Button>
                 <DeleteOutlined className="site-form-item-icon" />
-              </Tooltip>
-            </Button>
+              </Button>
+            </Tooltip>
           </Popconfirm>
         </>
       ),
@@ -271,6 +288,19 @@ function Ui(props) {
           <SubmitButton onClick={() => handleCreate()}>Create</SubmitButton>
         </ProductLeftContainer>
         <ProductRightContainer>
+          <ProductTempImageFilenameInput
+            value={newProduct.image}
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, image: e.target.value })
+            }
+            placeholder="Enter product image filename"
+            prefix={<FileImageOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Temporary product image filename applier">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
           <Transfer
             dataSource={stripePricesForTransfer}
             titles={["Product Prices", "Stripe Prices"]}
