@@ -436,7 +436,7 @@ code {
     a {
       padding: 0.5em;
       text-decoration: none;
-      color: inherit;
+      color: rgb(173, 173, 173);
     }
     svg {
       height: 1.5em;
@@ -457,6 +457,11 @@ code {
         #d6249f 60%,
         #285aeb 90%
       );
+      color: white;
+    }
+
+    .tiktok-hover:hover {
+      background: black;
       color: white;
     }
 

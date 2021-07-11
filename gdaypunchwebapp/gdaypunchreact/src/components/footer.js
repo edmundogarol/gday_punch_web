@@ -5,7 +5,7 @@ import {
   faInstagram,
   faYoutube,
   faTwitter,
-  tiktok,
+  faTiktok,
 } from "@fortawesome/free-brands-svg-icons";
 
 export default function Footer() {
@@ -22,8 +22,8 @@ export default function Footer() {
         <a className="fb-hover" href="https://www.facebook.com/gdaypunch/">
           <FontAwesomeIcon icon={faFacebook} />
         </a>
-        <a className="ig-hover" href="https://instagram.com/gdaypunch">
-          <FontAwesomeIcon icon={tiktok} />
+        <a className="tiktok-hover" href="https://tiktok.com/@gdaypunch">
+          <FontAwesomeIcon icon={faTiktok} />
         </a>
         <a className="ig-hover" href="https://instagram.com/gdaypunch">
           <FontAwesomeIcon icon={faInstagram} />

@@ -1,5 +1,6 @@
 import React from "react";
 import styled from "styled-components";
+import { device } from "utils/styles";
 
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
@@ -95,12 +96,17 @@ export const GalleryContainer = styled.div`
   display: flex;
   flex-direction: row;
   margin: 4em;
-  margin-left: 10em;
-  margin-right: 10em;
+  margin-left: auto;
+  margin-right: auto;
   justify-content: center;
   width: 80%;
   justify-content: flex-start;
   flex-wrap: wrap;
+
+  @media ${device.laptop} {
+    margin-left: 10em;
+    margin-right: 10em;
+  }
 `;
 
 export const GalleryImage = styled.div`
@@ -112,4 +118,8 @@ export const GalleryImage = styled.div`
   background-size: cover;
   background-position: center;
   filter: saturate(0.5);
+  margin-left: 1pt;
+  margin-right: 1pt;
+  margin-bottom: 1pt;
+  margin-top: 1pt;
 `;
