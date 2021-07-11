@@ -8,7 +8,7 @@ import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
 
-import { App, TopFeaturedSection } from "./styles";
+import { App } from "./styles";
 
 const featuredProductIds = [10, 11];
 
@@ -40,7 +40,7 @@ function Ui(props) {
 
   return (
     <App id="top" className="App">
-      <TopFeaturedSection>
+      <FeaturedSection top>
         <SectionTitle>Products</SectionTitle>
         <FeaturedList>
           {!isEmpty(productList) &&
@@ -57,7 +57,7 @@ function Ui(props) {
               ) : null;
             })}
         </FeaturedList>
-      </TopFeaturedSection>
+      </FeaturedSection>
       <FeaturedSection idx={1}>
         <SectionTitle>Free Manga</SectionTitle>
         <FeaturedList>

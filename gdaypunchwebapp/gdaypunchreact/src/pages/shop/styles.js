@@ -6,7 +6,3 @@ export const App = styled.div`
     min-height: 56vh;
   }
 `;
-
-export const TopFeaturedSection = styled(FeaturedSection)`
-  padding-top: 7em;
-`;
