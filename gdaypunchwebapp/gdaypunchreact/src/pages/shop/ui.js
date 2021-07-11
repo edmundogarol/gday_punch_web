@@ -4,14 +4,11 @@ import { isEmpty } from "lodash";
 
 import PaymentForm from "components/paymentForm";
 import MangaTile from "components/mangaTile";
+import FeaturedSection from "components/featuredSection";
+import { FeaturedList } from "components/featuredList";
+import { SectionTitle } from "components/sectionTitle";
 
-import {
-  App,
-  TopFeaturedSection,
-  FeaturedSection,
-  FeaturedList,
-  SectionTitle,
-} from "./styles";
+import { App, TopFeaturedSection } from "./styles";
 
 const featuredProductIds = [10, 11];
 

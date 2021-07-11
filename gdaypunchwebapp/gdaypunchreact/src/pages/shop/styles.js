@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { device } from "utils/styles";
+import FeaturedSection from "components/featuredSection";
 
 export const App = styled.div`
   .App-header-container {
@@ -7,29 +7,6 @@ export const App = styled.div`
   }
 `;
 
-export const FeaturedSection = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  flex-direction: column;
-  background: ${(props) => (props.idx === 1 ? "#f1f1f1" : "#ffffff")};
-`;
-
 export const TopFeaturedSection = styled(FeaturedSection)`
   padding-top: 7em;
-`;
-
-export const FeaturedList = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-`;
-
-export const SectionTitle = styled.h3`
-  font-size: 2em;
-  text-transform: uppercase;
-  margin: 1em;
-  letter-spacing: 1pt;
-  color: #909090;
-  font-weight: bolder;
 `;

@@ -40,11 +40,6 @@ export default function Header(props) {
   );
 }
 
-Header.propTypes = {
-  // Redux Properties
-  loginView: PropTypes.bool.isRequired,
-};
-
 function getStyles() {
   return {
     mangaka: {

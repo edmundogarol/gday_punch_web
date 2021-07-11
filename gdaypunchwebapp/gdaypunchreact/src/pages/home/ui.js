@@ -6,8 +6,12 @@ import Header from "components/header";
 import Login from "components/login";
 import MangaTile from "components/mangaTile";
 import PaymentForm from "components/paymentForm";
+import About from "components/about";
+import FeaturedSection from "components/featuredSection";
+import { FeaturedList } from "components/featuredList";
+import { SectionTitle } from "components/sectionTitle";
 
-import { App, FeaturedSection, FeaturedList, SectionTitle } from "./styles";
+import { App } from "./styles";
 
 const featuredProductIds = [10, 11];
 
@@ -80,6 +84,7 @@ function Ui(props) {
             })}
         </FeaturedList>
       </FeaturedSection>
+      <About />
     </App>
   );
 }
