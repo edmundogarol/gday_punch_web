@@ -24,10 +24,11 @@ import { doCheckLogin } from "actions/user";
 
 import { selectUser, selectLoginCheckFinished } from "selectors/app";
 
-import Home from "pages/home";
+import Home from "pages/Home";
 import DailyPrompt from "pages/DailyPrompt";
-import Admin from "pages/admin";
-import Shop from "pages/shop";
+import Admin from "pages/Admin";
+import Shop from "pages/Shop";
+import About from "pages/About";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
 
@@ -106,7 +107,7 @@ function Root(props) {
             <Route exact path="/" component={Home} />
             <Route exact path="/shop" component={Shop} />
             <Route exact path="/contact" component={Home} />
-            <Route exact path="/about" component={Home} />
+            <Route exact path="/about" component={About} />
             {loginCheckFinished && !user.logged_in ? (
               <Redirect to="/" />
             ) : (

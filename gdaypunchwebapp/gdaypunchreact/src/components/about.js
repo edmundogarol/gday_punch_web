@@ -9,7 +9,7 @@ import { getGdayPunchStaticUrl } from "utils/utils";
 
 export default function About(props) {
   return (
-    <FeaturedSection>
+    <FeaturedSection top={props.top}>
       <SectionTitle>Our Vision</SectionTitle>
       <BlurbContainer>
         <BlurbText>
