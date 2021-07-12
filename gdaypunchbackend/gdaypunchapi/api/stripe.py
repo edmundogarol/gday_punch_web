@@ -172,7 +172,7 @@ def PaymentsWebhookHandler(request):
 
 
 class StripeProductsViewSet(APIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
 
@@ -199,4 +199,4 @@ class StripeProductsViewSet(APIView):
 class StripePriceViewSet(viewsets.ModelViewSet):
     queryset = StripePrice.objects.all()
     serializer_class = StripePriceSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]

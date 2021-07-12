@@ -11,13 +11,18 @@ import {
   updateUser,
   registrationSuccess,
   updateLoginError,
-  updateRegistrationError
+  updateRegistrationError,
 } from "actions/user";
+import {
+  SUBMIT_CONTACT_FORM,
+  updateContactFormErrors,
+  contactFormSubmitted,
+} from "actions/app";
 import { doGetFeaturedManga } from "actions/manga";
 import {
   selectPendingRegistration,
   selectPendingLogin,
-  selectUser
+  selectUser,
 } from "selectors/app";
 import { api } from "utils/api";
 import { message } from "antd";
@@ -27,14 +32,14 @@ export function* register() {
 
   const response = yield call(api, "user/", {
     method: "POST",
-    body: pendingRegistration
+    body: pendingRegistration,
   });
 
   if (response && response.ok) {
     const data = response.data;
     const user = {
       logged_in: data.logged_in,
-      ...data.user
+      ...data.user,
     };
     yield put(updateUser(user));
     yield put(doLogin(pendingRegistration));
@@ -51,34 +56,34 @@ export function* patchUser(action) {
   const response = yield call(api, `user/${currentUser.id}/`, {
     method: "PATCH",
     body: {
-      username: action.payload.user.username
-    } 
+      username: action.payload.user.username,
+    },
   });
 
   if (response && response.ok) {
     const data = response.data;
     const user = {
-      ...data
-    }
+      ...data,
+    };
 
     yield put(updateUser(user));
-    message.success(`Successfully updated username to: ${user.username}`)
+    message.success(`Successfully updated username to: ${user.username}`);
   } else {
     console.log("Update user details error", JSON.stringify(response));
-    yield put(updateRegistrationError(response.data))
+    yield put(updateRegistrationError(response.data));
   }
 }
 
 export function* checkLogin() {
   const response = yield call(api, "login-check/", {
-    method: "GET"
+    method: "GET",
   });
 
   if (response && response.ok) {
     const data = response.data;
     const user = {
       logged_in: data.logged_in,
-      ...data.user
+      ...data.user,
     };
     yield put(updateUser(user));
   } else {
@@ -96,14 +101,14 @@ export function* login() {
 
   const response = yield call(api, "login/", {
     method: "POST",
-    body: pendingLogin
+    body: pendingLogin,
   });
 
   if (response && response.ok) {
     const data = response.data;
     const user = {
       logged_in: data.logged_in,
-      ...data.user
+      ...data.user,
     };
     yield put(updateUser(user));
     yield put(doGetFeaturedManga());
@@ -115,7 +120,7 @@ export function* login() {
 
 export function* logout() {
   const response = yield call(api, "logout/", {
-    method: "GET"
+    method: "GET",
   });
 
   if (response && response.ok) {
@@ -128,12 +133,31 @@ export function* logout() {
   }
 }
 
+export function* submitContactFormCall(action) {
+  const response = yield call(api, "contact/", {
+    method: "POST",
+    body: action.payload.form,
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    message.success(`Contact Form Submitted.`);
+    yield put(contactFormSubmitted(true));
+  } else {
+    const data = response.data;
+    console.log("Contact error", JSON.stringify(response));
+    message.error(`Submitting contact form failed. Please try again.`);
+    yield put(updateContactFormErrors(data));
+  }
+}
+
 export default function* appSaga() {
   yield all([
     takeLatest(UPDATE_USER_DETAILS, patchUser),
     takeLatest(DO_LOGIN, login),
     takeLatest(DO_LOGOUT, logout),
     takeLatest(DO_REGISTRATION, register),
-    takeLatest(DO_CHECK_LOGIN, checkLogin)
+    takeLatest(DO_CHECK_LOGIN, checkLogin),
+    takeLatest(SUBMIT_CONTACT_FORM, submitContactFormCall),
   ]);
 }

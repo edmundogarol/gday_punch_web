@@ -37,6 +37,9 @@ from .gdaypunchapi.api.stripe import (
     StripeProductsViewSet,
     StripePriceViewSet,
 )
+from .gdaypunchapi.api.contact import (
+    ContactViewSet
+)
 
 schema_view = get_swagger_view(title='Gday Punch Web App API')
 
@@ -57,6 +60,7 @@ router.register(
 )
 router.register(r'products', ProductViewSet, basename="products")
 router.register(r'product', ProductDetailView, basename="product")
+router.register(r'contact', ContactViewSet, basename="contact")
 
 urlpatterns = [
     url(r'^docs/', schema_view),

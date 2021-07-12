@@ -43,3 +43,8 @@ export const selectSuggestRegistration = createSelector(
   selectDomain,
   ({ suggestRegistration }) => suggestRegistration || ""
 );
+
+export const selectContactState = createSelector(
+  selectDomain,
+  ({ contact }) => contact
+);

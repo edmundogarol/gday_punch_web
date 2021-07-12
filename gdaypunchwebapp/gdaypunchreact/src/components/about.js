@@ -71,11 +71,9 @@ export const BlurbText = styled.p`
   margin-right: auto;
   margin-bottom: 2em;
   font-size: 1.1em;
-
-  p {
-    font-family: system-ui;
-    word-spacing: 2.3pt;
-  }
+  font-family: system-ui;
+  word-spacing: 2.3pt;
+  color: #464646;
 `;
 
 export const BlurbImage = styled.div`

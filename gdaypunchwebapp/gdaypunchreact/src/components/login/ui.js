@@ -120,7 +120,7 @@ function Ui(props) {
         <ErrorField>
           <div>
             <label>Error:</label>
-            {loginError.detail}
+            <span>{loginError.detail}</span>
           </div>
         </ErrorField>
       )}

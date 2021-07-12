@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework.permissions import BasePermission
 
 from django.db.models import Q
 from django.db.utils import IntegrityError
@@ -32,6 +33,17 @@ from .serializers import (
 )
 
 
+class PostOnlyPermissions(BasePermission):
+    def has_permission(self, request, view):
+        WRITE_METHODS = ["POST", ]
+
+        return (
+            request.method in WRITE_METHODS or
+            request.user and
+            request.user.is_authenticated
+        )
+
+
 class PostUserRateThrottle(throttling.UserRateThrottle):
     scope = "post_user"
 
@@ -42,7 +54,7 @@ class PostUserRateThrottle(throttling.UserRateThrottle):
 
 
 class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = (PostOnlyPermissions, )
 
     def create(self, validated_data):
         user = None

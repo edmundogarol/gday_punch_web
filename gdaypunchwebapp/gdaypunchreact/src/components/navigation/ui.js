@@ -18,8 +18,15 @@ import {
 } from "./styles";
 
 function Ui(props) {
-  const { user, loggedIn, loginView, closeRegister, openRegister, logout } =
-    props;
+  const {
+    user,
+    loggedIn,
+    loginView,
+    closeRegister,
+    openRegister,
+    logout,
+    history,
+  } = props;
 
   window.onscroll = () => scrollFunction();
 
@@ -34,6 +41,18 @@ function Ui(props) {
       document.getElementById("navbar").style.minHeight = "11.5vh";
       document.getElementById("navbar").style.fontSize = "15px";
     }
+  };
+
+  const handleOpenRegister = () => {
+    if (window.location.pathname !== "/") {
+      history.push("/");
+    }
+    openRegister();
+  };
+
+  const handleCloseRegister = () => {
+    history.push("/");
+    closeRegister();
   };
 
   return (
@@ -61,7 +80,9 @@ function Ui(props) {
           {!loggedIn && (
             <HeaderALink
               href="#"
-              onClick={() => (loginView ? closeRegister() : openRegister())}
+              onClick={() =>
+                loginView ? handleCloseRegister() : handleOpenRegister()
+              }
             >
               {loginView ? "Home" : "Login"}
             </HeaderALink>

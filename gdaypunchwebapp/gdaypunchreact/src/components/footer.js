@@ -39,7 +39,7 @@ export default function Footer() {
         </a>
       </div>
       <div className="copyright">
-        © COPYRIGHT 2021 GDAY PUNCH. ALL RIGHTS RESERVED.
+        © COPYRIGHT 2021 GDAY PUNCH PTY LTD. ALL RIGHTS RESERVED.
       </div>
     </div>
   );

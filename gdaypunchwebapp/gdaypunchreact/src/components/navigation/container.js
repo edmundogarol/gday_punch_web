@@ -1,4 +1,5 @@
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
 import { doLogout, openRegistration, closeRegistration } from "actions/user";
 import {
@@ -20,4 +21,4 @@ const mapDispatch = {
   closeRegister: closeRegistration,
 };
 
-export default connect(mapState, mapDispatch)(Ui);
+export default connect(mapState, mapDispatch)(withRouter(Ui));

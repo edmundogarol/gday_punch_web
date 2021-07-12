@@ -14,7 +14,6 @@ export const ErrorField = styled.div`
     background: #ff0000ad;
     border-radius: 0.4em;
     border: 1px solid red;
-    margin: 1em;
     display: flex;
     align-items: center;
     padding: 1em;
@@ -23,6 +22,9 @@ export const ErrorField = styled.div`
     width: max-content;
     height: max-content;
     flex-wrap: wrap;
+    width: 100%;
+    margin-top: 1em;
+    margin-bottom: 1em;
   }
 
   label {

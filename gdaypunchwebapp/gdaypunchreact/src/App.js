@@ -29,6 +29,7 @@ import DailyPrompt from "pages/DailyPrompt";
 import Admin from "pages/Admin";
 import Shop from "pages/Shop";
 import About from "pages/About";
+import Contact from "pages/Contact";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
 
@@ -106,7 +107,7 @@ function Root(props) {
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/shop" component={Shop} />
-            <Route exact path="/contact" component={Home} />
+            <Route exact path="/contact" component={Contact} />
             <Route exact path="/about" component={About} />
             {loginCheckFinished && !user.logged_in ? (
               <Redirect to="/" />

@@ -14,6 +14,10 @@ import {
   SUGGEST_REGISTER_TO_CONTINUE,
   UPDATE_USER,
 } from "actions/user";
+import {
+  UPDATE_CONTACT_FORM_ERRORS,
+  UPDATE_CONTACT_FORM_SUBMITTED,
+} from "actions/app";
 
 const INITIAL_STATE = {
   user: {
@@ -35,8 +39,12 @@ const INITIAL_STATE = {
   registrationError: undefined,
   pendingLogin: {},
   pendingRegistration: {},
-
   suggestRegistration: undefined,
+
+  contact: {
+    errors: [],
+    submitted: false,
+  },
 };
 
 const appReducer = (state = INITIAL_STATE, action) => {
@@ -107,6 +115,23 @@ const appReducer = (state = INITIAL_STATE, action) => {
         loginView: false,
         user: INITIAL_STATE.user,
         loginCheckFinished: true,
+      };
+    case UPDATE_CONTACT_FORM_ERRORS:
+      return {
+        ...state,
+        contact: {
+          ...state.contact,
+          errors: action.payload.errors,
+        },
+      };
+    case UPDATE_CONTACT_FORM_SUBMITTED:
+      return {
+        ...state,
+        contact: {
+          ...state.contact,
+          submitted: action.payload.submitted,
+          errors: [],
+        },
       };
     default:
       return state;

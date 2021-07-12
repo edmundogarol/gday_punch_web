@@ -327,3 +327,26 @@ class ProductReview(models.Model):
     rating = models.IntegerField(blank=False)
     purchase_date = models.DateField(null=True, blank=True)
     comment = models.TextField(max_length=500, blank=True)
+
+
+class Contact(models.Model):
+    GENERAL = 'general'
+    ORDER = 'order'
+    ADVERTISING = 'advertising'
+    SUBSCRIPTION = 'subscription'
+    SUBSCRIPTION_CANCELLATION = 'subscription_cancellation'
+    UNSUBSCRIBE = 'unsubscribe'
+    CONTACT_REASONS = (
+        (GENERAL, 'General'),
+        (ORDER, 'Order'),
+        (ADVERTISING, 'Advertising'),
+        (SUBSCRIPTION, 'Subscription'),
+        (SUBSCRIPTION_CANCELLATION, 'SubCancellation'),
+        (UNSUBSCRIBE, 'EmailUnsubscribe'),
+    )
+
+    name = models.TextField(max_length=50, blank=False)
+    email = models.TextField(max_length=50, blank=False)
+    reason = models.TextField(
+        max_length=30, choices=CONTACT_REASONS, default=GENERAL)
+    message = models.TextField(max_length=1000, blank=True)
