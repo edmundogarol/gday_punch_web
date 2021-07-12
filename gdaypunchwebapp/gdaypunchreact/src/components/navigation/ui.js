@@ -55,6 +55,8 @@ function Ui(props) {
     closeRegister();
   };
 
+  const location = window.location.pathname;
+
   return (
     <NavigationContainer id="navbar">
       <NavSection>
@@ -67,16 +69,28 @@ function Ui(props) {
           </NavLink>
         </NavLogoContainer>
         <NavLinksMiddle>
-          <HeaderLink to="/">{"Home"}</HeaderLink>
-          <HeaderLink to="/shop">{"Shop"}</HeaderLink>
-          <HeaderLink to="/about">{"About"}</HeaderLink>
-          <HeaderLink to="/contact">{"Contact"}</HeaderLink>
+          <HeaderLink to="/" active={location === "/"}>
+            {"Home"}
+          </HeaderLink>
+          <HeaderLink to="/shop" active={location === "/shop"}>
+            {"Shop"}
+          </HeaderLink>
+          <HeaderLink to="/about" active={location === "/about"}>
+            {"About"}
+          </HeaderLink>
+          <HeaderLink to="/contact" active={location === "/contact"}>
+            {"Contact"}
+          </HeaderLink>
         </NavLinksMiddle>
         <NavLinksRight>
           {/* <UserProfile>
             {user.username && user.username.length ? user.username : user.email}
           </UserProfile> */}
-          {user.is_staff && <HeaderLink to="/admin">{"Admin"}</HeaderLink>}
+          {user.is_staff && (
+            <HeaderLink to="/admin" active={location === "/admin"}>
+              {"Admin"}
+            </HeaderLink>
+          )}
           {!loggedIn && (
             <HeaderALink
               href="#"

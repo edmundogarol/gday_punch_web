@@ -95,6 +95,10 @@ export const HeaderALink = styled.a`
   font-size: 1em;
   letter-spacing: 2pt;
   margin-left: 2em;
+
+  &:hover {
+    color: #ffbd46;
+  }
 `;
 
 export const HeaderLink = styled(Link)`
@@ -103,4 +107,19 @@ export const HeaderLink = styled(Link)`
   font-size: 1em;
   letter-spacing: 2pt;
   margin-left: 2em;
+
+  &:hover {
+    color: #ffbd46;
+  }
+
+  ${(props) =>
+    props.active
+      ? `    
+        color: #ffbd46;
+
+        &:hover {
+          color: #ffc864;
+        }
+      `
+      : ``}
 `;
