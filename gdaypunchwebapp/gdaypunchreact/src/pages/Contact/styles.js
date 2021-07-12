@@ -39,6 +39,9 @@ export const ContactImageContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: flex-end;
+  flex-wrap: wrap;
+  margin-right: 2em;
+  margin-left: 2em;
 
   img {
     height: fit-content;
