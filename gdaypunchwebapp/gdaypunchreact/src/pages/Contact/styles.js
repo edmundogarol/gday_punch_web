@@ -27,6 +27,18 @@ export const ContactForm = styled.div`
 
   button {
     margin-top: 1em;
+    background: #f7b757;
+    border: none;
+    color: white;
+    height: 3em;
+    text-transform: uppercase;
+    letter-spacing: 1pt;
+    border-radius: 3pt;
+
+    &:hover {
+      background: #eaac4e;
+      color: white;
+    }
   }
 `;
 
