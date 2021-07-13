@@ -352,4 +352,5 @@ class Contact(models.Model):
     email = models.TextField(max_length=50, blank=False)
     reason = models.TextField(
         max_length=30, choices=CONTACT_REASONS, default=GENERAL)
-    message = models.TextField(max_length=1000, blank=True)
+    content = models.TextField(max_length=1000, blank=True)
+    date_created = models.DateField(null=True, blank=True)

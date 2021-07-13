@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { Input, Button, Select } from "antd";
+import moment from "moment";
 
 import PaymentForm from "components/paymentForm";
 import FeaturedSection from "components/featuredSection";
@@ -26,7 +27,7 @@ function Ui(props) {
     name: undefined,
     email: undefined,
     reason: "general",
-    message: undefined,
+    content: undefined,
   });
 
   useEffect(() => {
@@ -35,7 +36,7 @@ function Ui(props) {
         name: undefined,
         email: undefined,
         reason: "general",
-        message: undefined,
+        content: undefined,
       });
     }
 
@@ -45,7 +46,10 @@ function Ui(props) {
   }, [submitted]);
 
   const handleSubmitForm = () => {
-    submitContactForm(contactForm);
+    submitContactForm({
+      ...contactForm,
+      date_created: moment().format("YYYY-MM-DD"),
+    });
   };
 
   const contactReasons = {
@@ -133,14 +137,14 @@ function Ui(props) {
                 <TextArea
                   rows={7}
                   showCount={
-                    contactForm.message && contactForm.message.length > 400
+                    contactForm.content && contactForm.content.length > 400
                   }
                   maxLength={500}
-                  value={contactForm.message}
+                  value={contactForm.content}
                   onChange={(e) =>
                     updateContactForm({
                       ...contactForm,
-                      message: e.target.value,
+                      content: e.target.value,
                     })
                   }
                   placeholder="Enter Message"

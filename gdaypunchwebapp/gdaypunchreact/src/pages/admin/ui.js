@@ -3,6 +3,7 @@ import { NavLink, useParams } from "react-router-dom";
 import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
+import Contacts from "./contacts";
 import StripeProducts from "./products/stripeProducts";
 import ProductDetail from "./products/productDetails";
 
@@ -14,6 +15,7 @@ function Ui(props) {
   const twitter = app === "twitter";
   const prompts = app === "prompts";
   const products = app === "products";
+  const contacts = app === "contacts";
   const stripeProducts = app === "stripe-products";
   const productDetail = app === "product-detail";
 
@@ -39,6 +41,9 @@ function Ui(props) {
           <NavLink to="/admin/instagram">Instagram</NavLink>
         )}
         {hasPrivilege("admin") && (
+          <NavLink to="/admin/contacts">Contacts</NavLink>
+        )}
+        {hasPrivilege("admin") && (
           <NavLink to="/admin/prompts">Prompts</NavLink>
         )}
         {hasPrivilege("admin") && (
@@ -49,6 +54,7 @@ function Ui(props) {
         {twitter && <Twitter />}
         {prompts && <Prompts />}
         {products && <Products />}
+        {contacts && <Contacts />}
         {stripeProducts && <StripeProducts />}
         {productDetail && <ProductDetail />}
       </AdminContentContainer>

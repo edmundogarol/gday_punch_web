@@ -46,6 +46,13 @@ export const FINISHED_FETCHING_STRIPE_PRICES =
   "admin/FINISHED_FETCHING_STRIPE_PRICES";
 export const UPDATE_STRIPE_PRICES = "admin/UPDATE_STRIPE_PRICES";
 
+export const FETCH_CONTACT_ENTRIES = "admin/FETCH_CONTACT_ENTRIES";
+export const FETCHING_CONTACT_ENTRIES = "admin/FETCHING_CONTACT_ENTRIES";
+export const FINISHED_FETCHING_CONTACT_ENTRIES =
+  "admin/FINISHED_FETCHING_CONTACT_ENTRIES";
+export const UPDATE_CONTACT_ENTRIES = "admin/UPDATE_CONTACT_ENTRIES";
+export const DELETE_CONTACT_ENTRY = "admin/DELETE_CONTACT_ENTRY";
+
 export const doTweet = () => ({
   type: DO_TWEET,
 });
@@ -250,5 +257,31 @@ export const updateStripePrices = (prices) => ({
   type: UPDATE_STRIPE_PRICES,
   payload: {
     prices,
+  },
+});
+
+export const fetchContactEntries = () => ({
+  type: FETCH_CONTACT_ENTRIES,
+});
+
+export const fetchingContactEntries = () => ({
+  type: FETCHING_CONTACT_ENTRIES,
+});
+
+export const finishedFetchingContactEntries = () => ({
+  type: FINISHED_FETCHING_CONTACT_ENTRIES,
+});
+
+export const updateContactEntries = (entries) => ({
+  type: UPDATE_CONTACT_ENTRIES,
+  payload: {
+    entries,
+  },
+});
+
+export const deleteContactEntry = (entryId) => ({
+  type: DELETE_CONTACT_ENTRY,
+  payload: {
+    entryId,
   },
 });

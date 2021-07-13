@@ -24,6 +24,9 @@ import {
   UPDATE_STRIPE_PRICES,
   FETCHING_STRIPE_PRICES,
   FINISHED_FETCHING_STRIPE_PRICES,
+  FETCHING_CONTACT_ENTRIES,
+  FINISHED_FETCHING_CONTACT_ENTRIES,
+  UPDATE_CONTACT_ENTRIES,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -60,6 +63,12 @@ const INITIAL_STATE = {
     editingProduct: undefined,
     fetchingStripePrices: false,
     finishedFetchingStripePrices: false,
+  },
+
+  contacts: {
+    contactEntries: [],
+    fetchingContactEntries: false,
+    finishedFetchingContactEntries: false,
   },
 };
 
@@ -247,6 +256,32 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
           ...state.products,
           fetchingStripePrices: false,
           finishedFetchingStripePrices: true,
+        },
+      };
+    case UPDATE_CONTACT_ENTRIES:
+      return {
+        ...state,
+        contacts: {
+          ...state.contacts,
+          contactEntries: action.payload.entries,
+        },
+      };
+    case FETCHING_CONTACT_ENTRIES:
+      return {
+        ...state,
+        contacts: {
+          ...state.contacts,
+          fetchingContactEntries: true,
+          finishedFetchingContactEntries: false,
+        },
+      };
+    case FINISHED_FETCHING_CONTACT_ENTRIES:
+      return {
+        ...state,
+        contacts: {
+          ...state.contacts,
+          fetchingContactEntries: false,
+          finishedFetchingContactEntries: true,
         },
       };
     default:

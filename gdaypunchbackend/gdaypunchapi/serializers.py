@@ -120,4 +120,4 @@ class StripePriceSerializer(serializers.ModelSerializer):
 class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
-        fields = ("id", "name", "email", "reason", "message")
+        fields = ("id", "name", "email", "reason", "content", "date_created")

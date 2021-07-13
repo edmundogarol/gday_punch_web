@@ -14,6 +14,7 @@ import {
   REGISTER_STRIPE_PRICE,
   FETCH_STRIPE_PRICES,
   UPDATE_ADMIN_PRODUCT,
+  FETCH_CONTACT_ENTRIES,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -32,6 +33,10 @@ import {
   fetchingStripePrices,
   finishedFetchingStripePrices,
   updateStripePrices,
+  fetchingContactEntries,
+  finishedFetchingContactEntries,
+  updateContactEntries,
+  DELETE_CONTACT_ENTRY,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -424,6 +429,43 @@ export function* fetchStripePricesCall() {
   }
 }
 
+export function* fetchContactEntriesCall() {
+  yield put(fetchingContactEntries());
+  const response = yield call(api, "contact/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateContactEntries(data));
+    yield put(finishedFetchingContactEntries());
+  } else {
+    yield put(finishedFetchingContactEntries());
+    console.log("Contact Entries Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* deleteContactEntryCall(action) {
+  const response = yield call(api, `contact/${action.payload.entryId}/`, {
+    method: "DELETE",
+  });
+
+  if (response && response.ok) {
+    yield call(fetchContactEntriesCall);
+  } else {
+    console.log("Delete Contact Entry error", JSON.stringify(response));
+    Object.values(response.data).map((error) =>
+      message.warn({
+        content: error,
+        className: "antd-message-capitalize",
+        style: {
+          textTransform: "capitalize",
+        },
+      })
+    );
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -439,5 +481,7 @@ export default function* adminSaga() {
     takeLatest(REGISTER_STRIPE_PRICE, registerStripePriceCall),
     takeLatest(FETCH_STRIPE_PRICES, fetchStripePricesCall),
     takeLatest(UPDATE_ADMIN_PRODUCT, updateProductCall),
+    takeLatest(FETCH_CONTACT_ENTRIES, fetchContactEntriesCall),
+    takeLatest(DELETE_CONTACT_ENTRY, deleteContactEntryCall),
   ]);
 }
