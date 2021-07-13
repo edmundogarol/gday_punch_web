@@ -312,21 +312,27 @@ export function* createProductCall(action) {
   if (response && response.ok) {
     message.success("Successfully Created Product");
     yield call(fetchAdminProductsCall);
+    yield call(fetchStripePricesCall);
 
     if (action.payload.history) {
       action.payload.history.push("/admin/products/");
     }
   } else {
     console.log("Create Product error", JSON.stringify(response));
-    Object.values(response.data).map((error) =>
-      message.warn({
-        content: error,
-        className: "antd-message-capitalize",
-        style: {
-          textTransform: "capitalize",
-        },
-      })
-    );
+
+    if (response.data) {
+      Object.values(response.data).map((error) =>
+        message.warn({
+          content: error,
+          className: "antd-message-capitalize",
+          style: {
+            textTransform: "capitalize",
+          },
+        })
+      );
+    } else {
+      message.error(`Create Product Error: ${response.status}`);
+    }
   }
 }
 

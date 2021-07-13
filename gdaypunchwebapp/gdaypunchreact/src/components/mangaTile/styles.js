@@ -20,8 +20,7 @@ export const MangaTile = styled.div`
 `;
 
 export const MangaImage = styled.img`
-  height: auto;
-  max-width: 12em;
+  max-height: 15em;
 `;
 
 export const MangaTitle = styled.h2`

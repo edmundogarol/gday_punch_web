@@ -191,7 +191,7 @@ class StripeProductsViewSet(APIView):
             price_details = stripe.Price.retrieve(price.id)
             product_details = stripe.Product.retrieve(price_details.product)
 
-            stripe_price = StripePrice.objects.filter(price_id=price.id)
+            stripe_price = StripePrice.objects.get(price_id=price.id)
 
             if product_details.active:
                 product_list.append(

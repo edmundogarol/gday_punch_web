@@ -49,6 +49,7 @@ function Ui(props) {
     currentProduct ? currentProduct.stripe_prices : []
   );
   const [transferStripePrices, updateTransferStripePrices] = useState([]);
+  const [assigningCustomPrice, updateAssigningCustomPrice] = useState(false);
 
   const [product, updateProduct] = useState({
     ...currentProduct,
@@ -56,17 +57,19 @@ function Ui(props) {
   });
 
   useEffect(() => {
-    let currentProductPrice = 0;
-    productPrices.map((price) => {
-      currentProductPrice += stripePrices.find(
-        (e) => e.id === price
-      ).price_amount;
-    });
-    updateProduct({
-      ...product,
-      price: currentProductPrice,
-      stripe_prices: productPrices,
-    });
+    if (!assigningCustomPrice) {
+      let currentProductPrice = 0;
+      productPrices.map((price) => {
+        currentProductPrice += stripePrices.find(
+          (e) => e.id === price
+        ).price_amount;
+      });
+      updateProduct({
+        ...product,
+        active_price: currentProductPrice,
+        stripe_prices: productPrices,
+      });
+    }
   }, [productPrices]);
 
   useEffect(() => {
@@ -83,11 +86,20 @@ function Ui(props) {
     );
   }, [stripePriceIds]);
 
+  useEffect(() => {
+    if (assigningCustomPrice) {
+      updateProductPrices([]);
+      updateTransferStripePrices(stripePriceIds);
+    }
+  }, [assigningCustomPrice, currentProduct]);
+
   const onSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
     setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
   };
 
   const onChange = (nextTargetKeys, direction, moveKeys) => {
+    updateAssigningCustomPrice(false);
+
     if (direction === "left") {
       updateProductPrices([...productPrices, ...moveKeys]);
     } else {
@@ -215,7 +227,26 @@ function Ui(props) {
             listStyle={{ direction: "left", width: "250px" }}
             showSelectAll={false}
           />
-          <Title level={4}>{`Price: $${product.price}`}</Title>
+          <Title level={4}>
+            Price
+            <Input
+              value={product.active_price}
+              onChange={(e) => {
+                updateProduct({
+                  ...product,
+                  active_price: e.target.value,
+                });
+                updateAssigningCustomPrice(true);
+              }}
+              placeholder="Enter product price"
+              prefix={<DollarOutlined className="site-form-item-icon" />}
+              suffix={
+                <Tooltip title="Product price">
+                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+                </Tooltip>
+              }
+            />
+          </Title>
         </ProductDetailRightContainer>
       </ProductDetailContainer>
     </ProductsContainer>

@@ -1,19 +1,77 @@
+import os
+import stripe
+
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 
 from ..models import (
-    Product
+    Product, ProductType, StripePrice
 )
 from ..serializers import (
-    ProductSerializer,
+    ProductSerializer, StripePriceSerializer
 )
+
+if 'DEVENV' in os.environ:
+    stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
+    endpoint_secret = 'whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal'
+    domain = "http://localhost:8000"
+else:
+    stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
+    domain = "https://www.beta-gdaypunch:com"
+
+# price_type: one_time, recurring
 
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def create(self, request, *args, **kwargs):
+
+        recurring = request.data['product_type'] == 3
+
+        stripe_price = stripe.Price.create(
+            unit_amount=int(float(request.data['active_price'])*100),
+            currency="aud",
+            recurring={
+                "interval": "month",
+                "interval_count": 2,
+                "usage_type": "metered"
+            } if recurring else None,
+            product_data={
+                "name": request.data['title'],
+            })
+
+        stripe_product = stripe.Product.retrieve(stripe_price.product)
+        stripe.Product.modify(stripe_product.id, images=[
+                              "https://gdaypunch-static.s3.us-west-2.amazonaws.com/" + request.data['image']])
+
+        new_stripe_price = StripePrice(
+            price_amount=(stripe_price.unit_amount / 100),
+            price_id=stripe_price.id,
+            price_title=request.data['title'],
+            price_type="recurring" if recurring else "one_time"
+        )
+        new_stripe_price.save()
+
+        product = Product.objects.create(
+            description=request.data['description'],
+            title=request.data['title'],
+            image=request.data['image'],
+            sale_price=request.data['sale_price'],
+            active_price=request.data['active_price'],
+            visible=request.data['visible'],
+            stock=request.data['stock'],
+            product_type=ProductType.objects.get(
+                id=request.data['product_type']),
+        )
+        product.stripe_prices.add(new_stripe_price)
+        product.save()
+
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
 
     def list(self, request, *args, **kwargs):
         queryset = Product.objects.all().order_by('-id')
