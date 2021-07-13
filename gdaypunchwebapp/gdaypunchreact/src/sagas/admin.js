@@ -310,6 +310,7 @@ export function* createProductCall(action) {
   });
 
   if (response && response.ok) {
+    message.success("Successfully Created Product");
     yield call(fetchAdminProductsCall);
 
     if (action.payload.history) {

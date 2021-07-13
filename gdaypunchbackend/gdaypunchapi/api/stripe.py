@@ -52,15 +52,14 @@ def StripePriceCreator(price):
         })
     elif stripe_ids is not None:
         for stripe_id in stripe_ids:
-            gday_stripe_price = StripePrice.objects.get(id=stripe_id)
-            stripe_price = stripe.Price.retrieve(gday_stripe_price.price_id)
+            stripe_price = StripePrice.objects.get(id=stripe_id)
 
-            if stripe_price.type == "recurring":
+            if stripe_price.price_type == "recurring":
                 has_subscription = True
 
             prices.append({
-                'price': gday_stripe_price.price_id,
-                'quantity': 1 if stripe_price.type == "one_time" else None
+                'price': stripe_price.price_id,
+                'quantity': 1 if stripe_price.price_type == "one_time" else None
             })
 
     return {"prices": prices, "type":  has_subscription}

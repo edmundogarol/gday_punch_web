@@ -69,16 +69,16 @@ function Ui(props) {
           </NavLink>
         </NavLogoContainer>
         <NavLinksMiddle>
-          <HeaderLink to="/" active={location === "/"}>
+          <HeaderLink to="/" $current={location === "/"}>
             {"Home"}
           </HeaderLink>
-          <HeaderLink to="/shop" active={location === "/shop"}>
+          <HeaderLink to="/shop" $current={location === "/shop"}>
             {"Shop"}
           </HeaderLink>
-          <HeaderLink to="/about" active={location === "/about"}>
+          <HeaderLink to="/about" $current={location === "/about"}>
             {"About"}
           </HeaderLink>
-          <HeaderLink to="/contact" active={location === "/contact"}>
+          <HeaderLink to="/contact" $current={location === "/contact"}>
             {"Contact"}
           </HeaderLink>
         </NavLinksMiddle>
@@ -87,7 +87,7 @@ function Ui(props) {
             {user.username && user.username.length ? user.username : user.email}
           </UserProfile> */}
           {user.is_staff && (
-            <HeaderLink to="/admin" active={location === "/admin"}>
+            <HeaderLink to="/admin" $current={location === "/admin"}>
               {"Admin"}
             </HeaderLink>
           )}

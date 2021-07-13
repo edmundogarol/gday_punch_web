@@ -14,6 +14,7 @@ import {
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
+import { message } from "node_modules/antd/lib/index";
 
 const stripePromise = loadStripe(
   process.env.NODE_ENV === "development"
@@ -71,12 +72,23 @@ function Ui(props) {
       },
     });
 
-    const result = await stripe.redirectToCheckout({
-      sessionId: response.data.id,
-    });
+    if (response && response.ok) {
+      const result = await stripe.redirectToCheckout({
+        sessionId: response.data.id,
+      });
 
-    if (result.error) {
-      alert(result.error.message);
+      if (result.error) {
+        alert(result.error.message);
+      }
+    } else {
+      console.log("Checkout Purchase error", JSON.stringify(response));
+      message.error({
+        content: "Checkout Purchase error",
+        className: "antd-message-capitalize",
+        style: {
+          textTransform: "capitalize",
+        },
+      });
     }
   };
 
@@ -101,7 +113,7 @@ function Ui(props) {
         >
           <MangaTitle>{title}</MangaTitle>
           <MangaArtist>{author_name}</MangaArtist>
-          {price && <p>{`A$${price}`}</p>}
+          {price && price > 0 ? <p>{`A$${price}`}</p> : <p>{`FREE`}</p>}
         </a>
         {manga && likes && (
           <a onClick={() => handleMangaClick(undefined, "like")}>

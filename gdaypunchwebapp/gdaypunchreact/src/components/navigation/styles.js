@@ -113,7 +113,7 @@ export const HeaderLink = styled(Link)`
   }
 
   ${(props) =>
-    props.active
+    props.$current
       ? `    
         color: #ffbd46;
 

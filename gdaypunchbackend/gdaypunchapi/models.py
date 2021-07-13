@@ -257,6 +257,8 @@ class StripePrice(models.Model):
     price_amount = models.FloatField(blank=False)
     price_id = models.TextField(max_length=50, blank=False)
     price_title = models.TextField(max_length=50, blank=False)
+    price_type = models.TextField(
+        max_length=20, blank=False, default="one_time")
 
 
 class Product(models.Model):

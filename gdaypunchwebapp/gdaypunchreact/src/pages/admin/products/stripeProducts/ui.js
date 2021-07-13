@@ -62,6 +62,7 @@ function Ui(props) {
       name: stripeProduct.product.name,
       stripeId: stripeProduct.price.id,
       type: productType[stripeProduct.price.type],
+      price_type: stripeProduct.price.type,
       price: stripeProduct.price.unit_amount / 100,
       registered: stripeProduct.registered,
     }));
@@ -154,6 +155,7 @@ function Ui(props) {
                 price_id: instance.stripeId,
                 price_amount: instance.price,
                 price_title: instance.name,
+                price_type: instance.price_type,
               })
             }
           >
