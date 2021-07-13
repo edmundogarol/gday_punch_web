@@ -24,6 +24,7 @@ if 'DEVENV' in os.environ:
 else:
     stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
     domain = "https://www.beta-gdaypunch:com"
+
 # price_type: one_time, recurring
 
 
@@ -53,14 +54,23 @@ def StripePriceCreator(price):
     elif stripe_ids is not None:
         for stripe_id in stripe_ids:
             stripe_price = StripePrice.objects.get(id=stripe_id)
+            append = True
 
             if stripe_price.price_type == "recurring":
                 has_subscription = True
 
-            prices.append({
-                'price': stripe_price.price_id,
-                'quantity': 1 if stripe_price.price_type == "one_time" else None
-            })
+            if len(prices):
+                for entry in prices:
+                    if entry['price'] == stripe_price.price_id:
+                        prices[prices.index(entry)]['quantity'] = prices[prices.index(
+                            entry)]['quantity'] + 1
+                        append = False
+
+            if append:
+                prices.append({
+                    'price': stripe_price.price_id,
+                    'quantity': 1 if stripe_price.price_type == "one_time" else None
+                })
 
     return {"prices": prices, "type":  has_subscription}
 
