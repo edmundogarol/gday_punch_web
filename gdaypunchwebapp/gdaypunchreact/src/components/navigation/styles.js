@@ -36,14 +36,22 @@ export const NavLogoContainer = styled.div`
 `;
 
 export const NavLinksMiddle = styled.div`
-  margin-right: 1em;
-  width: max-content;
-  display: none;
+  display: ${(props) => (props.$open ? "flex" : "none")};
   justify-content: center;
   align-items: center;
 
+  position: fixed;
+  margin-top: ${(props) => (props.$scrolledMini ? "3.2em" : "4em")};
+  flex-direction: column;
+  width: 100%;
+
   @media ${device.laptop} {
     display: flex;
+    width: max-content;
+    position: inherit;
+    margin-top: unset;
+    flex-direction: row;
+    width: unset;
   }
 `;
 
@@ -94,7 +102,24 @@ export const HeaderALink = styled.a`
   color: #565656;
   font-size: 1em;
   letter-spacing: 2pt;
-  margin-left: 2em;
+
+  width: 100%;
+  text-align: center;
+  background: #f3f3f3;
+  margin-left: unset;
+  padding: 1em;
+  border-bottom: 1px solid #d0d0d0;
+
+  @media ${device.laptop} {
+    width: unset;
+    text-align: inherit;
+    background: transparent;
+    margin-left: 2em;
+    padding: unset;
+    border-bottom: unset;
+
+    display: ${(props) => (props.$adminLink ? "none" : "inherit")};
+  }
 
   &:hover {
     color: #ffbd46;
@@ -106,7 +131,24 @@ export const HeaderLink = styled(Link)`
   color: #565656;
   font-size: 1em;
   letter-spacing: 2pt;
-  margin-left: 2em;
+
+  width: 100%;
+  text-align: center;
+  background: #f3f3f3;
+  margin-left: unset;
+  padding: 1em;
+  border-bottom: 1px solid #d0d0d0;
+
+  @media ${device.laptop} {
+    width: unset;
+    text-align: inherit;
+    background: transparent;
+    margin-left: 2em;
+    padding: unset;
+    border-bottom: unset;
+
+    display: ${(props) => (props.$adminLink ? "none" : "inherit")};
+  }
 
   &:hover {
     color: #ffbd46;

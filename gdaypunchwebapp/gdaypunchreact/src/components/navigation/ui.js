@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { MenuOutlined } from "@ant-design/icons";
@@ -27,6 +27,8 @@ function Ui(props) {
     logout,
     history,
   } = props;
+  const [miniNavOpen, toggleMiniNav] = useState(false);
+  const [scrolledMini, toggleScrolledMini] = useState(false);
 
   window.onscroll = () => scrollFunction();
 
@@ -37,9 +39,11 @@ function Ui(props) {
     ) {
       document.getElementById("navbar").style.minHeight = "8vh";
       document.getElementById("navbar").style.fontSize = "14px";
+      toggleScrolledMini(true);
     } else {
       document.getElementById("navbar").style.minHeight = "11.5vh";
       document.getElementById("navbar").style.fontSize = "15px";
+      toggleScrolledMini(false);
     }
   };
 
@@ -57,6 +61,7 @@ function Ui(props) {
 
   const location = window.location.pathname;
 
+  console.log({ miniNavOpen });
   return (
     <NavigationContainer id="navbar">
       <NavSection>
@@ -68,19 +73,69 @@ function Ui(props) {
             />
           </NavLink>
         </NavLogoContainer>
-        <NavLinksMiddle>
-          <HeaderLink to="/" $current={location === "/"}>
+        <NavLinksMiddle $open={miniNavOpen} $scrolledMini={scrolledMini}>
+          <HeaderLink
+            to="/"
+            $current={location === "/"}
+            onClick={() => toggleMiniNav(false)}
+          >
             {"Home"}
           </HeaderLink>
-          <HeaderLink to="/shop" $current={location === "/shop"}>
+          <HeaderLink
+            to="/shop"
+            $current={location === "/shop"}
+            onClick={() => toggleMiniNav(false)}
+          >
             {"Shop"}
           </HeaderLink>
-          <HeaderLink to="/about" $current={location === "/about"}>
+          <HeaderLink
+            to="/about"
+            $current={location === "/about"}
+            onClick={() => toggleMiniNav(false)}
+          >
             {"About"}
           </HeaderLink>
-          <HeaderLink to="/contact" $current={location === "/contact"}>
+          <HeaderLink
+            to="/contact"
+            $current={location === "/contact"}
+            onClick={() => toggleMiniNav(false)}
+          >
             {"Contact"}
           </HeaderLink>
+          {user.is_staff && (
+            <HeaderLink
+              to="/admin"
+              $adminLink
+              $current={location === "/admin"}
+              onClick={() => toggleMiniNav(false)}
+            >
+              {"Admin"}
+            </HeaderLink>
+          )}
+          {!loggedIn && (
+            <HeaderALink
+              href="#"
+              $adminLink
+              onClick={() => {
+                toggleMiniNav(false);
+                return loginView ? handleCloseRegister() : handleOpenRegister();
+              }}
+            >
+              {loginView ? "Home" : "Login"}
+            </HeaderALink>
+          )}
+          {loggedIn && (
+            <HeaderALink
+              $adminLink
+              href="#"
+              onClick={() => {
+                toggleMiniNav(false);
+                return logout();
+              }}
+            >
+              Logout
+            </HeaderALink>
+          )}
         </NavLinksMiddle>
         <NavLinksRight>
           {/* <UserProfile>
@@ -107,7 +162,7 @@ function Ui(props) {
             </HeaderALink>
           )}
         </NavLinksRight>
-        <NavDropDownButton>
+        <NavDropDownButton onClick={() => toggleMiniNav(!miniNavOpen)}>
           <MenuOutlined className="site-form-item-icon" />
         </NavDropDownButton>
       </NavSection>

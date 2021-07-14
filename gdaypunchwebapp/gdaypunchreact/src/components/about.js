@@ -58,22 +58,21 @@ export const BlurbContainer = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   text-align: initial;
-  justify-content: space-between;
   width: 90%;
   margin-left: auto;
   margin-right: auto;
   align-items: center;
+  justify-content: center;
 `;
 
 export const BlurbText = styled.p`
-  max-width: 400pt;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 330pt;
   margin-bottom: 2em;
   font-size: 1.1em;
   font-family: system-ui;
   word-spacing: 2.3pt;
   color: #464646;
+  margin-right: 2em;
 `;
 
 export const BlurbImage = styled.div`
@@ -83,11 +82,10 @@ export const BlurbImage = styled.div`
   background-size: cover;
   background-position: center;
   -webkit-filter: saturate(0.5);
+  -webkit-filter: saturate(0.5);
   filter: saturate(0.5);
-  min-width: 300pt;
-  min-height: 250px;
-  margin-left: auto;
-  margin-right: auto;
+  min-width: 230pt;
+  min-height: 200px;
 `;
 
 export const GalleryContainer = styled.div`
@@ -109,10 +107,10 @@ export const GalleryContainer = styled.div`
 
 export const GalleryImage = styled.div`
   background-image: url("${(props) => props.src}");
-  max-width: 190px;
-  min-width: 190px;
-  max-height: 150px;
-  min-height: 150px;
+  max-width: 130px;
+  min-width: 130px;
+  max-height: 120px;
+  min-height: 120px;
   background-size: cover;
   background-position: center;
   filter: saturate(0.5);
