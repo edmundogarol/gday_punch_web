@@ -55,3 +55,8 @@ export const selectCartCount = createSelector(
   selectDomain,
   ({ cart: { items } }) => items.length
 );
+
+export const selectSideCartOpen = createSelector(
+  selectDomain,
+  ({ cart: { sideCartOpen } }) => sideCartOpen
+);

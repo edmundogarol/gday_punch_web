@@ -22,6 +22,7 @@ import {
   FETCHING_CART_ITEMS,
   FINISHED_FETCHING_CART_ITEMS,
   UPDATE_CART_ITEMS,
+  TOGGLE_SIDE_CART,
 } from "actions/cart";
 
 const INITIAL_STATE = {
@@ -56,6 +57,7 @@ const INITIAL_STATE = {
     items: [],
     fetchingCartItems: false,
     finishedFetchingCartItems: false,
+    sideCartOpen: false,
   },
 };
 
@@ -152,6 +154,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         cart: {
           ...state.cart,
           items: action.payload.addItems ? newItems : action.payload.items,
+          sideCartOpen: action.payload.addItems,
         },
       };
     case FETCHING_CART_ITEMS:
@@ -170,6 +173,14 @@ const appReducer = (state = INITIAL_STATE, action) => {
           ...state.cart,
           fetchingCartItems: false,
           finishedFetchingCartItems: true,
+        },
+      };
+    case TOGGLE_SIDE_CART:
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          sideCartOpen: action.payload.open,
         },
       };
     default:

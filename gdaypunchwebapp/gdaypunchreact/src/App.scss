@@ -75,6 +75,18 @@ code {
   animation: 0.6s ease-in 0s 1 slideInFromLeft;
 }
 
+.side-cart {
+  transition-timing-function: ease-in;
+  transition: 0.2s;
+  transform: translateX(100%);
+}
+
+.side-cart-open {
+  transition-timing-function: ease-out;
+  transition: 0.2s;
+  transform: translateX(0);
+}
+
 .App-header-container,
 .pdf-container {
   background-color: #f1f1f1;

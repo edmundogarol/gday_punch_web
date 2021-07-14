@@ -33,6 +33,7 @@ import Contact from "pages/Contact";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
 
+import SideCart from "components/sideCart";
 import Footer from "components/footer";
 import Navigation from "components/navigation";
 
@@ -104,6 +105,7 @@ function Root(props) {
         <Route exact path="/daily-prompt" component={DailyPrompt} />
         <Route path="/">
           <Navigation />
+          <SideCart />
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/shop" component={Shop} />
