@@ -1,9 +1,9 @@
-import React, { useEffect } from "react";
-import { Tooltip, Typography, Table, Button, Popconfirm } from "antd";
-import { DeleteOutlined } from "@ant-design/icons";
+import React, { useEffect, useState } from "react";
+import { Tooltip, Typography, Table, Button, Popconfirm, Modal } from "antd";
+import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import moment from "moment";
 
-import { ContactsContainer } from "./styles";
+import { ContactsContainer, ActionsContainer } from "./styles";
 
 const { Title } = Typography;
 
@@ -23,6 +23,7 @@ function Ui(props) {
     fetchingContactEntries,
     finishedFetchingContactEntries,
   } = contactsState;
+  const [showingEntry, updateShowingEntry] = useState(undefined);
 
   useEffect(() => {
     if (!fetchingContactEntries && !finishedFetchingContactEntries) {
@@ -57,7 +58,12 @@ function Ui(props) {
     {
       title: "Edit",
       render: (value, instance) => (
-        <>
+        <ActionsContainer>
+          <Tooltip title="View Entry">
+            <Button onClick={() => updateShowingEntry(instance)}>
+              <EyeOutlined className="site-form-item-icon" />
+            </Button>
+          </Tooltip>
           <Popconfirm
             title="Are you sure to delete this entry?"
             onConfirm={() => deleteContactEntry(instance.id)}
@@ -71,10 +77,27 @@ function Ui(props) {
               </Button>
             </Tooltip>
           </Popconfirm>
-        </>
+        </ActionsContainer>
       ),
     },
   ];
+
+  const contactEnquiryModal = (entry) => {
+    return (
+      <Modal
+        title={contactReasons[entry.reason]}
+        visible={showingEntry}
+        onCancel={() => updateShowingEntry(undefined)}
+        cancelText="Close"
+      >
+        <h4>{entry.name}</h4>
+        <p>{entry.email}</p>
+        <p>{moment(entry.date_created).format("LL")}</p>
+        <br />
+        <p>{entry.content}</p>
+      </Modal>
+    );
+  };
 
   const dataSource = contactEntries.map((entry, idx) => ({
     key: idx + entry.email,
@@ -85,6 +108,7 @@ function Ui(props) {
     <ContactsContainer>
       <Title level={4}>Contact Entries</Title>
       <Table dataSource={dataSource} columns={columns} />
+      {showingEntry && contactEnquiryModal(showingEntry)}
     </ContactsContainer>
   );
 }
