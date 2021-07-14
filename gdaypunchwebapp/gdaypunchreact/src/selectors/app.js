@@ -48,3 +48,10 @@ export const selectContactState = createSelector(
   selectDomain,
   ({ contact }) => contact
 );
+
+export const selectCartState = createSelector(selectDomain, ({ cart }) => cart);
+
+export const selectCartCount = createSelector(
+  selectDomain,
+  ({ cart: { items } }) => items.length
+);

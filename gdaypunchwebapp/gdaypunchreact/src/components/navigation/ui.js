@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
-import { MenuOutlined } from "@ant-design/icons";
+import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 
 import { getImageModule } from "utils/utils";
 import {
@@ -15,6 +15,7 @@ import {
   UserProfile,
   HeaderALink,
   HeaderLink,
+  CartNumber,
 } from "./styles";
 
 function Ui(props) {
@@ -26,6 +27,7 @@ function Ui(props) {
     openRegister,
     logout,
     history,
+    cartCount,
   } = props;
   const [miniNavOpen, toggleMiniNav] = useState(false);
   const [scrolledMini, toggleScrolledMini] = useState(false);
@@ -61,7 +63,6 @@ function Ui(props) {
 
   const location = window.location.pathname;
 
-  console.log({ miniNavOpen });
   return (
     <NavigationContainer id="navbar">
       <NavSection>
@@ -73,6 +74,16 @@ function Ui(props) {
             />
           </NavLink>
         </NavLogoContainer>
+        <HeaderLink
+          to="/cart"
+          $showOnMiniNav
+          $adminLink
+          $current={location === "/cart"}
+          onClick={() => toggleMiniNav(false)}
+        >
+          <ShoppingCartOutlined className="site-form-item-icon" />
+          {cartCount > 0 && <CartNumber $showOnMiniNav>{cartCount}</CartNumber>}
+        </HeaderLink>
         <NavLinksMiddle $open={miniNavOpen} $scrolledMini={scrolledMini}>
           <HeaderLink
             to="/"
@@ -161,6 +172,15 @@ function Ui(props) {
               Logout
             </HeaderALink>
           )}
+          <HeaderLink
+            to="/cart"
+            $current={location === "/cart"}
+            onClick={() => toggleMiniNav(false)}
+          >
+            {"Cart"}
+            <ShoppingCartOutlined className="site-form-item-icon" />
+            {cartCount > 0 && <CartNumber>{cartCount}</CartNumber>}
+          </HeaderLink>
         </NavLinksRight>
         <NavDropDownButton onClick={() => toggleMiniNav(!miniNavOpen)}>
           <MenuOutlined className="site-form-item-icon" />

@@ -45,7 +45,6 @@ export const MangaDetails = styled.div`
   margin-top: 10pt;
   margin-bottom: 10pt;
   align-items: flex-end;
-  margin-bottom: 5vh;
 
   a {
     text-decoration: none;
@@ -63,5 +62,35 @@ export const MangaDetails = styled.div`
       -webkit-transform: scale(1.02);
       transform: scale(1.1);
     }
+  }
+
+  p {
+    margin-bottom: unset;
+  }
+`;
+
+export const ActionButton = styled.button`
+  font-size: 0.9em;
+  width: 100%;
+  height: 3em;
+  background: transparent;
+  border: 2px solid #d4882d;
+  color: #d4882d;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: linear-gradient(
+    45deg,
+    transparent 89%,
+    #d69e5a 30%,
+    #d69e5a 114%,
+    transparent 5%
+  );
+  margin-bottom: 1em;
+
+  &:hover {
+    background: #ffbc6a;
+    border: 2px solid #ffbc6a;
+    color: white;
+    cursor: pointer;
   }
 `;

@@ -1,5 +1,4 @@
 import React from "react";
-import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { Card, Tooltip, Switch } from "antd";
@@ -180,14 +179,6 @@ class DailyPrompt extends React.Component {
 function getStyles() {
   return {};
 }
-
-DailyPrompt.propTypes = {
-  // Redux Properties
-  prompts: PropTypes.oneOf(PropTypes.object, PropTypes.array),
-  promptStatuses: PropTypes.object,
-  // Redux Functions
-  fetchPrompts: PropTypes.func.isRequired,
-};
 
 const mapStateToProps = createStructuredSelector({
   prompts: selectPrompts,

@@ -18,6 +18,11 @@ import {
   UPDATE_CONTACT_FORM_ERRORS,
   UPDATE_CONTACT_FORM_SUBMITTED,
 } from "actions/app";
+import {
+  FETCHING_CART_ITEMS,
+  FINISHED_FETCHING_CART_ITEMS,
+  UPDATE_CART_ITEMS,
+} from "actions/cart";
 
 const INITIAL_STATE = {
   user: {
@@ -33,6 +38,7 @@ const INITIAL_STATE = {
     is_staff: false,
     roles: [],
   },
+
   loginView: false,
   loginCheckFinished: false,
   loginError: undefined,
@@ -44,6 +50,12 @@ const INITIAL_STATE = {
   contact: {
     errors: [],
     submitted: false,
+  },
+
+  cart: {
+    items: [],
+    fetchingCartItems: false,
+    finishedFetchingCartItems: false,
   },
 };
 
@@ -131,6 +143,33 @@ const appReducer = (state = INITIAL_STATE, action) => {
           ...state.contact,
           submitted: action.payload.submitted,
           errors: [],
+        },
+      };
+    case UPDATE_CART_ITEMS:
+      const newItems = [...state.cart.items, action.payload.items];
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          items: action.payload.addItems ? newItems : action.payload.items,
+        },
+      };
+    case FETCHING_CART_ITEMS:
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          fetchingCartItems: true,
+          finishedFetchingCartItems: false,
+        },
+      };
+    case FINISHED_FETCHING_CART_ITEMS:
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          fetchingCartItems: false,
+          finishedFetchingCartItems: true,
         },
       };
     default:

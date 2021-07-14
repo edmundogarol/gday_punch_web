@@ -150,6 +150,19 @@ export const HeaderLink = styled(Link)`
     display: ${(props) => (props.$adminLink ? "none" : "inherit")};
   }
 
+  ${(props) =>
+    props.$showOnMiniNav
+      ? `
+      width: unset;
+      text-align: inherit;
+      background: transparent;
+      margin-left: 2em;
+      padding: unset;
+      border-bottom: unset;
+      transform: translate(0, 7pt);
+    `
+      : ``};
+
   &:hover {
     color: #ffbd46;
   }
@@ -164,4 +177,35 @@ export const HeaderLink = styled(Link)`
         }
       `
       : ``}
+
+  // Cart icon and number logic
+  .site-form-item-icon {
+    svg {
+      width: ${(props) => (props.$showOnMiniNav ? "2.2em" : "1.5em")};
+      height: ${(props) => (props.$showOnMiniNav ? "2.2em" : "1.5em")};
+    }
+  }
+`;
+
+export const CartNumber = styled.div`
+  background: orange;
+  color: white;
+  border-radius: 14pt;
+  width: 1.6em;
+  text-align: center;
+  padding-left: 1pt;
+  transform: translate(-4pt, -8pt);
+
+  &:hover {
+    transform: ${(props) =>
+      props.$showOnMiniNav ? "" : "translate(-4pt, -8pt) scale(1.1)"};
+  }
+
+  ${(props) =>
+    props.$showOnMiniNav
+      ? `
+      transform: translate(-10pt,-19pt);
+      display: inline-block;
+      `
+      : ``};
 `;

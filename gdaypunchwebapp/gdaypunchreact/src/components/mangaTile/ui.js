@@ -11,6 +11,7 @@ import {
   MangaTitle,
   MangaArtist,
   MangaDetails,
+  ActionButton,
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
@@ -23,7 +24,14 @@ const stripePromise = loadStripe(
 );
 
 function Ui(props) {
-  const { loggedIn, manga, likeManga, openRegister, suggestRegister } = props;
+  const {
+    loggedIn,
+    manga,
+    likeManga,
+    openRegister,
+    suggestRegister,
+    updateCartItems,
+  } = props;
   const {
     id,
     cover,
@@ -92,6 +100,10 @@ function Ui(props) {
     }
   };
 
+  const handleAddToCart = () => {
+    updateCartItems(manga, true);
+  };
+
   return (
     <MangaTile>
       <a
@@ -125,6 +137,11 @@ function Ui(props) {
           </a>
         )}
       </MangaDetails>
+      {price && price > 0 && (
+        <ActionButton onClick={() => handleAddToCart()}>
+          Add To Cart
+        </ActionButton>
+      )}
     </MangaTile>
   );
 }

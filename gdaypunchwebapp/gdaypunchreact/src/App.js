@@ -109,6 +109,7 @@ function Root(props) {
             <Route exact path="/shop" component={Shop} />
             <Route exact path="/contact" component={Contact} />
             <Route exact path="/about" component={About} />
+            <Route exact path="/cart" component={Home} />
             {loginCheckFinished && !user.logged_in ? (
               <Redirect to="/" />
             ) : (

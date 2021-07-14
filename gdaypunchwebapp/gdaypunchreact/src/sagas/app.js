@@ -18,6 +18,12 @@ import {
   updateContactFormErrors,
   contactFormSubmitted,
 } from "actions/app";
+import {
+  FETCH_CART_ITEMS,
+  updateCartItems,
+  fetchingCartItems,
+  finishedFetchingCartItems,
+} from "actions/cart";
 import { doGetFeaturedManga } from "actions/manga";
 import {
   selectPendingRegistration,
@@ -151,6 +157,22 @@ export function* submitContactFormCall(action) {
   }
 }
 
+export function* fetchCartItemsCall() {
+  yield put(fetchingCartItems());
+  const response = yield call(api, "cart/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateCartItems(data));
+    yield put(finishedFetchingCartItems());
+  } else {
+    yield put(finishedFetchingCartItems());
+    console.log("Cart Items Fetch error", JSON.stringify(response));
+  }
+}
+
 export default function* appSaga() {
   yield all([
     takeLatest(UPDATE_USER_DETAILS, patchUser),
@@ -159,5 +181,6 @@ export default function* appSaga() {
     takeLatest(DO_REGISTRATION, register),
     takeLatest(DO_CHECK_LOGIN, checkLogin),
     takeLatest(SUBMIT_CONTACT_FORM, submitContactFormCall),
+    takeLatest(FETCH_CART_ITEMS, fetchCartItemsCall),
   ]);
 }
