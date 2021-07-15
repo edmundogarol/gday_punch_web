@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 
 import { Typography } from "antd";
-import { SideCartContainer } from "./styles";
+import { SideCartContainer, SideCartPopOut } from "./styles";
 
 const { Title } = Typography;
 
@@ -29,14 +29,17 @@ function Ui(props) {
 
   return (
     <SideCartContainer
+      onClick={() => toggleSideCart(false)}
       className={`side-cart ${sideCartOpen ? "side-cart-open" : ""}`}
     >
-      <button onClick={() => toggleSideCart(false)}>Close</button>
-      <Title level={4}>
-        Shopping Cart
-        <ShoppingCartOutlined className="site-form-item-icon" />
-        {cartCount}
-      </Title>
+      <SideCartPopOut>
+        <button onClick={() => toggleSideCart(false)}>Close</button>
+        <Title level={4}>
+          Shopping Cart
+          <ShoppingCartOutlined className="site-form-item-icon" />
+          {cartCount}
+        </Title>
+      </SideCartPopOut>
     </SideCartContainer>
   );
 }
