@@ -51,12 +51,29 @@ export const selectContactState = createSelector(
 
 export const selectCartState = createSelector(selectDomain, ({ cart }) => cart);
 
-export const selectCartCount = createSelector(
-  selectDomain,
-  ({ cart: { items } }) => items.length
-);
-
 export const selectSideCartOpen = createSelector(
   selectDomain,
   ({ cart: { sideCartOpen } }) => sideCartOpen
+);
+
+export const selectCartCount = createSelector(
+  selectDomain,
+  ({ cart: { items } }) => {
+    let count = 0;
+    Object.values(items).map((item) => {
+      count += item.quantity;
+    });
+    return count;
+  }
+);
+
+export const selectCartTotal = createSelector(
+  selectDomain,
+  ({ cart: { items } }) => {
+    let total = 0;
+    Object.values(items).map((item) => {
+      total += item.quantity * item.price;
+    });
+    return total;
+  }
 );

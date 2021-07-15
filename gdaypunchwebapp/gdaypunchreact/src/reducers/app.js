@@ -1,3 +1,4 @@
+import { unset } from "lodash";
 import { combineReducers } from "redux";
 import { mangaReducer } from "./manga";
 import { adminReducer } from "./admin";
@@ -23,6 +24,8 @@ import {
   FINISHED_FETCHING_CART_ITEMS,
   UPDATE_CART_ITEMS,
   TOGGLE_SIDE_CART,
+  UPDATE_CART_ITEM_QUANTITY,
+  REMOVE_CART_ITEM,
 } from "actions/cart";
 
 const INITIAL_STATE = {
@@ -54,7 +57,7 @@ const INITIAL_STATE = {
   },
 
   cart: {
-    items: [],
+    items: {},
     fetchingCartItems: false,
     finishedFetchingCartItems: false,
     sideCartOpen: false,
@@ -148,13 +151,45 @@ const appReducer = (state = INITIAL_STATE, action) => {
         },
       };
     case UPDATE_CART_ITEMS:
-      const newItems = [...state.cart.items, action.payload.items];
+      const existingItem = state.cart.items[action.payload.items.id];
+      const newItems = {
+        ...state.cart.items,
+        [action.payload.items.id]: existingItem
+          ? { ...existingItem, quantity: existingItem.quantity + 1 }
+          : { ...action.payload.items, quantity: 1 },
+      };
       return {
         ...state,
         cart: {
           ...state.cart,
           items: action.payload.addItems ? newItems : action.payload.items,
           sideCartOpen: action.payload.addItems,
+        },
+      };
+    case UPDATE_CART_ITEM_QUANTITY:
+      const modifyingItem = state.cart.items[action.payload.productId];
+
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          items: {
+            ...state.cart.items,
+            [action.payload.productId]: {
+              ...modifyingItem,
+              quantity: action.payload.quantity,
+            },
+          },
+        },
+      };
+    case REMOVE_CART_ITEM:
+      const updatedItems = state.cart.items;
+      unset(updatedItems, action.payload.productId);
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          items: updatedItems,
         },
       };
     case FETCHING_CART_ITEMS:
