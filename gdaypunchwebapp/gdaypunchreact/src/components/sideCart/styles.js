@@ -4,20 +4,28 @@ import { Button } from "antd";
 
 export const SideCartBlurField = styled.div`
   display: ${(props) => (props.sideCartOpen ? "inherit" : "none")};
-  width: 65%;
+  width: 0%;
   height: 100%;
   position: fixed;
   z-index: 12;
+
+  @media ${device.laptop} {
+    width: 65%;
+  }
 `;
 
 export const SideCartContainer = styled.div`
   position: fixed;
   right: 0;
   height: 100%;
-  width: 35%;
+  width: 100%;
   background: white;
   z-index: 11;
   box-shadow: 7px 0px 12px 6px #888888;
+
+  @media ${device.laptop} {
+    width: 35%;
+  }
 `;
 
 export const SideCartHeader = styled.div`
@@ -54,13 +62,17 @@ export const SideCartHeader = styled.div`
 `;
 
 export const SideCartItemsList = styled.div`
-  height: 60%;
+  height: 50%;
   overflow: scroll;
   margin-top: 1em;
   border-top: 1px solid #c5c5c5;
   width: 95%;
   margin-left: auto;
   margin-right: auto;
+
+  @media ${device.laptop} {
+    height: 60%;
+  }
 `;
 
 export const CloseSideCart = styled.button`
