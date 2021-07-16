@@ -10,7 +10,7 @@ export const SideCartBlurField = styled.div`
   z-index: 12;
 
   @media ${device.laptop} {
-    width: 65%;
+    width: 60%;
   }
 `;
 
@@ -24,7 +24,7 @@ export const SideCartContainer = styled.div`
   box-shadow: 7px 0px 12px 6px #888888;
 
   @media ${device.laptop} {
-    width: 35%;
+    width: 40%;
   }
 `;
 
@@ -95,7 +95,8 @@ export const CloseSideCart = styled.button`
 
 export const ItemContainer = styled.div`
   display: flex;
-  margin: 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid #c5c5c5;
@@ -103,6 +104,10 @@ export const ItemContainer = styled.div`
 
   p {
     margin: unset;
+  }
+
+  @media ${device.laptop} {
+    margin: 1em;
   }
 `;
 
@@ -116,10 +121,21 @@ export const ItemDetails = styled.div`
   justify-content: center;
 `;
 
+export const ItemTitleMetaContainer = styled.div`
+  width: 50%;
+  padding: 1em;
+
+  .spacer {
+    margin-right: 1em;
+    margin-left: 1em;
+  }
+`;
+
 export const ItemMeta = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 48%;
 
   p {
     margin: unset;
@@ -134,6 +150,22 @@ export const ItemSubtotal = styled.div`
     font-size: 0.7em;
     display: flex;
     justify-content: center;
+  }
+`;
+
+export const ItemSubtotalBinContainer = styled.div`
+  display: flex;
+  width: 30%;
+  height: 80pt;
+  justify-content: space-evenly;
+  align-items: center;
+
+  @media ${device.laptop} {
+    width: 40%;
+  }
+
+  button {
+    margin-left: 1em;
   }
 `;
 
@@ -162,14 +194,35 @@ export const ItemCoupon = styled.div`
 `;
 
 export const ItemTotalContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+
   p {
     display: flex;
     align-items: flex-end;
     justify-content: flex-end;
-    margin-right: 2.4em;
     margin-top: unset;
-    font-size: 0.84em;
   }
+
+  a {
+    display: flex;
+    margin-left: 2em;
+    color: #b77600;
+    text-decoration: underline;
+}
+  }
+`;
+
+export const TotalLabel = styled.p`
+  font-size: 1.3em;
+  margin-right: 2.2em;
+  font-weight: 600;
+`;
+
+export const GSTLabel = styled.p`
+  margin-right: 2.4em;
+  margin-top: unset;
+  font-size: 0.84em;
 `;
 
 export const ItemTotal = styled.div`
@@ -196,7 +249,7 @@ export const SideCartCheckoutButton = styled(Button)`
   margin-right: 2em;
   width: -webkit-fill-available;
   height: 4em;
-  background: #909090;
+  background: #444444;
 
   &:hover {
     background: transparent;

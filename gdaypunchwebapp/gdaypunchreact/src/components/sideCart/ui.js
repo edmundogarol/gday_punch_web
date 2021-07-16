@@ -18,10 +18,14 @@ import {
   SideCartItemsList,
   ItemContainer,
   ItemImage,
+  ItemTitleMetaContainer,
   ItemMeta,
   ItemSubtotal,
+  ItemSubtotalBinContainer,
   ItemCoupon,
   ItemTotal,
+  TotalLabel,
+  GSTLabel,
   ItemTotalContainer,
   SideCartCheckoutButton,
 } from "./styles";
@@ -115,11 +119,11 @@ function Ui(props) {
     return (
       <ItemContainer key={id}>
         <ItemImage src={getGdayPunchStaticUrl(image)} />
-        <div>
+        <ItemTitleMetaContainer>
           <h3>{title}</h3>
           <ItemMeta>
             <p>{`A$${price}`}</p>
-            <p>QTY:</p>
+            <p className="spacer">QTY:</p>
             <Select
               value={quantity}
               onSelect={(value) => updateCartItemQuantity(id, value)}
@@ -132,16 +136,18 @@ function Ui(props) {
               ))}
             </Select>
           </ItemMeta>
-        </div>
-        <ItemSubtotal>
-          <h4>{`A$${quantity ? quantity * price : price}`}</h4>
-          <p>Subtotal</p>
-        </ItemSubtotal>
-        <Tooltip title="Remove Item from Cart">
-          <Button onClick={() => removeCartItem(id)}>
-            <DeleteOutlined className="site-form-item-icon" />
-          </Button>
-        </Tooltip>
+        </ItemTitleMetaContainer>
+        <ItemSubtotalBinContainer>
+          <ItemSubtotal>
+            <h4>{`A$${quantity ? quantity * price : price}`}</h4>
+            <p>Subtotal</p>
+          </ItemSubtotal>
+          <Tooltip title="Remove Item from Cart">
+            <Button onClick={() => removeCartItem(id)}>
+              <DeleteOutlined className="site-form-item-icon" />
+            </Button>
+          </Tooltip>
+        </ItemSubtotalBinContainer>
       </ItemContainer>
     );
   };
@@ -173,11 +179,19 @@ function Ui(props) {
           <Button>Apply Discount</Button>
         </ItemCoupon>
         <ItemTotalContainer>
-          <ItemTotal>
-            <p>Total:</p>
-            <h3>$A{cartTotal}</h3>
-          </ItemTotal>
-          <p>Price Includes GST</p>
+          <a
+            target="_blank"
+            href="https://www.gdaypunch.com/return-and-refund-policy.html"
+          >
+            <p className="website">Refunds & Returns Policy</p>
+          </a>
+          <div>
+            <ItemTotal>
+              <TotalLabel>Total:</TotalLabel>
+              <h3>A${cartTotal}</h3>
+            </ItemTotal>
+            <GSTLabel>[Price Includes GST]</GSTLabel>
+          </div>
         </ItemTotalContainer>
         <SideCartCheckoutButton onClick={() => handlePurchaseClick()}>
           Checkout

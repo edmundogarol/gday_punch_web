@@ -28,6 +28,7 @@ function Ui(props) {
     logout,
     history,
     cartCount,
+    toggleSideCart,
   } = props;
   const [miniNavOpen, toggleMiniNav] = useState(false);
   const [scrolledMini, toggleScrolledMini] = useState(false);
@@ -75,11 +76,14 @@ function Ui(props) {
           </NavLink>
         </NavLogoContainer>
         <HeaderLink
-          to="/cart"
+          to="#"
           $showOnMiniNav
           $adminLink
           $current={location === "/cart"}
-          onClick={() => toggleMiniNav(false)}
+          onClick={() => {
+            toggleMiniNav(false);
+            toggleSideCart(true);
+          }}
         >
           <ShoppingCartOutlined className="site-form-item-icon" />
           {cartCount > 0 && <CartNumber $showOnMiniNav>{cartCount}</CartNumber>}

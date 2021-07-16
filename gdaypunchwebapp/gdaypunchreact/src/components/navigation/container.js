@@ -2,6 +2,8 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
 import { doLogout, openRegistration, closeRegistration } from "actions/user";
+import { toggleSideCart as toggleSideCartAction } from "actions/cart";
+
 import {
   selectUser,
   selectLoginViewToggle,
@@ -21,6 +23,7 @@ const mapDispatch = {
   logout: doLogout,
   openRegister: openRegistration,
   closeRegister: closeRegistration,
+  toggleSideCart: toggleSideCartAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));
