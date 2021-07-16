@@ -27,6 +27,12 @@ import {
   UPDATE_CART_ITEM_QUANTITY,
   REMOVE_CART_ITEM,
 } from "actions/cart";
+import {
+  SET_VIEWING_PRODUCT,
+  UPDATE_VIEWING_PRODUCT,
+  FETCHING_VIEWING_PRODUCT,
+  FINISHED_FETCHING_VIEWING_PRODUCT,
+} from "actions/products";
 
 const INITIAL_STATE = {
   user: {
@@ -61,6 +67,12 @@ const INITIAL_STATE = {
     fetchingCartItems: false,
     finishedFetchingCartItems: false,
     sideCartOpen: false,
+  },
+
+  viewingProduct: {
+    product: {},
+    fetchingViewingProduct: false,
+    finishedFetchingViewingProduct: false,
   },
 };
 
@@ -216,6 +228,40 @@ const appReducer = (state = INITIAL_STATE, action) => {
         cart: {
           ...state.cart,
           sideCartOpen: action.payload.open,
+        },
+      };
+    case SET_VIEWING_PRODUCT:
+      return {
+        ...state,
+        viewingProduct: {
+          ...state.viewingProduct,
+          product: action.payload.product,
+        },
+      };
+    case UPDATE_VIEWING_PRODUCT:
+      return {
+        ...state,
+        viewingProduct: {
+          ...state.viewingProduct,
+          product: action.payload.product,
+        },
+      };
+    case FETCHING_VIEWING_PRODUCT:
+      return {
+        ...state,
+        viewingProduct: {
+          ...state.viewingProduct,
+          fetchingViewingProduct: true,
+          finishedFetchingViewingProduct: false,
+        },
+      };
+    case FINISHED_FETCHING_VIEWING_PRODUCT:
+      return {
+        ...state,
+        viewingProduct: {
+          ...state.viewingProduct,
+          fetchingViewingProduct: false,
+          finishedFetchingViewingProduct: true,
         },
       };
     default:

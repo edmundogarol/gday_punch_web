@@ -31,6 +31,7 @@ function Ui(props) {
     openRegister,
     suggestRegister,
     updateCartItems,
+    viewProduct,
   } = props;
   const {
     id,
@@ -104,12 +105,19 @@ function Ui(props) {
     updateCartItems(manga, true);
   };
 
+  const handleViewProduct = () => {
+    viewProduct(manga);
+    props.history.push(
+      `/product/${manga.id}/${manga.title.split(" ").join("-")}`
+    );
+  };
+
   return (
     <MangaTile>
       <a
         onClick={() =>
           stripe_prices
-            ? handlePurchaseClick()
+            ? handleViewProduct()
             : handleMangaClick(`/manga/${id}`, "manga")
         }
       >
@@ -119,7 +127,7 @@ function Ui(props) {
         <a
           onClick={() =>
             stripe_prices
-              ? handlePurchaseClick()
+              ? handleViewProduct()
               : handleMangaClick(`/manga/${id}`, "manga")
           }
         >

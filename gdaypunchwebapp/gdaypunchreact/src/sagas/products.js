@@ -9,6 +9,12 @@ import {
 import { message } from "antd";
 
 import { FETCH_HOME_PRODUCTS, updateHomeProducts } from "actions/home";
+import {
+  FETCH_VIEWING_PRODUCT,
+  updateViewingProduct,
+  fetchingViewingProduct,
+  finishedFetchingViewingProduct,
+} from "actions/products";
 import { api } from "utils/api";
 
 export function* fetchProductsCall(action) {
@@ -36,6 +42,14 @@ export function* getProduct(productId) {
   }
 }
 
+export function* fetchViewingProductCall(action) {
+  yield put(fetchingViewingProduct());
+  const fetchedProduct = yield call(getProduct, action.payload.productId);
+
+  yield put(updateViewingProduct(fetchedProduct));
+  yield put(finishedFetchingViewingProduct());
+}
+
 export function* fetchAllProductsCall() {
   const response = yield call(api, `products/`, {
     method: "GET",
@@ -50,5 +64,8 @@ export function* fetchAllProductsCall() {
 }
 
 export default function* productSaga() {
-  yield all([takeLatest(FETCH_HOME_PRODUCTS, fetchAllProductsCall)]);
+  yield all([
+    takeLatest(FETCH_HOME_PRODUCTS, fetchAllProductsCall),
+    takeLatest(FETCH_VIEWING_PRODUCT, fetchViewingProductCall),
+  ]);
 }

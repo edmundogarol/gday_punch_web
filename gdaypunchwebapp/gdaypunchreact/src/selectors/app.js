@@ -2,6 +2,8 @@ import { createSelector } from "reselect";
 
 const selectDomain = (state) => state.app;
 
+const selectHomeDomain = (state) => state.home;
+
 export const selectUser = createSelector(selectDomain, ({ user }) => user);
 
 export const selectLoginViewToggle = createSelector(
@@ -76,4 +78,9 @@ export const selectCartTotal = createSelector(
     });
     return total;
   }
+);
+
+export const selectViewingProductState = createSelector(
+  selectDomain,
+  ({ viewingProduct }) => viewingProduct
 );
