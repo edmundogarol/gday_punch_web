@@ -8,7 +8,7 @@ export const App = styled.div`
 
 export const ContactForm = styled.div`
   height: 480pt;
-  width: 300pt;
+  width: 24em;
   justify-content: space-evenly;
   display: flex;
   flex-direction: column;
