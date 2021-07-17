@@ -1,6 +1,7 @@
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { createStructuredSelector } from "reselect";
+import Ui from "./ui";
 
 import {
   selectCartState,
@@ -12,7 +13,7 @@ import {
   updateCartItemQuantity as updateCartItemQuantityAction,
   removeCartItem as removeCartItemAction,
 } from "actions/cart";
-import Ui from "./ui";
+import { setViewingProduct as setViewingProductAction } from "actions/products";
 
 const mapState = createStructuredSelector({
   cartState: selectCartState,
@@ -24,6 +25,7 @@ const mapDispatch = {
   toggleSideCart: toggleSideCartAction,
   updateCartItemQuantity: updateCartItemQuantityAction,
   removeCartItem: removeCartItemAction,
+  viewProduct: setViewingProductAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));

@@ -55,6 +55,7 @@ function Ui(props) {
             <ProductDetailRightContainer>
               <Title level={4}>{product.title}</Title>
               <h4>$A{product.price.toFixed(2)}</h4>
+              <h4>{product.sku}</h4>
               <p>{product.description}</p>
             </ProductDetailRightContainer>
           </ProductDetailContainer>

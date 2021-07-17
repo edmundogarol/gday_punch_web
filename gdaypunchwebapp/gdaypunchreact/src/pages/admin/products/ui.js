@@ -24,6 +24,7 @@ import {
 } from "@ant-design/icons";
 
 import {
+  FieldLabel,
   ProductsContainer,
   ProductCreateContainer,
   ProductLeftContainer,
@@ -74,6 +75,7 @@ function Ui(props) {
     sale_price: 0,
     visible: false,
     stock: undefined,
+    sku: undefined,
     product_type: 1,
     price: 0,
     stripe_prices: productPrices,
@@ -162,6 +164,11 @@ function Ui(props) {
       render: (value) => (value ? "Visible" : "Hidden"),
     },
     {
+      title: "SKU",
+      dataIndex: "sku",
+      key: "sku",
+    },
+    {
       title: "Stock",
       dataIndex: "stock",
       key: "stock",
@@ -231,6 +238,7 @@ function Ui(props) {
       <Title level={4}>Create Product</Title>
       <ProductCreateContainer>
         <ProductLeftContainer>
+          <FieldLabel>Title</FieldLabel>
           <Input
             value={newProduct.title}
             onChange={(e) =>
@@ -244,6 +252,7 @@ function Ui(props) {
               </Tooltip>
             }
           />
+          <FieldLabel>Description</FieldLabel>
           <TextArea
             rows={5}
             value={newProduct.description}
@@ -254,19 +263,29 @@ function Ui(props) {
             maxLength={1000}
             showCount
           />
-          <Input
-            value={newProduct.sale_price}
+          <FieldLabel>Visibility</FieldLabel>
+          <Checkbox
             onChange={(e) =>
-              updateNewProduct({ ...newProduct, sale_price: e.target.value })
+              updateNewProduct({ ...newProduct, visible: e.target.checked })
             }
-            placeholder="Enter product sale price"
-            prefix={<DollarOutlined className="site-form-item-icon" />}
+          >
+            Visible
+          </Checkbox>
+          <FieldLabel>SKU</FieldLabel>
+          <Input
+            value={newProduct.sku}
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, sku: e.target.value })
+            }
+            placeholder="Enter product SKU"
+            prefix={<StockOutlined className="site-form-item-icon" />}
             suffix={
-              <Tooltip title="Product sale price in AUD$(00.00)">
+              <Tooltip title="Product SKU">
                 <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
               </Tooltip>
             }
           />
+          <FieldLabel>Stock</FieldLabel>
           <Input
             value={newProduct.stock}
             onChange={(e) =>
@@ -280,6 +299,7 @@ function Ui(props) {
               </Tooltip>
             }
           />
+          <FieldLabel>Product Type</FieldLabel>
           <Radio.Group
             onChange={(e) =>
               updateNewProduct({ ...newProduct, product_type: e.target.value })
@@ -290,17 +310,10 @@ function Ui(props) {
             <Radio value={2}>Digital</Radio>
             <Radio value={3}>Subscription</Radio>
           </Radio.Group>
-          <Checkbox
-            onChange={(e) =>
-              updateNewProduct({ ...newProduct, visible: e.target.checked })
-            }
-          >
-            Visible
-          </Checkbox>
-          <SubmitButton onClick={() => handleCreate()}>Create</SubmitButton>
         </ProductLeftContainer>
         <ProductRightContainer>
-          <ProductTempImageFilenameInput
+          <FieldLabel>Image Filename</FieldLabel>
+          <Input
             value={newProduct.image}
             onChange={(e) =>
               updateNewProduct({ ...newProduct, image: e.target.value })
@@ -313,6 +326,21 @@ function Ui(props) {
               </Tooltip>
             }
           />
+          <FieldLabel>Sale Price</FieldLabel>
+          <Input
+            value={newProduct.sale_price}
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, sale_price: e.target.value })
+            }
+            placeholder="Enter product sale price"
+            prefix={<DollarOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Product sale price in AUD$(00.00)">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
+          <FieldLabel>Stripe Prices</FieldLabel>
           <Transfer
             dataSource={stripePricesForTransfer}
             titles={["Product Prices", "Stripe Prices"]}
@@ -324,26 +352,25 @@ function Ui(props) {
             listStyle={{ direction: "left", width: "200px" }}
             showSelectAll={false}
           />
-          <Title level={4}>
-            Price
-            <Input
-              value={newProduct.active_price}
-              onChange={(e) => {
-                updateNewProduct({
-                  ...newProduct,
-                  active_price: e.target.value,
-                });
-                updateAssigningCustomPrice(true);
-              }}
-              placeholder="Enter product price"
-              prefix={<DollarOutlined className="site-form-item-icon" />}
-              suffix={
-                <Tooltip title="Product price">
-                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
-                </Tooltip>
-              }
-            />
-          </Title>
+          <FieldLabel>Price</FieldLabel>
+          <Input
+            value={newProduct.active_price}
+            onChange={(e) => {
+              updateNewProduct({
+                ...newProduct,
+                active_price: e.target.value,
+              });
+              updateAssigningCustomPrice(true);
+            }}
+            placeholder="Enter product price"
+            prefix={<DollarOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Product price">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
+          <SubmitButton onClick={() => handleCreate()}>Create</SubmitButton>
         </ProductRightContainer>
       </ProductCreateContainer>
       <Title level={4}>

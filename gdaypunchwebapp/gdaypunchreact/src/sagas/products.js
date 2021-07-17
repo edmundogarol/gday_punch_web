@@ -57,7 +57,7 @@ export function* fetchAllProductsCall() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateHomeProducts(data));
+    yield put(updateHomeProducts(data.filter((product) => product.visible)));
   } else {
     console.log("All Products fetch error", JSON.stringify(response));
   }

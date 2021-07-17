@@ -40,11 +40,11 @@ function Ui(props) {
 
   return (
     <App id="top" className="App">
-      <FeaturedSection top>
-        <SectionTitle>Products</SectionTitle>
-        <FeaturedList>
-          {!isEmpty(productList) &&
-            productList.map((product) => {
+      {!isEmpty(productList) && (
+        <FeaturedSection top>
+          <SectionTitle>Products</SectionTitle>
+          <FeaturedList>
+            {productList.map((product) => {
               return product ? (
                 <MangaTile
                   key={product.id}
@@ -56,13 +56,17 @@ function Ui(props) {
                 />
               ) : null;
             })}
-        </FeaturedList>
-      </FeaturedSection>
-      <FeaturedSection idx={1}>
-        <SectionTitle>Free Manga</SectionTitle>
-        <FeaturedList>
-          {!isEmpty(featuredManga) &&
-            featuredManga.map((manga) => {
+          </FeaturedList>
+        </FeaturedSection>
+      )}
+      {!isEmpty(featuredManga) && (
+        <FeaturedSection
+          idx={!isEmpty(productList) ? 1 : 0}
+          top={isEmpty(productList)}
+        >
+          <SectionTitle>Free Manga</SectionTitle>
+          <FeaturedList>
+            {featuredManga.map((manga) => {
               return manga ? (
                 <MangaTile
                   key={manga.id}
@@ -74,8 +78,9 @@ function Ui(props) {
                 />
               ) : null;
             })}
-        </FeaturedList>
-      </FeaturedSection>
+          </FeaturedList>
+        </FeaturedSection>
+      )}
     </App>
   );
 }

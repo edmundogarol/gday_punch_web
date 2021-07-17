@@ -3,6 +3,11 @@ import { Button, Image, Transfer, Input } from "antd";
 
 export const ProductsContainer = styled.div``;
 
+export const FieldLabel = styled.label`
+  margin-top: 1em;
+  margin-bottom: 0.2em;
+`;
+
 export const ProductDetailContainer = styled.div`
   display: flex;
   flex-direction: row;
@@ -10,6 +15,7 @@ export const ProductDetailContainer = styled.div`
 `;
 
 export const SubmitButton = styled(Button)`
+  margin-top: 1em;
   width: inherit;
   align-self: flex-end;
 `;
@@ -17,17 +23,15 @@ export const SubmitButton = styled(Button)`
 export const ProductDetailLeftContainer = styled.div`
   width: 50%;
   display: flex;
-  padding-top: 1em;
-  height: 550px;
-  justify-content: space-between;
   flex-direction: column;
   margin-bottom: 2em;
 `;
 
 export const ProductDetailRightContainer = styled.div`
   width: 50%;
-  padding-top: 1em;
   margin-left: 2em;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const ProductImage = styled(Image)`
@@ -41,10 +45,6 @@ export const ProductImage = styled(Image)`
     width: auto;
     height: auto;
   }
-`;
-
-export const ProductTempImageFilenameInput = styled(Input)`
-  margin-bottom: 1em;
 `;
 
 export const ProductPriceTransfer = styled(Transfer)`

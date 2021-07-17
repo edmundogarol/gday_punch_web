@@ -44,6 +44,7 @@ function Ui(props) {
     price,
     stripe_prices,
   } = manga;
+  const perma_link = manga.title.toLowerCase().split(" ").join("-");
 
   function handleMangaClick(destination, clickType) {
     const clickTypeMessages = {
@@ -107,9 +108,7 @@ function Ui(props) {
 
   const handleViewProduct = () => {
     viewProduct(manga);
-    props.history.push(
-      `/product/${manga.id}/${manga.title.split(" ").join("-")}`
-    );
+    props.history.push(`/product/${manga.id}/${perma_link}`);
   };
 
   return (

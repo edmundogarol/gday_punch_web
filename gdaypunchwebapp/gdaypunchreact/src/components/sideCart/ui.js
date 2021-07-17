@@ -50,6 +50,7 @@ function Ui(props) {
     updateCartItemQuantity,
     removeCartItem,
     cartTotal,
+    viewProduct,
   } = props;
   const { items: cartItemsObject, sideCartOpen } = cartState;
   const items = Object.values(cartItemsObject).map((item) => item);
@@ -69,10 +70,11 @@ function Ui(props) {
     }
   };
 
-  const productTypeString = {
-    1: "Physical",
-    2: "Digital",
-    3: "Subscription",
+  const handleViewProduct = (product) => {
+    viewProduct(product);
+    toggleSideCart(false);
+    const perma_link = product.title.toLowerCase().split(" ").join("-");
+    props.history.push(`/product/${product.id}/${perma_link}`);
   };
 
   const handlePurchaseClick = async () => {
@@ -120,7 +122,9 @@ function Ui(props) {
       <ItemContainer key={id}>
         <ItemImage src={getGdayPunchStaticUrl(image)} />
         <ItemTitleMetaContainer>
-          <h3>{title}</h3>
+          <a onClick={() => handleViewProduct(item)}>
+            <h3>{title}</h3>
+          </a>
           <ItemMeta>
             <p>{`A$${price}`}</p>
             <p className="spacer">QTY:</p>

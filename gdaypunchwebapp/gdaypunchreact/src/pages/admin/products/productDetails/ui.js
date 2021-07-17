@@ -12,13 +12,13 @@ import {
 import { isEqual } from "lodash";
 
 import {
+  FieldLabel,
   ProductsContainer,
   ProductDetailContainer,
   SubmitButton,
   ProductDetailLeftContainer,
   ProductDetailRightContainer,
   ProductImage,
-  ProductTempImageFilenameInput,
   ProductPriceTransfer,
 } from "./styles";
 
@@ -127,6 +127,7 @@ function Ui(props) {
       </Title>
       <ProductDetailContainer>
         <ProductDetailLeftContainer>
+          <FieldLabel>Title</FieldLabel>
           <Input
             value={product.title}
             onChange={(e) =>
@@ -140,6 +141,7 @@ function Ui(props) {
               </Tooltip>
             }
           />
+          <FieldLabel>Description</FieldLabel>
           <TextArea
             rows={10}
             showCount
@@ -150,19 +152,28 @@ function Ui(props) {
             }
             placeholder="Enter Product Description"
           />
-          <Input
-            value={product.sale_price}
+          <FieldLabel>Visibility</FieldLabel>
+          <Checkbox
+            checked={product.visible}
             onChange={(e) =>
-              updateProduct({ ...product, sale_price: e.target.value })
+              updateProduct({ ...product, visible: e.target.checked })
             }
-            placeholder="Enter product sale price"
-            prefix={<DollarOutlined className="site-form-item-icon" />}
+          >
+            Visible
+          </Checkbox>
+          <FieldLabel>SKU</FieldLabel>
+          <Input
+            value={product.sku}
+            onChange={(e) => updateProduct({ ...product, sku: e.target.value })}
+            placeholder="Enter product SKU"
+            prefix={<StockOutlined className="site-form-item-icon" />}
             suffix={
-              <Tooltip title="Product sale price in AUD$(00.00)">
+              <Tooltip title="Product SKU">
                 <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
               </Tooltip>
             }
           />
+          <FieldLabel>Stock</FieldLabel>
           <Input
             value={product.stock}
             onChange={(e) =>
@@ -176,6 +187,7 @@ function Ui(props) {
               </Tooltip>
             }
           />
+          <FieldLabel>Product Type</FieldLabel>
           <Radio.Group
             onChange={(e) =>
               updateProduct({ ...product, product_type: e.target.value })
@@ -186,24 +198,11 @@ function Ui(props) {
             <Radio value={2}>Digital</Radio>
             <Radio value={3}>Subscription</Radio>
           </Radio.Group>
-          <Checkbox
-            checked={product.visible}
-            onChange={(e) =>
-              updateProduct({ ...product, visible: e.target.checked })
-            }
-          >
-            Visible
-          </Checkbox>
-          <SubmitButton
-            disabled={isEqual(currentProduct, product)}
-            onClick={() => (creatingProduct ? handleCreate() : handleUpdate())}
-          >
-            {creatingProduct ? "Create" : "Update"}
-          </SubmitButton>
         </ProductDetailLeftContainer>
         <ProductDetailRightContainer>
           <ProductImage src={getGdayPunchStaticUrl(product.image)} />
-          <ProductTempImageFilenameInput
+          <FieldLabel>Image Filename</FieldLabel>
+          <Input
             value={product.image}
             onChange={(e) =>
               updateProduct({ ...product, image: e.target.value })
@@ -216,6 +215,21 @@ function Ui(props) {
               </Tooltip>
             }
           />
+          <FieldLabel>Sale Price</FieldLabel>
+          <Input
+            value={product.sale_price}
+            onChange={(e) =>
+              updateProduct({ ...product, sale_price: e.target.value })
+            }
+            placeholder="Enter product sale price"
+            prefix={<DollarOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Product sale price in AUD$(00.00)">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
+          <FieldLabel>Stripe Prices</FieldLabel>
           <ProductPriceTransfer
             dataSource={stripePricesForTransfer}
             titles={["Product Prices", "Stripe Prices"]}
@@ -227,26 +241,30 @@ function Ui(props) {
             listStyle={{ direction: "left", width: "250px" }}
             showSelectAll={false}
           />
-          <Title level={4}>
-            Price
-            <Input
-              value={product.active_price}
-              onChange={(e) => {
-                updateProduct({
-                  ...product,
-                  active_price: e.target.value,
-                });
-                updateAssigningCustomPrice(true);
-              }}
-              placeholder="Enter product price"
-              prefix={<DollarOutlined className="site-form-item-icon" />}
-              suffix={
-                <Tooltip title="Product price">
-                  <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
-                </Tooltip>
-              }
-            />
-          </Title>
+          <FieldLabel>Price</FieldLabel>
+          <Input
+            value={product.active_price}
+            onChange={(e) => {
+              updateProduct({
+                ...product,
+                active_price: e.target.value,
+              });
+              updateAssigningCustomPrice(true);
+            }}
+            placeholder="Enter product price"
+            prefix={<DollarOutlined className="site-form-item-icon" />}
+            suffix={
+              <Tooltip title="Product price">
+                <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+              </Tooltip>
+            }
+          />
+          <SubmitButton
+            disabled={isEqual(currentProduct, product)}
+            onClick={() => (creatingProduct ? handleCreate() : handleUpdate())}
+          >
+            {creatingProduct ? "Create" : "Update"}
+          </SubmitButton>
         </ProductDetailRightContainer>
       </ProductDetailContainer>
     </ProductsContainer>

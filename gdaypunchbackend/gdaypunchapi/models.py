@@ -272,6 +272,7 @@ class Product(models.Model):
     product_type = models.ForeignKey(
         ProductType,  on_delete=models.PROTECT)
     stripe_prices = models.ManyToManyField(StripePrice, blank=True)
+    sku = models.TextField(max_length=30, blank=True)
 
     @property
     def price(self):
