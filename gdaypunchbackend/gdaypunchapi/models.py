@@ -132,6 +132,20 @@ class Manga(models.Model):
     cover = models.TextField(max_length=100, blank=True)
     release_date = models.DateField(null=True, blank=True)
 
+    ALL_AGES = 'all_ages'
+    TEENS = 'teens'
+    YOUNG_ADULTS = 'young_adults'
+    ADULTS = 'adults'
+    AGE_RATINGS = (
+        (ALL_AGES, 'All Ages'),
+        (TEENS, 'Teens'),
+        (YOUNG_ADULTS, 'Young Adults'),
+        (ADULTS, 'Adults'),
+    )
+
+    age_rating = models.TextField(
+        max_length=30, choices=AGE_RATINGS, default=TEENS)
+
     def __str__(self):
         return self.title
 
