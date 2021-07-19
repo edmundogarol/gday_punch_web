@@ -52,24 +52,10 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MangaSerializer(serializers.ModelSerializer):
-    author_name = serializers.SerializerMethodField(
-        method_name='get_author_name')
-
     class Meta:
         model = Manga
         fields = ("id", "title", "author", "author_name", "pdf", "cover",
                   "likes", "user_likes", "comments")
-
-    def get_author_name(self, instance):
-        user = User.objects.get(email=instance.author)
-        full_name = user.first_name + " " + user.last_name
-
-        if full_name is not " ":
-            return full_name
-        elif user.username is not "":
-            return user.username
-        else:
-            return user.email[:10]
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -107,7 +93,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ("id", "title", "description", "image", "product_type", "active_price",
-                  "sale_price", "visible", "stock", "stripe_prices", "price", "sku")
+                  "sale_price", "visible", "stock", "stripe_prices", "price", "sku",
+                  "manga", "manga_details")
 
 
 class StripePriceSerializer(serializers.ModelSerializer):

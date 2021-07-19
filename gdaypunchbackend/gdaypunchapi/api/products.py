@@ -64,6 +64,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             active_price=request.data['active_price'],
             visible=request.data['visible'],
             stock=request.data['stock'],
+            sku=request.data['sku'],
             product_type=ProductType.objects.get(
                 id=request.data['product_type']),
         )

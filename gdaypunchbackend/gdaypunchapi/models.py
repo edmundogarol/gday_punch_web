@@ -111,12 +111,26 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
 
+    @property
+    def author_name(self):
+        full_name = self.first_name + " " + self.last_name
+
+        if full_name is not " ":
+            return full_name
+        elif self.username is not "":
+            return self.username
+        else:
+            return self.email[:10]
+
+        return full_name
+
 
 class Manga(models.Model):
     title = models.TextField(max_length=50, blank=False)
     author = models.ForeignKey(User,  on_delete=models.PROTECT)
     pdf = models.TextField(max_length=100, blank=True)
     cover = models.TextField(max_length=100, blank=True)
+    release_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.title
@@ -273,6 +287,7 @@ class Product(models.Model):
         ProductType,  on_delete=models.PROTECT)
     stripe_prices = models.ManyToManyField(StripePrice, blank=True)
     sku = models.TextField(max_length=30, blank=True)
+    manga = models.ManyToManyField(Manga, blank=True)
 
     @property
     def price(self):
@@ -284,6 +299,23 @@ class Product(models.Model):
             price += StripePrice.objects.get(id=stripe_price.id).price_amount
 
         return price
+
+    @property
+    def manga_details(self):
+        product = Product.objects.get(id=self.id)
+        mangas = product.manga.all()
+
+        manga_details_array = []
+        for manga in mangas:
+            current_manga = Manga.objects.get(id=manga.id)
+            manga_details_array.append({
+                "id": current_manga.id,
+                "title": current_manga.title,
+                "author": User.objects.get(id=current_manga.author_id).author_name,
+                "release_date": current_manga.release_date,
+            })
+
+        return manga_details_array if len(manga_details_array) > 1 else manga_details_array[0]
 
 
 class Order(models.Model):
