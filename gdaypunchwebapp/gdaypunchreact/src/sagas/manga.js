@@ -49,7 +49,7 @@ export function* getMangaCollection(mangaIds) {
   return collection;
 }
 
-export function* getManga(id) {
+export function* getManga(id, updateProducts = false) {
   const mangaId = typeof id !== "number" ? id?.payload?.mangaId : id;
 
   const response = yield call(api, `manga/${mangaId}/`, {
@@ -58,14 +58,14 @@ export function* getManga(id) {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateManga(data));
+    yield put(updateManga(data, updateProducts));
     return data;
   } else {
     console.log("Manga fetch error", JSON.stringify(response));
   }
 }
 
-export function* likeManga() {
+export function* likeManga(action) {
   const manga = yield select(selectLikingManga);
   const { id } = yield select(selectUser);
 
@@ -78,7 +78,7 @@ export function* likeManga() {
   });
 
   if (response && response.ok) {
-    yield call(getManga, manga);
+    yield call(getManga, manga, action.payload.updateProducts);
   } else {
     console.log("Like error", JSON.stringify(response));
   }

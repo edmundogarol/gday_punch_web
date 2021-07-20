@@ -25,6 +25,10 @@ const stripePromise = loadStripe(
     : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
 );
 
+const productType = {
+  1: "Physical",
+};
+
 function Ui(props) {
   const {
     loggedIn,
@@ -35,18 +39,25 @@ function Ui(props) {
     updateCartItemQuantity,
     viewProduct,
   } = props;
+  const { manga_details } = manga;
+  const { id: mangaId } = manga_details || { id: undefined };
   const {
+    //manga
     id,
     cover,
     title,
-    user_likes,
-    likes,
     comments,
     author_name,
     image,
+    //product
     price,
     stripe_prices,
+    product_type,
   } = manga;
+  const user_likes =
+    manga.user_likes || (manga_details ? manga_details.user_likes : false);
+  const likes = manga.likes || (manga_details ? manga_details.likes : 0);
+
   const perma_link = manga.title.toLowerCase().split(" ").join("-");
 
   function handleMangaClick(destination, clickType) {
@@ -54,13 +65,6 @@ function Ui(props) {
       manga: "Info: Sign up or Log in to read this manga!",
       like: "Info: Sign up or Log in to like this manga!",
     };
-
-    console.log({
-      clickType,
-      loggedIn,
-      manga,
-      "!manga.user_likes": !manga.user_likes,
-    });
 
     if (clickType === "manga") {
       if (!loggedIn) {
@@ -75,8 +79,8 @@ function Ui(props) {
         window.location.href = "/#top";
         openRegister();
         suggestRegister(clickTypeMessages[clickType]);
-      } else if (!manga.user_likes) {
-        likeManga(manga.id);
+      } else if (!user_likes) {
+        likeManga(manga_details ? mangaId : id, !!manga_details);
       } else {
         // Implement Unlike Manga
       }
@@ -113,12 +117,17 @@ function Ui(props) {
   };
 
   const handleAddToCart = () => {
-    updateCartItemQuantity(manga.id, 1, true);
+    updateCartItemQuantity(id, 1, true);
   };
 
   const handleViewProduct = () => {
-    viewProduct(manga.id);
-    props.history.push(`/product/${manga.id}/${perma_link}`);
+    const purchased = false;
+    viewProduct(id);
+    if (!price || purchased) {
+      handleMangaClick(`/manga/${!price ? id : mangaId}`, "manga");
+    } else {
+      props.history.push(`/product/${id}/${perma_link}`);
+    }
   };
 
   return (
@@ -144,19 +153,21 @@ function Ui(props) {
           <MangaArtist>{author_name}</MangaArtist>
           {price && price > 0 ? <p>{`A$${price}`}</p> : <p>{`FREE`}</p>}
         </a>
-        <a onClick={() => handleMangaClick(undefined, "like")}>
-          <FontAwesomeIcon
-            icon={faHeart}
-            style={manga && user_likes ? { color: "red" } : null}
-          />
-          <NumberLabel>{`${likes || 0}`}</NumberLabel>
-        </a>
-        <InteractionContainer
-          onClick={() => handleMangaClick(undefined, "like")}
-        >
-          <CommentOutlined className="site-form-item-icon" />
-          <NumberLabel>{`${comments || 0}`}</NumberLabel>
-        </InteractionContainer>
+        {!productType[product_type] && (
+          <>
+            <a onClick={() => handleMangaClick(undefined, "like")}>
+              <FontAwesomeIcon
+                icon={faHeart}
+                style={manga && user_likes ? { color: "red" } : null}
+              />
+              <NumberLabel>{`${likes || 0}`}</NumberLabel>
+            </a>
+            <InteractionContainer onClick={() => handleViewProduct()}>
+              <CommentOutlined className="site-form-item-icon" />
+              <NumberLabel>{`${comments || 0}`}</NumberLabel>
+            </InteractionContainer>
+          </>
+        )}
       </MangaDetails>
       {price && price > 0 && (
         <ActionButton onClick={() => handleAddToCart()}>

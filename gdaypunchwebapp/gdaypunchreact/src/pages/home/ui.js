@@ -59,7 +59,7 @@ function Ui(props) {
                   key={product.id}
                   manga={product}
                   loggedIn={loggedIn}
-                  likeManga={() => {}}
+                  likeManga={likeManga}
                   openRegister={openRegister}
                   suggestRegister={suggestRegister}
                 />

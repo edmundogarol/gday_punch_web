@@ -34,6 +34,7 @@ import {
   FETCHING_VIEWING_PRODUCT,
   FINISHED_FETCHING_VIEWING_PRODUCT,
 } from "actions/products";
+import { UPDATE_MANGA } from "actions/manga";
 
 const INITIAL_STATE = {
   user: {
@@ -301,6 +302,28 @@ const appReducer = (state = INITIAL_STATE, action) => {
           ...state.products,
           fetchingViewingProduct: false,
           finishedFetchingViewingProduct: true,
+        },
+      };
+    case UPDATE_MANGA:
+      if (!payload.updateProducts) return state;
+      const { manga } = payload;
+      const { id: mangaId } = manga;
+      const updatingProductManga = Object.values(
+        state.products.productList
+      ).find((product) => product.manga_details.id === mangaId);
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          productList: {
+            ...state.products.productList,
+            [updatingProductManga.id]: {
+              ...updatingProductManga,
+              likes: manga.likes,
+              user_likes: manga.user_likes,
+              comments: manga.comments,
+            },
+          },
         },
       };
     default:

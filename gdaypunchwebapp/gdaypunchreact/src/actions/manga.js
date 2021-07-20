@@ -12,66 +12,68 @@ export const SET_READING_MANGA = "manga/SET_READING_MANGA";
 export const doGetManga = (mangaId) => ({
   type: DO_GET_MANGA,
   payload: {
-    mangaId
-  }
+    mangaId,
+  },
 });
 
-export const updateManga = (manga) => ({
+export const updateManga = (manga, updateProducts = false) => ({
   type: UPDATE_MANGA,
   payload: {
-    manga
-  }
+    manga,
+    updateProducts,
+  },
 });
 
 export const doSetReadingManga = (mangaId) => ({
   type: SET_READING_MANGA,
   payload: {
-    mangaId
-  }
-})
+    mangaId,
+  },
+});
 
-export const doLikeManga = (manga) => ({
+export const doLikeManga = (manga, updateProducts = false) => ({
   type: DO_LIKE_MANGA,
   payload: {
-    manga
-  }
+    manga,
+    updateProducts,
+  },
 });
 
 export const doCommentManga = (comment, mangaId) => ({
   type: DO_COMMENT_MANGA,
   payload: {
     comment,
-    mangaId
-  }
+    mangaId,
+  },
 });
 
 export const doLikeComment = (comment, user) => ({
   type: DO_LIKE_COMMENT,
   payload: {
     comment,
-    user
-  }
+    user,
+  },
 });
 
 export const doGetComments = (mangaId) => ({
   type: DO_GET_COMMENTS,
   payload: {
-    mangaId
-  }
+    mangaId,
+  },
 });
 
 export const updateComments = (comments) => ({
   type: UPDATE_COMMENTS,
   payload: {
-    comments
-  }
+    comments,
+  },
 });
 
 export const updateComment = (comment) => ({
   type: UPDATE_COMMENT,
   payload: {
-    comment
-  }
+    comment,
+  },
 });
 
 export const doGetFeaturedManga = () => ({
