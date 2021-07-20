@@ -33,6 +33,7 @@ export const MangaArtist = styled.h4`
   font-size: 0.8em;
   margin: unset;
   max-width: 12em;
+  white-space: nowrap;
 `;
 
 export const MangaDetails = styled.div`

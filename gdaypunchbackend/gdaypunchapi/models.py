@@ -120,7 +120,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         elif self.username is not "":
             return self.username
         else:
-            return self.email[:10]
+            return self.email
 
         return full_name
 
