@@ -53,7 +53,7 @@ export const MangaDetails = styled.div`
   }
 
   svg {
-    margin-left: 20pt;
+    color: dimgrey;
     height: 1em;
 
     &:hover {
@@ -67,6 +67,17 @@ export const MangaDetails = styled.div`
 
   p {
     margin-bottom: unset;
+  }
+`;
+
+export const NumberLabel = styled.span`
+  margin-left: 0.3em;
+  color: dimgrey;
+`;
+
+export const InteractionContainer = styled.a`
+  svg {
+    margin-left: 6pt;
   }
 `;
 

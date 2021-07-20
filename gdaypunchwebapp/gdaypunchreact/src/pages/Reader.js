@@ -286,6 +286,8 @@ function getStyles() {
       gridRowStart: 2,
       gridRowEnd: 2,
       justifySelf: "center",
+      margin: "1em",
+      zIndex: 3,
     }),
     pdfNavigator: (position) => ({
       position: "relative",

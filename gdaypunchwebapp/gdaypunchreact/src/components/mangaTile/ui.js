@@ -1,9 +1,12 @@
 import React, { useEffect } from "react";
-import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
+import { CommentOutlined } from "@ant-design/icons";
 import { loadStripe } from "@stripe/stripe-js";
+import { message } from "antd";
+
 import { gdayfetch } from "utils/gdayfetch";
+import { getGdayPunchStaticUrl } from "utils/utils";
 
 import {
   MangaTile,
@@ -12,10 +15,9 @@ import {
   MangaArtist,
   MangaDetails,
   ActionButton,
+  NumberLabel,
+  InteractionContainer,
 } from "./styles";
-
-import { getGdayPunchStaticUrl } from "utils/utils";
-import { message } from "node_modules/antd/lib/index";
 
 const stripePromise = loadStripe(
   process.env.NODE_ENV === "development"
@@ -39,6 +41,7 @@ function Ui(props) {
     title,
     user_likes,
     likes,
+    comments,
     author_name,
     image,
     price,
@@ -51,6 +54,13 @@ function Ui(props) {
       manga: "Info: Sign up or Log in to read this manga!",
       like: "Info: Sign up or Log in to like this manga!",
     };
+
+    console.log({
+      clickType,
+      loggedIn,
+      manga,
+      "!manga.user_likes": !manga.user_likes,
+    });
 
     if (clickType === "manga") {
       if (!loggedIn) {
@@ -134,15 +144,19 @@ function Ui(props) {
           <MangaArtist>{author_name}</MangaArtist>
           {price && price > 0 ? <p>{`A$${price}`}</p> : <p>{`FREE`}</p>}
         </a>
-        {manga && likes && (
-          <a onClick={() => handleMangaClick(undefined, "like")}>
-            <FontAwesomeIcon
-              icon={faHeart}
-              style={manga && user_likes ? { color: "red" } : null}
-            />
-            {`(${likes || 0})`}
-          </a>
-        )}
+        <a onClick={() => handleMangaClick(undefined, "like")}>
+          <FontAwesomeIcon
+            icon={faHeart}
+            style={manga && user_likes ? { color: "red" } : null}
+          />
+          <NumberLabel>{`${likes || 0}`}</NumberLabel>
+        </a>
+        <InteractionContainer
+          onClick={() => handleMangaClick(undefined, "like")}
+        >
+          <CommentOutlined className="site-form-item-icon" />
+          <NumberLabel>{`${comments || 0}`}</NumberLabel>
+        </InteractionContainer>
       </MangaDetails>
       {price && price > 0 && (
         <ActionButton onClick={() => handleAddToCart()}>
