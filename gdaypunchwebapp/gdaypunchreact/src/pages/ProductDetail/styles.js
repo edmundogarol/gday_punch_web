@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { device } from "utils/styles";
 
 export const PageContainer = styled.div`
   min-height: 56vh;
@@ -14,17 +15,22 @@ export const ProductDetailContainer = styled.div`
   width: 100%;
   flex-wrap: wrap;
   justify-content: center;
+  padding-bottom: 3em;
 `;
 
 export const ProductDetailLeftContainer = styled.div`
   width: 25em;
   display: flex;
   padding-top: 1em;
-  height: 550px;
+  height: 27em;
   flex-direction: column;
   margin-bottom: 2em;
   align-items: center;
   justify-content: center;
+
+  @media ${device.laptop} {
+    height: 550px;
+  }
 
   .ant-image {
     width: max-content;
@@ -32,12 +38,18 @@ export const ProductDetailLeftContainer = styled.div`
 `;
 
 export const ProductDetailRightContainer = styled.div`
-  width: 40em;
+  width: 100%;
+  min-width: 20em;
   padding-top: 1em;
   margin-left: 2em;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-right: 1em;
+
+  @media ${device.laptop} {
+    width: 46%;
+  }
 
   p {
     white-space: pre-wrap;
@@ -81,20 +93,26 @@ export const MoreDetailsContainer = styled.div`
 
 export const LabelFieldContainer = styled.div`
   display: flex;
+  margin-bottom: 1em;
 
   label {
     color: black;
     font-weight: 500;
     margin-right: 1em;
   }
+
+  p {
+    margin-bottom: unset;
+  }
 `;
 
 export const SocialContainer = styled.div`
   display: flex;
   width: 100%;
-  justify-content: flex-end;
+  justify-content: flex-start;
   height: 2em;
   margin-right: 1em;
+  margin-bottom: 2em;
 
   svg {
     color: dimgray;

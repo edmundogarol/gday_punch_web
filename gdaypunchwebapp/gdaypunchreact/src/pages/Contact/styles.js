@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { device } from "utils/styles";
 
 export const App = styled.div`
   .App-header-container {
@@ -8,12 +9,16 @@ export const App = styled.div`
 
 export const ContactForm = styled.div`
   height: 480pt;
-  width: 24em;
+  width: 100%;
   justify-content: space-evenly;
   display: flex;
   flex-direction: column;
   text-align: start;
   margin-bottom: 2em;
+
+  @media ${device.laptop} {
+    width: 24em;
+  }
 
   .ant-select {
     text-align: start;
@@ -54,10 +59,10 @@ export const ContactImageContainer = styled.div`
   flex-wrap: wrap;
   margin-right: 2em;
   margin-left: 2em;
+  justify-content: center;
 
   img {
     height: fit-content;
-    margin-left: 5em;
   }
 `;
 

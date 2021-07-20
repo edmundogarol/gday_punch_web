@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,
-  faInstagram,
   faTwitter,
   faPinterest,
 } from "@fortawesome/free-brands-svg-icons";
@@ -83,7 +82,32 @@ function Ui(props) {
   const fbShare = () => {
     const url =
       "https://www.facebook.com/sharer.php?display=popup&u=" +
+      // "https://www.gdaypunch.com/store/p32/gday-punch-manga-magazine-issue-1-digital.html";
       window.location.href;
+    const options = "toolbar=0,status=0,resizable=1,width=626,height=436";
+    window.open(url, "sharer", options);
+  };
+
+  const twShare = () => {
+    const url =
+      "https://twitter.com/intent/tweet?display=popup&url=" +
+      // "https://www.gdaypunch.com/store/p32/gday-punch-manga-magazine-issue-1-digital.html" +
+      window.location.href +
+      "&text=" +
+      product.title.replace("#", "%23");
+    const options = "toolbar=0,status=0,resizable=1,width=626,height=436";
+    window.open(url, "sharer", options);
+  };
+
+  const pnShare = () => {
+    const url =
+      "https://www.pinterest.com/pin/create/button/?url=" +
+      // "https://www.gdaypunch.com/store/p32/gday-punch-manga-magazine-issue-1-digital.html" +
+      window.location.href +
+      "&media=" +
+      getGdayPunchStaticUrl(product.image) +
+      "&description=" +
+      product.title.replace("#", "%23");
     const options = "toolbar=0,status=0,resizable=1,width=626,height=436";
     window.open(url, "sharer", options);
   };
@@ -103,51 +127,56 @@ function Ui(props) {
             <ProductDetailRightContainer>
               <Title level={4}>{product.title}</Title>
               <PriceSkuContainer>
-                <h4>$A{product.price.toFixed(2)}</h4>
-                <SkuContainer>
-                  <label>SKU:</label>
-                  <h4>{product.sku}</h4>
-                </SkuContainer>
+                <h4>A${product.price.toFixed(2)}</h4>
+                {product.sku && (
+                  <SkuContainer>
+                    <label>SKU:</label>
+                    <h4>{product.sku}</h4>
+                  </SkuContainer>
+                )}
               </PriceSkuContainer>
               <p>{product.description}</p>
               <SocialContainer>
                 <a className="fb-hover" onClick={() => fbShare()}>
                   <FontAwesomeIcon icon={faFacebook} />
                 </a>
-                <a className="ig-hover" onClick={() => fbShare()}>
-                  <FontAwesomeIcon icon={faInstagram} />
-                </a>
-                <a className="tw-hover" onClick={() => fbShare()}>
+                <a className="tw-hover" onClick={() => twShare()}>
                   <FontAwesomeIcon icon={faTwitter} />
                 </a>
-                <a className="yt-hover" onClick={() => fbShare()}>
+                <a className="yt-hover" onClick={() => pnShare()}>
                   <FontAwesomeIcon icon={faPinterest} />
                 </a>
               </SocialContainer>
-              <MoreDetailsContainer>
-                <MoreDetailsColumn>
-                  <LabelFieldContainer>
-                    <label>Author</label>
-                    <p>{product.manga_details.author}</p>
-                  </LabelFieldContainer>
-                  <LabelFieldContainer>
-                    <label>Release Date</label>
-                    <p>
-                      {moment(product.manga_details.release_date).format("LL")}
-                    </p>
-                  </LabelFieldContainer>
-                </MoreDetailsColumn>
-                <MoreDetailsColumn>
-                  <LabelFieldContainer>
-                    <label>Type</label>
-                    <p>{productType[product.product_type]}</p>
-                  </LabelFieldContainer>
-                  <LabelFieldContainer>
-                    <label>Age Range</label>
-                    <p>{ageRating[product.manga_details.age_rating]}</p>
-                  </LabelFieldContainer>
-                </MoreDetailsColumn>
-              </MoreDetailsContainer>
+              {product.manga_details.author && (
+                <MoreDetailsContainer>
+                  <MoreDetailsColumn>
+                    <LabelFieldContainer>
+                      <label>Author</label>
+                      <p>{product.manga_details.author}</p>
+                    </LabelFieldContainer>
+                    <LabelFieldContainer>
+                      <label>Release Date</label>
+                      <p>
+                        {product.manga_details.release_date
+                          ? moment(product.manga_details.release_date).format(
+                              "LL"
+                            )
+                          : null}
+                      </p>
+                    </LabelFieldContainer>
+                  </MoreDetailsColumn>
+                  <MoreDetailsColumn>
+                    <LabelFieldContainer>
+                      <label>Type</label>
+                      <p>{productType[product.product_type]}</p>
+                    </LabelFieldContainer>
+                    <LabelFieldContainer>
+                      <label>Age Range</label>
+                      <p>{ageRating[product.manga_details.age_rating]}</p>
+                    </LabelFieldContainer>
+                  </MoreDetailsColumn>
+                </MoreDetailsContainer>
+              )}
               <QuantityAddCartContainer>
                 <label>Quantity</label>
                 <Select
