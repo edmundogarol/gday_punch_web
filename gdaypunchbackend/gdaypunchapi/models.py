@@ -166,6 +166,10 @@ class Manga(models.Model):
         else:
             return False
 
+    @property
+    def author_name(self):
+        return User.objects.get(email=self.author).author_name
+
 
 class Like(models.Model):
     manga = models.ForeignKey(Manga,  on_delete=models.PROTECT)
@@ -190,10 +194,7 @@ class Comment(models.Model):
     def user_likes(self):
         user = User.objects.get(email=get_current_user())
         liked = CommentLike.objects.all().filter(user=user, comment=self.id).count()
-        if liked > 0:
-            return True
-        else:
-            return False
+        return liked > 0
 
 
 class CommentLike(models.Model):
@@ -319,17 +320,21 @@ class Product(models.Model):
         product = Product.objects.get(id=self.id)
         mangas = product.manga.all()
 
-        manga_details_array = []
+        details = {}
         for manga in mangas:
             current_manga = Manga.objects.get(id=manga.id)
-            manga_details_array.append({
+            details = {
                 "id": current_manga.id,
                 "title": current_manga.title,
                 "author": User.objects.get(id=current_manga.author_id).author_name,
                 "release_date": current_manga.release_date,
-            })
+                "age_rating": current_manga.age_rating,
+                "likes": current_manga.likes,
+                "comments": current_manga.comments,
+                "user_likes": current_manga.user_likes,
+            }
 
-        return manga_details_array if len(manga_details_array) > 1 else manga_details_array[0]
+        return details
 
 
 class Order(models.Model):

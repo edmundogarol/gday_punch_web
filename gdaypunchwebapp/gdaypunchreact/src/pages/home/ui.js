@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { isEmpty } from "lodash";
+import { isEmpty, orderBy } from "lodash";
 
 import Header from "components/header";
 import Login from "components/login";
@@ -25,10 +25,11 @@ function Ui(props) {
     likeManga,
     getFeaturedManga,
     products,
-    fetchAdminProducts,
+    fetchProducts,
   } = props;
 
   const { productList } = products;
+  const productValues = orderBy(Object.values(productList), "id", "desc");
 
   useEffect(() => {
     if (isEmpty(featuredManga) || !featuredManga[0]) {
@@ -37,8 +38,8 @@ function Ui(props) {
   }, [featuredManga]);
 
   useEffect(() => {
-    if (isEmpty(productList)) {
-      fetchAdminProducts(featuredProductIds);
+    if (isEmpty(productValues)) {
+      fetchProducts(featuredProductIds);
     }
   }, [productList]);
 
@@ -48,11 +49,11 @@ function Ui(props) {
         <Header loginView={loginView} />
         <Login />
       </div>
-      {!isEmpty(productList) && (
+      {!isEmpty(productValues) && (
         <FeaturedSection>
           <SectionTitle>Products</SectionTitle>
           <FeaturedList>
-            {productList.map((product) => {
+            {productValues.map((product) => {
               return product ? (
                 <MangaTile
                   key={product.id}

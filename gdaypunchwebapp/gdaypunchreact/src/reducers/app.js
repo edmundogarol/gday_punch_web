@@ -1,8 +1,7 @@
-import { unset } from "lodash";
+import { set, unset } from "lodash";
 import { combineReducers } from "redux";
 import { mangaReducer } from "./manga";
 import { adminReducer } from "./admin";
-import { homeReducer } from "./home";
 import {
   DO_LOGIN,
   LOGOUT_SUCESS,
@@ -16,6 +15,9 @@ import {
   UPDATE_USER,
 } from "actions/user";
 import {
+  FETCHING_PRODUCTS,
+  FINISHED_FETCHING_PRODUCTS,
+  UPDATE_PRODUCTS,
   UPDATE_CONTACT_FORM_ERRORS,
   UPDATE_CONTACT_FORM_SUBMITTED,
 } from "actions/app";
@@ -57,6 +59,15 @@ const INITIAL_STATE = {
   pendingRegistration: {},
   suggestRegistration: undefined,
 
+  products: {
+    productList: {},
+    fetchingProducts: false,
+    finishedFetchingProducts: false,
+    viewingProduct: undefined,
+    fetchingViewingProduct: false,
+    finishedFetchingViewingProduct: false,
+  },
+
   contact: {
     errors: [],
     submitted: false,
@@ -68,34 +79,29 @@ const INITIAL_STATE = {
     finishedFetchingCartItems: false,
     sideCartOpen: false,
   },
-
-  viewingProduct: {
-    product: {},
-    fetchingViewingProduct: false,
-    finishedFetchingViewingProduct: false,
-  },
 };
 
 const appReducer = (state = INITIAL_STATE, action) => {
+  const { payload } = action;
   switch (action.type) {
     case DO_LOGIN:
       return {
         ...state,
-        pendingLogin: action.payload,
+        pendingLogin: payload,
       };
     case UPDATE_LOGIN_ERROR:
       return {
         ...state,
         registrationError: undefined,
         suggestRegistration: undefined,
-        loginError: action.payload.error,
+        loginError: payload.error,
       };
     case UPDATE_REGISTRATION_ERROR:
       return {
         ...state,
         loginError: undefined,
         suggestRegistration: undefined,
-        registrationError: action.payload.error,
+        registrationError: payload.error,
       };
     case OPEN_REGISTRATION:
       return {
@@ -105,7 +111,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
     case DO_REGISTRATION:
       return {
         ...state,
-        pendingRegistration: action.payload,
+        pendingRegistration: payload,
       };
     case CLOSE_REGISTRATION:
       return {
@@ -117,7 +123,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         loginError: undefined,
         registrationError: undefined,
-        suggestRegistration: action.payload.message,
+        suggestRegistration: payload.message,
       };
     case REGISTRATION_SUCCESS:
       return {
@@ -132,7 +138,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         registrationError: undefined,
         suggestRegistration: undefined,
         loginView: false,
-        user: { ...state.user, ...action.payload.user },
+        user: { ...state.user, ...payload.user },
         loginCheckFinished: true,
       };
     case LOGOUT_SUCESS:
@@ -145,12 +151,60 @@ const appReducer = (state = INITIAL_STATE, action) => {
         user: INITIAL_STATE.user,
         loginCheckFinished: true,
       };
+    case UPDATE_PRODUCTS:
+      const { adding } = payload;
+      let newProductList = [];
+      if (adding) {
+        newProductList = state.products.productList;
+        payload.products.map((product) =>
+          set(newProductList, product.id, product)
+        );
+      }
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          productList: adding ? newProductList : payload.products,
+        },
+      };
+    case FETCHING_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchingProducts: true,
+          finishedFetchingProducts: false,
+        },
+      };
+    case FINISHED_FETCHING_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchingProducts: false,
+          finishedFetchingProducts: true,
+        },
+      };
+    case UPDATE_VIEWING_PRODUCT:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          productList: {
+            ...state.products.productList,
+            [payload.product.id]: {
+              ...payload.product,
+            },
+          },
+          viewingProduct: payload.product.id,
+        },
+      };
     case UPDATE_CONTACT_FORM_ERRORS:
       return {
         ...state,
         contact: {
           ...state.contact,
-          errors: action.payload.errors,
+          errors: payload.errors,
         },
       };
     case UPDATE_CONTACT_FORM_SUBMITTED:
@@ -158,50 +212,58 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         contact: {
           ...state.contact,
-          submitted: action.payload.submitted,
+          submitted: payload.submitted,
           errors: [],
         },
       };
     case UPDATE_CART_ITEMS:
-      const existingItem = state.cart.items[action.payload.items.id];
+      const existingItem = state.cart.items[payload.items.id];
       const newItems = {
         ...state.cart.items,
-        [action.payload.items.id]: existingItem
+        [payload.items.id]: existingItem
           ? { ...existingItem, quantity: existingItem.quantity + 1 }
-          : { ...action.payload.items, quantity: 1 },
+          : { ...payload.items, quantity: 1 },
       };
       return {
         ...state,
         cart: {
           ...state.cart,
-          items: action.payload.addItems ? newItems : action.payload.items,
-          sideCartOpen: action.payload.addItems,
+          items: payload.addItems ? newItems : payload.items,
+          sideCartOpen: payload.addItems,
         },
       };
     case UPDATE_CART_ITEM_QUANTITY:
-      const modifyingItem = state.cart.items[action.payload.productId];
-
+      const modifyingItem = state.products.productList[payload.productId];
       return {
         ...state,
-        cart: {
-          ...state.cart,
-          items: {
-            ...state.cart.items,
-            [action.payload.productId]: {
+        products: {
+          ...state.products,
+          productList: {
+            ...state.products.productList,
+            [modifyingItem.id]: {
               ...modifyingItem,
-              quantity: action.payload.quantity,
+              quantity: payload.addOnTop
+                ? (modifyingItem.quantity || 0) + payload.quantity
+                : payload.quantity,
             },
           },
         },
-      };
-    case REMOVE_CART_ITEM:
-      const updatedItems = state.cart.items;
-      unset(updatedItems, action.payload.productId);
-      return {
-        ...state,
         cart: {
           ...state.cart,
-          items: updatedItems,
+          sideCartOpen: true,
+        },
+      };
+    case REMOVE_CART_ITEM:
+      const updatedProduct = state.products.productList[payload.productId];
+      unset(updatedProduct, "quantity");
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          productList: {
+            ...state.products.productList,
+            [updatedProduct.id]: updatedProduct,
+          },
         },
       };
     case FETCHING_CART_ITEMS:
@@ -227,15 +289,15 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         cart: {
           ...state.cart,
-          sideCartOpen: action.payload.open,
+          sideCartOpen: payload.open,
         },
       };
     case SET_VIEWING_PRODUCT:
       return {
         ...state,
-        viewingProduct: {
-          ...state.viewingProduct,
-          product: action.payload.product,
+        products: {
+          ...state.products,
+          viewingProduct: payload.productId,
         },
       };
     case UPDATE_VIEWING_PRODUCT:
@@ -243,7 +305,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         viewingProduct: {
           ...state.viewingProduct,
-          product: action.payload.product,
+          product: payload.product,
         },
       };
     case FETCHING_VIEWING_PRODUCT:
@@ -273,5 +335,4 @@ export default combineReducers({
   app: appReducer,
   manga: mangaReducer,
   admin: adminReducer,
-  home: homeReducer,
 });

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { isEmpty } from "lodash";
+import { isEmpty, orderBy } from "lodash";
 
 import PaymentForm from "components/paymentForm";
 import MangaTile from "components/mangaTile";
@@ -21,7 +21,7 @@ function Ui(props) {
     likeManga,
     getFeaturedManga,
     products,
-    fetchAdminProducts,
+    fetchProducts,
   } = props;
 
   const { productList } = products;
@@ -33,18 +33,20 @@ function Ui(props) {
   }, [featuredManga]);
 
   useEffect(() => {
-    if (isEmpty(productList)) {
-      fetchAdminProducts(featuredProductIds);
+    if (isEmpty(Object.values(productList))) {
+      fetchProducts(featuredProductIds);
     }
   }, [productList]);
 
+  const productListValues = orderBy(Object.values(productList), "id", "desc");
+
   return (
     <App id="top" className="App">
-      {!isEmpty(productList) && (
+      {!isEmpty(productListValues) && (
         <FeaturedSection top>
-          <SectionTitle>Products</SectionTitle>
+          <SectionTitle>Magazines</SectionTitle>
           <FeaturedList>
-            {productList.map((product) => {
+            {productListValues.map((product) => {
               return product ? (
                 <MangaTile
                   key={product.id}
@@ -61,8 +63,8 @@ function Ui(props) {
       )}
       {!isEmpty(featuredManga) && (
         <FeaturedSection
-          idx={!isEmpty(productList) ? 1 : 0}
-          top={isEmpty(productList)}
+          idx={!isEmpty(productListValues) ? 1 : 0}
+          top={isEmpty(productListValues)}
         >
           <SectionTitle>Free Manga</SectionTitle>
           <FeaturedList>

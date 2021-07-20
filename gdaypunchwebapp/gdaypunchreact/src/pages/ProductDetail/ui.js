@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFacebook } from "@fortawesome/free-brands-svg-icons";
+import {
+  faFacebook,
+  faInstagram,
+  faTwitter,
+  faPinterest,
+} from "@fortawesome/free-brands-svg-icons";
 import { Typography, Image, Select } from "antd";
 import {} from "@ant-design/icons";
 import moment from "moment";
@@ -14,6 +19,13 @@ import {
   ProductDetailContainer,
   ProductDetailLeftContainer,
   ProductDetailRightContainer,
+  PriceSkuContainer,
+  SkuContainer,
+  MoreDetailsContainer,
+  MoreDetailsColumn,
+  LabelFieldContainer,
+  QuantityAddCartContainer,
+  SocialContainer,
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
@@ -24,34 +36,48 @@ const productType = {
   3: "Subscription",
 };
 
+const ageRating = {
+  all_ages: "All Ages",
+  teens: "Teens",
+  young_adults: "Young Adults",
+  adults: "Adults",
+};
+
 function Ui(props) {
   const {
-    viewingProductState,
-    productList,
+    productState,
     fetchViewingProduct,
     setViewingProduct,
+    updateCartItemQuantity,
+    updateCartItems,
   } = props;
-  const { product, fetchingViewingProduct, finishedFetchingViewingProduct } =
-    viewingProductState;
+  const {
+    productList,
+    viewingProduct,
+    fetchingViewingProduct,
+    finishedFetchingViewingProduct,
+  } = productState;
+  const product = productList[viewingProduct];
+  const [quantity, setQuantity] = useState(1);
   const { productId } = useParams();
 
   useEffect(() => {
     if (!fetchingViewingProduct && !finishedFetchingViewingProduct) {
-      if (productId && !product.id) fetchViewingProduct(productId);
+      if (productId && !product) {
+        setViewingProduct(productId);
+        if (!productList[productId]) fetchViewingProduct(productId);
+      }
     }
   }, [fetchingViewingProduct, finishedFetchingViewingProduct]);
 
   useEffect(() => {
     if (
       product &&
-      product.id &&
-      productList.length &&
+      Object.values(productList).length &&
       productId &&
       productId !== product.id
     )
-      setViewingProduct(
-        productList.find((product) => product.id === parseInt(productId))
-      );
+      setViewingProduct(product.id);
   }, [product]);
 
   const fbShare = () => {
@@ -60,6 +86,10 @@ function Ui(props) {
       window.location.href;
     const options = "toolbar=0,status=0,resizable=1,width=626,height=436";
     window.open(url, "sharer", options);
+  };
+
+  const handleAddToCart = () => {
+    updateCartItemQuantity(product.id, quantity, product.quantity);
   };
 
   return (
@@ -72,34 +102,67 @@ function Ui(props) {
             </ProductDetailLeftContainer>
             <ProductDetailRightContainer>
               <Title level={4}>{product.title}</Title>
-              <h4>$A{product.price.toFixed(2)}</h4>
-              <h4>{product.sku}</h4>
+              <PriceSkuContainer>
+                <h4>$A{product.price.toFixed(2)}</h4>
+                <SkuContainer>
+                  <label>SKU:</label>
+                  <h4>{product.sku}</h4>
+                </SkuContainer>
+              </PriceSkuContainer>
               <p>{product.description}</p>
-              <div>
+              <SocialContainer>
                 <a className="fb-hover" onClick={() => fbShare()}>
                   <FontAwesomeIcon icon={faFacebook} />
                 </a>
-              </div>
-              <div>
-                <div>
-                  <label>Author</label>
-                  <p>{productType[product.product_type]}</p>
-                  <label>Release Date</label>
-                  <p>
-                    {moment(product.manga_details.release_date).format("LL")}
-                  </p>
-                </div>
-                <div></div>
-              </div>
-              <label>Quantity</label>
-              <Select defaultValue={1}>
-                {[...Array(10)].map((x, i) => (
-                  <Option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </Option>
-                ))}
-              </Select>
-              <button>Add to Cart</button>
+                <a className="ig-hover" onClick={() => fbShare()}>
+                  <FontAwesomeIcon icon={faInstagram} />
+                </a>
+                <a className="tw-hover" onClick={() => fbShare()}>
+                  <FontAwesomeIcon icon={faTwitter} />
+                </a>
+                <a className="yt-hover" onClick={() => fbShare()}>
+                  <FontAwesomeIcon icon={faPinterest} />
+                </a>
+              </SocialContainer>
+              <MoreDetailsContainer>
+                <MoreDetailsColumn>
+                  <LabelFieldContainer>
+                    <label>Author</label>
+                    <p>{product.manga_details.author}</p>
+                  </LabelFieldContainer>
+                  <LabelFieldContainer>
+                    <label>Release Date</label>
+                    <p>
+                      {moment(product.manga_details.release_date).format("LL")}
+                    </p>
+                  </LabelFieldContainer>
+                </MoreDetailsColumn>
+                <MoreDetailsColumn>
+                  <LabelFieldContainer>
+                    <label>Type</label>
+                    <p>{productType[product.product_type]}</p>
+                  </LabelFieldContainer>
+                  <LabelFieldContainer>
+                    <label>Age Range</label>
+                    <p>{ageRating[product.manga_details.age_rating]}</p>
+                  </LabelFieldContainer>
+                </MoreDetailsColumn>
+              </MoreDetailsContainer>
+              <QuantityAddCartContainer>
+                <label>Quantity</label>
+                <Select
+                  defaultValue={1}
+                  value={quantity}
+                  onSelect={(val) => setQuantity(val)}
+                >
+                  {[...Array(10)].map((x, i) => (
+                    <Option key={"product-qty-select-" + i + 1} value={i + 1}>
+                      {i + 1}
+                    </Option>
+                  ))}
+                </Select>
+                <button onClick={() => handleAddToCart()}>Add to Cart</button>
+              </QuantityAddCartContainer>
             </ProductDetailRightContainer>
           </ProductDetailContainer>
         </ProductContainer>

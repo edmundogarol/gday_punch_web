@@ -12,17 +12,10 @@ export const fetchViewingProduct = (productId) => ({
   },
 });
 
-export const setViewingProduct = (product) => ({
+export const setViewingProduct = (productId) => ({
   type: SET_VIEWING_PRODUCT,
   payload: {
-    product,
-  },
-});
-
-export const updateViewingProduct = (product) => ({
-  type: UPDATE_VIEWING_PRODUCT,
-  payload: {
-    product,
+    productId,
   },
 });
 

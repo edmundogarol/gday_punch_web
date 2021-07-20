@@ -44,16 +44,19 @@ const stripePromise = loadStripe(
 
 function Ui(props) {
   const {
-    cartState,
+    cartState: { sideCartOpen },
     cartCount,
     toggleSideCart,
     updateCartItemQuantity,
     removeCartItem,
     cartTotal,
     viewProduct,
+    productList: cartItemsObject,
   } = props;
-  const { items: cartItemsObject, sideCartOpen } = cartState;
-  const items = Object.values(cartItemsObject).map((item) => item);
+
+  const items = Object.values(cartItemsObject)
+    .map((item) => item)
+    .filter((item) => item.quantity);
 
   window.onscroll = () => scrollFunction();
 
@@ -143,7 +146,7 @@ function Ui(props) {
         </ItemTitleMetaContainer>
         <ItemSubtotalBinContainer>
           <ItemSubtotal>
-            <h4>{`A$${quantity ? quantity * price : price}`}</h4>
+            <h4>{`A$${(quantity ? quantity * price : price).toFixed(2)}`}</h4>
             <p>Subtotal</p>
           </ItemSubtotal>
           <Tooltip title="Remove Item from Cart">
@@ -192,7 +195,7 @@ function Ui(props) {
           <div>
             <ItemTotal>
               <TotalLabel>Total:</TotalLabel>
-              <h3>A${cartTotal}</h3>
+              <h3>A${cartTotal.toFixed(2)}</h3>
             </ItemTotal>
             <GSTLabel>[Price Includes GST]</GSTLabel>
           </div>

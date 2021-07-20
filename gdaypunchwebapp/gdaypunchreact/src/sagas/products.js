@@ -8,25 +8,22 @@ import {
 } from "redux-saga/effects";
 import { message } from "antd";
 
-import { FETCH_HOME_PRODUCTS, updateHomeProducts } from "actions/home";
+import { FETCH_PRODUCTS, updateProducts } from "actions/app";
 import {
   FETCH_VIEWING_PRODUCT,
-  updateViewingProduct,
   fetchingViewingProduct,
   finishedFetchingViewingProduct,
 } from "actions/products";
 import { api } from "utils/api";
+import { arrayIdsMapToObject } from "utils/utils";
 
 export function* fetchProductsCall(action) {
   const fetchedProducts = yield all(
     action.payload.productIds.map((productId) => call(getProduct, productId))
   );
 
-  switch (action.type) {
-    case FETCH_HOME_PRODUCTS: {
-      yield put(updateHomeProducts(fetchedProducts));
-    }
-  }
+  const mappedProducts = arrayIdsMapToObject(fetchedProducts);
+  yield put(updateProducts(mappedProducts));
 }
 
 export function* getProduct(productId) {
@@ -46,18 +43,29 @@ export function* fetchViewingProductCall(action) {
   yield put(fetchingViewingProduct());
   const fetchedProduct = yield call(getProduct, action.payload.productId);
 
-  yield put(updateViewingProduct(fetchedProduct));
+  const mappedProducts = arrayIdsMapToObject([fetchedProduct]);
+
+  yield put(updateProducts(mappedProducts));
+
+  yield call(fetchAllProductsCall, true);
   yield put(finishedFetchingViewingProduct());
 }
 
-export function* fetchAllProductsCall() {
+export function* fetchAllProductsCall(addItems = false) {
   const response = yield call(api, `products/`, {
     method: "GET",
   });
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateHomeProducts(data.filter((product) => product.visible)));
+    yield put(
+      updateProducts(
+        arrayIdsMapToObject(
+          data.filter((product) => product.visible),
+          addItems
+        )
+      )
+    );
   } else {
     console.log("All Products fetch error", JSON.stringify(response));
   }
@@ -65,7 +73,7 @@ export function* fetchAllProductsCall() {
 
 export default function* productSaga() {
   yield all([
-    takeLatest(FETCH_HOME_PRODUCTS, fetchAllProductsCall),
+    takeLatest(FETCH_PRODUCTS, fetchAllProductsCall),
     takeLatest(FETCH_VIEWING_PRODUCT, fetchViewingProductCall),
   ]);
 }

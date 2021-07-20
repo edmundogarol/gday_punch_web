@@ -12,16 +12,19 @@ export const ProductDetailContainer = styled.div`
   display: flex;
   flex-direction: row;
   width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
 `;
 
 export const ProductDetailLeftContainer = styled.div`
-  width: 50%;
+  width: 25em;
   display: flex;
   padding-top: 1em;
   height: 550px;
-  justify-content: space-between;
   flex-direction: column;
   margin-bottom: 2em;
+  align-items: center;
+  justify-content: center;
 
   .ant-image {
     width: max-content;
@@ -29,7 +32,119 @@ export const ProductDetailLeftContainer = styled.div`
 `;
 
 export const ProductDetailRightContainer = styled.div`
-  width: 50%;
+  width: 40em;
   padding-top: 1em;
   margin-left: 2em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  p {
+    white-space: pre-wrap;
+    font-family: sans-serif;
+    color: #464646;
+  }
+`;
+
+export const PriceSkuContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 0em;
+  border-bottom: 1px solid #dadada;
+  margin-bottom: 0.7em;
+  margin-right: 1em;
+
+  h4 {
+    font-size: 1.7em;
+  }
+`;
+
+export const SkuContainer = styled.div`
+  display: flex;
+
+  label {
+    margin-right: 1em;
+    font-size: 1.2em;
+    color: dimgray;
+  }
+
+  h4 {
+    font-size: 1.2em;
+    color: #cacaca;
+  }
+`;
+
+export const MoreDetailsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const LabelFieldContainer = styled.div`
+  display: flex;
+
+  label {
+    color: black;
+    font-weight: 500;
+    margin-right: 1em;
+  }
+`;
+
+export const SocialContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+  height: 2em;
+  margin-right: 1em;
+
+  svg {
+    color: dimgray;
+    height: 1.5em;
+    width: 1.3em !important;
+    margin: 0.4em;
+  }
+`;
+
+export const MoreDetailsColumn = styled.div`
+  width: 50%;
+  margin-right: 2em;
+`;
+
+export const QuantityAddCartContainer = styled.div`
+  width: 20em;
+  justify-content: space-between;
+  display: flex;
+
+  label {
+    align-items: center;
+    display: flex;
+  }
+
+  .ant-select {
+    width: 5em;
+
+    .ant-select-selector {
+      height: 100%;
+      align-items: center;
+    }
+  }
+
+  button {
+    padding: 9pt;
+    color: #d68a00;
+    border: 3px solid orange;
+    background: linear-gradient(
+      45deg,
+      transparent 89%,
+      #ffa12e 30%,
+      #d69e5a 114%,
+      transparent 5%
+    );
+
+    &:hover {
+      background: #ffbc6a;
+      border: 3px solid #ffbc6a;
+      color: white;
+      cursor: pointer;
+    }
+  }
 `;

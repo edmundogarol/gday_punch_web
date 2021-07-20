@@ -1,3 +1,4 @@
+import { set } from "lodash";
 /**
  * Retrieves an img Module with default data image base64
  *
@@ -13,4 +14,10 @@ export function getCoverImage(url) {
 
 export function getGdayPunchStaticUrl(url) {
   return `https://gdaypunch-static.s3.us-west-2.amazonaws.com/${url}`;
+}
+
+export function arrayIdsMapToObject(list) {
+  let finalObject = {};
+  list.map((element) => set(finalObject, element.id, element));
+  return finalObject;
 }

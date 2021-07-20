@@ -30,7 +30,7 @@ function Ui(props) {
     likeManga,
     openRegister,
     suggestRegister,
-    updateCartItems,
+    updateCartItemQuantity,
     viewProduct,
   } = props;
   const {
@@ -103,7 +103,7 @@ function Ui(props) {
   };
 
   const handleAddToCart = () => {
-    updateCartItems(manga, true);
+    updateCartItemQuantity(manga.id, 1, true);
   };
 
   const handleViewProduct = () => {

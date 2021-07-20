@@ -5,16 +5,19 @@ import Ui from "./ui";
 
 import { openRegistration, doSuggestRegister } from "actions/user";
 import { doGetFeaturedManga, doLikeManga } from "actions/manga";
-import { fetchAdminProducts as fetchAdminProductsAction } from "actions/home";
-import { selectLoginViewToggle, selectLoggedIn } from "selectors/app";
+import { fetchProducts as fetchProductsAction } from "actions/app";
+import {
+  selectLoginViewToggle,
+  selectLoggedIn,
+  selectProductsState,
+} from "selectors/app";
 import { selectFeaturedManga } from "selectors/manga";
-import { selectHomeProductsState } from "selectors/home";
 
 const mapState = createStructuredSelector({
   loggedIn: selectLoggedIn,
   loginView: selectLoginViewToggle,
   featuredManga: selectFeaturedManga,
-  products: selectHomeProductsState,
+  products: selectProductsState,
 });
 
 const mapDispatch = {
@@ -22,7 +25,7 @@ const mapDispatch = {
   suggestRegister: doSuggestRegister,
   getFeaturedManga: doGetFeaturedManga,
   likeManga: doLikeManga,
-  fetchAdminProducts: fetchAdminProductsAction,
+  fetchProducts: fetchProductsAction,
 };
 
 export default connect(mapState, mapDispatch)(Ui);

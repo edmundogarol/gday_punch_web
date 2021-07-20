@@ -2,8 +2,6 @@ import { createSelector } from "reselect";
 
 const selectDomain = (state) => state.app;
 
-const selectHomeDomain = (state) => state.home;
-
 export const selectUser = createSelector(selectDomain, ({ user }) => user);
 
 export const selectLoginViewToggle = createSelector(
@@ -46,6 +44,16 @@ export const selectSuggestRegistration = createSelector(
   ({ suggestRegistration }) => suggestRegistration || ""
 );
 
+export const selectProductsState = createSelector(
+  selectDomain,
+  ({ products }) => products
+);
+
+export const selectProductList = createSelector(
+  selectDomain,
+  ({ products: { productList } }) => productList
+);
+
 export const selectContactState = createSelector(
   selectDomain,
   ({ contact }) => contact
@@ -60,10 +68,10 @@ export const selectSideCartOpen = createSelector(
 
 export const selectCartCount = createSelector(
   selectDomain,
-  ({ cart: { items } }) => {
+  ({ products: { productList } }) => {
     let count = 0;
-    Object.values(items).map((item) => {
-      count += item.quantity;
+    Object.values(productList).map((product) => {
+      if (product.quantity) count += product.quantity;
     });
     return count;
   }
@@ -71,16 +79,11 @@ export const selectCartCount = createSelector(
 
 export const selectCartTotal = createSelector(
   selectDomain,
-  ({ cart: { items } }) => {
+  ({ products: { productList } }) => {
     let total = 0;
-    Object.values(items).map((item) => {
-      total += item.quantity * item.price;
+    Object.values(productList).map((product) => {
+      if (product.quantity) total += product.quantity * product.price;
     });
     return total;
   }
-);
-
-export const selectViewingProductState = createSelector(
-  selectDomain,
-  ({ viewingProduct }) => viewingProduct
 );
