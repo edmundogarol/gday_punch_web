@@ -74,7 +74,7 @@ function Ui(props) {
   };
 
   const handleViewProduct = (product) => {
-    viewProduct(product);
+    viewProduct(product.id);
     toggleSideCart(false);
     const perma_link = product.title.toLowerCase().split(" ").join("-");
     props.history.push(`/product/${product.id}/${perma_link}`);

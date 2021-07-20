@@ -2,7 +2,6 @@ export const FETCH_VIEWING_PRODUCT = "products/FETCH_VIEWING_PRODUCT";
 export const FETCHING_VIEWING_PRODUCT = "products/FETCHING_VIEWING_PRODUCT";
 export const FINISHED_FETCHING_VIEWING_PRODUCT =
   "products/FINISHED_FETCHING_VIEWING_PRODUCT";
-export const UPDATE_VIEWING_PRODUCT = "products/UPDATE_VIEWING_PRODUCT";
 export const SET_VIEWING_PRODUCT = "products/SET_VIEWING_PRODUCT";
 
 export const fetchViewingProduct = (productId) => ({

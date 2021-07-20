@@ -31,7 +31,6 @@ import {
 } from "actions/cart";
 import {
   SET_VIEWING_PRODUCT,
-  UPDATE_VIEWING_PRODUCT,
   FETCHING_VIEWING_PRODUCT,
   FINISHED_FETCHING_VIEWING_PRODUCT,
 } from "actions/products";
@@ -185,20 +184,6 @@ const appReducer = (state = INITIAL_STATE, action) => {
           finishedFetchingProducts: true,
         },
       };
-    case UPDATE_VIEWING_PRODUCT:
-      return {
-        ...state,
-        products: {
-          ...state.products,
-          productList: {
-            ...state.products.productList,
-            [payload.product.id]: {
-              ...payload.product,
-            },
-          },
-          viewingProduct: payload.product.id,
-        },
-      };
     case UPDATE_CONTACT_FORM_ERRORS:
       return {
         ...state,
@@ -300,19 +285,11 @@ const appReducer = (state = INITIAL_STATE, action) => {
           viewingProduct: payload.productId,
         },
       };
-    case UPDATE_VIEWING_PRODUCT:
-      return {
-        ...state,
-        viewingProduct: {
-          ...state.viewingProduct,
-          product: payload.product,
-        },
-      };
     case FETCHING_VIEWING_PRODUCT:
       return {
         ...state,
-        viewingProduct: {
-          ...state.viewingProduct,
+        products: {
+          ...state.products,
           fetchingViewingProduct: true,
           finishedFetchingViewingProduct: false,
         },
@@ -320,8 +297,8 @@ const appReducer = (state = INITIAL_STATE, action) => {
     case FINISHED_FETCHING_VIEWING_PRODUCT:
       return {
         ...state,
-        viewingProduct: {
-          ...state.viewingProduct,
+        products: {
+          ...state.products,
           fetchingViewingProduct: false,
           finishedFetchingViewingProduct: true,
         },

@@ -44,7 +44,7 @@ function Ui(props) {
     <App id="top" className="App">
       {!isEmpty(productListValues) && (
         <FeaturedSection top>
-          <SectionTitle>Magazines</SectionTitle>
+          <SectionTitle id="magazines">Magazines</SectionTitle>
           <FeaturedList>
             {productListValues.map((product) => {
               return product ? (
@@ -66,7 +66,7 @@ function Ui(props) {
           idx={!isEmpty(productListValues) ? 1 : 0}
           top={isEmpty(productListValues)}
         >
-          <SectionTitle>Free Manga</SectionTitle>
+          <SectionTitle id="free-manga">Free Manga</SectionTitle>
           <FeaturedList>
             {featuredManga.map((manga) => {
               return manga ? (

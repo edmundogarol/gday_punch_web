@@ -7,6 +7,15 @@ export const PageContainer = styled.div`
 
 export const ProductContainer = styled.div`
   padding-top: 6em;
+  min-height: 84vh;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+
+  .ant-spin {
+    transform: scale(2);
+    filter: hue-rotate(165deg);
+  }
 `;
 
 export const ProductDetailContainer = styled.div`
@@ -16,6 +25,8 @@ export const ProductDetailContainer = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   padding-bottom: 3em;
+  margin-top: 2em;
+  align-items: center;
 `;
 
 export const ProductDetailLeftContainer = styled.div`
@@ -28,12 +39,27 @@ export const ProductDetailLeftContainer = styled.div`
   align-items: center;
   justify-content: center;
 
-  @media ${device.laptop} {
-    height: 550px;
-  }
-
   .ant-image {
     width: max-content;
+  }
+`;
+
+export const CategoryLinks = styled.div`
+  display: flex;
+  font-size: 0.9em;
+  margin-bottom: 3em;
+  color: dimgray;
+
+  span {
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+  }
+
+  a {
+    color: dimgray;
+    &:hover {
+      color: orange;
+    }
   }
 `;
 

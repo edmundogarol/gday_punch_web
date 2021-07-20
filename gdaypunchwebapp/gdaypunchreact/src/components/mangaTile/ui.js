@@ -107,7 +107,7 @@ function Ui(props) {
   };
 
   const handleViewProduct = () => {
-    viewProduct(manga);
+    viewProduct(manga.id);
     props.history.push(`/product/${manga.id}/${perma_link}`);
   };
 

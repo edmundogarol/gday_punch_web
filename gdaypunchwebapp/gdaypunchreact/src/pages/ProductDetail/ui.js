@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,
   faTwitter,
   faPinterest,
 } from "@fortawesome/free-brands-svg-icons";
-import { Typography, Image, Select } from "antd";
+import { Typography, Image, Select, Spin } from "antd";
 import {} from "@ant-design/icons";
 import moment from "moment";
 const { Title } = Typography;
@@ -15,6 +15,7 @@ const { Option } = Select;
 import {
   PageContainer,
   ProductContainer,
+  CategoryLinks,
   ProductDetailContainer,
   ProductDetailLeftContainer,
   ProductDetailRightContainer,
@@ -48,7 +49,6 @@ function Ui(props) {
     fetchViewingProduct,
     setViewingProduct,
     updateCartItemQuantity,
-    updateCartItems,
   } = props;
   const {
     productList,
@@ -70,13 +70,7 @@ function Ui(props) {
   }, [fetchingViewingProduct, finishedFetchingViewingProduct]);
 
   useEffect(() => {
-    if (
-      product &&
-      Object.values(productList).length &&
-      productId &&
-      productId !== product.id
-    )
-      setViewingProduct(product.id);
+    if (product && productId !== product.id) setViewingProduct(productId);
   }, [product]);
 
   const fbShare = () => {
@@ -118,10 +112,17 @@ function Ui(props) {
 
   return (
     <PageContainer>
-      {product && product.id && (
-        <ProductContainer>
+      <ProductContainer>
+        {product && product.id ? (
           <ProductDetailContainer>
             <ProductDetailLeftContainer>
+              <CategoryLinks>
+                <NavLink to="/shop/#magazines">
+                  <p>Magazines</p>
+                </NavLink>
+                <span>{">"}</span>
+                <p>{product.title}</p>
+              </CategoryLinks>
               <Image src={getGdayPunchStaticUrl(product.image)} />
             </ProductDetailLeftContainer>
             <ProductDetailRightContainer>
@@ -194,8 +195,10 @@ function Ui(props) {
               </QuantityAddCartContainer>
             </ProductDetailRightContainer>
           </ProductDetailContainer>
-        </ProductContainer>
-      )}
+        ) : (
+          fetchingViewingProduct && <Spin />
+        )}
+      </ProductContainer>
     </PageContainer>
   );
 }
