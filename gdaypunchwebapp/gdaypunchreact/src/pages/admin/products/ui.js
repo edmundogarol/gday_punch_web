@@ -156,6 +156,7 @@ function Ui(props) {
       title: "Price",
       dataIndex: "active_price",
       key: "active_price",
+      render: (value) => `$${value}`,
     },
     {
       title: "Visible",

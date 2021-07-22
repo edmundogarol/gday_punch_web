@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 
 from ..models import (
-    Product, ProductType, StripePrice
+    User, Product, ProductType, StripePrice
 )
 from ..serializers import (
     ProductSerializer, StripePriceSerializer
@@ -71,6 +71,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             sku=request.data['sku'],
             product_type=ProductType.objects.get(
                 id=request.data['product_type']),
+            user=User.objects.get(email=self.request.user)
         )
 
         if create_stripe_price:

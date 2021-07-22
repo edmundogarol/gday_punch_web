@@ -120,7 +120,7 @@ function Ui(props) {
   };
 
   const cartItem = (item) => {
-    const { id, image, title, product_type, price, quantity } = item;
+    const { id, image, title, product_type, active_price, quantity } = item;
     return (
       <ItemContainer key={id}>
         <ItemImage src={getGdayPunchStaticUrl(image)} />
@@ -129,7 +129,7 @@ function Ui(props) {
             <h3>{title}</h3>
           </a>
           <ItemMeta>
-            <p>{`A$${price}`}</p>
+            <p>{`A$${active_price}`}</p>
             <p className="spacer">QTY:</p>
             <Select
               value={quantity}
@@ -146,7 +146,10 @@ function Ui(props) {
         </ItemTitleMetaContainer>
         <ItemSubtotalBinContainer>
           <ItemSubtotal>
-            <h4>{`A$${(quantity ? quantity * price : price).toFixed(2)}`}</h4>
+            <h4>{`A$${(quantity
+              ? quantity * active_price
+              : active_price
+            ).toFixed(2)}`}</h4>
             <p>Subtotal</p>
           </ItemSubtotal>
           <Tooltip title="Remove Item from Cart">

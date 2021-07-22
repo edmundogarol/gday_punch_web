@@ -302,6 +302,8 @@ class Product(models.Model):
     stripe_prices = models.ManyToManyField(StripePrice, blank=True)
     sku = models.TextField(max_length=30, blank=True)
     manga = models.ManyToManyField(Manga, blank=True)
+    user = models.ForeignKey(
+        User,  on_delete=models.PROTECT, blank=True, null=True)
 
     @property
     def active_price(self):
@@ -334,6 +336,11 @@ class Product(models.Model):
             }
 
         return details
+
+    @property
+    def user_string(self):
+        user = User.objects.get(email=self.user)
+        return user.author_name
 
 
 class Order(models.Model):

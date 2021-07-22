@@ -128,7 +128,7 @@ function Ui(props) {
             <ProductDetailRightContainer>
               <Title level={4}>{product.title}</Title>
               <PriceSkuContainer>
-                <h4>A${product.price.toFixed(2)}</h4>
+                <h4>A${product.active_price.toFixed(2)}</h4>
                 {product.sku && (
                   <SkuContainer>
                     <label>SKU:</label>

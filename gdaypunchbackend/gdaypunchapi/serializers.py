@@ -94,7 +94,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ("id", "title", "description", "image", "product_type", "active_price",
                   "sale_price", "visible", "stock", "stripe_prices", "manga_details", "sku",
-                  "manga")
+                  "manga", "user", "user_string")
 
 
 class StripePriceSerializer(serializers.ModelSerializer):

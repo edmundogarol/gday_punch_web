@@ -40,27 +40,29 @@ function Ui(props) {
     viewProduct,
   } = props;
   const { manga_details } = product;
-  const { id: mangaId } = manga_details || { id: undefined };
   const {
-    //manga
     id,
-    cover,
     title,
-    comments,
-    author_name,
     image,
-    //product
     active_price,
-    stripe_prices,
     product_type,
+    user_string: creator,
   } = product;
-  const user_likes =
-    product.user_likes || (manga_details ? manga_details.user_likes : false);
-  const likes = product.likes || (manga_details ? manga_details.likes : 0);
+  const {
+    id: mangaId,
+    author,
+    comments,
+    likes,
+    user_likes,
+  } = manga_details || {
+    id: undefined,
+    author: undefined,
+    comments: undefined,
+    likes: undefined,
+    user_likes: undefined,
+  };
 
   const perma_link = product.title.toLowerCase().split(" ").join("-");
-
-  console.log({ active_price });
 
   function handleMangaClick(destination, clickType) {
     const clickTypeMessages = {
@@ -89,35 +91,6 @@ function Ui(props) {
     }
   }
 
-  const handlePurchaseClick = async (event) => {
-    const stripe = await stripePromise;
-    const response = await gdayfetch("payments/create-checkout-session/", {
-      method: "POST",
-      body: {
-        stripe_ids: stripe_prices,
-      },
-    });
-
-    if (response && response.ok) {
-      const result = await stripe.redirectToCheckout({
-        sessionId: response.data.id,
-      });
-
-      if (result.error) {
-        alert(result.error.message);
-      }
-    } else {
-      console.log("Checkout Purchase error", JSON.stringify(response));
-      message.error({
-        content: "Checkout Purchase error",
-        className: "antd-message-capitalize",
-        style: {
-          textTransform: "capitalize",
-        },
-      });
-    }
-  };
-
   const handleAddToCart = () => {
     updateCartItemQuantity(id, 1, true);
   };
@@ -135,25 +108,13 @@ function Ui(props) {
   console.log({ product });
   return (
     <ProductTileContainer>
-      <a
-        onClick={() =>
-          stripe_prices
-            ? handleViewProduct()
-            : handleMangaClick(`/manga/${id}`, "manga")
-        }
-      >
-        <ProductImage src={image ? getGdayPunchStaticUrl(image) : cover} />
+      <a onClick={() => handleViewProduct()}>
+        <ProductImage src={getGdayPunchStaticUrl(image)} />
       </a>
       <ProductDetails>
-        <a
-          onClick={() =>
-            stripe_prices
-              ? handleViewProduct()
-              : handleMangaClick(`/manga/${id}`, "manga")
-          }
-        >
+        <a onClick={() => handleViewProduct()}>
           <ProductTitle>{title}</ProductTitle>
-          <ProductAuthor>{author_name}</ProductAuthor>
+          <ProductAuthor>{author || creator}</ProductAuthor>
           {active_price && active_price > 0 ? (
             <p>{`A$${active_price}`}</p>
           ) : (

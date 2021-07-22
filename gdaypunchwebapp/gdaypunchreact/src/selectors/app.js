@@ -82,7 +82,7 @@ export const selectCartTotal = createSelector(
   ({ products: { productList } }) => {
     let total = 0;
     Object.values(productList).map((product) => {
-      if (product.quantity) total += product.quantity * product.price;
+      if (product.quantity) total += product.quantity * product.active_price;
     });
     return total;
   }
