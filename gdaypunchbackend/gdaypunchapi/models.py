@@ -295,7 +295,6 @@ class Product(models.Model):
     title = models.TextField(max_length=70, blank=True, unique=True)
     image = models.TextField(max_length=100, blank=True)
     sale_price = models.FloatField(blank=True)
-    active_price = models.FloatField(blank=True, default=0)
     visible = models.BooleanField(default=False)
     stock = models.IntegerField(blank=True)
     product_type = models.ForeignKey(
@@ -305,7 +304,7 @@ class Product(models.Model):
     manga = models.ManyToManyField(Manga, blank=True)
 
     @property
-    def price(self):
+    def active_price(self):
         product = Product.objects.get(id=self.id)
         stripe_prices = product.stripe_prices.all()
 

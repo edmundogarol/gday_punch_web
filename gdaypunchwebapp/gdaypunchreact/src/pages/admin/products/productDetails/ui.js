@@ -70,7 +70,7 @@ function Ui(props) {
         stripe_prices: productPrices,
       });
     }
-  }, [productPrices]);
+  }, [productPrices, assigningCustomPrice]);
 
   useEffect(() => {
     if (!fetchingStripePrices && !finishedFetchingStripePrices) {
@@ -111,15 +111,32 @@ function Ui(props) {
     updateTransferStripePrices(nextTargetKeys);
   };
 
-  const handleUpdate = () => updateAdminProduct(product, history);
+  const handleUpdate = () => {
+    updateAdminProduct(
+      {
+        ...product,
+        stripe_prices: productPrices,
+      },
+      history
+    );
+  };
 
-  const handleCreate = () => createAdminProduct(product, history);
+  const handleCreate = () => {
+    createAdminProduct(
+      {
+        ...product,
+        stripe_prices: productPrices,
+      },
+      history
+    );
+  };
 
   const stripePricesForTransfer = stripePrices.map((price) => ({
     key: price.id,
     title: `$${price.price_amount} ${price.price_title}`,
   }));
 
+  console.log({ productPrices });
   return (
     <ProductsContainer>
       <Title level={4}>

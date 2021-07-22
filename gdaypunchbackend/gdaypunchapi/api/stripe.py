@@ -187,11 +187,14 @@ class StripeProductsViewSet(APIView):
 
         product_list = []
 
-        for price in stripe.Price.list(limit=10):
+        for price in stripe.Price.list(limit=100):
             price_details = stripe.Price.retrieve(price.id)
             product_details = stripe.Product.retrieve(price_details.product)
 
-            stripe_price = StripePrice.objects.get(price_id=price.id)
+            try:
+                stripe_price = StripePrice.objects.get(price_id=price.id)
+            except:
+                print("No price in db: ", price.id)
 
             if product_details.active:
                 product_list.append(
@@ -206,6 +209,7 @@ class StripeProductsViewSet(APIView):
 
 
 class StripePriceViewSet(viewsets.ModelViewSet):
+    pagination_class = None
     queryset = StripePrice.objects.all()
     serializer_class = StripePriceSerializer
     permission_classes = [permissions.IsAuthenticated]

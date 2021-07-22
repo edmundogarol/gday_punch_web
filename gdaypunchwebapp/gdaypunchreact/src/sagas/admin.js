@@ -1,4 +1,5 @@
 import { call, all, takeLatest, select, put } from "redux-saga/effects";
+import { message } from "antd";
 import { api } from "utils/api";
 import {
   DO_TWEET,
@@ -42,7 +43,7 @@ import {
   selectPendingTweet,
   selectPendingDeletingTweet,
 } from "selectors/admin";
-import { message } from "antd";
+import { fetchAllProductsCall } from "./products";
 
 const NO_MEDIA = "admin-sagas/NO_MEDIA";
 const ERROR_TALKING_TO_GDAYPUNCH = "admin-sagas/ERROR_TALKING_TO_GDAYPUNCH";
@@ -351,6 +352,8 @@ export function* updateProductCall(action) {
 
   if (response && response.ok) {
     yield call(fetchAdminProductsCall);
+    yield call(fetchAllProductsCall);
+    yield call(fetchStripePricesCall);
     action.payload.history.push("/admin/products/");
   } else {
     console.log("Update Product error", JSON.stringify(response));
@@ -419,7 +422,7 @@ export function* fetchStripePricesCall() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateStripePrices(data.results));
+    yield put(updateStripePrices(data));
     yield put(finishedFetchingStripePrices());
 
     return data;

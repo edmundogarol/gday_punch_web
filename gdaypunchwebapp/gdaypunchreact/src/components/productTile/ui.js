@@ -9,11 +9,11 @@ import { gdayfetch } from "utils/gdayfetch";
 import { getGdayPunchStaticUrl } from "utils/utils";
 
 import {
-  MangaTile,
-  MangaImage,
-  MangaTitle,
-  MangaArtist,
-  MangaDetails,
+  ProductTileContainer,
+  ProductImage,
+  ProductTitle,
+  ProductAuthor,
+  ProductDetails,
   ActionButton,
   NumberLabel,
   InteractionContainer,
@@ -32,14 +32,14 @@ const productType = {
 function Ui(props) {
   const {
     loggedIn,
-    manga,
+    product,
     likeManga,
     openRegister,
     suggestRegister,
     updateCartItemQuantity,
     viewProduct,
   } = props;
-  const { manga_details } = manga;
+  const { manga_details } = product;
   const { id: mangaId } = manga_details || { id: undefined };
   const {
     //manga
@@ -50,15 +50,17 @@ function Ui(props) {
     author_name,
     image,
     //product
-    price,
+    active_price,
     stripe_prices,
     product_type,
-  } = manga;
+  } = product;
   const user_likes =
-    manga.user_likes || (manga_details ? manga_details.user_likes : false);
-  const likes = manga.likes || (manga_details ? manga_details.likes : 0);
+    product.user_likes || (manga_details ? manga_details.user_likes : false);
+  const likes = product.likes || (manga_details ? manga_details.likes : 0);
 
-  const perma_link = manga.title.toLowerCase().split(" ").join("-");
+  const perma_link = product.title.toLowerCase().split(" ").join("-");
+
+  console.log({ active_price });
 
   function handleMangaClick(destination, clickType) {
     const clickTypeMessages = {
@@ -123,16 +125,16 @@ function Ui(props) {
   const handleViewProduct = () => {
     const purchased = false;
     viewProduct(id);
-    if (!price || purchased) {
-      handleMangaClick(`/manga/${!price ? id : mangaId}`, "manga");
+    if (!active_price || purchased) {
+      handleMangaClick(`/manga/${!active_price ? id : mangaId}`, "manga");
     } else {
       props.history.push(`/product/${id}/${perma_link}`);
     }
   };
 
-  console.log({ manga });
+  console.log({ product });
   return (
-    <MangaTile>
+    <ProductTileContainer>
       <a
         onClick={() =>
           stripe_prices
@@ -140,9 +142,9 @@ function Ui(props) {
             : handleMangaClick(`/manga/${id}`, "manga")
         }
       >
-        <MangaImage src={image ? getGdayPunchStaticUrl(image) : cover} />
+        <ProductImage src={image ? getGdayPunchStaticUrl(image) : cover} />
       </a>
-      <MangaDetails>
+      <ProductDetails>
         <a
           onClick={() =>
             stripe_prices
@@ -150,16 +152,20 @@ function Ui(props) {
               : handleMangaClick(`/manga/${id}`, "manga")
           }
         >
-          <MangaTitle>{title}</MangaTitle>
-          <MangaArtist>{author_name}</MangaArtist>
-          {price && price > 0 ? <p>{`A$${price}`}</p> : <p>{`FREE`}</p>}
+          <ProductTitle>{title}</ProductTitle>
+          <ProductAuthor>{author_name}</ProductAuthor>
+          {active_price && active_price > 0 ? (
+            <p>{`A$${active_price}`}</p>
+          ) : (
+            <p>{`FREE`}</p>
+          )}
         </a>
         {!productType[product_type] && (
           <>
             <a onClick={() => handleMangaClick(undefined, "like")}>
               <FontAwesomeIcon
                 icon={faHeart}
-                style={manga && user_likes ? { color: "red" } : null}
+                style={product && user_likes ? { color: "red" } : null}
               />
               <NumberLabel>{`${likes || 0}`}</NumberLabel>
             </a>
@@ -169,13 +175,13 @@ function Ui(props) {
             </InteractionContainer>
           </>
         )}
-      </MangaDetails>
-      {price && price > 0 && (
+      </ProductDetails>
+      {active_price && active_price > 0 && (
         <ActionButton onClick={() => handleAddToCart()}>
           Add To Cart
         </ActionButton>
       )}
-    </MangaTile>
+    </ProductTileContainer>
   );
 }
 

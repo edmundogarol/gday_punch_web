@@ -4,7 +4,7 @@ import { isEmpty, orderBy } from "lodash";
 
 import Header from "components/header";
 import Login from "components/login";
-import MangaTile from "components/mangaTile";
+import ProductTile from "components/productTile";
 import PaymentForm from "components/paymentForm";
 import About from "components/about";
 import FeaturedSection from "components/featuredSection";
@@ -59,9 +59,9 @@ function Ui(props) {
           <FeaturedList>
             {productValues.map((product) => {
               return product ? (
-                <MangaTile
+                <ProductTile
                   key={product.id}
-                  manga={product}
+                  product={product}
                   loggedIn={loggedIn}
                   likeManga={likeManga}
                   openRegister={openRegister}
@@ -78,9 +78,9 @@ function Ui(props) {
           <FeaturedList>
             {featuredManga.map((manga) => {
               return manga ? (
-                <MangaTile
+                <ProductTile
                   key={manga.id}
-                  manga={manga}
+                  product={manga}
                   loggedIn={loggedIn}
                   likeManga={likeManga}
                   openRegister={openRegister}

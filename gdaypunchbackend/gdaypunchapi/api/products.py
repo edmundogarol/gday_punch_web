@@ -30,8 +30,8 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
 
-        free = request.data['active_price'] == 0 or None
-        use_existing_price = request.data['stripe_prices'] is not None
+        free = request.data['active_price'] == 0 or request.data['active_price'] == "" or None
+        use_existing_price = len(request.data['stripe_prices']) > 0
         create_stripe_price = not free and not use_existing_price
 
         if create_stripe_price:
@@ -66,7 +66,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             title=request.data['title'],
             image=request.data['image'],
             sale_price=request.data['sale_price'],
-            active_price=request.data['active_price'],
             visible=request.data['visible'],
             stock=request.data['stock'],
             sku=request.data['sku'],
@@ -101,6 +100,40 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
     def partial_update(self, request, *args, **kwargs):
         queryset = Product.objects.all()
         product = queryset.get(pk=kwargs.get("pk"))
+
+        free = request.data['active_price'] == 0 or request.data['active_price'] == "" or None
+        use_existing_price = len(request.data['stripe_prices']) > 0
+        create_stripe_price = not free and not use_existing_price
+
+        if create_stripe_price:
+            recurring = request.data['product_type'] == 3
+
+            stripe_price = stripe.Price.create(
+                unit_amount=int(float(request.data['active_price'])*100),
+                currency="aud",
+                recurring={
+                    "interval": "month",
+                    "interval_count": 2,
+                    "usage_type": "metered"
+                } if recurring else None,
+                product_data={
+                    "name": request.data['title'],
+                })
+
+            stripe_product = stripe.Product.retrieve(stripe_price.product)
+            stripe.Product.modify(stripe_product.id, images=[
+                "https://gdaypunch-static.s3.us-west-2.amazonaws.com/" + request.data['image']])
+
+            new_stripe_price = StripePrice(
+                price_amount=(stripe_price.unit_amount / 100),
+                price_id=stripe_price.id,
+                price_title=request.data['title'],
+                price_type="recurring" if recurring else "one_time"
+            )
+            new_stripe_price.save()
+
+            request.data['stripe_prices'] = [new_stripe_price.id]
+
         serializer = ProductSerializer(
             product, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)

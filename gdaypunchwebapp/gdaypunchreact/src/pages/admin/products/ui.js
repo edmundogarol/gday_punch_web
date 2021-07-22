@@ -154,8 +154,8 @@ function Ui(props) {
     },
     {
       title: "Price",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "active_price",
+      key: "active_price",
     },
     {
       title: "Visible",

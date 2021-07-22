@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { isEmpty, orderBy } from "lodash";
 
 import PaymentForm from "components/paymentForm";
-import MangaTile from "components/mangaTile";
+import ProductTile from "components/productTile";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
@@ -48,9 +48,9 @@ function Ui(props) {
           <FeaturedList>
             {productListValues.map((product) => {
               return product ? (
-                <MangaTile
+                <ProductTile
                   key={product.id}
-                  manga={product}
+                  product={product}
                   loggedIn={loggedIn}
                   likeManga={likeManga}
                   openRegister={openRegister}
@@ -70,9 +70,9 @@ function Ui(props) {
           <FeaturedList>
             {featuredManga.map((manga) => {
               return manga ? (
-                <MangaTile
+                <ProductTile
                   key={manga.id}
-                  manga={manga}
+                  product={manga}
                   loggedIn={loggedIn}
                   likeManga={likeManga}
                   openRegister={openRegister}

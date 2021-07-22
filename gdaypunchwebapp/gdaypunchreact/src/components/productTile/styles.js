@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const MangaTile = styled.div`
+export const ProductTileContainer = styled.div`
   margin: 20pt;
 
   a {
@@ -19,24 +19,24 @@ export const MangaTile = styled.div`
   }
 `;
 
-export const MangaImage = styled.img`
+export const ProductImage = styled.img`
   max-height: 15em;
 `;
 
-export const MangaTitle = styled.h2`
+export const ProductTitle = styled.h2`
   font-size: 1em;
   margin: unset;
   max-width: 12em;
 `;
 
-export const MangaArtist = styled.h4`
+export const ProductAuthor = styled.h4`
   font-size: 0.8em;
   margin: unset;
   max-width: 12em;
   white-space: nowrap;
 `;
 
-export const MangaDetails = styled.div`
+export const ProductDetails = styled.div`
   display: flex;
   flex-direction: row;
   text-align: start;
