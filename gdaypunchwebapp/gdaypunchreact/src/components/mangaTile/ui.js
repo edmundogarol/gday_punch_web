@@ -130,6 +130,7 @@ function Ui(props) {
     }
   };
 
+  console.log({ manga });
   return (
     <MangaTile>
       <a

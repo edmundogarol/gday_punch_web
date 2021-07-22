@@ -8,7 +8,12 @@ import {
 } from "redux-saga/effects";
 import { message } from "antd";
 
-import { FETCH_PRODUCTS, updateProducts } from "actions/app";
+import {
+  FETCH_PRODUCTS,
+  updateProducts,
+  fetchingProducts,
+  finishedFetchingProducts,
+} from "actions/app";
 import {
   FETCH_VIEWING_PRODUCT,
   fetchingViewingProduct,
@@ -52,6 +57,7 @@ export function* fetchViewingProductCall(action) {
 }
 
 export function* fetchAllProductsCall(addItems = false) {
+  yield put(fetchingProducts());
   const response = yield call(api, `products/`, {
     method: "GET",
   });
@@ -66,8 +72,10 @@ export function* fetchAllProductsCall(addItems = false) {
         )
       )
     );
+    yield put(finishedFetchingProducts());
   } else {
     console.log("All Products fetch error", JSON.stringify(response));
+    yield put(finishedFetchingProducts());
   }
 }
 

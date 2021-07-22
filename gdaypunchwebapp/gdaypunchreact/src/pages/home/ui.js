@@ -28,7 +28,7 @@ function Ui(props) {
     fetchProducts,
   } = props;
 
-  const { productList } = products;
+  const { productList, fetchingProducts, finishedFetchingProducts } = products;
   const productValues = orderBy(Object.values(productList), "id", "desc");
 
   useEffect(() => {
@@ -38,10 +38,14 @@ function Ui(props) {
   }, [featuredManga]);
 
   useEffect(() => {
-    if (isEmpty(productValues)) {
+    if (
+      isEmpty(productValues) &&
+      !fetchingProducts &&
+      !finishedFetchingProducts
+    ) {
       fetchProducts(featuredProductIds);
     }
-  }, [productList]);
+  }, [productList, fetchingProducts, finishedFetchingProducts]);
 
   return (
     <App id="top" className="App">

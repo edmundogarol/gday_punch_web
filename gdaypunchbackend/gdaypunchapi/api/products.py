@@ -30,31 +30,36 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
 
-        recurring = request.data['product_type'] == 3
+        free = request.data['active_price'] == 0 or None
+        use_existing_price = request.data['stripe_prices'] is not None
+        create_stripe_price = not free and not use_existing_price
 
-        stripe_price = stripe.Price.create(
-            unit_amount=int(float(request.data['active_price'])*100),
-            currency="aud",
-            recurring={
-                "interval": "month",
-                "interval_count": 2,
-                "usage_type": "metered"
-            } if recurring else None,
-            product_data={
-                "name": request.data['title'],
-            })
+        if create_stripe_price:
+            recurring = request.data['product_type'] == 3
 
-        stripe_product = stripe.Product.retrieve(stripe_price.product)
-        stripe.Product.modify(stripe_product.id, images=[
-                              "https://gdaypunch-static.s3.us-west-2.amazonaws.com/" + request.data['image']])
+            stripe_price = stripe.Price.create(
+                unit_amount=int(float(request.data['active_price'])*100),
+                currency="aud",
+                recurring={
+                    "interval": "month",
+                    "interval_count": 2,
+                    "usage_type": "metered"
+                } if recurring else None,
+                product_data={
+                    "name": request.data['title'],
+                })
 
-        new_stripe_price = StripePrice(
-            price_amount=(stripe_price.unit_amount / 100),
-            price_id=stripe_price.id,
-            price_title=request.data['title'],
-            price_type="recurring" if recurring else "one_time"
-        )
-        new_stripe_price.save()
+            stripe_product = stripe.Product.retrieve(stripe_price.product)
+            stripe.Product.modify(stripe_product.id, images=[
+                "https://gdaypunch-static.s3.us-west-2.amazonaws.com/" + request.data['image']])
+
+            new_stripe_price = StripePrice(
+                price_amount=(stripe_price.unit_amount / 100),
+                price_id=stripe_price.id,
+                price_title=request.data['title'],
+                price_type="recurring" if recurring else "one_time"
+            )
+            new_stripe_price.save()
 
         product = Product.objects.create(
             description=request.data['description'],
@@ -68,7 +73,12 @@ class ProductViewSet(viewsets.ModelViewSet):
             product_type=ProductType.objects.get(
                 id=request.data['product_type']),
         )
-        product.stripe_prices.add(new_stripe_price)
+
+        if create_stripe_price:
+            product.stripe_prices.add(new_stripe_price)
+        else:
+            product.stripe_prices.set(request.data['stripe_prices'])
+
         product.save()
 
         serializer = ProductSerializer(product)
@@ -76,6 +86,11 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = Product.objects.all().order_by('-id')
+        price_filter = request.query_params.get('price')
+
+        if price_filter:
+            queryset = queryset.filter(active_price=price_filter)
+
         serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data)
 
