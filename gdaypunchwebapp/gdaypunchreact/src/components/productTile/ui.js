@@ -78,21 +78,23 @@ function Ui(props) {
       } else {
         props.history.push(destination);
       }
-    } else if (clickType === "like") {
-      if (!loggedIn) {
-        window.location.href = "/#top";
-        openRegister();
-        suggestRegister(clickTypeMessages[clickType]);
-      } else if (!user_likes) {
-        likeManga(manga_details ? mangaId : id, !!manga_details);
-      } else {
-        // Implement Unlike Manga
-      }
     }
   }
 
   const handleAddToCart = () => {
     updateCartItemQuantity(id, 1, true);
+  };
+
+  const handleLikeClick = () => {
+    if (!loggedIn) {
+      window.location.href = "/#top";
+      openRegister();
+      suggestRegister("Info: Sign up or Log in to like this manga!");
+    } else if (!user_likes) {
+      likeManga(mangaId, false);
+    } else {
+      // Implement Unlike Manga
+    }
   };
 
   const handleViewProduct = () => {
@@ -105,7 +107,6 @@ function Ui(props) {
     }
   };
 
-  console.log({ product });
   return (
     <ProductTileContainer>
       <a onClick={() => handleViewProduct()}>
@@ -123,7 +124,7 @@ function Ui(props) {
         </a>
         {!productType[product_type] && (
           <>
-            <a onClick={() => handleMangaClick(undefined, "like")}>
+            <a onClick={() => handleLikeClick()}>
               <FontAwesomeIcon
                 icon={faHeart}
                 style={product && user_likes ? { color: "red" } : null}

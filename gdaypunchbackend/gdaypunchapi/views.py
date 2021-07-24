@@ -164,6 +164,20 @@ class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def create(self, request, *args, **kwargs):
+        user = User.objects.get(email=self.request.user)
+        manga = Manga.objects.get(id=request.data['manga'])
+
+        like = Like.objects.create(
+            manga=manga,
+            user=user,
+        )
+
+        like.save()
+
+        serializer = MangaSerializer(manga)
+        return Response(serializer.data)
+
 
 class CommentLikeViewSet(viewsets.ModelViewSet):
     queryset = CommentLike.objects.none()

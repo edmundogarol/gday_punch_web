@@ -20,7 +20,6 @@ import {
   updateComment,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
-import { selectLikingManga } from "selectors/manga";
 import { api } from "utils/api";
 import { message } from "antd";
 
@@ -49,7 +48,7 @@ export function* getMangaCollection(mangaIds) {
   return collection;
 }
 
-export function* getManga(id, updateProducts = false) {
+export function* getManga(id) {
   const mangaId = typeof id !== "number" ? id?.payload?.mangaId : id;
 
   const response = yield call(api, `manga/${mangaId}/`, {
@@ -58,7 +57,7 @@ export function* getManga(id, updateProducts = false) {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateManga(data, updateProducts));
+    yield put(updateManga(data));
     return data;
   } else {
     console.log("Manga fetch error", JSON.stringify(response));
@@ -66,19 +65,18 @@ export function* getManga(id, updateProducts = false) {
 }
 
 export function* likeManga(action) {
-  const manga = yield select(selectLikingManga);
-  const { id } = yield select(selectUser);
+  const { mangaId } = action.payload;
 
   const response = yield call(api, `like/`, {
     method: "POST",
     body: {
-      manga,
-      user: id,
+      manga: mangaId,
     },
   });
 
   if (response && response.ok) {
-    yield call(getManga, manga, action.payload.updateProducts);
+    const data = response.data;
+    yield put(updateManga(data));
   } else {
     console.log("Like error", JSON.stringify(response));
   }

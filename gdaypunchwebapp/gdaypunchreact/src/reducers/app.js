@@ -305,12 +305,12 @@ const appReducer = (state = INITIAL_STATE, action) => {
         },
       };
     case UPDATE_MANGA:
-      if (!payload.updateProducts) return state;
       const { manga } = payload;
       const { id: mangaId } = manga;
       const updatingProductManga = Object.values(
         state.products.productList
       ).find((product) => product.manga_details.id === mangaId);
+
       return {
         ...state,
         products: {
@@ -319,9 +319,12 @@ const appReducer = (state = INITIAL_STATE, action) => {
             ...state.products.productList,
             [updatingProductManga.id]: {
               ...updatingProductManga,
-              likes: manga.likes,
-              user_likes: manga.user_likes,
-              comments: manga.comments,
+              manga_details: {
+                ...updatingProductManga.manga_details,
+                likes: manga.likes,
+                user_likes: manga.user_likes,
+                comments: manga.comments,
+              },
             },
           },
         },

@@ -13,29 +13,22 @@ import { SectionTitle } from "components/sectionTitle";
 
 import { App } from "./styles";
 
-const featuredProductIds = [10, 11];
-
 function Ui(props) {
   const {
     loggedIn,
     loginView,
     openRegister,
     suggestRegister,
-    featuredManga,
     likeManga,
-    getFeaturedManga,
     products,
     fetchProducts,
   } = props;
 
   const { productList, fetchingProducts, finishedFetchingProducts } = products;
   const productValues = orderBy(Object.values(productList), "id", "desc");
-
-  useEffect(() => {
-    if (isEmpty(featuredManga) || !featuredManga[0]) {
-      getFeaturedManga();
-    }
-  }, [featuredManga]);
+  const freeProducts = productValues.filter(
+    (product) => product.active_price < 1
+  );
 
   useEffect(() => {
     if (
@@ -43,7 +36,7 @@ function Ui(props) {
       !fetchingProducts &&
       !finishedFetchingProducts
     ) {
-      fetchProducts(featuredProductIds);
+      fetchProducts();
     }
   }, [productList, fetchingProducts, finishedFetchingProducts]);
 
@@ -72,11 +65,11 @@ function Ui(props) {
           </FeaturedList>
         </FeaturedSection>
       )}
-      {!isEmpty(featuredManga) && (
+      {!isEmpty(freeProducts) && (
         <FeaturedSection idx={1}>
           <SectionTitle>Free Manga</SectionTitle>
           <FeaturedList>
-            {featuredManga.map((manga) => {
+            {freeProducts.map((manga) => {
               return manga ? (
                 <ProductTile
                   key={manga.id}

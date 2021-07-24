@@ -8,11 +8,8 @@ export const UPDATE_CONTACT_FORM_ERRORS = "app/UPDATE_CONTACT_FORM_ERRORS";
 export const UPDATE_CONTACT_FORM_SUBMITTED =
   "app/UPDATE_CONTACT_FORM_SUBMITTED";
 
-export const fetchProducts = (productIds) => ({
+export const fetchProducts = () => ({
   type: FETCH_PRODUCTS,
-  payload: {
-    productIds,
-  },
 });
 
 export const fetchingProducts = () => ({

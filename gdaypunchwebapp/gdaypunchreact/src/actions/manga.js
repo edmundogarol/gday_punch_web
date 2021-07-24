@@ -31,11 +31,10 @@ export const doSetReadingManga = (mangaId) => ({
   },
 });
 
-export const doLikeManga = (manga, updateProducts = false) => ({
+export const doLikeManga = (mangaId) => ({
   type: DO_LIKE_MANGA,
   payload: {
-    manga,
-    updateProducts,
+    mangaId,
   },
 });
 
