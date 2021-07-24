@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 export const ProductTileContainer = styled.div`
   margin: 20pt;
+  min-width: 13em;
 
   a {
     &:hover {
@@ -38,14 +39,13 @@ export const ProductAuthor = styled.h4`
 
 export const ProductDetails = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   text-align: start;
   margin-left: auto;
   margin-right: auto;
-  width: max-content;
+  width: 90%;
   margin-top: 10pt;
   margin-bottom: 10pt;
-  align-items: flex-end;
 
   a {
     text-decoration: none;
@@ -68,6 +68,15 @@ export const ProductDetails = styled.div`
   p {
     margin-bottom: unset;
   }
+`;
+
+export const PriceLikeCommentConainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const LikeCommentConainer = styled.div`
+  display: flex;
 `;
 
 export const NumberLabel = styled.span`

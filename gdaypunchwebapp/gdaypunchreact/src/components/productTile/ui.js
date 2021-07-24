@@ -17,6 +17,8 @@ import {
   ActionButton,
   NumberLabel,
   InteractionContainer,
+  PriceLikeCommentConainer,
+  LikeCommentConainer,
 } from "./styles";
 
 const stripePromise = loadStripe(
@@ -115,28 +117,30 @@ function Ui(props) {
       <ProductDetails>
         <a onClick={() => handleViewProduct()}>
           <ProductTitle>{title}</ProductTitle>
-          <ProductAuthor>{author || creator}</ProductAuthor>
+        </a>
+        <ProductAuthor>{author || creator}</ProductAuthor>
+        <PriceLikeCommentConainer>
           {active_price && active_price > 0 ? (
             <p>{`A$${active_price}`}</p>
           ) : (
             <p>{`FREE`}</p>
           )}
-        </a>
-        {!productType[product_type] && (
-          <>
-            <a onClick={() => handleLikeClick()}>
-              <FontAwesomeIcon
-                icon={faHeart}
-                style={product && user_likes ? { color: "red" } : null}
-              />
-              <NumberLabel>{`${likes || 0}`}</NumberLabel>
-            </a>
-            <InteractionContainer onClick={() => handleViewProduct()}>
-              <CommentOutlined className="site-form-item-icon" />
-              <NumberLabel>{`${comments || 0}`}</NumberLabel>
-            </InteractionContainer>
-          </>
-        )}
+          {!productType[product_type] && (
+            <LikeCommentConainer>
+              <a onClick={() => handleLikeClick()}>
+                <FontAwesomeIcon
+                  icon={faHeart}
+                  style={product && user_likes ? { color: "red" } : null}
+                />
+                <NumberLabel>{`${likes || 0}`}</NumberLabel>
+              </a>
+              <InteractionContainer onClick={() => handleViewProduct()}>
+                <CommentOutlined className="site-form-item-icon" />
+                <NumberLabel>{`${comments || 0}`}</NumberLabel>
+              </InteractionContainer>
+            </LikeCommentConainer>
+          )}
+        </PriceLikeCommentConainer>
       </ProductDetails>
       {active_price && active_price > 0 && (
         <ActionButton onClick={() => handleAddToCart()}>

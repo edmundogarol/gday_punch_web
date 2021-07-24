@@ -24,12 +24,12 @@ function Ui(props) {
 
   useEffect(() => {
     if (isEmpty(Object.values(productList))) {
-      fetchProducts(featuredProductIds);
+      fetchProducts();
     }
   }, [productList]);
 
   const productListValues = orderBy(Object.values(productList), "id", "desc");
-  const freeProducts = productValues.filter(
+  const freeProducts = productListValues.filter(
     (product) => product.active_price < 1
   );
 

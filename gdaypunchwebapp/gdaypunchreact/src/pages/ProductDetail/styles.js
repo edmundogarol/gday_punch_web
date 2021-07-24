@@ -39,8 +39,9 @@ export const ProductDetailLeftContainer = styled.div`
   align-items: center;
   justify-content: center;
 
-  .ant-image {
-    width: max-content;
+  .ant-image-img {
+    max-height: 29em;
+    width: unset;
   }
 `;
 
