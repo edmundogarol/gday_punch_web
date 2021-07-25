@@ -118,7 +118,6 @@ function Ui(props) {
       ? props.history.push("/")
       : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1);
 
-  console.log({ manga });
   return (
     <div
       className={classNames("pdf-reader", {

@@ -12,7 +12,6 @@ export const selectComments = createSelector(
 export const selectReadingManga = createSelector(
   selectDomain,
   ({ products: { productList }, reader: { mangaId } }) => {
-    console.log({ products: Object.values(productList), mangaId });
     const product = Object.values(productList).find(
       (product) => product.manga_details.id === mangaId
     );
