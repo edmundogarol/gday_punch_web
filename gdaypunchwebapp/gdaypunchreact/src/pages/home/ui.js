@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { isEmpty, orderBy } from "lodash";
+import { isEmpty } from "lodash";
 
 import Header from "components/header";
 import Login from "components/login";
@@ -21,24 +21,22 @@ function Ui(props) {
     suggestRegister,
     likeManga,
     products,
+    buyableProducts,
+    freeProducts,
     fetchProducts,
   } = props;
 
-  const { productList, fetchingProducts, finishedFetchingProducts } = products;
-  const productValues = orderBy(Object.values(productList), "id", "desc");
-  const freeProducts = productValues.filter(
-    (product) => product.active_price < 1
-  );
+  const { fetchingProducts, finishedFetchingProducts } = products;
 
   useEffect(() => {
     if (
-      isEmpty(productValues) &&
+      isEmpty(buyableProducts) &&
       !fetchingProducts &&
       !finishedFetchingProducts
     ) {
       fetchProducts();
     }
-  }, [productList, fetchingProducts, finishedFetchingProducts]);
+  }, [buyableProducts, fetchingProducts, finishedFetchingProducts]);
 
   return (
     <App id="top" className="App">
@@ -46,11 +44,11 @@ function Ui(props) {
         <Header loginView={loginView} />
         <Login />
       </div>
-      {!isEmpty(productValues) && (
+      {!isEmpty(buyableProducts) && (
         <FeaturedSection>
           <SectionTitle>Products</SectionTitle>
           <FeaturedList>
-            {productValues.map((product) => {
+            {buyableProducts.map((product) => {
               return product ? (
                 <ProductTile
                   key={product.id}

@@ -65,6 +65,7 @@ function Ui(props) {
   };
 
   const perma_link = product.title.toLowerCase().split(" ").join("-");
+  const buyableProduct = active_price && active_price > 0;
 
   function handleMangaClick(destination, clickType) {
     const clickTypeMessages = {
@@ -100,13 +101,9 @@ function Ui(props) {
   };
 
   const handleViewProduct = () => {
-    const purchased = false;
     viewProduct(id);
-    if (!active_price || purchased) {
-      handleMangaClick(`/manga/${!active_price ? id : mangaId}`, "manga");
-    } else {
-      props.history.push(`/product/${id}/${perma_link}`);
-    }
+    props.history.push(`/product/${id}/${perma_link}`);
+    // handleMangaClick(`/manga/${!active_price ? id : mangaId}`, "manga");
   };
 
   return (
@@ -120,11 +117,7 @@ function Ui(props) {
         </a>
         <ProductAuthor>{author || creator}</ProductAuthor>
         <PriceLikeCommentConainer>
-          {active_price && active_price > 0 ? (
-            <p>{`A$${active_price}`}</p>
-          ) : (
-            <p>{`FREE`}</p>
-          )}
+          {buyableProduct ? <p>{`A$${active_price}`}</p> : <p>{`FREE`}</p>}
           {!productType[product_type] && (
             <LikeCommentConainer>
               <a onClick={() => handleLikeClick()}>
@@ -142,11 +135,9 @@ function Ui(props) {
           )}
         </PriceLikeCommentConainer>
       </ProductDetails>
-      {active_price && active_price > 0 && (
-        <ActionButton onClick={() => handleAddToCart()}>
-          Add To Cart
-        </ActionButton>
-      )}
+      <ActionButton onClick={() => handleAddToCart()}>
+        {buyableProduct ? "Add To Cart" : "Read Now"}
+      </ActionButton>
     </ProductTileContainer>
   );
 }

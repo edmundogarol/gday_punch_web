@@ -1,4 +1,7 @@
 import { createSelector } from "reselect";
+import { orderBy } from "lodash";
+
+// const productValues = orderBy(Object.values(productList), "id", "desc");
 
 const selectDomain = (state) => state.app;
 
@@ -52,6 +55,26 @@ export const selectProductsState = createSelector(
 export const selectProductList = createSelector(
   selectDomain,
   ({ products: { productList } }) => productList
+);
+
+export const selectBuyableProducts = createSelector(
+  selectDomain,
+  ({ products: { productList } }) => {
+    const list = Object.values(productList).filter(
+      (product) => product.active_price > 0
+    );
+    return orderBy(list, "id", "desc");
+  }
+);
+
+export const selectFreeProducts = createSelector(
+  selectDomain,
+  ({ products: { productList } }) => {
+    const list = Object.values(productList).filter(
+      (product) => product.active_price === 0
+    );
+    return orderBy(list, "id", "desc");
+  }
 );
 
 export const selectContactState = createSelector(

@@ -6,11 +6,16 @@ import Ui from "./ui";
 import { openRegistration, doSuggestRegister } from "actions/user";
 import { doLikeManga } from "actions/manga";
 import { fetchProducts as fetchProductsAction } from "actions/app";
-import { selectLoggedIn, selectProductsState } from "selectors/app";
+import {
+  selectLoggedIn,
+  selectBuyableProducts,
+  selectFreeProducts,
+} from "selectors/app";
 
 const mapState = createStructuredSelector({
   loggedIn: selectLoggedIn,
-  products: selectProductsState,
+  buyableProducts: selectBuyableProducts,
+  freeProducts: selectFreeProducts,
 });
 
 const mapDispatch = {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { isEmpty, orderBy } from "lodash";
+import { isEmpty } from "lodash";
 
 import PaymentForm from "components/paymentForm";
 import ProductTile from "components/productTile";
@@ -16,30 +16,24 @@ function Ui(props) {
     openRegister,
     suggestRegister,
     likeManga,
-    products,
     fetchProducts,
+    buyableProducts,
+    freeProducts,
   } = props;
 
-  const { productList } = products;
-
   useEffect(() => {
-    if (isEmpty(Object.values(productList))) {
+    if (isEmpty(buyableProducts)) {
       fetchProducts();
     }
-  }, [productList]);
-
-  const productListValues = orderBy(Object.values(productList), "id", "desc");
-  const freeProducts = productListValues.filter(
-    (product) => product.active_price < 1
-  );
+  }, [buyableProducts]);
 
   return (
     <App id="top" className="App">
-      {!isEmpty(productListValues) && (
+      {!isEmpty(buyableProducts) && (
         <FeaturedSection top>
           <SectionTitle id="magazines">Magazines</SectionTitle>
           <FeaturedList>
-            {productListValues.map((product) => {
+            {buyableProducts.map((product) => {
               return product ? (
                 <ProductTile
                   key={product.id}
