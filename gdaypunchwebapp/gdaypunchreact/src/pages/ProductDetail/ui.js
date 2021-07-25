@@ -76,7 +76,6 @@ function Ui(props) {
   const fbShare = () => {
     const url =
       "https://www.facebook.com/sharer.php?display=popup&u=" +
-      // "https://www.gdaypunch.com/store/p32/gday-punch-manga-magazine-issue-1-digital.html";
       window.location.href;
     const options = "toolbar=0,status=0,resizable=1,width=626,height=436";
     window.open(url, "sharer", options);
@@ -85,7 +84,6 @@ function Ui(props) {
   const twShare = () => {
     const url =
       "https://twitter.com/intent/tweet?display=popup&url=" +
-      // "https://www.gdaypunch.com/store/p32/gday-punch-manga-magazine-issue-1-digital.html" +
       window.location.href +
       "&text=" +
       product.title.replace("#", "%23");
@@ -96,7 +94,6 @@ function Ui(props) {
   const pnShare = () => {
     const url =
       "https://www.pinterest.com/pin/create/button/?url=" +
-      // "https://www.gdaypunch.com/store/p32/gday-punch-manga-magazine-issue-1-digital.html" +
       window.location.href +
       "&media=" +
       getGdayPunchStaticUrl(product.image) +
@@ -109,6 +106,12 @@ function Ui(props) {
   const handleAddToCart = () => {
     updateCartItemQuantity(product.id, quantity, product.quantity);
   };
+
+  const handleReadManga = () => {
+    props.history.push(`/manga/${product.manga_details.id}`);
+  };
+
+  const freeProduct = product && product.active_price === 0;
 
   return (
     <PageContainer>
@@ -128,7 +131,13 @@ function Ui(props) {
             <ProductDetailRightContainer>
               <Title level={4}>{product.title}</Title>
               <PriceSkuContainer>
-                <h4>A${product.active_price.toFixed(2)}</h4>
+                {freeProduct ? null : (
+                  <h4>
+                    {freeProduct
+                      ? "Free"
+                      : `A$${product.active_price.toFixed(2)}`}
+                  </h4>
+                )}
                 {product.sku && (
                   <SkuContainer>
                     <label>SKU:</label>
@@ -179,19 +188,32 @@ function Ui(props) {
                 </MoreDetailsContainer>
               )}
               <QuantityAddCartContainer>
-                <label>Quantity</label>
-                <Select
-                  defaultValue={1}
-                  value={quantity}
-                  onSelect={(val) => setQuantity(val)}
+                {freeProduct ? null : (
+                  <>
+                    <label>Quantity</label>
+                    <Select
+                      defaultValue={1}
+                      value={quantity}
+                      onSelect={(val) => setQuantity(val)}
+                    >
+                      {[...Array(10)].map((x, i) => (
+                        <Option
+                          key={"product-qty-select-" + i + 1}
+                          value={i + 1}
+                        >
+                          {i + 1}
+                        </Option>
+                      ))}
+                    </Select>
+                  </>
+                )}
+                <button
+                  onClick={() =>
+                    freeProduct ? handleReadManga() : handleAddToCart()
+                  }
                 >
-                  {[...Array(10)].map((x, i) => (
-                    <Option key={"product-qty-select-" + i + 1} value={i + 1}>
-                      {i + 1}
-                    </Option>
-                  ))}
-                </Select>
-                <button onClick={() => handleAddToCart()}>Add to Cart</button>
+                  {freeProduct ? "Read" : "Add to Cart"}
+                </button>
               </QuantityAddCartContainer>
             </ProductDetailRightContainer>
           </ProductDetailContainer>

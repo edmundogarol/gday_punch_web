@@ -1,11 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { CommentOutlined } from "@ant-design/icons";
-import { loadStripe } from "@stripe/stripe-js";
-import { message } from "antd";
 
-import { gdayfetch } from "utils/gdayfetch";
 import { getGdayPunchStaticUrl } from "utils/utils";
 
 import {
@@ -20,12 +17,6 @@ import {
   PriceLikeCommentConainer,
   LikeCommentConainer,
 } from "./styles";
-
-const stripePromise = loadStripe(
-  process.env.NODE_ENV === "development"
-    ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
-    : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
-);
 
 const productType = {
   1: "Physical",
@@ -103,7 +94,6 @@ function Ui(props) {
   const handleViewProduct = () => {
     viewProduct(id);
     props.history.push(`/product/${id}/${perma_link}`);
-    // handleMangaClick(`/manga/${!active_price ? id : mangaId}`, "manga");
   };
 
   return (
@@ -135,7 +125,11 @@ function Ui(props) {
           )}
         </PriceLikeCommentConainer>
       </ProductDetails>
-      <ActionButton onClick={() => handleAddToCart()}>
+      <ActionButton
+        onClick={() =>
+          buyableProduct ? handleAddToCart() : handleViewProduct()
+        }
+      >
         {buyableProduct ? "Add To Cart" : "Read Now"}
       </ActionButton>
     </ProductTileContainer>

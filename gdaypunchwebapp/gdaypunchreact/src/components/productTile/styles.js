@@ -67,6 +67,7 @@ export const ProductDetails = styled.div`
 
   p {
     margin-bottom: unset;
+    color: dimgray;
   }
 `;
 
