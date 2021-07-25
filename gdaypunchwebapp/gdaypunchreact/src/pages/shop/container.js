@@ -8,12 +8,14 @@ import { doLikeManga } from "actions/manga";
 import { fetchProducts as fetchProductsAction } from "actions/app";
 import {
   selectLoggedIn,
+  selectProductsState,
   selectBuyableProducts,
   selectFreeProducts,
 } from "selectors/app";
 
 const mapState = createStructuredSelector({
   loggedIn: selectLoggedIn,
+  products: selectProductsState,
   buyableProducts: selectBuyableProducts,
   freeProducts: selectFreeProducts,
 });

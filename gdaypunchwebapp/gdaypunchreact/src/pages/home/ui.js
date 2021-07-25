@@ -20,13 +20,11 @@ function Ui(props) {
     openRegister,
     suggestRegister,
     likeManga,
-    products,
+    products: { fetchingProducts, finishedFetchingProducts },
     buyableProducts,
     freeProducts,
     fetchProducts,
   } = props;
-
-  const { fetchingProducts, finishedFetchingProducts } = products;
 
   useEffect(() => {
     if (

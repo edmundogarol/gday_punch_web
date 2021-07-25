@@ -16,16 +16,21 @@ function Ui(props) {
     openRegister,
     suggestRegister,
     likeManga,
+    products: { fetchingProducts, finishedFetchingProducts },
     fetchProducts,
     buyableProducts,
     freeProducts,
   } = props;
 
   useEffect(() => {
-    if (isEmpty(buyableProducts)) {
+    if (
+      isEmpty(buyableProducts) &&
+      !fetchingProducts &&
+      !finishedFetchingProducts
+    ) {
       fetchProducts();
     }
-  }, [buyableProducts]);
+  }, [buyableProducts, fetchingProducts, finishedFetchingProducts]);
 
   return (
     <App id="top" className="App">
@@ -50,8 +55,8 @@ function Ui(props) {
       )}
       {!isEmpty(freeProducts) && (
         <FeaturedSection
-          idx={!isEmpty(productListValues) ? 1 : 0}
-          top={isEmpty(productListValues)}
+          idx={!isEmpty(buyableProducts) ? 1 : 0}
+          top={isEmpty(buyableProducts)}
         >
           <SectionTitle id="free-manga">Free Manga</SectionTitle>
           <FeaturedList>
