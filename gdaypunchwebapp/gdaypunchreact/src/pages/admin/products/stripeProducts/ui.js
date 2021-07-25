@@ -84,11 +84,6 @@ function Ui(props) {
       body: {
         ...stripeProduct,
         previous_url: window.location.href,
-        // stripe_ids: [
-        //   "price_1J0jbpGCrsnfPck1QVkM2ytH",
-        //   "price_1J0jboGCrsnfPck11GrH2apB",
-        // ],
-        // type: "recurring",
       },
     });
 

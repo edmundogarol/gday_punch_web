@@ -23,13 +23,8 @@ const promptTypes = {
 };
 
 function Ui(props) {
-  const {
-    prompts,
-    fetchPrompts,
-    promptStatuses,
-    createPrompt,
-    selectPrompt,
-  } = props;
+  const { prompts, fetchPrompts, promptStatuses, createPrompt, selectPrompt } =
+    props;
   const { fetchingPrompts, fetchingPromptsSucess } = promptStatuses;
   const [prompt, setPrompt] = useState({
     description: "",
@@ -88,7 +83,7 @@ function Ui(props) {
       <Title level={4}>
         Create Prompt
         <EyeOutlined
-          onClick={() => (window.location.href = "/daily-prompt")}
+          onClick={() => props.history.push("/daily-prompt")}
           style={{ position: "absolute", right: "1em" }}
         />
       </Title>

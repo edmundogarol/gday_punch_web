@@ -1,5 +1,6 @@
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import { withRouter } from "react-router-dom";
 
 import { selectPrompts, selectPromptStatuses } from "selectors/admin";
 
@@ -22,4 +23,4 @@ const mapDispatch = {
   selectPrompt: selectPromptAction,
 };
 
-export default connect(mapState, mapDispatch)(Ui);
+export default connect(mapState, mapDispatch)(withRouter(Ui));

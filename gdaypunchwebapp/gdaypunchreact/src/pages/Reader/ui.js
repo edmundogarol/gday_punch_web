@@ -1,29 +1,10 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import classNames from "classnames";
 import { Page, pdfjs } from "react-pdf";
-import { connect } from "react-redux";
 import { useParams } from "react-router-dom";
-import { createStructuredSelector } from "reselect";
 import { Modal, Input } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { Document } from "react-pdf/dist/entry.webpack";
-import { openRegistration, doSuggestRegister } from "actions/user";
-import {
-  doGetManga,
-  doSetReadingManga,
-  doCommentManga,
-  doGetComments,
-  doLikeComment,
-  doLikeManga,
-} from "actions/manga";
-import { doUpdateUserDetails } from "actions/user";
-import {
-  selectLoginViewToggle,
-  selectLoggedIn,
-  selectUser,
-} from "selectors/app";
-import { selectReadingManga, selectComments } from "selectors/manga";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronCircleRight,
@@ -36,7 +17,7 @@ import {
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-function Reader(props) {
+function Ui(props) {
   const {
     file,
     orientation = "japanese",
@@ -129,14 +110,15 @@ function Reader(props) {
 
   const leftClick = () =>
     leftNavigatorDisabled
-      ? (window.location.href = "/")
+      ? props.history.push("/")
       : setPageNumber(japaneseReading ? pageNumber + 1 : pageNumber - 1);
 
   const rightClick = () =>
     rightNavigatorDisabled
-      ? (window.location.href = "/")
+      ? props.history.push("/")
       : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1);
 
+  console.log({ manga });
   return (
     <div
       className={classNames("pdf-reader", {
@@ -304,43 +286,4 @@ function getStyles() {
   };
 }
 
-Reader.propTypes = {
-  // Component Properites
-  user: PropTypes.object,
-  orientation: PropTypes.string,
-  readerOnly: PropTypes.bool,
-  pageCount: PropTypes.number,
-  manga: PropTypes.object,
-  // Redux Properties
-  gpManga: PropTypes.object,
-  loggedIn: PropTypes.bool.isRequired,
-  loginView: PropTypes.bool.isRequired,
-  userManga: PropTypes.object,
-  // Redux Functions
-  openRegister: PropTypes.func.isRequired,
-  suggestRegister: PropTypes.func.isRequired,
-  setReadingManga: PropTypes.func.isRequired,
-  getManga: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = createStructuredSelector({
-  user: selectUser,
-  loggedIn: selectLoggedIn,
-  loginView: selectLoginViewToggle,
-  manga: selectReadingManga,
-  comments: selectComments,
-});
-
-const mapDispatchToProps = {
-  openRegister: openRegistration,
-  suggestRegister: doSuggestRegister,
-  setReadingManga: doSetReadingManga,
-  getManga: doGetManga,
-  updateUserDetails: doUpdateUserDetails,
-  commentManga: doCommentManga,
-  getComments: doGetComments,
-  likeComment: doLikeComment,
-  likeManga: doLikeManga,
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Reader);
+export default Ui;

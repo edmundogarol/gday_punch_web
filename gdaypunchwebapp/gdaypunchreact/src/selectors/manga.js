@@ -1,24 +1,21 @@
 import { createSelector } from "reselect";
 
-const selectDomain = (state) => state.manga;
+const selectDomain = (state) => state.app;
 
-export const selectFeaturedMangaIds = createSelector(
+export const selectComments = createSelector(
   selectDomain,
-  ({ featuredMangaIds }) => featuredMangaIds
+  ({ reader: { comments } }) => {
+    return comments.sort((commentA, commentB) => commentA.id - commentB.id);
+  }
 );
-
-export const selectAllMangaIds = createSelector(selectDomain, ({ manga }) =>
-  Object.keys(manga).map((key) => parseInt(key, 10))
-);
-
-export const selectComments = createSelector(selectDomain, ({ comments }) => {
-  return comments.sort((commentA, commentB) => commentA.id - commentB.id);
-});
-
-export const selectManga = (mangaId) =>
-  createSelector(selectDomain, ({ manga }) => manga[mangaId]);
 
 export const selectReadingManga = createSelector(
   selectDomain,
-  ({ readingManga, manga }) => manga[readingManga]
+  ({ products: { productList }, reader: { mangaId } }) => {
+    console.log({ products: Object.values(productList), mangaId });
+    const product = Object.values(productList).find(
+      (product) => product.manga_details.id === mangaId
+    );
+    return product ? product.manga_details : undefined;
+  }
 );

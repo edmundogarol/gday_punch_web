@@ -9,7 +9,6 @@ import {
 } from "redux-saga/effects";
 import {
   DO_GET_MANGA,
-  DO_GET_FEATURED_MANGA,
   DO_LIKE_MANGA,
   DO_COMMENT_MANGA,
   DO_GET_COMMENTS,
@@ -150,7 +149,6 @@ export function* likeComment(action) {
 export default function* mangaSaga() {
   yield all([
     takeLatest(DO_GET_MANGA, getManga),
-    takeLatest(DO_GET_FEATURED_MANGA, getFeaturedManga),
     takeEvery(DO_LIKE_MANGA, likeManga),
     takeEvery(DO_COMMENT_MANGA, commentManga),
     takeEvery(DO_GET_COMMENTS, getComments),

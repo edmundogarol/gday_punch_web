@@ -1,8 +1,6 @@
 import { createSelector } from "reselect";
 import { orderBy } from "lodash";
 
-// const productValues = orderBy(Object.values(productList), "id", "desc");
-
 const selectDomain = (state) => state.app;
 
 export const selectUser = createSelector(selectDomain, ({ user }) => user);

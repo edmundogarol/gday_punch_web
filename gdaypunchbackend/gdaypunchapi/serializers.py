@@ -54,8 +54,8 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class MangaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manga
-        fields = ("id", "title", "author", "author_name", "pdf", "cover",
-                  "likes", "user_likes", "comments")
+        fields = ("id", "title", "author", "pdf", "cover", "likes", "user_likes",
+                  "comments")
 
 
 class LikeSerializer(serializers.ModelSerializer):

@@ -333,6 +333,7 @@ class Product(models.Model):
                 "likes": current_manga.likes,
                 "comments": current_manga.comments,
                 "user_likes": current_manga.user_likes,
+                "pdf": current_manga.pdf
             }
 
         return details

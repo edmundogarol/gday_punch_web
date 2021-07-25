@@ -66,7 +66,7 @@ function Ui(props) {
 
     if (clickType === "manga") {
       if (!loggedIn) {
-        window.location.href = "/#top";
+        props.history.push("/#top");
         openRegister();
         suggestRegister(clickTypeMessages[clickType]);
       } else {
@@ -81,7 +81,7 @@ function Ui(props) {
 
   const handleLikeClick = () => {
     if (!loggedIn) {
-      window.location.href = "/#top";
+      props.history.push("/#top");
       openRegister();
       suggestRegister("Info: Sign up or Log in to like this manga!");
     } else if (!user_likes) {

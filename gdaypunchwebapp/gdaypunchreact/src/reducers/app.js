@@ -1,6 +1,5 @@
 import { set, unset } from "lodash";
 import { combineReducers } from "redux";
-import { mangaReducer } from "./manga";
 import { adminReducer } from "./admin";
 import {
   DO_LOGIN,
@@ -24,7 +23,6 @@ import {
 import {
   FETCHING_CART_ITEMS,
   FINISHED_FETCHING_CART_ITEMS,
-  UPDATE_CART_ITEMS,
   TOGGLE_SIDE_CART,
   UPDATE_CART_ITEM_QUANTITY,
   REMOVE_CART_ITEM,
@@ -34,7 +32,12 @@ import {
   FETCHING_VIEWING_PRODUCT,
   FINISHED_FETCHING_VIEWING_PRODUCT,
 } from "actions/products";
-import { UPDATE_MANGA } from "actions/manga";
+import {
+  UPDATE_MANGA,
+  SET_READING_MANGA,
+  UPDATE_COMMENTS,
+  UPDATE_COMMENT,
+} from "actions/manga";
 
 const INITIAL_STATE = {
   user: {
@@ -74,10 +77,14 @@ const INITIAL_STATE = {
   },
 
   cart: {
-    items: {},
     fetchingCartItems: false,
     finishedFetchingCartItems: false,
     sideCartOpen: false,
+  },
+
+  reader: {
+    mangaId: undefined,
+    comments: [],
   },
 };
 
@@ -202,22 +209,6 @@ const appReducer = (state = INITIAL_STATE, action) => {
           errors: [],
         },
       };
-    case UPDATE_CART_ITEMS:
-      const existingItem = state.cart.items[payload.items.id];
-      const newItems = {
-        ...state.cart.items,
-        [payload.items.id]: existingItem
-          ? { ...existingItem, quantity: existingItem.quantity + 1 }
-          : { ...payload.items, quantity: 1 },
-      };
-      return {
-        ...state,
-        cart: {
-          ...state.cart,
-          items: payload.addItems ? newItems : payload.items,
-          sideCartOpen: payload.addItems,
-        },
-      };
     case UPDATE_CART_ITEM_QUANTITY:
       const modifyingItem = state.products.productList[payload.productId];
       return {
@@ -304,13 +295,38 @@ const appReducer = (state = INITIAL_STATE, action) => {
           finishedFetchingViewingProduct: true,
         },
       };
+    case SET_READING_MANGA:
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          mangaId: action.payload.mangaId,
+        },
+      };
     case UPDATE_MANGA:
       const { manga } = payload;
       const { id: mangaId } = manga;
       const updatingProductManga = Object.values(
         state.products.productList
-      ).find((product) => product.manga_details.id === mangaId);
+      ).find((product) => {
+        return product.id && product.manga_details.id === mangaId;
+      });
 
+      if (!updatingProductManga) {
+        return {
+          ...state,
+          products: {
+            ...state.products,
+            productList: {
+              ...state.products.productList,
+              [`temp-product-${mangaId}`]: {
+                ...updatingProductManga,
+                manga_details: manga,
+              },
+            },
+          },
+        };
+      }
       return {
         ...state,
         products: {
@@ -329,6 +345,25 @@ const appReducer = (state = INITIAL_STATE, action) => {
           },
         },
       };
+    case UPDATE_COMMENTS:
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          comments: action.payload.comments,
+        },
+      };
+    case UPDATE_COMMENT:
+      remove(state.reader.comments, (comment) => {
+        return comment.id === action.payload.comment.id;
+      });
+      return {
+        ...state,
+        reader: {
+          ...state.reader,
+          comments: [...state.comments, action.payload.comment],
+        },
+      };
     default:
       return state;
   }
@@ -336,6 +371,5 @@ const appReducer = (state = INITIAL_STATE, action) => {
 
 export default combineReducers({
   app: appReducer,
-  manga: mangaReducer,
   admin: adminReducer,
 });
