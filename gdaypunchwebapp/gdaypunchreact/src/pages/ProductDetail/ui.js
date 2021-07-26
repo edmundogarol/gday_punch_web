@@ -67,7 +67,7 @@ function Ui(props) {
   const { productId } = useParams();
 
   const freeProduct = product && product.active_price === 0;
-  const digitalProduct = product.product_type === 2;
+  const digitalProduct = product && product.product_type === 2;
 
   useEffect(() => {
     if (!fetchingViewingProduct && !finishedFetchingViewingProduct) {
