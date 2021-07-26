@@ -1,4 +1,4 @@
-import { set, unset } from "lodash";
+import { set, unset, remove } from "lodash";
 import { combineReducers } from "redux";
 import { adminReducer } from "./admin";
 import {
@@ -361,7 +361,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         reader: {
           ...state.reader,
-          comments: [...state.comments, action.payload.comment],
+          comments: [...state.reader.comments, action.payload.comment],
         },
       };
     default:
