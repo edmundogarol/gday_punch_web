@@ -66,6 +66,9 @@ function Ui(props) {
   const [quantity, setQuantity] = useState(1);
   const { productId } = useParams();
 
+  const freeProduct = product && product.active_price === 0;
+  const digitalProduct = product.product_type === 2;
+
   useEffect(() => {
     if (!fetchingViewingProduct && !finishedFetchingViewingProduct) {
       if (productId && !product) {
@@ -117,8 +120,6 @@ function Ui(props) {
     props.history.push(`/manga/${product.manga_details.id}`);
   };
 
-  const freeProduct = product && product.active_price === 0;
-
   return (
     <PageContainer>
       <ProductContainer>
@@ -137,29 +138,31 @@ function Ui(props) {
             <ProductDetailRightContainer>
               <TitleInteractionButtonsContainer>
                 <Title level={4}>{product.title}</Title>
-                <LikeCommentConainer>
-                  <InteractionButton>
-                    <FontAwesomeIcon
-                      icon={faHeart}
-                      style={
-                        product.manga_details.user_likes
-                          ? { color: "red" }
-                          : null
-                      }
-                    />
-                    <NumberLabel>{`${
-                      product.manga_details.likes || 0
-                    }`}</NumberLabel>
-                  </InteractionButton>
-                  <InteractionContainer>
+                {digitalProduct && (
+                  <LikeCommentConainer>
                     <InteractionButton>
-                      <CommentOutlined className="site-form-item-icon" />
+                      <FontAwesomeIcon
+                        icon={faHeart}
+                        style={
+                          product.manga_details.user_likes
+                            ? { color: "red" }
+                            : null
+                        }
+                      />
+                      <NumberLabel>{`${
+                        product.manga_details.likes || 0
+                      }`}</NumberLabel>
                     </InteractionButton>
-                    <NumberLabel>{`${
-                      product.manga_details.comments || 0
-                    }`}</NumberLabel>
-                  </InteractionContainer>
-                </LikeCommentConainer>
+                    <InteractionContainer>
+                      <InteractionButton>
+                        <CommentOutlined className="site-form-item-icon" />
+                      </InteractionButton>
+                      <NumberLabel>{`${
+                        product.manga_details.comments || 0
+                      }`}</NumberLabel>
+                    </InteractionContainer>
+                  </LikeCommentConainer>
+                )}
               </TitleInteractionButtonsContainer>
               <PriceSkuContainer>
                 {freeProduct ? null : (

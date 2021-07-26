@@ -75,19 +75,23 @@ function Ui(props) {
             />
           </NavLink>
         </NavLogoContainer>
-        <HeaderLink
-          to="#"
-          $showOnMiniNav
-          $adminLink
-          $current={location === "/cart"}
-          onClick={() => {
-            toggleMiniNav(false);
-            toggleSideCart(true);
-          }}
-        >
-          <ShoppingCartOutlined className="site-form-item-icon" />
-          {cartCount > 0 && <CartNumber $showOnMiniNav>{cartCount}</CartNumber>}
-        </HeaderLink>
+        {!location.includes("cart") && (
+          <HeaderLink
+            to="#"
+            $showOnMiniNav
+            $adminLink
+            $current={location === "/cart"}
+            onClick={() => {
+              toggleMiniNav(false);
+              toggleSideCart(true);
+            }}
+          >
+            <ShoppingCartOutlined className="site-form-item-icon" />
+            {cartCount > 0 && (
+              <CartNumber $showOnMiniNav>{cartCount}</CartNumber>
+            )}
+          </HeaderLink>
+        )}
         <NavLinksMiddle $open={miniNavOpen} $scrolledMini={scrolledMini}>
           <HeaderLink
             to="/"

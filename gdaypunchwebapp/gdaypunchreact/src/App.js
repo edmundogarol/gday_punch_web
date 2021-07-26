@@ -30,6 +30,7 @@ import Admin from "pages/Admin";
 import Shop from "pages/Shop";
 import About from "pages/About";
 import Contact from "pages/Contact";
+import Cart from "pages/Cart";
 import ProductDetail from "pages/ProductDetail";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
@@ -112,7 +113,7 @@ function Root(props) {
             <Route exact path="/shop" component={Shop} />
             <Route exact path="/contact" component={Contact} />
             <Route exact path="/about" component={About} />
-            <Route exact path="/cart" component={Home} />
+            <Route exact path="/cart" component={Cart} />
             <Route
               exact
               path="/product/:productId/:productUri"

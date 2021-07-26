@@ -4,7 +4,9 @@ import styled from "styled-components";
 export default function FeaturedSection(props) {
   return (
     <FeaturedSectionContainer idx={props.idx} top={props.top}>
-      <FeaturedChildrenContainer>{props.children}</FeaturedChildrenContainer>
+      <FeaturedChildrenContainer width={props.width} height={props.height}>
+        {props.children}
+      </FeaturedChildrenContainer>
     </FeaturedSectionContainer>
   );
 }
@@ -23,4 +25,7 @@ export const FeaturedSectionContainer = styled.div`
 
 export const FeaturedChildrenContainer = styled.div`
   max-width: 90em;
+  width: ${(props) => props.width};
+  min-height: ${(props) => props.height};
+  position: relative;
 `;

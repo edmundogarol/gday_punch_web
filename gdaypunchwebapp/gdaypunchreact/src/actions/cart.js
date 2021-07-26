@@ -17,12 +17,18 @@ export const finishedFetchingCartItems = () => ({
   type: FINISHED_FETCHING_CART_ITEMS,
 });
 
-export const updateCartItemQuantity = (productId, quantity, addOnTop) => ({
+export const updateCartItemQuantity = (
+  productId,
+  quantity,
+  addOnTop,
+  openSideCart = true
+) => ({
   type: UPDATE_CART_ITEM_QUANTITY,
   payload: {
     productId,
     quantity,
     addOnTop,
+    openSideCart,
   },
 });
 

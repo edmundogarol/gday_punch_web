@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import React from "react";
 import { NavLink } from "react-router-dom";
 import {
   ShoppingCartOutlined,
   VerticalAlignTopOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { loadStripe } from "@stripe/stripe-js";
-import { gdayfetch } from "utils/gdayfetch";
-
 import { Typography, Select, Tooltip, Button, Input, message } from "antd";
+import { loadStripe } from "@stripe/stripe-js";
+
 import {
   SideCartContainer,
   SideCartHeader,
@@ -31,7 +29,7 @@ import {
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
-import { faDoorClosed } from "node_modules/@fortawesome/free-solid-svg-icons/index";
+import { gdayfetch } from "utils/gdayfetch";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -180,6 +178,9 @@ function Ui(props) {
             <ShoppingCartOutlined className="site-form-item-icon" />
           </Title>
           <p>{cartCount}</p>
+          <NavLink to="/cart" onClick={() => toggleSideCart(false)}>
+            Edit Cart
+          </NavLink>
         </SideCartHeader>
         <SideCartItemsList>
           {items.map((item) => cartItem(item))}

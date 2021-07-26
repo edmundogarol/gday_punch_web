@@ -59,6 +59,15 @@ export const SideCartHeader = styled.div`
     margin-left: 0.4em;
     color: #d29e41;
   }
+
+  a {
+    position: absolute;
+    right: 0;
+    margin-right: 1em;
+    color: white;
+    text-decoration: underline;
+    font-size: 1.1em;
+  }
 `;
 
 export const SideCartItemsList = styled.div`
@@ -209,7 +218,6 @@ export const ItemTotalContainer = styled.div`
     margin-left: 2em;
     color: #b77600;
     text-decoration: underline;
-}
   }
 `;
 

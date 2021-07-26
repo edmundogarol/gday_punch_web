@@ -227,7 +227,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         },
         cart: {
           ...state.cart,
-          sideCartOpen: true,
+          sideCartOpen: payload.openSideCart,
         },
       };
     case REMOVE_CART_ITEM:
