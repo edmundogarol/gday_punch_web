@@ -159,6 +159,9 @@ class Manga(models.Model):
 
     @property
     def user_likes(self):
+        if str(get_current_user()) == "AnonymousUser":
+            return False
+
         user = User.objects.get(email=get_current_user())
         liked = Like.objects.all().filter(user=user, manga=self.id).count()
         if liked > 0:
@@ -324,6 +327,7 @@ class Product(models.Model):
         details = {}
         for manga in mangas:
             current_manga = Manga.objects.get(id=manga.id)
+
             details = {
                 "id": current_manga.id,
                 "title": current_manga.title,
@@ -338,7 +342,7 @@ class Product(models.Model):
 
         return details
 
-    @property
+    @ property
     def user_string(self):
         user = User.objects.get(email=self.user)
         return user.author_name
