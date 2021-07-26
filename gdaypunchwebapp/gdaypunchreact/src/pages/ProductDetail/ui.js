@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CommentOutlined } from "@ant-design/icons";
+import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebook,
   faTwitter,
   faPinterest,
 } from "@fortawesome/free-brands-svg-icons";
 import { Typography, Image, Select, Spin } from "antd";
-import {} from "@ant-design/icons";
 import moment from "moment";
 const { Title } = Typography;
 const { Option } = Select;
@@ -26,6 +27,11 @@ import {
   LabelFieldContainer,
   QuantityAddCartContainer,
   SocialContainer,
+  TitleInteractionButtonsContainer,
+  LikeCommentConainer,
+  NumberLabel,
+  InteractionContainer,
+  InteractionButton,
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
@@ -129,7 +135,32 @@ function Ui(props) {
               <Image src={getGdayPunchStaticUrl(product.image)} />
             </ProductDetailLeftContainer>
             <ProductDetailRightContainer>
-              <Title level={4}>{product.title}</Title>
+              <TitleInteractionButtonsContainer>
+                <Title level={4}>{product.title}</Title>
+                <LikeCommentConainer>
+                  <InteractionButton>
+                    <FontAwesomeIcon
+                      icon={faHeart}
+                      style={
+                        product.manga_details.user_likes
+                          ? { color: "red" }
+                          : null
+                      }
+                    />
+                    <NumberLabel>{`${
+                      product.manga_details.likes || 0
+                    }`}</NumberLabel>
+                  </InteractionButton>
+                  <InteractionContainer>
+                    <InteractionButton>
+                      <CommentOutlined className="site-form-item-icon" />
+                    </InteractionButton>
+                    <NumberLabel>{`${
+                      product.manga_details.comments || 0
+                    }`}</NumberLabel>
+                  </InteractionContainer>
+                </LikeCommentConainer>
+              </TitleInteractionButtonsContainer>
               <PriceSkuContainer>
                 {freeProduct ? null : (
                   <h4>

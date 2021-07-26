@@ -193,3 +193,35 @@ export const QuantityAddCartContainer = styled.div`
     }
   }
 `;
+
+export const TitleInteractionButtonsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-right: 1em;
+`;
+
+export const InteractionButton = styled.span`
+  svg {
+    margin-right: 0.3em;
+    color: dimgrey;
+  }
+
+  &:hover {
+    cursor: default;
+  }
+`;
+
+export const LikeCommentConainer = styled.div`
+  display: flex;
+`;
+
+export const NumberLabel = styled.span`
+  padding-left: 0.3em;
+  color: dimgrey;
+`;
+
+export const InteractionContainer = styled.div`
+  svg {
+    margin-left: 6pt;
+  }
+`;
