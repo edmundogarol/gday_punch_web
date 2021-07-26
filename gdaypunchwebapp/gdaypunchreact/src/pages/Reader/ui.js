@@ -14,6 +14,7 @@ import {
   faHeart,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
+import { LikeButton } from "./styles";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -190,13 +191,15 @@ function Ui(props) {
         <div className="pdf-details">
           <h2 style={styles.mangaTitle}>{manga.title}</h2>
           <h4 style={styles.mangaArtist}>{manga.author_name}</h4>
-          <a onClick={() => (!manga.user_likes ? likeManga(manga.id) : null)}>
+          <LikeButton
+            onClick={() => (!manga.user_likes ? likeManga(manga.id) : null)}
+          >
             <FontAwesomeIcon
               icon={faHeart}
               style={manga && manga.user_likes ? { color: "red" } : null}
             />
-            {`(${manga ? manga.likes : 0})`}
-          </a>
+            {`${manga ? manga.likes : 0}`}
+          </LikeButton>
         </div>
       )}
 
@@ -208,7 +211,7 @@ function Ui(props) {
               <div className="comment" key={comment.id}>
                 <div className="author">{comment.user_username}</div>
                 <div className="content">{comment.content}</div>
-                <a
+                <LikeButton
                   onClick={() =>
                     !comment.user_likes
                       ? likeComment(comment.id, user.id)
@@ -220,7 +223,7 @@ function Ui(props) {
                     style={comment.user_likes ? { color: "red" } : null}
                   />
                   {`${comment.likes}`}
-                </a>
+                </LikeButton>
               </div>
             ))}
           </div>
