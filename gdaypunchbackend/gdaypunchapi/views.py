@@ -256,6 +256,13 @@ class PromptSelectedViewSet(viewsets.ModelViewSet):
             if next_prompt is None:
                 next_prompt = Prompt.objects.first()
 
+            if (str(next_prompt.promptType) != "subject"):
+                while str(next_prompt.promptType) != "subject":
+                    next_prompt = next_in_order(next_prompt)
+
+                    if next_prompt is None:
+                        next_prompt = Prompt.objects.first()
+
             next_prompt.is_selected = True
             next_prompt.last_selected = datetime.datetime.now()
             next_prompt.save()

@@ -235,7 +235,7 @@ class PromptType(models.Model):
     PROMPT_TYPES = (
         (SUBJECT, 'subject'),
         (PANEL_STYLE, 'panel_style'),
-        (PANEL_STYLE, 'panel_framing'),
+        (PANEL_FRAMING, 'panel_framing'),
     )
 
     id = models.PositiveSmallIntegerField(
@@ -243,7 +243,7 @@ class PromptType(models.Model):
     name = models.TextField(max_length=20, blank=True)
 
     def __str__(self):
-        return self.get_id_display()
+        return str(self.get_id_display())
 
 
 class Prompt(models.Model):
