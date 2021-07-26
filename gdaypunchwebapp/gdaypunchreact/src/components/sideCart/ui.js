@@ -190,12 +190,9 @@ function Ui(props) {
           <Button>Apply Discount</Button>
         </ItemCoupon>
         <ItemTotalContainer>
-          <a
-            target="_blank"
-            href="https://www.gdaypunch.com/return-and-refund-policy.html"
-          >
+          <NavLink target="_blank" to="/refunds-and-returns">
             <p className="website">Refunds & Returns Policy</p>
-          </a>
+          </NavLink>
           <div>
             <ItemTotal>
               <TotalLabel>Total:</TotalLabel>

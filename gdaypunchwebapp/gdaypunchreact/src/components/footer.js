@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faFacebook,
@@ -8,15 +9,15 @@ import {
   faTiktok,
 } from "@fortawesome/free-brands-svg-icons";
 
-export default function Footer() {
+function Footer() {
   return (
     <div className="footer">
       <div className="contact-us">
         <p>+61 484 575 754</p>
         <p>info@gdaypunch.com</p>
-        <a href="https://www.gdaypunch.com/return-and-refund-policy.html">
+        <NavLink target="_blank" to="/refunds-and-returns">
           <p className="website">Refunds & Returns Policy</p>
-        </a>
+        </NavLink>
       </div>
       <div className="socials">
         <a className="fb-hover" href="https://www.facebook.com/gdaypunch/">
@@ -44,3 +45,5 @@ export default function Footer() {
     </div>
   );
 }
+
+export default withRouter(Footer);
