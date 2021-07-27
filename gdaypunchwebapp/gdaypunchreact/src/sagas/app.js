@@ -15,6 +15,7 @@ import {
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
+  fetchProducts,
   updateContactFormErrors,
   contactFormSubmitted,
 } from "actions/app";
@@ -24,7 +25,6 @@ import {
   fetchingCartItems,
   finishedFetchingCartItems,
 } from "actions/cart";
-import { doGetFeaturedManga } from "actions/manga";
 import {
   selectPendingRegistration,
   selectPendingLogin,
@@ -117,7 +117,7 @@ export function* login() {
       ...data.user,
     };
     yield put(updateUser(user));
-    yield put(doGetFeaturedManga());
+    yield put(fetchProducts());
   } else {
     console.log("Login error", JSON.stringify(response));
     yield put(updateLoginError(response.data));
@@ -133,7 +133,7 @@ export function* logout() {
     const data = response.data;
     yield put(logoutSuccess());
     yield put(doCheckLogin());
-    yield put(doGetFeaturedManga());
+    yield put(fetchProducts());
   } else {
     console.log("Log Out error", JSON.stringify(response));
   }
