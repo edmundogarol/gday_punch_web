@@ -21,3 +21,8 @@ export function arrayIdsMapToObject(list) {
   list.map((element) => set(finalObject, element.id, element));
   return finalObject;
 }
+
+export function scrollToTop() {
+  document.body.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+}

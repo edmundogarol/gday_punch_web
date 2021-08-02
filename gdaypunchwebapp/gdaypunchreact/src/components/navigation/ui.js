@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 
-import { getImageModule } from "utils/utils";
+import { getImageModule, scrollToTop } from "utils/utils";
 import {
   NavigationContainer,
   NavSection,
@@ -167,10 +167,15 @@ function Ui(props) {
           )}
           {!loggedIn && (
             <HeaderALink
-              href="#"
-              onClick={() =>
-                loginView ? handleCloseRegister() : handleOpenRegister()
-              }
+              href="#top"
+              onClick={() => {
+                if (loginView) {
+                  handleCloseRegister();
+                } else {
+                  scrollToTop();
+                  handleOpenRegister();
+                }
+              }}
             >
               {loginView ? "Home" : "Login"}
             </HeaderALink>

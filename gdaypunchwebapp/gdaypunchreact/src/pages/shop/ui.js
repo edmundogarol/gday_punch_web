@@ -41,7 +41,7 @@ function Ui(props) {
             {buyableProducts.map((product) => {
               return product ? (
                 <ProductTile
-                  key={product.id}
+                  key={`${product.id}_${product.quantity || 0}`}
                   product={product}
                   loggedIn={loggedIn}
                   likeManga={likeManga}

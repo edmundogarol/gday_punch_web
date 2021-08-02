@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { CommentOutlined } from "@ant-design/icons";
 
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchStaticUrl, scrollToTop } from "utils/utils";
 
 import {
   ProductTileContainer,
@@ -39,6 +39,7 @@ function Ui(props) {
     image,
     active_price,
     product_type,
+    quantity,
     user_string: creator,
   } = product;
   const {
@@ -57,23 +58,7 @@ function Ui(props) {
 
   const perma_link = product.title.toLowerCase().split(" ").join("-");
   const buyableProduct = active_price && active_price > 0;
-
-  function handleMangaClick(destination, clickType) {
-    const clickTypeMessages = {
-      manga: "Info: Sign up or Log in to read this manga!",
-      like: "Info: Sign up or Log in to like this manga!",
-    };
-
-    if (clickType === "manga") {
-      if (!loggedIn) {
-        props.history.push("/#top");
-        openRegister();
-        suggestRegister(clickTypeMessages[clickType]);
-      } else {
-        props.history.push(destination);
-      }
-    }
-  }
+  const digitalProduct = !productType[product_type];
 
   const handleAddToCart = () => {
     updateCartItemQuantity(id, 1, true);
@@ -81,6 +66,7 @@ function Ui(props) {
 
   const handleLikeClick = () => {
     if (!loggedIn) {
+      scrollToTop();
       props.history.push("/#top");
       openRegister();
       suggestRegister("Info: Sign up or Log in to like this manga!");
@@ -94,6 +80,36 @@ function Ui(props) {
   const handleViewProduct = () => {
     viewProduct(id);
     props.history.push(`/product/${id}/${perma_link}`);
+  };
+
+  const renderActionButton = () => {
+    console.log({ quantity });
+    if (buyableProduct) {
+      if (digitalProduct) {
+        return (
+          <ActionButton
+            disabled={quantity}
+            onClick={() =>
+              !quantity || quantity < 1 ? handleAddToCart() : null
+            }
+          >
+            {quantity ? "ALREADY IN CART" : "Add to Cart"}
+          </ActionButton>
+        );
+      } else {
+        return (
+          <ActionButton onClick={() => handleAddToCart()}>
+            Add to Cart
+          </ActionButton>
+        );
+      }
+    } else {
+      return (
+        <ActionButton onClick={() => handleViewProduct()}>
+          Read Now
+        </ActionButton>
+      );
+    }
   };
 
   return (
@@ -125,13 +141,7 @@ function Ui(props) {
           )}
         </PriceLikeCommentConainer>
       </ProductDetails>
-      <ActionButton
-        onClick={() =>
-          buyableProduct ? handleAddToCart() : handleViewProduct()
-        }
-      >
-        {buyableProduct ? "Add To Cart" : "Read Now"}
-      </ActionButton>
+      {renderActionButton()}
     </ProductTileContainer>
   );
 }

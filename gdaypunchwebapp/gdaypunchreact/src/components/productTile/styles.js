@@ -96,23 +96,26 @@ export const ActionButton = styled.button`
   width: 100%;
   height: 3em;
   background: transparent;
-  border: 2px solid #d4882d;
-  color: #d4882d;
+  border: 2px solid ${(props) => (props.disabled ? "dimgrey" : "#d4882d")};
+  color: ${(props) => (props.disabled ? "dimgrey" : "#d4882d")};
   font-weight: 600;
   text-transform: uppercase;
   background: linear-gradient(
     45deg,
     transparent 89%,
-    #d69e5a 30%,
-    #d69e5a 114%,
+    ${(props) => (props.disabled ? "dimgrey" : "#d69e5a")} 30%,
+    ${(props) => (props.disabled ? "dimgrey" : "#d69e5a")} 114%,
     transparent 5%
   );
   margin-bottom: 1em;
 
-  &:hover {
+  ${(props) =>
+    props.disabled
+      ? ""
+      : `&:hover {
     background: #ffbc6a;
     border: 2px solid #ffbc6a;
     color: white;
     cursor: pointer;
-  }
+  }`}
 `;

@@ -172,26 +172,6 @@ export const QuantityAddCartContainer = styled.div`
       align-items: center;
     }
   }
-
-  button {
-    padding: 9pt;
-    color: #d68a00;
-    border: 3px solid orange;
-    background: linear-gradient(
-      45deg,
-      transparent 89%,
-      #ffa12e 30%,
-      #d69e5a 114%,
-      transparent 5%
-    );
-
-    &:hover {
-      background: #ffbc6a;
-      border: 3px solid #ffbc6a;
-      color: white;
-      cursor: pointer;
-    }
-  }
 `;
 
 export const TitleInteractionButtonsContainer = styled.div`
@@ -224,4 +204,28 @@ export const InteractionContainer = styled.div`
   svg {
     margin-left: 6pt;
   }
+`;
+
+export const ActionButton = styled.button`
+  padding: 9pt;
+  color: ${(props) => (props.disabled ? "dimgrey" : "#d68a00")};
+  border: 3px solid ${(props) => (props.disabled ? "dimgrey" : "orange")};
+  background: linear-gradient(
+    45deg,
+    transparent 89%,
+    ${(props) => (props.disabled ? "dimgrey" : "#ffa12e")} 30%,
+    ${(props) => (props.disabled ? "dimgrey" : "#d69e5a")} 114%,
+    transparent 5%
+  );
+
+  ${(props) =>
+    props.disabled
+      ? ""
+      : `
+    &:hover {
+      background: #ffbc6a;
+      border: 3px solid #ffbc6a;
+      color: white;
+      cursor: pointer;
+    }`}
 `;

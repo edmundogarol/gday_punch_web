@@ -32,9 +32,10 @@ import {
   NumberLabel,
   InteractionContainer,
   InteractionButton,
+  ActionButton,
 } from "./styles";
 
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchStaticUrl, scrollToTop } from "utils/utils";
 
 const productType = {
   1: "Paperback",
@@ -55,6 +56,9 @@ function Ui(props) {
     fetchViewingProduct,
     setViewingProduct,
     updateCartItemQuantity,
+    loggedIn,
+    openRegister,
+    suggestRegister,
   } = props;
   const {
     productList,
@@ -67,7 +71,8 @@ function Ui(props) {
   const { productId } = useParams();
 
   const freeProduct = product && product.active_price === 0;
-  const digitalProduct = product && product.product_type === 2;
+  const digitalProduct = product && product.product_type !== 1;
+  const qtyRange = digitalProduct && quantity ? 1 : 10;
 
   useEffect(() => {
     if (!fetchingViewingProduct && !finishedFetchingViewingProduct) {
@@ -117,7 +122,43 @@ function Ui(props) {
   };
 
   const handleReadManga = () => {
-    props.history.push(`/manga/${product.manga_details.id}`);
+    if (!loggedIn) {
+      scrollToTop();
+      props.history.push("/#top");
+      openRegister();
+      suggestRegister("Info: Sign up or Log in to read this manga!");
+    } else {
+      props.history.push(`/manga/${product.manga_details.id}`);
+    }
+  };
+
+  const renderActionButton = () => {
+    if (!freeProduct) {
+      if (digitalProduct) {
+        return (
+          <ActionButton
+            disabled={product.quantity}
+            onClick={() =>
+              !product.quantity || product.quantity < 1
+                ? handleAddToCart()
+                : null
+            }
+          >
+            {product.quantity ? "ALREADY IN CART" : "Add to Cart"}
+          </ActionButton>
+        );
+      } else {
+        return (
+          <ActionButton onClick={() => handleAddToCart()}>
+            Add to Cart
+          </ActionButton>
+        );
+      }
+    } else {
+      return (
+        <ActionButton onClick={() => handleReadManga()}>Read</ActionButton>
+      );
+    }
   };
 
   return (
@@ -230,7 +271,7 @@ function Ui(props) {
                       value={quantity}
                       onSelect={(val) => setQuantity(val)}
                     >
-                      {[...Array(10)].map((x, i) => (
+                      {[...Array(qtyRange)].map((x, i) => (
                         <Option
                           key={"product-qty-select-" + i + 1}
                           value={i + 1}
@@ -241,13 +282,7 @@ function Ui(props) {
                     </Select>
                   </>
                 )}
-                <button
-                  onClick={() =>
-                    freeProduct ? handleReadManga() : handleAddToCart()
-                  }
-                >
-                  {freeProduct ? "Read" : "Add to Cart"}
-                </button>
+                {renderActionButton()}
               </QuantityAddCartContainer>
             </ProductDetailRightContainer>
           </ProductDetailContainer>

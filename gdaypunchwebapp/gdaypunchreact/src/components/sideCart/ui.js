@@ -119,6 +119,9 @@ function Ui(props) {
 
   const cartItem = (item) => {
     const { id, image, title, product_type, active_price, quantity } = item;
+    const digitalProduct = product_type !== 1;
+    const qtyRange = digitalProduct && quantity ? 1 : 10;
+
     return (
       <ItemContainer key={id}>
         <ItemImage src={getGdayPunchStaticUrl(image)} />
@@ -134,7 +137,7 @@ function Ui(props) {
               onSelect={(value) => updateCartItemQuantity(id, value)}
               defaultValue={1}
             >
-              {[...Array(10)].map((x, i) => (
+              {[...Array(qtyRange)].map((x, i) => (
                 <Option key={i + 1} value={i + 1}>
                   {i + 1}
                 </Option>

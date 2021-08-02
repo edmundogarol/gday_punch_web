@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 export default function FeaturedSection(props) {
   return (
-    <FeaturedSectionContainer idx={props.idx} top={props.top}>
+    <FeaturedSectionContainer id={props.id} idx={props.idx} top={props.top}>
       <FeaturedChildrenContainer width={props.width} height={props.height}>
         {props.children}
       </FeaturedChildrenContainer>

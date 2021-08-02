@@ -49,7 +49,7 @@ function Ui(props) {
             {buyableProducts.map((product) => {
               return product ? (
                 <ProductTile
-                  key={product.id}
+                  key={`${product.id}_${product.quantity || 0}`}
                   product={product}
                   loggedIn={loggedIn}
                   likeManga={likeManga}
@@ -62,7 +62,7 @@ function Ui(props) {
         </FeaturedSection>
       )}
       {!isEmpty(freeProducts) && (
-        <FeaturedSection idx={1}>
+        <FeaturedSection id="manga" idx={1}>
           <SectionTitle>Free Manga</SectionTitle>
           <FeaturedList>
             {freeProducts.map((manga) => {
