@@ -26,6 +26,7 @@ import {
   GSTLabel,
   ItemTotalContainer,
   SideCartCheckoutButton,
+  SideCartFooterContainer,
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
@@ -188,25 +189,27 @@ function Ui(props) {
         <SideCartItemsList>
           {items.map((item) => cartItem(item))}
         </SideCartItemsList>
-        <ItemCoupon>
-          <Input placeholder="Enter Coupon Code" />
-          <Button>Apply Discount</Button>
-        </ItemCoupon>
-        <ItemTotalContainer>
-          <NavLink target="_blank" to="/refunds-and-returns">
-            <p className="website">Refunds & Returns Policy</p>
-          </NavLink>
-          <div>
-            <ItemTotal>
-              <TotalLabel>Total:</TotalLabel>
-              <h3>A${cartTotal.toFixed(2)}</h3>
-            </ItemTotal>
-            <GSTLabel>[Price Includes GST]</GSTLabel>
-          </div>
-        </ItemTotalContainer>
-        <SideCartCheckoutButton onClick={() => handlePurchaseClick()}>
-          Checkout
-        </SideCartCheckoutButton>
+        <SideCartFooterContainer>
+          <ItemCoupon>
+            <Input placeholder="Enter Coupon Code" />
+            <Button>Apply Discount</Button>
+          </ItemCoupon>
+          <ItemTotalContainer>
+            <NavLink target="_blank" to="/refunds-and-returns">
+              <p className="website">Refunds & Returns Policy</p>
+            </NavLink>
+            <div>
+              <ItemTotal>
+                <TotalLabel>Total:</TotalLabel>
+                <h3>A${cartTotal.toFixed(2)}</h3>
+              </ItemTotal>
+              <GSTLabel>[Price Includes GST]</GSTLabel>
+            </div>
+          </ItemTotalContainer>
+          <SideCartCheckoutButton onClick={() => handlePurchaseClick()}>
+            Checkout
+          </SideCartCheckoutButton>
+        </SideCartFooterContainer>
       </SideCartContainer>
     </>
   );

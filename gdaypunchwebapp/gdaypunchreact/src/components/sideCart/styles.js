@@ -71,17 +71,13 @@ export const SideCartHeader = styled.div`
 `;
 
 export const SideCartItemsList = styled.div`
-  height: 50%;
+  height: calc(100% - 20em);
   overflow: scroll;
   margin-top: 1em;
   border-top: 1px solid #c5c5c5;
   width: 95%;
   margin-left: auto;
   margin-right: auto;
-
-  @media ${device.laptop} {
-    height: 60%;
-  }
 `;
 
 export const CloseSideCart = styled.button`
@@ -275,3 +271,5 @@ export const SideCartCheckoutButton = styled(Button)`
     color: white;
   }
 `;
+
+export const SideCartFooterContainer = styled.div``;
