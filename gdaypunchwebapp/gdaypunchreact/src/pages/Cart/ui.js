@@ -208,7 +208,12 @@ function Ui(props) {
                 </div>
               </ItemTotalContainer>
               <CheckoutButtonContainer>
-                <SideCartCheckoutButton onClick={() => handlePurchaseClick()}>
+                <SideCartCheckoutButton
+                  onClick={() => {
+                    props.history.push("/checkout");
+                    // handlePurchaseClick();
+                  }}
+                >
                   Checkout
                 </SideCartCheckoutButton>
               </CheckoutButtonContainer>

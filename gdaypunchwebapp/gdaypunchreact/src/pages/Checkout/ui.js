@@ -1,36 +1,40 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import {
   ShoppingCartOutlined,
-  VerticalAlignTopOutlined,
+  ShopOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
 import { Typography, Select, Tooltip, Button, Input, message } from "antd";
 import { loadStripe } from "@stripe/stripe-js";
 
+import FeaturedSection from "components/featuredSection";
+import { SectionTitle } from "components/sectionTitle";
 import {
-  SideCartContainer,
-  SideCartHeader,
-  CloseSideCart,
-  SideCartBlurField,
+  App,
+  CheckoutContainer,
+  CheckoutHeader,
   SideCartItemsList,
+  OrderSummaryContainer,
   ItemContainer,
   ItemImage,
   ItemTitleMetaContainer,
   ItemMeta,
   ItemSubtotal,
   ItemSubtotalBinContainer,
+  CustomerDetailsContainer,
+  CartFooter,
   ItemCoupon,
   ItemTotal,
   TotalLabel,
   GSTLabel,
   ItemTotalContainer,
   SideCartCheckoutButton,
-  SideCartFooterContainer,
+  EmptyCartMessage,
+  CheckoutButtonContainer,
 } from "./styles";
-
-import { getGdayPunchStaticUrl } from "utils/utils";
 import { gdayfetch } from "utils/gdayfetch";
+import { getGdayPunchStaticUrl } from "utils/utils";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -43,11 +47,8 @@ const stripePromise = loadStripe(
 
 function Ui(props) {
   const {
-    cartState: { sideCartOpen },
     cartCount,
     toggleSideCart,
-    updateCartItemQuantity,
-    removeCartItem,
     cartTotal,
     viewProduct,
     productList: cartItemsObject,
@@ -133,17 +134,7 @@ function Ui(props) {
           <ItemMeta>
             <p>{`A$${active_price}`}</p>
             <p className="spacer">QTY:</p>
-            <Select
-              value={quantity}
-              onSelect={(value) => updateCartItemQuantity(id, value)}
-              defaultValue={1}
-            >
-              {[...Array(qtyRange)].map((x, i) => (
-                <Option key={i + 1} value={i + 1}>
-                  {i + 1}
-                </Option>
-              ))}
-            </Select>
+            {quantity}
           </ItemMeta>
         </ItemTitleMetaContainer>
         <ItemSubtotalBinContainer>
@@ -154,70 +145,56 @@ function Ui(props) {
             ).toFixed(2)}`}</h4>
             <p>Subtotal</p>
           </ItemSubtotal>
-          <Tooltip title="Remove Item from Cart">
-            <Button onClick={() => removeCartItem(id)}>
-              <DeleteOutlined className="site-form-item-icon" />
-            </Button>
-          </Tooltip>
         </ItemSubtotalBinContainer>
       </ItemContainer>
     );
   };
 
   return (
-    <>
-      <SideCartBlurField
-        sideCartOpen={sideCartOpen}
-        onClick={() => toggleSideCart(false)}
-      />
-      <SideCartContainer
-        className={`side-cart ${sideCartOpen ? "side-cart-open" : ""}`}
-      >
-        <SideCartHeader>
-          <CloseSideCart onClick={() => toggleSideCart(false)}>
-            <VerticalAlignTopOutlined className="site-form-item-icon" />
-          </CloseSideCart>
-          <Title level={4}>
-            Cart
-            <ShoppingCartOutlined className="site-form-item-icon" />
-          </Title>
+    <App id="top" className="App">
+      <FeaturedSection top width={"90%"} height={"70vh"}>
+        <CheckoutHeader>
+          <h3>Secure Checkout</h3>
           <p>{cartCount}</p>
-          <NavLink to="/cart" onClick={() => toggleSideCart(false)}>
-            Edit Cart
-          </NavLink>
-        </SideCartHeader>
-        <SideCartItemsList>
-          {items.map((item) => cartItem(item))}
-        </SideCartItemsList>
-        <SideCartFooterContainer>
-          <ItemCoupon>
-            <Input placeholder="Enter Coupon Code" />
-            <Button>Apply Discount</Button>
-          </ItemCoupon>
-          <ItemTotalContainer>
-            <NavLink target="_blank" to="/refunds-and-returns">
-              <p className="website">Refunds & Returns Policy</p>
-            </NavLink>
+        </CheckoutHeader>
+        {items.length < 1 ? (
+          <EmptyCartMessage>
+            <h4>Empty Cart</h4>
             <div>
-              <ItemTotal>
-                <TotalLabel>Total:</TotalLabel>
-                <h3>A${cartTotal.toFixed(2)}</h3>
-              </ItemTotal>
-              <GSTLabel>[Price Includes GST]</GSTLabel>
+              <h2 onClick={() => props.history.push("/shop")}>Shop now!</h2>
+              <ShopOutlined className="site-form-item-icon" />
             </div>
-          </ItemTotalContainer>
-          <SideCartCheckoutButton
-            onClick={() => {
-              props.history.push("/cart");
-              toggleSideCart(false);
-              // handlePurchaseClick();
-            }}
-          >
-            Checkout
-          </SideCartCheckoutButton>
-        </SideCartFooterContainer>
-      </SideCartContainer>
-    </>
+          </EmptyCartMessage>
+        ) : (
+          <CheckoutContainer>
+            <CustomerDetailsContainer>
+              Customer Details
+            </CustomerDetailsContainer>
+            <OrderSummaryContainer>
+              <label>Order Summary</label>
+              <SideCartItemsList>
+                {items.map((item) => cartItem(item))}
+              </SideCartItemsList>
+              <ItemTotalContainer>
+                <NavLink target="_blank" to="/refunds-and-returns">
+                  <p className="website">Refunds & Returns Policy</p>
+                </NavLink>
+                <div>
+                  <ItemTotal>
+                    <TotalLabel>Total:</TotalLabel>
+                    <h3>A${cartTotal.toFixed(2)}</h3>
+                  </ItemTotal>
+                  <GSTLabel>[Price Includes GST]</GSTLabel>
+                </div>
+              </ItemTotalContainer>
+              <CartFooter>
+                <button onClick={() => handlePurchaseClick()}>Pay Now</button>
+              </CartFooter>
+            </OrderSummaryContainer>
+          </CheckoutContainer>
+        )}
+      </FeaturedSection>
+    </App>
   );
 }
 
