@@ -155,7 +155,6 @@ function Ui(props) {
       <FeaturedSection top width={"90%"} height={"70vh"}>
         <CheckoutHeader>
           <h3>Secure Checkout</h3>
-          <p>{cartCount}</p>
         </CheckoutHeader>
         {items.length < 1 ? (
           <EmptyCartMessage>

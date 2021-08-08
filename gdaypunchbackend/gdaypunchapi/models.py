@@ -264,7 +264,7 @@ class StripeCustomer(models.Model):
     customer_id = models.TextField(max_length=50, blank=False)
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=True, null=True)
-    stripe_email = models.TextField(max_length=70, blank=False, unique=True)
+    stripe_email = models.TextField(max_length=70, blank=False)
 
 
 class ProductType(models.Model):
@@ -349,8 +349,7 @@ class Product(models.Model):
 
 
 class Order(models.Model):
-    product = models.ForeignKey(
-        Product,  on_delete=models.PROTECT, blank=False, null=True)
+    products = models.ManyToManyField(Product, blank=True)
     number = models.IntegerField(blank=False)
     email = models.TextField(max_length=100, blank=False)
     first_name = models.TextField(max_length=50, blank=False)
