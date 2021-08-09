@@ -199,6 +199,9 @@ def PaymentsWebhookHandler(request):
         else:
             billing = transaction.charges.data[0].billing_details.address
 
+        line_items = stripe.checkout.Session.list_line_items(session.id)
+
+        print('line_items', line_items)
         print('shipping', shipping)
         print('billing', billing)
 
