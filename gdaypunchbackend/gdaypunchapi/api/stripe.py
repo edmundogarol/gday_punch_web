@@ -17,6 +17,10 @@ from ..serializers import (
     StripePriceSerializer
 )
 
+from .orders import (
+    handle_create_order
+)
+
 if 'DEVENV' in os.environ:
     stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
     endpoint_secret = 'whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal'
@@ -176,32 +180,39 @@ def PaymentsWebhookHandler(request):
         customer_id = session.customer
         customer_email = session.customer_details.email
         payment_email_exists = False
+        subscription_payment = False
         transaction = None
+
+        shipping = session.shipping.address
+        billing = None
 
         if session.payment_intent is None:
             transaction = stripe.Subscription.retrieve(session.subscription)
+            subscription_payment = True
         else:
             transaction = stripe.PaymentIntent.retrieve(session.payment_intent)
 
-        # print("checkout.session.completed: shipping", session.shipping.address)
-        # print("payment_intent: billing",
-        #       payment_intent.charges.data[0].billing_details.address)
+        if subscription_payment:
+            payment_method = stripe.PaymentMethod.retrieve(
+                transaction.default_payment_method)
+            billing = payment_method.billing_details.address
+        else:
+            billing = transaction.charges.data[0].billing_details.address
 
-        print('transaction', transaction)
-        print("customer_id", customer_id)
-        print("customer_email", customer_email)
+        print('shipping', shipping)
+        print('billing', billing)
 
         # Get GP_StripeCustomer with checkout email or customer_id
         stripe_customer = StripeCustomer.objects.filter(
             Q(stripe_email=customer_email) | Q(customer_id=customer_id)
         ).first()
 
-        # Remove GP_StripeCustomer if customer_id is not the same as payment stripe customer_id
+        # User is buying a product with an email that exists as a GP_StripeCustomer
         if stripe_customer and stripe_customer.customer_id != transaction.customer:
             stripe_customer = None
             payment_email_exists = True
             print(
-                'Payment email is associated with a GP_StripeCustomer but not same customer_id')
+                'Unregistered payment email is associated with a GP_StripeCustomer')
 
         # GP_StripeCustomer is making a payment
         if stripe_customer:
@@ -213,6 +224,8 @@ def PaymentsWebhookHandler(request):
                 if stripe_customer.stripe_email != customer_email:
                     stripe_customer.stripe_email = customer_email
                     stripe_customer.save()
+
+                    handle_create_order()
 
             except User.DoesNotExist:
                 print("GP_StripeCustomer not associated with user ")
@@ -226,18 +239,27 @@ def PaymentsWebhookHandler(request):
                 # If payment email is associated with a user
                 user = User.objects.get(email=customer_email)
 
-                stripe_customer = StripeCustomer(
-                    customer_id=customer_id,
-                    stripe_email=customer_email,
-                    user=user
-                )
-                stripe_customer.save()
+                # Payment email associated with existing GP_StripeCustomer,
+                # delete new payment customer
+                if payment_email_exists:
+                    stripe_customer = StripeCustomer.objects.get(
+                        stripe_email=customer_email)
+
+                    stripe.Customer.delete(transaction.customer)
+
+                else:
+                    stripe_customer = StripeCustomer(
+                        customer_id=customer_id,
+                        stripe_email=customer_email,
+                        user=user
+                    )
+                    stripe_customer.save()
 
             except User.DoesNotExist:
                 print("Payment email is not associated with user ")
 
                 # Payment email associated with existing GP_StripeCustomer,
-                # delete and replace new payment customer with existing GP_StripeCustomer
+                # delete new payment customer
                 if payment_email_exists:
                     stripe_customer = StripeCustomer.objects.get(
                         stripe_email=customer_email)
@@ -265,6 +287,7 @@ class StripeProductsViewSet(APIView):
     def get(self, request, format=None):
 
         product_list = []
+        stripe_price = None
 
         for price in stripe.Price.list(limit=100):
             price_details = stripe.Price.retrieve(price.id)
@@ -280,7 +303,7 @@ class StripeProductsViewSet(APIView):
                     {
                         'price': price_details,
                         'product': product_details,
-                        'registered': False if not stripe_price else True
+                        'registered': False if stripe_price is None else True
                     }
                 )
 

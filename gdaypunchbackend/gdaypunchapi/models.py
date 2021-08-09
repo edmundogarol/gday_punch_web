@@ -310,6 +310,9 @@ class Product(models.Model):
 
     @property
     def active_price(self):
+        if self.sale_price > 0:
+            return self.sale_price
+
         product = Product.objects.get(id=self.id)
         stripe_prices = product.stripe_prices.all()
 
@@ -349,6 +352,8 @@ class Product(models.Model):
 
 
 class Order(models.Model):
+    customer = models.ForeignKey(
+        StripeCustomer,  on_delete=models.PROTECT, blank=False, null=True)
     products = models.ManyToManyField(Product, blank=True)
     number = models.IntegerField(blank=False)
     email = models.TextField(max_length=100, blank=False)
