@@ -201,6 +201,9 @@ def PaymentsWebhookHandler(request):
 
         line_items = stripe.checkout.Session.list_line_items(session.id)
 
+        print('session', session)
+        print('transaction', transaction)
+
         print('line_items', line_items)
         print('shipping', shipping)
         print('billing', billing)

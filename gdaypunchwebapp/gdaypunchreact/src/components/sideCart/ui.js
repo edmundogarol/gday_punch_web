@@ -213,7 +213,7 @@ function Ui(props) {
               // handlePurchaseClick();
             }}
           >
-            Checkout
+            Review Cart
           </SideCartCheckoutButton>
         </SideCartFooterContainer>
       </SideCartContainer>

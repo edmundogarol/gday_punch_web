@@ -186,9 +186,9 @@ function Ui(props) {
             </HeaderALink>
           )}
           <HeaderLink
-            to="/cart"
+            to="#"
             $current={location === "/cart"}
-            onClick={() => toggleMiniNav(false)}
+            onClick={() => toggleSideCart(true)}
           >
             {"Cart"}
             <ShoppingCartOutlined className="site-form-item-icon" />

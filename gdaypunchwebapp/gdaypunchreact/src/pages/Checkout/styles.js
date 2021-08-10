@@ -52,7 +52,36 @@ export const CheckoutContainer = styled.div`
   justify-content: space-between;
 `;
 
-export const CustomerDetailsContainer = styled.div``;
+export const CheckoutInnerSectionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  border: 1px solid #bbbbbb;
+  padding: 1em;
+  margin-bottom: 1em;
+
+  label {
+    font-weight: 600;
+    color: #868686;
+  }
+
+  p {
+    margin-bottom: 0.5em;
+    color: dimgray;
+  }
+
+  input {
+    padding: 0.6em;
+    padding-left: 1.3em;
+  }
+`;
+
+export const LeftCheckoutContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: -webkit-fill-available;
+  margin-right: 2em;
+`;
 
 export const OrderSummaryContainer = styled.div`
   display: flex;
@@ -147,34 +176,6 @@ export const CartFooter = styled.div`
   margin-bottom: 1em;
 `;
 
-export const ItemCoupon = styled.div`
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid #b5b5b5;
-  padding-top: 1em;
-  width: 95%;
-  margin-left: auto;
-  margin-right: auto;
-
-  input {
-    width: 50%;
-    margin-left: 1em;
-    height: 3em;
-    border: 1px solid #888888;
-
-    @media ${device.laptop} {
-      width: 25%;
-    }
-  }
-
-  button {
-    height: 3em;
-    margin-right: 1em;
-    background: #d2d2d2;
-    color: #464646;
-  }
-`;
-
 export const ItemTotalContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -184,6 +185,7 @@ export const ItemTotalContainer = styled.div`
     align-items: flex-end;
     justify-content: flex-end;
     margin-top: unset;
+    text-align: start;
   }
 
   a {
@@ -225,30 +227,6 @@ export const ItemTotal = styled.div`
   }
 `;
 
-export const SideCartCheckoutButton = styled(Button)`
-  margin-left: 2em;
-  margin-right: 2em;
-  width: 20em;
-  height: 4em;
-  background: #444444;
-
-  &:hover {
-    background: transparent;
-    border: 2px solid orange;
-
-    span {
-      color: orange;
-    }
-  }
-
-  span {
-    font-size: 1.4em;
-    text-transform: uppercase;
-    letter-spacing: 1pt;
-    color: white;
-  }
-`;
-
 export const EmptyCartMessage = styled.div`
   position: absolute;
   left: 0;
@@ -278,9 +256,4 @@ export const EmptyCartMessage = styled.div`
     margin-left: 1em;
     color: #efa114;
   }
-`;
-
-export const CheckoutButtonContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
 `;

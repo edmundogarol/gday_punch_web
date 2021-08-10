@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import {
-  ShoppingCartOutlined,
-  ShopOutlined,
-  DeleteOutlined,
-} from "@ant-design/icons";
+import { ShopOutlined } from "@ant-design/icons";
 import { Typography, Select, Tooltip, Button, Input, message } from "antd";
 import { loadStripe } from "@stripe/stripe-js";
+import { CardElement } from "@stripe/react-stripe-js";
 
 import FeaturedSection from "components/featuredSection";
-import { SectionTitle } from "components/sectionTitle";
 import {
   App,
   CheckoutContainer,
@@ -22,16 +18,14 @@ import {
   ItemMeta,
   ItemSubtotal,
   ItemSubtotalBinContainer,
-  CustomerDetailsContainer,
+  LeftCheckoutContainer,
+  CheckoutInnerSectionContainer,
   CartFooter,
-  ItemCoupon,
   ItemTotal,
   TotalLabel,
   GSTLabel,
   ItemTotalContainer,
-  SideCartCheckoutButton,
   EmptyCartMessage,
-  CheckoutButtonContainer,
 } from "./styles";
 import { gdayfetch } from "utils/gdayfetch";
 import { getGdayPunchStaticUrl } from "utils/utils";
@@ -45,14 +39,34 @@ const stripePromise = loadStripe(
     : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
 );
 
+const CARD_ELEMENT_OPTIONS = {
+  style: {
+    invalid: {
+      color: "#fa755a",
+      iconColor: "#fa755a",
+    },
+  },
+};
+
 function Ui(props) {
   const {
-    cartCount,
     toggleSideCart,
     cartTotal,
     viewProduct,
     productList: cartItemsObject,
   } = props;
+  const [checkoutForm, updateCheckoutForm] = useState({
+    email: undefined,
+    firstName: undefined,
+    lastName: undefined,
+    addressLine1: undefined,
+    addressLine2: undefined,
+    city: undefined,
+    state: undefined,
+    postcode: undefined,
+    country: undefined,
+    phone: undefined,
+  });
 
   const items = Object.values(cartItemsObject)
     .map((item) => item)
@@ -121,8 +135,6 @@ function Ui(props) {
 
   const cartItem = (item) => {
     const { id, image, title, product_type, active_price, quantity } = item;
-    const digitalProduct = product_type !== 1;
-    const qtyRange = digitalProduct && quantity ? 1 : 10;
 
     return (
       <ItemContainer key={id}>
@@ -166,9 +178,24 @@ function Ui(props) {
           </EmptyCartMessage>
         ) : (
           <CheckoutContainer>
-            <CustomerDetailsContainer>
-              Customer Details
-            </CustomerDetailsContainer>
+            <LeftCheckoutContainer>
+              <CheckoutInnerSectionContainer>
+                <label>Customer Details</label>
+                <br />
+                <p>Email Address</p>
+                <Input
+                  value={checkoutForm.email}
+                  onChange={(e) => updateCheckoutForm(e.target.value)}
+                />
+                <CardElement options={CARD_ELEMENT_OPTIONS} />
+              </CheckoutInnerSectionContainer>
+              <CheckoutInnerSectionContainer>
+                <label>Shipping Method</label>
+              </CheckoutInnerSectionContainer>
+              <CheckoutInnerSectionContainer>
+                <label>Payment</label>
+              </CheckoutInnerSectionContainer>
+            </LeftCheckoutContainer>
             <OrderSummaryContainer>
               <label>Order Summary</label>
               <SideCartItemsList>
