@@ -4,9 +4,10 @@ import { ShopOutlined } from "@ant-design/icons";
 import { Typography, Select, Tooltip, Button, Input, message } from "antd";
 import { loadStripe } from "@stripe/stripe-js";
 import { CardElement } from "@stripe/react-stripe-js";
-
+import axios from "axios";
 import "unfetch/polyfill";
 import "es6-promise/auto";
+
 import { AddressForm } from "@shopify/theme-addresses";
 
 import FeaturedSection from "components/featuredSection";
@@ -61,6 +62,8 @@ function Ui(props) {
     productList: cartItemsObject,
   } = props;
   const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
+  const [fetchingLocale, updateFetchingLocale] = useState(false);
+  const [locale, setLocale] = useState(undefined);
   const [checkoutForm, updateCheckoutForm] = useState({
     email: undefined,
     firstName: undefined,
@@ -71,7 +74,7 @@ function Ui(props) {
     state: undefined,
     postcode: undefined,
     province: undefined,
-    country: "AU",
+    country: locale || "AU",
     company: undefined,
     phone: undefined,
   });
@@ -79,13 +82,27 @@ function Ui(props) {
   useEffect(() => {
     const checkoutFormRoot = document.getElementById("checkout-root");
 
-    if (!countriesDownloaded && checkoutFormRoot) {
-      if (checkoutFormRoot !== null) {
-        AddressForm(document.getElementById("checkout-root"), "AU");
-        updateCountriesDownloaded(true);
-      }
+    if (!countriesDownloaded && checkoutFormRoot && locale) {
+      AddressForm(document.getElementById("checkout-root"), locale);
+      updateCountriesDownloaded(true);
     }
-  }, [countriesDownloaded]);
+  }, [countriesDownloaded, locale]);
+
+  useEffect(() => {
+    if (!locale && !fetchingLocale) {
+      const getCountry = async () => {
+        const res = await axios.get("https://geolocation-db.com/json/");
+        const country = res.data.country_code;
+        setLocale(country);
+        updateFetchingLocale(true);
+        updateCheckoutForm({
+          ...checkoutForm,
+          country,
+        });
+      };
+      getCountry();
+    }
+  }, [locale, fetchingLocale]);
 
   window.onscroll = () => scrollFunction();
 
@@ -181,7 +198,6 @@ function Ui(props) {
     .map((item) => item)
     .filter((item) => item.quantity);
 
-  console.log({ country: checkoutForm.country });
   return (
     <App id="top" className="App">
       <FeaturedSection top width={"90%"} height={"70vh"}>
@@ -306,7 +322,7 @@ function Ui(props) {
                     <select
                       id="AddressCountry"
                       name="address[country]"
-                      defaultValue={"AU"}
+                      data-default={checkoutForm.country}
                       onChange={(e) =>
                         updateCheckoutForm({
                           ...checkoutForm,
