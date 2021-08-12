@@ -74,6 +74,56 @@ export const CheckoutInnerSectionContainer = styled.div`
     padding: 0.6em;
     padding-left: 1.3em;
   }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    align-items: self-end;
+    min-width: 21em;
+
+    label {
+      font-weight: unset;
+      color: #868686;
+    }
+
+    select {
+      appearance: none;
+      background: url(${(props) => props.selectImage}) 97% center no-repeat;
+      background-size: 1.5em;
+    }
+
+    select,
+    input {
+      padding: 0.6em;
+      padding-left: 1.3em;
+      width: 100%;
+      border: 1px solid #bfbfbf;
+      margin-top: 0.5em;
+      margin-bottom: 1em;
+      border-radius: 0.2em;
+    }
+  }
+
+  [data-address="root"] {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  [data-aria-hidden="true"] {
+    display: none;
+  }
+
+  [data-line-count="1"] {
+    flex-basis: 100%;
+  }
+  [data-line-count="2"] {
+    flex-basis: 49%;
+  }
+  [data-line-count="3"] {
+    flex-basis: 32%;
+  }
 `;
 
 export const LeftCheckoutContainer = styled.div`
@@ -84,12 +134,18 @@ export const LeftCheckoutContainer = styled.div`
 `;
 
 export const OrderSummaryContainer = styled.div`
+  width: 44em;
+  padding-right: 2em;
+`;
+
+export const OrderSummaryFixed = styled.div`
   display: flex;
   flex-direction: column;
   align-items: start;
   border: 1px solid #bbbbbb;
   padding: 1em;
   margin-bottom: 1em;
+  position: fixed;
 
   label {
     color: dimgrey;

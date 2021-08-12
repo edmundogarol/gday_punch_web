@@ -5,6 +5,10 @@ import { Typography, Select, Tooltip, Button, Input, message } from "antd";
 import { loadStripe } from "@stripe/stripe-js";
 import { CardElement } from "@stripe/react-stripe-js";
 
+import "unfetch/polyfill";
+import "es6-promise/auto";
+import { AddressForm } from "@shopify/theme-addresses";
+
 import FeaturedSection from "components/featuredSection";
 import {
   App,
@@ -12,6 +16,7 @@ import {
   CheckoutHeader,
   SideCartItemsList,
   OrderSummaryContainer,
+  OrderSummaryFixed,
   ItemContainer,
   ItemImage,
   ItemTitleMetaContainer,
@@ -28,7 +33,7 @@ import {
   EmptyCartMessage,
 } from "./styles";
 import { gdayfetch } from "utils/gdayfetch";
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchStaticUrl, getImageModule } from "utils/utils";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -55,22 +60,32 @@ function Ui(props) {
     viewProduct,
     productList: cartItemsObject,
   } = props;
+  const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
   const [checkoutForm, updateCheckoutForm] = useState({
     email: undefined,
     firstName: undefined,
     lastName: undefined,
-    addressLine1: undefined,
-    addressLine2: undefined,
+    address1: undefined,
+    address2: undefined,
     city: undefined,
     state: undefined,
     postcode: undefined,
-    country: undefined,
+    province: undefined,
+    country: "AU",
+    company: undefined,
     phone: undefined,
   });
 
-  const items = Object.values(cartItemsObject)
-    .map((item) => item)
-    .filter((item) => item.quantity);
+  useEffect(() => {
+    const checkoutFormRoot = document.getElementById("checkout-root");
+
+    if (!countriesDownloaded && checkoutFormRoot) {
+      if (checkoutFormRoot !== null) {
+        AddressForm(document.getElementById("checkout-root"), "AU");
+        updateCountriesDownloaded(true);
+      }
+    }
+  }, [countriesDownloaded]);
 
   window.onscroll = () => scrollFunction();
 
@@ -162,6 +177,11 @@ function Ui(props) {
     );
   };
 
+  const items = Object.values(cartItemsObject)
+    .map((item) => item)
+    .filter((item) => item.quantity);
+
+  console.log({ country: checkoutForm.country });
   return (
     <App id="top" className="App">
       <FeaturedSection top width={"90%"} height={"70vh"}>
@@ -179,14 +199,170 @@ function Ui(props) {
         ) : (
           <CheckoutContainer>
             <LeftCheckoutContainer>
-              <CheckoutInnerSectionContainer>
+              <CheckoutInnerSectionContainer
+                selectImage={getImageModule("down-arrow.png")}
+              >
                 <label>Customer Details</label>
                 <br />
-                <p>Email Address</p>
-                <Input
-                  value={checkoutForm.email}
-                  onChange={(e) => updateCheckoutForm(e.target.value)}
-                />
+                <form id="checkout-root">
+                  <div className="form-field">
+                    <label htmlFor="AddressFirstName">First Name</label>
+                    <input
+                      type="text"
+                      id="AddressFirstName"
+                      name="address[first_name]"
+                      value={checkoutForm.firstName}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          firstName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressLastName">Last Name</label>
+                    <input
+                      type="text"
+                      id="AddressLastName"
+                      name="address[last_name]"
+                      value={checkoutForm.lastName}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          lastName: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressCompany">Company</label>
+                    <input
+                      type="text"
+                      id="AddressCompany"
+                      name="address[company]"
+                      value={checkoutForm.company}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          company: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressAddress1">Address Line 1</label>
+                    <input
+                      type="text"
+                      id="AddressAddress1"
+                      name="address[address1]"
+                      value={checkoutForm.address1}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          address1: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressAddress2">Address Line 2</label>
+                    <input
+                      type="text"
+                      id="AddressAddress2"
+                      name="address[address2]"
+                      value={checkoutForm.address2}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          address2: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressCity">City</label>
+                    <input
+                      type="text"
+                      id="AddressCity"
+                      name="address[city]"
+                      value={checkoutForm.city}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          city: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressCountry">Country</label>
+                    <select
+                      id="AddressCountry"
+                      name="address[country]"
+                      defaultValue={"AU"}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          country: e.target.value,
+                        })
+                      }
+                    ></select>
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressProvince">Province</label>
+                    <select
+                      id="AddressProvince"
+                      name="address[province]"
+                      value={checkoutForm.province}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          province: e.target.value,
+                        })
+                      }
+                    ></select>
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressZip">Post Code</label>
+                    <input
+                      type="text"
+                      id="AddressZip"
+                      name="address[zip]"
+                      value={checkoutForm.postcode}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          postcode: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div className="form-field">
+                    <label htmlFor="AddressPhone">Phone</label>
+                    <input
+                      type="tel"
+                      id="AddressPhone"
+                      name="address[phone]"
+                      value={checkoutForm.phone}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          phone: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                </form>
                 <CardElement options={CARD_ELEMENT_OPTIONS} />
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
@@ -197,25 +373,27 @@ function Ui(props) {
               </CheckoutInnerSectionContainer>
             </LeftCheckoutContainer>
             <OrderSummaryContainer>
-              <label>Order Summary</label>
-              <SideCartItemsList>
-                {items.map((item) => cartItem(item))}
-              </SideCartItemsList>
-              <ItemTotalContainer>
-                <NavLink target="_blank" to="/refunds-and-returns">
-                  <p className="website">Refunds & Returns Policy</p>
-                </NavLink>
-                <div>
-                  <ItemTotal>
-                    <TotalLabel>Total:</TotalLabel>
-                    <h3>A${cartTotal.toFixed(2)}</h3>
-                  </ItemTotal>
-                  <GSTLabel>[Price Includes GST]</GSTLabel>
-                </div>
-              </ItemTotalContainer>
-              <CartFooter>
-                <button onClick={() => handlePurchaseClick()}>Pay Now</button>
-              </CartFooter>
+              <OrderSummaryFixed>
+                <label>Order Summary</label>
+                <SideCartItemsList>
+                  {items.map((item) => cartItem(item))}
+                </SideCartItemsList>
+                <ItemTotalContainer>
+                  <NavLink target="_blank" to="/refunds-and-returns">
+                    <p className="website">Refunds & Returns Policy</p>
+                  </NavLink>
+                  <div>
+                    <ItemTotal>
+                      <TotalLabel>Total:</TotalLabel>
+                      <h3>A${cartTotal.toFixed(2)}</h3>
+                    </ItemTotal>
+                    <GSTLabel>[Price Includes GST]</GSTLabel>
+                  </div>
+                </ItemTotalContainer>
+                <CartFooter>
+                  <button onClick={() => handlePurchaseClick()}>Pay Now</button>
+                </CartFooter>
+              </OrderSummaryFixed>
             </OrderSummaryContainer>
           </CheckoutContainer>
         )}
