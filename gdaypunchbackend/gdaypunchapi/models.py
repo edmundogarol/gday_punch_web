@@ -354,7 +354,7 @@ class Product(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(
         StripeCustomer,  on_delete=models.PROTECT, blank=False, null=True)
-    products = models.ManyToManyField(Product, blank=True)
+    products = models.ManyToManyField(Product, blank=False)
     number = models.IntegerField(blank=False)
     email = models.TextField(max_length=100, blank=False)
     first_name = models.TextField(max_length=50, blank=False)
