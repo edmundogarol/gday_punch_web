@@ -83,7 +83,6 @@ function Ui(props) {
   };
 
   const renderActionButton = () => {
-    console.log({ quantity });
     if (buyableProduct) {
       if (digitalProduct) {
         return (

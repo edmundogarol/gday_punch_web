@@ -79,7 +79,7 @@ export const CheckoutInnerSectionContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: self-end;
-    min-width: 21em;
+    min-width: 18em;
 
     label {
       font-weight: unset;
@@ -104,7 +104,19 @@ export const CheckoutInnerSectionContainer = styled.div`
     }
   }
 
-  [data-address="root"] {
+  .error {
+    input,
+    select {
+      color: #de5757;
+      border: 1px solid #ea7878;
+    }
+
+    label {
+      color: #de5757;
+    }
+  }
+
+  [data-address="checkout-root"] {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -131,6 +143,11 @@ export const LeftCheckoutContainer = styled.div`
   flex-direction: column;
   width: -webkit-fill-available;
   margin-right: 2em;
+`;
+
+export const NameFieldsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 export const OrderSummaryContainer = styled.div`

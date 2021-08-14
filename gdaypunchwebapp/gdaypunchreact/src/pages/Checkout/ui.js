@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
 import { Typography, Select, Tooltip, Button, Input, message } from "antd";
+import classNames from "classnames";
 import { loadStripe } from "@stripe/stripe-js";
 import { CardElement } from "@stripe/react-stripe-js";
 import axios from "axios";
@@ -24,6 +25,7 @@ import {
   ItemMeta,
   ItemSubtotal,
   ItemSubtotalBinContainer,
+  NameFieldsContainer,
   LeftCheckoutContainer,
   CheckoutInnerSectionContainer,
   CartFooter,
@@ -64,19 +66,20 @@ function Ui(props) {
   const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
   const [fetchingLocale, updateFetchingLocale] = useState(false);
   const [locale, setLocale] = useState(undefined);
+  const [submitting, toggleSubmitting] = useState(false);
   const [checkoutForm, updateCheckoutForm] = useState({
-    email: undefined,
-    firstName: undefined,
-    lastName: undefined,
-    address1: undefined,
-    address2: undefined,
-    city: undefined,
-    state: undefined,
-    postcode: undefined,
-    province: undefined,
+    email: "",
+    firstName: "",
+    lastName: "",
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    postcode: "",
+    province: "",
     country: locale || "AU",
-    company: undefined,
-    phone: undefined,
+    company: "",
+    phone: "",
   });
 
   useEffect(() => {
@@ -91,9 +94,11 @@ function Ui(props) {
   useEffect(() => {
     if (!locale && !fetchingLocale) {
       const getCountry = async () => {
-        const res = await axios.get("https://geolocation-db.com/json/");
-        const country = res.data.country_code;
-        setLocale(country);
+        const res = await axios
+          .get("https://geolocation-db.com/json/")
+          .catch((e) => console.error(e));
+        const country = res ? res.data.country_code : "AU";
+        setLocale("US");
         updateFetchingLocale(true);
         updateCheckoutForm({
           ...checkoutForm,
@@ -194,6 +199,12 @@ function Ui(props) {
     );
   };
 
+  const getFormClass = (field) => {
+    return classNames("form-field", {
+      error: submitting && !checkoutForm[field].length,
+    });
+  };
+
   const items = Object.values(cartItemsObject)
     .map((item) => item)
     .filter((item) => item.quantity);
@@ -220,8 +231,27 @@ function Ui(props) {
               >
                 <label>Customer Details</label>
                 <br />
-                <form id="checkout-root">
-                  <div className="form-field">
+                <form id="checkout-root" data-address="checkout-root">
+                  <div className={getFormClass("email")} data-line-count="1">
+                    <label>Email</label>
+                    <input
+                      type="text"
+                      id="AddressEmail"
+                      name="address[email]"
+                      value={checkoutForm.email}
+                      onChange={(e) =>
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          email: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+
+                  <div
+                    className={getFormClass("firstName")}
+                    data-line-count="2"
+                  >
                     <label htmlFor="AddressFirstName">First Name</label>
                     <input
                       type="text"
@@ -237,7 +267,7 @@ function Ui(props) {
                     />
                   </div>
 
-                  <div className="form-field">
+                  <div className={getFormClass("lastName")} data-line-count="2">
                     <label htmlFor="AddressLastName">Last Name</label>
                     <input
                       type="text"
@@ -253,7 +283,7 @@ function Ui(props) {
                     />
                   </div>
 
-                  <div className="form-field">
+                  <div className="form-field" data-line-count="1">
                     <label htmlFor="AddressCompany">Company</label>
                     <input
                       type="text"
@@ -269,7 +299,7 @@ function Ui(props) {
                     />
                   </div>
 
-                  <div className="form-field">
+                  <div className={getFormClass("address1")} data-line-count="1">
                     <label htmlFor="AddressAddress1">Address Line 1</label>
                     <input
                       type="text"
@@ -285,7 +315,7 @@ function Ui(props) {
                     />
                   </div>
 
-                  <div className="form-field">
+                  <div className="form-field" data-line-count="1">
                     <label htmlFor="AddressAddress2">Address Line 2</label>
                     <input
                       type="text"
@@ -301,7 +331,7 @@ function Ui(props) {
                     />
                   </div>
 
-                  <div className="form-field">
+                  <div className={getFormClass("city")} data-line-count="1">
                     <label htmlFor="AddressCity">City</label>
                     <input
                       type="text"
@@ -317,7 +347,7 @@ function Ui(props) {
                     />
                   </div>
 
-                  <div className="form-field">
+                  <div className={getFormClass("country")} data-line-count="3">
                     <label htmlFor="AddressCountry">Country</label>
                     <select
                       id="AddressCountry"
@@ -329,15 +359,28 @@ function Ui(props) {
                           country: e.target.value,
                         })
                       }
-                    ></select>
+                    >
+                      <option value="AU">Australia</option>
+                      <option value="US">United States</option>
+                      <option value="NZ">New Zealand</option>
+                      <option value="JP">Japan</option>
+                      <option value="GB">United Kingdom</option>
+                      <option disabled>_ _ _ _ _ _ _ _ _</option>
+                    </select>
                   </div>
 
-                  <div className="form-field">
+                  <div className={getFormClass("province")} data-line-count="3">
                     <label htmlFor="AddressProvince">Province</label>
                     <select
                       id="AddressProvince"
                       name="address[province]"
-                      value={checkoutForm.province}
+                      data-default={checkoutForm.province}
+                      onMouseUp={(e) => {
+                        updateCheckoutForm({
+                          ...checkoutForm,
+                          province: e.target.value,
+                        });
+                      }}
                       onChange={(e) =>
                         updateCheckoutForm({
                           ...checkoutForm,
@@ -347,7 +390,7 @@ function Ui(props) {
                     ></select>
                   </div>
 
-                  <div className="form-field">
+                  <div className={getFormClass("postcode")} data-line-count="3">
                     <label htmlFor="AddressZip">Post Code</label>
                     <input
                       type="text"
@@ -363,7 +406,7 @@ function Ui(props) {
                     />
                   </div>
 
-                  <div className="form-field">
+                  <div className={getFormClass("phone")} data-line-count="1">
                     <label htmlFor="AddressPhone">Phone</label>
                     <input
                       type="tel"
@@ -379,13 +422,13 @@ function Ui(props) {
                     />
                   </div>
                 </form>
-                <CardElement options={CARD_ELEMENT_OPTIONS} />
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
                 <label>Shipping Method</label>
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
                 <label>Payment</label>
+                <CardElement options={CARD_ELEMENT_OPTIONS} />
               </CheckoutInnerSectionContainer>
             </LeftCheckoutContainer>
             <OrderSummaryContainer>
@@ -407,7 +450,14 @@ function Ui(props) {
                   </div>
                 </ItemTotalContainer>
                 <CartFooter>
-                  <button onClick={() => handlePurchaseClick()}>Pay Now</button>
+                  <button
+                    onClick={() => {
+                      toggleSubmitting(true);
+                      console.log({ checkoutForm });
+                    }}
+                  >
+                    Pay Now
+                  </button>
                 </CartFooter>
               </OrderSummaryFixed>
             </OrderSummaryContainer>
