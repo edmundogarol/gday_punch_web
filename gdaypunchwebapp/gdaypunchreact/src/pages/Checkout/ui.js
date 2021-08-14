@@ -36,7 +36,11 @@ import {
   EmptyCartMessage,
 } from "./styles";
 import { gdayfetch } from "utils/gdayfetch";
-import { getGdayPunchStaticUrl, getImageModule } from "utils/utils";
+import {
+  getGdayPunchStaticUrl,
+  getImageModule,
+  phoneValidator,
+} from "utils/utils";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -200,8 +204,25 @@ function Ui(props) {
   };
 
   const getFormClass = (field) => {
+    const empty = !checkoutForm[field].length;
+    let validator = undefined;
+
+    if (field === "phone") {
+      validator = phoneValidator;
+    }
+
+    const invalid = !empty && validator && !validator(checkoutForm[field]);
+
     return classNames("form-field", {
-      error: submitting && !checkoutForm[field].length,
+      error: (submitting && empty) || invalid,
+      "invalid-format": invalid,
+    });
+  };
+
+  const handleUpdateCheckoutForm = (field, e) => {
+    updateCheckoutForm({
+      ...checkoutForm,
+      [field]: e.target.value,
     });
   };
 
@@ -239,12 +260,7 @@ function Ui(props) {
                       id="AddressEmail"
                       name="address[email]"
                       value={checkoutForm.email}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          email: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("email", e)}
                     />
                   </div>
 
@@ -258,12 +274,7 @@ function Ui(props) {
                       id="AddressFirstName"
                       name="address[first_name]"
                       value={checkoutForm.firstName}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          firstName: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("firstName", e)}
                     />
                   </div>
 
@@ -274,12 +285,7 @@ function Ui(props) {
                       id="AddressLastName"
                       name="address[last_name]"
                       value={checkoutForm.lastName}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          lastName: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("lastName", e)}
                     />
                   </div>
 
@@ -290,12 +296,7 @@ function Ui(props) {
                       id="AddressCompany"
                       name="address[company]"
                       value={checkoutForm.company}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          company: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("company", e)}
                     />
                   </div>
 
@@ -306,12 +307,7 @@ function Ui(props) {
                       id="AddressAddress1"
                       name="address[address1]"
                       value={checkoutForm.address1}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          address1: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("address1", e)}
                     />
                   </div>
 
@@ -322,12 +318,7 @@ function Ui(props) {
                       id="AddressAddress2"
                       name="address[address2]"
                       value={checkoutForm.address2}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          address2: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("address2", e)}
                     />
                   </div>
 
@@ -338,12 +329,7 @@ function Ui(props) {
                       id="AddressCity"
                       name="address[city]"
                       value={checkoutForm.city}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          city: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("city", e)}
                     />
                   </div>
 
@@ -353,12 +339,7 @@ function Ui(props) {
                       id="AddressCountry"
                       name="address[country]"
                       data-default={checkoutForm.country}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          country: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("country", e)}
                     >
                       <option value="AU">Australia</option>
                       <option value="US">United States</option>
@@ -375,18 +356,8 @@ function Ui(props) {
                       id="AddressProvince"
                       name="address[province]"
                       data-default={checkoutForm.province}
-                      onMouseUp={(e) => {
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          province: e.target.value,
-                        });
-                      }}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          province: e.target.value,
-                        })
-                      }
+                      onMouseUp={(e) => handleUpdateCheckoutForm("province", e)}
+                      onChange={(e) => handleUpdateCheckoutForm("province", e)}
                     ></select>
                   </div>
 
@@ -397,12 +368,7 @@ function Ui(props) {
                       id="AddressZip"
                       name="address[zip]"
                       value={checkoutForm.postcode}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          postcode: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("postcode", e)}
                     />
                   </div>
 
@@ -413,13 +379,11 @@ function Ui(props) {
                       id="AddressPhone"
                       name="address[phone]"
                       value={checkoutForm.phone}
-                      onChange={(e) =>
-                        updateCheckoutForm({
-                          ...checkoutForm,
-                          phone: e.target.value,
-                        })
-                      }
+                      onChange={(e) => handleUpdateCheckoutForm("phone", e)}
                     />
+                    <label className="invalid-message">
+                      Please enter a valid phone number
+                    </label>
                   </div>
                 </form>
               </CheckoutInnerSectionContainer>

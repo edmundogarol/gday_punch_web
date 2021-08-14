@@ -104,6 +104,10 @@ export const CheckoutInnerSectionContainer = styled.div`
     }
   }
 
+  .invalid-message {
+    display: none;
+  }
+
   .error {
     input,
     select {
@@ -112,6 +116,13 @@ export const CheckoutInnerSectionContainer = styled.div`
     }
 
     label {
+      color: #de5757;
+    }
+  }
+
+  .invalid-format {
+    .invalid-message {
+      display: initial;
       color: #de5757;
     }
   }

@@ -26,3 +26,11 @@ export function scrollToTop() {
   document.body.scrollTop = 0;
   document.documentElement.scrollTop = 0;
 }
+
+export function phoneValidator(inputtxt) {
+  var phoneno = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/;
+  if (inputtxt.match(phoneno)) {
+    return true;
+  }
+  return false;
+}
