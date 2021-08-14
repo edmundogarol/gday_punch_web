@@ -85,6 +85,7 @@ function Ui(props) {
     company: "",
     phone: "",
   });
+  const [customerDetailsOpen, toggleCustomerDetails] = useState(true);
 
   useEffect(() => {
     const checkoutFormRoot = document.getElementById("checkout-root");
@@ -203,7 +204,7 @@ function Ui(props) {
     );
   };
 
-  const getFormClass = (field) => {
+  const getFormFieldClass = (field) => {
     const empty = !checkoutForm[field].length;
     let validator = undefined;
 
@@ -220,10 +221,41 @@ function Ui(props) {
   };
 
   const handleUpdateCheckoutForm = (field, e) => {
+    let value = e.target.value;
+
+    if (field === "province") {
+      const select = e.target;
+      value = select.selectedOptions[0] ? select.selectedOptions[0].text : "-";
+    }
+
     updateCheckoutForm({
       ...checkoutForm,
-      [field]: e.target.value,
+      [field]: value,
     });
+  };
+
+  const handleValidateCustomerDetails = () => {
+    let hasError = false;
+
+    Object.keys(checkoutForm).map((key) => {
+      const empty = !checkoutForm[key].length;
+      let validator = undefined;
+
+      if (key === "phone") {
+        validator = phoneValidator;
+      }
+      const invalid = !empty && validator && !validator(checkoutForm[key]);
+      const requiredField = key !== "company" && key !== "address2";
+
+      if (!hasError && requiredField) {
+        if (key === "state" && checkoutForm.province.length) {
+        } else {
+          hasError = empty || invalid;
+        }
+      }
+    });
+
+    if (!hasError) toggleCustomerDetails(false);
   };
 
   const items = Object.values(cartItemsObject)
@@ -250,142 +282,215 @@ function Ui(props) {
               <CheckoutInnerSectionContainer
                 selectImage={getImageModule("down-arrow.png")}
               >
-                <label>Customer Details</label>
+                <label>
+                  Customer Details{" "}
+                  {!customerDetailsOpen && (
+                    <span onClick={() => toggleCustomerDetails(true)}>
+                      Edit
+                    </span>
+                  )}
+                </label>
                 <br />
-                <form id="checkout-root" data-address="checkout-root">
-                  <div className={getFormClass("email")} data-line-count="1">
-                    <label>Email</label>
-                    <input
-                      type="text"
-                      id="AddressEmail"
-                      name="address[email]"
-                      value={checkoutForm.email}
-                      onChange={(e) => handleUpdateCheckoutForm("email", e)}
-                    />
-                  </div>
+                {customerDetailsOpen ? (
+                  <>
+                    <form id="checkout-root" data-address="checkout-root">
+                      <div
+                        className={getFormFieldClass("email")}
+                        data-line-count="1"
+                      >
+                        <label>Email</label>
+                        <input
+                          type="text"
+                          id="AddressEmail"
+                          name="address[email]"
+                          value={checkoutForm.email}
+                          onChange={(e) => handleUpdateCheckoutForm("email", e)}
+                        />
+                      </div>
 
-                  <div
-                    className={getFormClass("firstName")}
-                    data-line-count="2"
-                  >
-                    <label htmlFor="AddressFirstName">First Name</label>
-                    <input
-                      type="text"
-                      id="AddressFirstName"
-                      name="address[first_name]"
-                      value={checkoutForm.firstName}
-                      onChange={(e) => handleUpdateCheckoutForm("firstName", e)}
-                    />
-                  </div>
+                      <div
+                        className={getFormFieldClass("firstName")}
+                        data-line-count="2"
+                      >
+                        <label htmlFor="AddressFirstName">First Name</label>
+                        <input
+                          type="text"
+                          id="AddressFirstName"
+                          name="address[first_name]"
+                          value={checkoutForm.firstName}
+                          onChange={(e) =>
+                            handleUpdateCheckoutForm("firstName", e)
+                          }
+                        />
+                      </div>
 
-                  <div className={getFormClass("lastName")} data-line-count="2">
-                    <label htmlFor="AddressLastName">Last Name</label>
-                    <input
-                      type="text"
-                      id="AddressLastName"
-                      name="address[last_name]"
-                      value={checkoutForm.lastName}
-                      onChange={(e) => handleUpdateCheckoutForm("lastName", e)}
-                    />
-                  </div>
+                      <div
+                        className={getFormFieldClass("lastName")}
+                        data-line-count="2"
+                      >
+                        <label htmlFor="AddressLastName">Last Name</label>
+                        <input
+                          type="text"
+                          id="AddressLastName"
+                          name="address[last_name]"
+                          value={checkoutForm.lastName}
+                          onChange={(e) =>
+                            handleUpdateCheckoutForm("lastName", e)
+                          }
+                        />
+                      </div>
 
-                  <div className="form-field" data-line-count="1">
-                    <label htmlFor="AddressCompany">Company</label>
-                    <input
-                      type="text"
-                      id="AddressCompany"
-                      name="address[company]"
-                      value={checkoutForm.company}
-                      onChange={(e) => handleUpdateCheckoutForm("company", e)}
-                    />
-                  </div>
+                      <div className="form-field" data-line-count="1">
+                        <label htmlFor="AddressCompany">Company</label>
+                        <input
+                          type="text"
+                          id="AddressCompany"
+                          name="address[company]"
+                          value={checkoutForm.company}
+                          onChange={(e) =>
+                            handleUpdateCheckoutForm("company", e)
+                          }
+                        />
+                      </div>
 
-                  <div className={getFormClass("address1")} data-line-count="1">
-                    <label htmlFor="AddressAddress1">Address Line 1</label>
-                    <input
-                      type="text"
-                      id="AddressAddress1"
-                      name="address[address1]"
-                      value={checkoutForm.address1}
-                      onChange={(e) => handleUpdateCheckoutForm("address1", e)}
-                    />
-                  </div>
+                      <div
+                        className={getFormFieldClass("address1")}
+                        data-line-count="1"
+                      >
+                        <label htmlFor="AddressAddress1">Address Line 1</label>
+                        <input
+                          type="text"
+                          id="AddressAddress1"
+                          name="address[address1]"
+                          value={checkoutForm.address1}
+                          onChange={(e) =>
+                            handleUpdateCheckoutForm("address1", e)
+                          }
+                        />
+                      </div>
 
-                  <div className="form-field" data-line-count="1">
-                    <label htmlFor="AddressAddress2">Address Line 2</label>
-                    <input
-                      type="text"
-                      id="AddressAddress2"
-                      name="address[address2]"
-                      value={checkoutForm.address2}
-                      onChange={(e) => handleUpdateCheckoutForm("address2", e)}
-                    />
-                  </div>
+                      <div className="form-field" data-line-count="1">
+                        <label htmlFor="AddressAddress2">Address Line 2</label>
+                        <input
+                          type="text"
+                          id="AddressAddress2"
+                          name="address[address2]"
+                          value={checkoutForm.address2}
+                          onChange={(e) =>
+                            handleUpdateCheckoutForm("address2", e)
+                          }
+                        />
+                      </div>
 
-                  <div className={getFormClass("city")} data-line-count="1">
-                    <label htmlFor="AddressCity">City</label>
-                    <input
-                      type="text"
-                      id="AddressCity"
-                      name="address[city]"
-                      value={checkoutForm.city}
-                      onChange={(e) => handleUpdateCheckoutForm("city", e)}
-                    />
-                  </div>
+                      <div
+                        className={getFormFieldClass("city")}
+                        data-line-count="1"
+                      >
+                        <label htmlFor="AddressCity">City</label>
+                        <input
+                          type="text"
+                          id="AddressCity"
+                          name="address[city]"
+                          value={checkoutForm.city}
+                          onChange={(e) => handleUpdateCheckoutForm("city", e)}
+                        />
+                      </div>
 
-                  <div className={getFormClass("country")} data-line-count="3">
-                    <label htmlFor="AddressCountry">Country</label>
-                    <select
-                      id="AddressCountry"
-                      name="address[country]"
-                      data-default={checkoutForm.country}
-                      onChange={(e) => handleUpdateCheckoutForm("country", e)}
+                      <div
+                        className={getFormFieldClass("country")}
+                        data-line-count="3"
+                      >
+                        <label htmlFor="AddressCountry">Country</label>
+                        <select
+                          id="AddressCountry"
+                          name="address[country]"
+                          data-default={checkoutForm.country}
+                          onChange={(e) =>
+                            handleUpdateCheckoutForm("country", e)
+                          }
+                        >
+                          <option value="AU">Australia</option>
+                          <option value="US">United States</option>
+                          <option value="NZ">New Zealand</option>
+                          <option value="JP">Japan</option>
+                          <option value="GB">United Kingdom</option>
+                          <option disabled>_ _ _ _ _ _ _ _ _</option>
+                        </select>
+                      </div>
+
+                      <div
+                        className={getFormFieldClass("province")}
+                        data-line-count="3"
+                      >
+                        <label htmlFor="AddressProvince">Province</label>
+                        <select
+                          id="AddressProvince"
+                          name="address[province]"
+                          data-default={checkoutForm.province}
+                          onMouseUp={(e) =>
+                            handleUpdateCheckoutForm("province", e)
+                          }
+                          onChange={(e) => {
+                            handleUpdateCheckoutForm("province", e);
+                          }}
+                        ></select>
+                      </div>
+
+                      <div
+                        className={getFormFieldClass("postcode")}
+                        data-line-count="3"
+                      >
+                        <label htmlFor="AddressZip">Post Code</label>
+                        <input
+                          type="text"
+                          id="AddressZip"
+                          name="address[zip]"
+                          value={checkoutForm.postcode}
+                          onChange={(e) =>
+                            handleUpdateCheckoutForm("postcode", e)
+                          }
+                        />
+                      </div>
+
+                      <div
+                        className={getFormFieldClass("phone")}
+                        data-line-count="1"
+                      >
+                        <label htmlFor="AddressPhone">Phone</label>
+                        <input
+                          type="tel"
+                          id="AddressPhone"
+                          name="address[phone]"
+                          value={checkoutForm.phone}
+                          onChange={(e) => handleUpdateCheckoutForm("phone", e)}
+                        />
+                        <label className="invalid-message">
+                          Please enter a valid phone number
+                        </label>
+                      </div>
+                    </form>
+                    <button
+                      onClick={() => {
+                        toggleSubmitting(true);
+                        handleValidateCustomerDetails();
+                      }}
                     >
-                      <option value="AU">Australia</option>
-                      <option value="US">United States</option>
-                      <option value="NZ">New Zealand</option>
-                      <option value="JP">Japan</option>
-                      <option value="GB">United Kingdom</option>
-                      <option disabled>_ _ _ _ _ _ _ _ _</option>
-                    </select>
-                  </div>
-
-                  <div className={getFormClass("province")} data-line-count="3">
-                    <label htmlFor="AddressProvince">Province</label>
-                    <select
-                      id="AddressProvince"
-                      name="address[province]"
-                      data-default={checkoutForm.province}
-                      onMouseUp={(e) => handleUpdateCheckoutForm("province", e)}
-                      onChange={(e) => handleUpdateCheckoutForm("province", e)}
-                    ></select>
-                  </div>
-
-                  <div className={getFormClass("postcode")} data-line-count="3">
-                    <label htmlFor="AddressZip">Post Code</label>
-                    <input
-                      type="text"
-                      id="AddressZip"
-                      name="address[zip]"
-                      value={checkoutForm.postcode}
-                      onChange={(e) => handleUpdateCheckoutForm("postcode", e)}
-                    />
-                  </div>
-
-                  <div className={getFormClass("phone")} data-line-count="1">
-                    <label htmlFor="AddressPhone">Phone</label>
-                    <input
-                      type="tel"
-                      id="AddressPhone"
-                      name="address[phone]"
-                      value={checkoutForm.phone}
-                      onChange={(e) => handleUpdateCheckoutForm("phone", e)}
-                    />
-                    <label className="invalid-message">
-                      Please enter a valid phone number
-                    </label>
-                  </div>
-                </form>
+                      Next
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <label>Contact</label>
+                    <div>{`${checkoutForm.email}`}</div>
+                    <div>{`${checkoutForm.phone}`}</div>
+                    <label>Ship to</label>
+                    <div>{`${checkoutForm.address1} ${checkoutForm.address2}, ${
+                      checkoutForm.city
+                    } ${checkoutForm.state || checkoutForm.province} ${
+                      checkoutForm.postcode
+                    }, ${checkoutForm.country}`}</div>
+                  </>
+                )}
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
                 <label>Shipping Method</label>

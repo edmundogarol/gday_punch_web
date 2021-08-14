@@ -63,6 +63,20 @@ export const CheckoutInnerSectionContainer = styled.div`
   label {
     font-weight: 600;
     color: #868686;
+    width: 100%;
+    text-align: start;
+    justify-content: space-between;
+    display: flex;
+
+    span {
+      text-decoration: underline;
+      color: #7272ff;
+      font-weight: 100;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
   }
 
   p {
