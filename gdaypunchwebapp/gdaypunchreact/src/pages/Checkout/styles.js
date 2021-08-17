@@ -93,7 +93,7 @@ export const CheckoutInnerSectionContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: self-end;
-    min-width: 18em;
+    min-width: 17em;
 
     label {
       font-weight: unset;
@@ -122,7 +122,7 @@ export const CheckoutInnerSectionContainer = styled.div`
     display: none;
   }
 
-  .error {
+  .empty {
     input,
     select {
       color: #de5757;
@@ -138,6 +138,15 @@ export const CheckoutInnerSectionContainer = styled.div`
     .invalid-message {
       display: initial;
       color: #de5757;
+
+      input {
+        color: #de5757;
+        border: 1px solid #ea7878;
+      }
+
+      label {
+        color: #de5757;
+      }
     }
   }
 

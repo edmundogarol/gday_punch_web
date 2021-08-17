@@ -72,20 +72,24 @@ function Ui(props) {
   const [locale, setLocale] = useState(undefined);
   const [submitting, toggleSubmitting] = useState(false);
   const [checkoutForm, updateCheckoutForm] = useState({
-    email: "",
-    firstName: "",
-    lastName: "",
-    address1: "",
-    address2: "",
-    city: "",
-    state: "",
-    postcode: "",
-    province: "",
-    country: locale || "AU",
-    company: "",
-    phone: "",
+    email: { value: "", error: undefined },
+    firstName: { value: "", error: undefined },
+    lastName: { value: "", error: undefined },
+    address1: { value: "", error: undefined },
+    address2: { value: "", error: undefined },
+    city: { value: "", error: undefined },
+    state: { value: "", error: undefined },
+    postcode: { value: "", error: undefined },
+    province: { value: "", error: undefined },
+    country: { value: locale || "AU", error: undefined },
+    company: { value: "", error: undefined },
+    phone: { value: "", error: undefined },
   });
   const [customerDetailsOpen, toggleCustomerDetails] = useState(true);
+
+  const formErrors = Object.values(checkoutForm)
+    .map((field) => field.error)
+    .filter((error) => error !== undefined);
 
   useEffect(() => {
     const checkoutFormRoot = document.getElementById("checkout-root");
@@ -107,7 +111,7 @@ function Ui(props) {
         updateFetchingLocale(true);
         updateCheckoutForm({
           ...checkoutForm,
-          country,
+          country: { ...checkoutForm.country, value: country },
         });
       };
       getCountry();
@@ -204,23 +208,8 @@ function Ui(props) {
     );
   };
 
-  const getFormFieldClass = (field) => {
-    const empty = !checkoutForm[field].length;
-    let validator = undefined;
-
-    if (field === "phone") {
-      validator = phoneValidator;
-    }
-
-    const invalid = !empty && validator && !validator(checkoutForm[field]);
-
-    return classNames("form-field", {
-      error: (submitting && empty) || invalid,
-      "invalid-format": invalid,
-    });
-  };
-
   const handleUpdateCheckoutForm = (field, e) => {
+    // Value
     let value = e.target.value;
 
     if (field === "province") {
@@ -228,34 +217,58 @@ function Ui(props) {
       value = select.selectedOptions[0] ? select.selectedOptions[0].text : "-";
     }
 
+    // Error
+    const empty = value.length;
+    let validator = undefined;
+
+    if (field === "phone") {
+      validator = phoneValidator;
+    }
+
+    const invalid = !empty && validator && !validator(value);
+
+    let currentError = submitting && empty ? "empty" : undefined;
+    currentError = invalid ? "invalid-format" : currentError;
+
     updateCheckoutForm({
       ...checkoutForm,
-      [field]: value,
+      [field]: {
+        value,
+        error: currentError,
+      },
     });
   };
 
-  const handleValidateCustomerDetails = () => {
-    let hasError = false;
+  const validateCheckoutForm = (validateOnly) => {
+    let updatingForm = checkoutForm;
 
-    Object.keys(checkoutForm).map((key) => {
-      const empty = !checkoutForm[key].length;
+    Object.keys(updatingForm).map((key) => {
+      const empty = !updatingForm[key].value.length;
       let validator = undefined;
 
       if (key === "phone") {
         validator = phoneValidator;
       }
-      const invalid = !empty && validator && !validator(checkoutForm[key]);
-      const requiredField = key !== "company" && key !== "address2";
+      const invalid =
+        !empty && validator && !validator(updatingForm[key].value);
 
-      if (!hasError && requiredField) {
-        if (key === "state" && checkoutForm.province.length) {
-        } else {
-          hasError = empty || invalid;
-        }
+      if (key === "state" && updatingForm.province.value.length) {
+      } else {
+        let currentError =
+          (validateOnly || submitting) && empty ? "empty" : undefined;
+        currentError = invalid ? "invalid-format" : currentError;
+
+        updatingForm = {
+          ...updatingForm,
+          [key]: {
+            ...updatingForm[key],
+            error: currentError,
+          },
+        };
       }
     });
 
-    if (!hasError) toggleCustomerDetails(false);
+    updateCheckoutForm(updatingForm);
   };
 
   const items = Object.values(cartItemsObject)
@@ -295,7 +308,10 @@ function Ui(props) {
                   <>
                     <form id="checkout-root" data-address="checkout-root">
                       <div
-                        className={getFormFieldClass("email")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.email.error
+                        )}
                         data-line-count="1"
                       >
                         <label>Email</label>
@@ -303,13 +319,16 @@ function Ui(props) {
                           type="text"
                           id="AddressEmail"
                           name="address[email]"
-                          value={checkoutForm.email}
+                          value={checkoutForm.email.value}
                           onChange={(e) => handleUpdateCheckoutForm("email", e)}
                         />
                       </div>
 
                       <div
-                        className={getFormFieldClass("firstName")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.firstName.error
+                        )}
                         data-line-count="2"
                       >
                         <label htmlFor="AddressFirstName">First Name</label>
@@ -317,7 +336,7 @@ function Ui(props) {
                           type="text"
                           id="AddressFirstName"
                           name="address[first_name]"
-                          value={checkoutForm.firstName}
+                          value={checkoutForm.firstName.value}
                           onChange={(e) =>
                             handleUpdateCheckoutForm("firstName", e)
                           }
@@ -325,7 +344,10 @@ function Ui(props) {
                       </div>
 
                       <div
-                        className={getFormFieldClass("lastName")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.lastName.error
+                        )}
                         data-line-count="2"
                       >
                         <label htmlFor="AddressLastName">Last Name</label>
@@ -333,7 +355,7 @@ function Ui(props) {
                           type="text"
                           id="AddressLastName"
                           name="address[last_name]"
-                          value={checkoutForm.lastName}
+                          value={checkoutForm.lastName.value}
                           onChange={(e) =>
                             handleUpdateCheckoutForm("lastName", e)
                           }
@@ -346,7 +368,7 @@ function Ui(props) {
                           type="text"
                           id="AddressCompany"
                           name="address[company]"
-                          value={checkoutForm.company}
+                          value={checkoutForm.company.value}
                           onChange={(e) =>
                             handleUpdateCheckoutForm("company", e)
                           }
@@ -354,7 +376,10 @@ function Ui(props) {
                       </div>
 
                       <div
-                        className={getFormFieldClass("address1")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.address1.error
+                        )}
                         data-line-count="1"
                       >
                         <label htmlFor="AddressAddress1">Address Line 1</label>
@@ -362,7 +387,7 @@ function Ui(props) {
                           type="text"
                           id="AddressAddress1"
                           name="address[address1]"
-                          value={checkoutForm.address1}
+                          value={checkoutForm.address1.value}
                           onChange={(e) =>
                             handleUpdateCheckoutForm("address1", e)
                           }
@@ -375,7 +400,7 @@ function Ui(props) {
                           type="text"
                           id="AddressAddress2"
                           name="address[address2]"
-                          value={checkoutForm.address2}
+                          value={checkoutForm.address2.value}
                           onChange={(e) =>
                             handleUpdateCheckoutForm("address2", e)
                           }
@@ -383,7 +408,10 @@ function Ui(props) {
                       </div>
 
                       <div
-                        className={getFormFieldClass("city")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.city.error
+                        )}
                         data-line-count="1"
                       >
                         <label htmlFor="AddressCity">City</label>
@@ -391,20 +419,23 @@ function Ui(props) {
                           type="text"
                           id="AddressCity"
                           name="address[city]"
-                          value={checkoutForm.city}
+                          value={checkoutForm.city.value}
                           onChange={(e) => handleUpdateCheckoutForm("city", e)}
                         />
                       </div>
 
                       <div
-                        className={getFormFieldClass("country")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.country.error
+                        )}
                         data-line-count="3"
                       >
                         <label htmlFor="AddressCountry">Country</label>
                         <select
                           id="AddressCountry"
                           name="address[country]"
-                          data-default={checkoutForm.country}
+                          data-default={checkoutForm.country.value}
                           onChange={(e) =>
                             handleUpdateCheckoutForm("country", e)
                           }
@@ -419,14 +450,17 @@ function Ui(props) {
                       </div>
 
                       <div
-                        className={getFormFieldClass("province")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.province.error
+                        )}
                         data-line-count="3"
                       >
                         <label htmlFor="AddressProvince">Province</label>
                         <select
                           id="AddressProvince"
                           name="address[province]"
-                          data-default={checkoutForm.province}
+                          data-default={checkoutForm.province.value}
                           onMouseUp={(e) =>
                             handleUpdateCheckoutForm("province", e)
                           }
@@ -437,7 +471,10 @@ function Ui(props) {
                       </div>
 
                       <div
-                        className={getFormFieldClass("postcode")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.postcode.error
+                        )}
                         data-line-count="3"
                       >
                         <label htmlFor="AddressZip">Post Code</label>
@@ -445,7 +482,7 @@ function Ui(props) {
                           type="text"
                           id="AddressZip"
                           name="address[zip]"
-                          value={checkoutForm.postcode}
+                          value={checkoutForm.postcode.value}
                           onChange={(e) =>
                             handleUpdateCheckoutForm("postcode", e)
                           }
@@ -453,7 +490,10 @@ function Ui(props) {
                       </div>
 
                       <div
-                        className={getFormFieldClass("phone")}
+                        className={classNames(
+                          "form-field",
+                          checkoutForm.phone.error
+                        )}
                         data-line-count="1"
                       >
                         <label htmlFor="AddressPhone">Phone</label>
@@ -461,7 +501,7 @@ function Ui(props) {
                           type="tel"
                           id="AddressPhone"
                           name="address[phone]"
-                          value={checkoutForm.phone}
+                          value={checkoutForm.phone.value}
                           onChange={(e) => handleUpdateCheckoutForm("phone", e)}
                         />
                         <label className="invalid-message">
@@ -471,8 +511,7 @@ function Ui(props) {
                     </form>
                     <button
                       onClick={() => {
-                        toggleSubmitting(true);
-                        handleValidateCustomerDetails();
+                        validateCheckoutForm(true);
                       }}
                     >
                       Next
@@ -481,14 +520,16 @@ function Ui(props) {
                 ) : (
                   <>
                     <label>Contact</label>
-                    <div>{`${checkoutForm.email}`}</div>
-                    <div>{`${checkoutForm.phone}`}</div>
+                    <div>{`${checkoutForm.email.value}`}</div>
+                    <div>{`${checkoutForm.phone.value}`}</div>
                     <label>Ship to</label>
-                    <div>{`${checkoutForm.address1} ${checkoutForm.address2}, ${
-                      checkoutForm.city
-                    } ${checkoutForm.state || checkoutForm.province} ${
-                      checkoutForm.postcode
-                    }, ${checkoutForm.country}`}</div>
+                    <div>{`${checkoutForm.address1.value} ${
+                      checkoutForm.address2.value
+                    }, ${checkoutForm.city.value} ${
+                      checkoutForm.state.value || checkoutForm.province.value
+                    } ${checkoutForm.postcode.value}, ${
+                      checkoutForm.country.value
+                    }`}</div>
                   </>
                 )}
               </CheckoutInnerSectionContainer>
