@@ -78,7 +78,6 @@ function Ui(props) {
     address1: { value: "", error: undefined },
     address2: { value: "", error: undefined },
     city: { value: "", error: undefined },
-    state: { value: "", error: undefined },
     postcode: { value: "", error: undefined },
     province: { value: "", error: undefined },
     country: { value: locale || "AU", error: undefined },
@@ -87,18 +86,19 @@ function Ui(props) {
   });
   const [customerDetailsOpen, toggleCustomerDetails] = useState(true);
 
-  const formErrors = Object.values(checkoutForm)
-    .map((field) => field.error)
-    .filter((error) => error !== undefined);
-
   useEffect(() => {
     const checkoutFormRoot = document.getElementById("checkout-root");
 
-    if (!countriesDownloaded && checkoutFormRoot && locale) {
+    if (
+      customerDetailsOpen &&
+      !countriesDownloaded &&
+      checkoutFormRoot &&
+      locale
+    ) {
       AddressForm(document.getElementById("checkout-root"), locale);
       updateCountriesDownloaded(true);
     }
-  }, [countriesDownloaded, locale]);
+  }, [customerDetailsOpen, countriesDownloaded, locale]);
 
   useEffect(() => {
     if (!locale && !fetchingLocale) {
@@ -239,7 +239,7 @@ function Ui(props) {
     });
   };
 
-  const validateCheckoutForm = (validateOnly) => {
+  const validateCheckoutForm = () => {
     let updatingForm = checkoutForm;
 
     Object.keys(updatingForm).map((key) => {
@@ -252,10 +252,8 @@ function Ui(props) {
       const invalid =
         !empty && validator && !validator(updatingForm[key].value);
 
-      if (key === "state" && updatingForm.province.value.length) {
-      } else {
-        let currentError =
-          (validateOnly || submitting) && empty ? "empty" : undefined;
+      if (key !== "company") {
+        let currentError = empty ? "empty" : undefined;
         currentError = invalid ? "invalid-format" : currentError;
 
         updatingForm = {
@@ -269,6 +267,17 @@ function Ui(props) {
     });
 
     updateCheckoutForm(updatingForm);
+
+    const errors = Object.values(updatingForm)
+      .map((field) => field.error)
+      .filter((error) => error !== undefined);
+
+    return !errors.length;
+  };
+
+  const handleCustomerDetailsNext = (validated) => {
+    if (validated) toggleCustomerDetails(false);
+    updateCountriesDownloaded(false);
   };
 
   const items = Object.values(cartItemsObject)
@@ -460,7 +469,7 @@ function Ui(props) {
                         <select
                           id="AddressProvince"
                           name="address[province]"
-                          data-default={checkoutForm.province.value}
+                          value={checkoutForm.province.value}
                           onMouseUp={(e) =>
                             handleUpdateCheckoutForm("province", e)
                           }
@@ -511,7 +520,7 @@ function Ui(props) {
                     </form>
                     <button
                       onClick={() => {
-                        validateCheckoutForm(true);
+                        handleCustomerDetailsNext(validateCheckoutForm());
                       }}
                     >
                       Next
@@ -523,13 +532,7 @@ function Ui(props) {
                     <div>{`${checkoutForm.email.value}`}</div>
                     <div>{`${checkoutForm.phone.value}`}</div>
                     <label>Ship to</label>
-                    <div>{`${checkoutForm.address1.value} ${
-                      checkoutForm.address2.value
-                    }, ${checkoutForm.city.value} ${
-                      checkoutForm.state.value || checkoutForm.province.value
-                    } ${checkoutForm.postcode.value}, ${
-                      checkoutForm.country.value
-                    }`}</div>
+                    <div>{`${checkoutForm.address1.value} ${checkoutForm.address2.value}, ${checkoutForm.city.value} ${checkoutForm.province.value} ${checkoutForm.postcode.value}, ${checkoutForm.country.value}`}</div>
                   </>
                 )}
               </CheckoutInnerSectionContainer>
