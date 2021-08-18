@@ -196,7 +196,6 @@ export const OrderSummaryFixed = styled.div`
   border: 1px solid #bbbbbb;
   padding: 1em;
   margin-bottom: 1em;
-  position: fixed;
 
   label {
     color: dimgrey;

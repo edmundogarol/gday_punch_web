@@ -121,15 +121,39 @@ function Ui(props) {
   window.onscroll = () => scrollFunction();
 
   const scrollFunction = () => {
+    const orderSummaryCont = document.getElementById("order-summary");
+
     if (
       document.body.scrollTop > 50 ||
       document.documentElement.scrollTop > 50
     ) {
       document.getElementById("navbar").style.minHeight = "8vh";
       document.getElementById("navbar").style.fontSize = "14px";
+
+      if (orderSummaryCont && orderSummaryCont.style.position !== "fixed") {
+        orderSummaryCont.style.position = "fixed";
+        orderSummaryCont.style.bottom = "unset";
+        orderSummaryCont.style.top = "8em";
+      }
     } else {
       document.getElementById("navbar").style.minHeight = "11.5vh";
       document.getElementById("navbar").style.fontSize = "15px";
+
+      if (orderSummaryCont) {
+        orderSummaryCont.style.position = "initial";
+      }
+    }
+
+    if (orderSummaryCont) {
+      const checkoutCont = document
+        .getElementById("checkout-container")
+        .getBoundingClientRect();
+
+      if (checkoutCont.bottom <= document.documentElement.clientHeight) {
+        orderSummaryCont.style.position = "absolute";
+        orderSummaryCont.style.bottom = "0";
+        orderSummaryCont.style.top = "unset";
+      }
     }
   };
 
@@ -218,7 +242,7 @@ function Ui(props) {
     }
 
     // Error
-    const empty = value.length;
+    const empty = !value.length;
     let validator = undefined;
 
     if (field === "phone") {
@@ -227,7 +251,7 @@ function Ui(props) {
 
     const invalid = !empty && validator && !validator(value);
 
-    let currentError = submitting && empty ? "empty" : undefined;
+    let currentError = empty ? "empty" : undefined;
     currentError = invalid ? "invalid-format" : currentError;
 
     updateCheckoutForm({
@@ -299,7 +323,7 @@ function Ui(props) {
             </div>
           </EmptyCartMessage>
         ) : (
-          <CheckoutContainer>
+          <CheckoutContainer id="checkout-container">
             <LeftCheckoutContainer>
               <CheckoutInnerSectionContainer
                 selectImage={getImageModule("down-arrow.png")}
@@ -545,7 +569,7 @@ function Ui(props) {
               </CheckoutInnerSectionContainer>
             </LeftCheckoutContainer>
             <OrderSummaryContainer>
-              <OrderSummaryFixed>
+              <OrderSummaryFixed id="order-summary">
                 <label>Order Summary</label>
                 <SideCartItemsList>
                   {items.map((item) => cartItem(item))}

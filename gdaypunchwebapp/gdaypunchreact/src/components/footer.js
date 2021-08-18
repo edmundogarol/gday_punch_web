@@ -11,7 +11,7 @@ import {
 
 function Footer() {
   return (
-    <div className="footer">
+    <div className="footer" id="footer">
       <div className="contact-us">
         <p>+61 484 575 754</p>
         <p>info@gdaypunch.com</p>
