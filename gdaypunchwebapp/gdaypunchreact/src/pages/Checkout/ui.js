@@ -145,14 +145,21 @@ function Ui(props) {
     }
 
     if (orderSummaryCont) {
-      const checkoutCont = document
-        .getElementById("checkout-container")
-        .getBoundingClientRect();
+      const checkoutCont = document.getElementById("checkout-container");
+      const checkoutContBottom = checkoutCont.getBoundingClientRect().bottom;
 
-      if (checkoutCont.bottom <= document.documentElement.clientHeight) {
+      const checkoutContSmaller =
+        checkoutCont.offsetHeight < orderSummaryCont.offsetHeight;
+
+      if (
+        checkoutContBottom <= document.documentElement.clientHeight &&
+        !checkoutContSmaller
+      ) {
         orderSummaryCont.style.position = "absolute";
         orderSummaryCont.style.bottom = "0";
         orderSummaryCont.style.top = "unset";
+      } else if (checkoutContSmaller) {
+        orderSummaryCont.style.position = "initial";
       }
     }
   };
