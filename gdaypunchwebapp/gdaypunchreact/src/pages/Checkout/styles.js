@@ -177,6 +177,7 @@ export const LeftCheckoutContainer = styled.div`
   flex-direction: column;
   width: -webkit-fill-available;
   margin-right: 2em;
+  height: min-content;
 `;
 
 export const NameFieldsContainer = styled.div`

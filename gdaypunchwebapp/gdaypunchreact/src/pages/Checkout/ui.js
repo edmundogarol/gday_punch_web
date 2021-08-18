@@ -122,6 +122,15 @@ function Ui(props) {
 
   const scrollFunction = () => {
     const orderSummaryCont = document.getElementById("order-summary");
+    const checkoutCont = document.getElementById("left-checkout-container");
+    const checkoutContBottom = checkoutCont.getBoundingClientRect().bottom;
+
+    console.log({
+      checkout: checkoutCont.offsetHeight,
+      orderSum: orderSummaryCont.offsetHeight,
+    });
+    const checkoutContSmaller =
+      checkoutCont.offsetHeight < orderSummaryCont.offsetHeight;
 
     if (
       document.body.scrollTop > 50 ||
@@ -130,7 +139,11 @@ function Ui(props) {
       document.getElementById("navbar").style.minHeight = "8vh";
       document.getElementById("navbar").style.fontSize = "14px";
 
-      if (orderSummaryCont && orderSummaryCont.style.position !== "fixed") {
+      if (
+        orderSummaryCont &&
+        orderSummaryCont.style.position !== "fixed" &&
+        !checkoutContSmaller
+      ) {
         orderSummaryCont.style.position = "fixed";
         orderSummaryCont.style.bottom = "unset";
         orderSummaryCont.style.top = "8em";
@@ -145,12 +158,6 @@ function Ui(props) {
     }
 
     if (orderSummaryCont) {
-      const checkoutCont = document.getElementById("checkout-container");
-      const checkoutContBottom = checkoutCont.getBoundingClientRect().bottom;
-
-      const checkoutContSmaller =
-        checkoutCont.offsetHeight < orderSummaryCont.offsetHeight;
-
       if (
         checkoutContBottom <= document.documentElement.clientHeight &&
         !checkoutContSmaller
@@ -159,7 +166,7 @@ function Ui(props) {
         orderSummaryCont.style.bottom = "0";
         orderSummaryCont.style.top = "unset";
       } else if (checkoutContSmaller) {
-        orderSummaryCont.style.position = "initial";
+        orderSummaryCont.style.background = "initial";
       }
     }
   };
@@ -330,8 +337,8 @@ function Ui(props) {
             </div>
           </EmptyCartMessage>
         ) : (
-          <CheckoutContainer id="checkout-container">
-            <LeftCheckoutContainer>
+          <CheckoutContainer>
+            <LeftCheckoutContainer id="left-checkout-container">
               <CheckoutInnerSectionContainer
                 selectImage={getImageModule("down-arrow.png")}
               >
