@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
-import { Typography, Select, Tooltip, Button, Input, message } from "antd";
+import { Typography, Select, Tooltip, Button, Radio, message } from "antd";
 import classNames from "classnames";
 import { loadStripe } from "@stripe/stripe-js";
 import { CardElement } from "@stripe/react-stripe-js";
@@ -19,15 +19,17 @@ import {
   SideCartItemsList,
   OrderSummaryContainer,
   OrderSummaryFixed,
+  OrderSummaryLine,
+  SummaryLineSeparator,
   ItemContainer,
   ItemImage,
   ItemTitleMetaContainer,
   ItemMeta,
   ItemSubtotal,
   ItemSubtotalBinContainer,
-  NameFieldsContainer,
   LeftCheckoutContainer,
   CheckoutInnerSectionContainer,
+  CheckoutInnerSectionTitle,
   CartFooter,
   ItemTotal,
   TotalLabel,
@@ -84,7 +86,9 @@ function Ui(props) {
     company: { value: "", error: undefined },
     phone: { value: "", error: undefined },
   });
+  const [provinceCode, setProvinceCode] = useState("");
   const [customerDetailsOpen, toggleCustomerDetails] = useState(true);
+  const [shippingMethodOpen, toggleShippingMethod] = useState(false);
 
   useEffect(() => {
     const checkoutFormRoot = document.getElementById("checkout-root");
@@ -121,53 +125,49 @@ function Ui(props) {
   window.onscroll = () => scrollFunction();
 
   const scrollFunction = () => {
+    const minimiseHeader =
+      document.body.scrollTop > 50 || document.documentElement.scrollTop > 50;
+
+    // Change header size
+    if (minimiseHeader) {
+      document.getElementById("navbar").style.minHeight = "8vh";
+      document.getElementById("navbar").style.fontSize = "14px";
+    } else {
+      document.getElementById("navbar").style.minHeight = "11.5vh";
+      document.getElementById("navbar").style.fontSize = "15px";
+    }
+
+    // Handle order summary style
+
     const orderSummaryCont = document.getElementById("order-summary");
     const checkoutCont = document.getElementById("left-checkout-container");
-    const checkoutContBottom = checkoutCont.getBoundingClientRect().bottom;
 
-    console.log({
-      checkout: checkoutCont.offsetHeight,
-      orderSum: orderSummaryCont.offsetHeight,
-    });
+    if (!orderSummaryCont || !checkoutCont) return;
+
     const checkoutContSmaller =
       checkoutCont.offsetHeight < orderSummaryCont.offsetHeight;
 
-    if (
-      document.body.scrollTop > 50 ||
-      document.documentElement.scrollTop > 50
-    ) {
-      document.getElementById("navbar").style.minHeight = "8vh";
-      document.getElementById("navbar").style.fontSize = "14px";
-
-      if (
-        orderSummaryCont &&
-        orderSummaryCont.style.position !== "fixed" &&
-        !checkoutContSmaller
-      ) {
+    if (minimiseHeader) {
+      if (orderSummaryCont.style.position !== "fixed" && !checkoutContSmaller) {
         orderSummaryCont.style.position = "fixed";
         orderSummaryCont.style.bottom = "unset";
         orderSummaryCont.style.top = "8em";
       }
     } else {
-      document.getElementById("navbar").style.minHeight = "11.5vh";
-      document.getElementById("navbar").style.fontSize = "15px";
-
-      if (orderSummaryCont) {
-        orderSummaryCont.style.position = "initial";
-      }
+      orderSummaryCont.style.position = "initial";
     }
 
-    if (orderSummaryCont) {
-      if (
-        checkoutContBottom <= document.documentElement.clientHeight &&
-        !checkoutContSmaller
-      ) {
-        orderSummaryCont.style.position = "absolute";
-        orderSummaryCont.style.bottom = "0";
-        orderSummaryCont.style.top = "unset";
-      } else if (checkoutContSmaller) {
-        orderSummaryCont.style.background = "initial";
-      }
+    const checkoutContBottom = checkoutCont.getBoundingClientRect().bottom;
+
+    if (
+      checkoutContBottom <= document.documentElement.clientHeight &&
+      !checkoutContSmaller
+    ) {
+      orderSummaryCont.style.position = "absolute";
+      orderSummaryCont.style.bottom = "0";
+      orderSummaryCont.style.top = "unset";
+    } else if (checkoutContSmaller) {
+      orderSummaryCont.style.background = "initial";
     }
   };
 
@@ -252,7 +252,8 @@ function Ui(props) {
 
     if (field === "province") {
       const select = e.target;
-      value = select.selectedOptions[0] ? select.selectedOptions[0].text : "-";
+      setProvinceCode(value);
+      value = select.options[select.selectedIndex].text;
     }
 
     // Error
@@ -342,14 +343,14 @@ function Ui(props) {
               <CheckoutInnerSectionContainer
                 selectImage={getImageModule("down-arrow.png")}
               >
-                <label>
+                <CheckoutInnerSectionTitle>
                   Customer Details{" "}
                   {!customerDetailsOpen && (
                     <span onClick={() => toggleCustomerDetails(true)}>
                       Edit
                     </span>
                   )}
-                </label>
+                </CheckoutInnerSectionTitle>
                 <br />
                 {customerDetailsOpen ? (
                   <>
@@ -507,7 +508,8 @@ function Ui(props) {
                         <select
                           id="AddressProvince"
                           name="address[province]"
-                          value={checkoutForm.province.value}
+                          value={provinceCode || checkoutForm.province.value}
+                          data-default={provinceCode}
                           onMouseUp={(e) =>
                             handleUpdateCheckoutForm("province", e)
                           }
@@ -566,16 +568,30 @@ function Ui(props) {
                   </>
                 ) : (
                   <>
-                    <label>Contact</label>
-                    <div>{`${checkoutForm.email.value}`}</div>
-                    <div>{`${checkoutForm.phone.value}`}</div>
-                    <label>Ship to</label>
-                    <div>{`${checkoutForm.address1.value} ${checkoutForm.address2.value}, ${checkoutForm.city.value} ${checkoutForm.province.value} ${checkoutForm.postcode.value}, ${checkoutForm.country.value}`}</div>
+                    <OrderSummaryLine>
+                      <label className="summary-line-label">Contact</label>
+                      <div>{`${checkoutForm.email.value}`}</div>
+                      <div>{`${checkoutForm.phone.value}`}</div>
+                    </OrderSummaryLine>
+                    <SummaryLineSeparator />
+                    <OrderSummaryLine>
+                      <label className="summary-line-label">Ship to</label>
+                      <div>{`${checkoutForm.address1.value} ${checkoutForm.address2.value}, ${checkoutForm.city.value} ${checkoutForm.province.value} ${checkoutForm.postcode.value}, ${checkoutForm.country.value}`}</div>
+                    </OrderSummaryLine>
                   </>
                 )}
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
-                <label>Shipping Method</label>
+                <CheckoutInnerSectionTitle>
+                  Shipping Method
+                </CheckoutInnerSectionTitle>
+                <br />
+                <OrderSummaryLine singleLine>
+                  <div>
+                    <Radio buttonStyle={{ color: "dimgrey" }} checked />{" "}
+                    {`Free Standard Shipping Worldwide`}
+                  </div>
+                </OrderSummaryLine>
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
                 <label>Payment</label>

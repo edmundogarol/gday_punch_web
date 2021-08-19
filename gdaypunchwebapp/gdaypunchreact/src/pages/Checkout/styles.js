@@ -60,25 +60,6 @@ export const CheckoutInnerSectionContainer = styled.div`
   padding: 1em;
   margin-bottom: 1em;
 
-  label {
-    font-weight: 600;
-    color: #868686;
-    width: 100%;
-    text-align: start;
-    justify-content: space-between;
-    display: flex;
-
-    span {
-      text-decoration: underline;
-      color: #7272ff;
-      font-weight: 100;
-
-      &:hover {
-        cursor: pointer;
-      }
-    }
-  }
-
   p {
     margin-bottom: 0.5em;
     color: dimgray;
@@ -172,17 +153,31 @@ export const CheckoutInnerSectionContainer = styled.div`
   }
 `;
 
+export const CheckoutInnerSectionTitle = styled.label`
+  font-weight: 600;
+  color: #868686;
+  width: 100%;
+  text-align: start;
+  justify-content: space-between;
+  display: flex;
+
+  span {
+    text-decoration: underline;
+    color: #7272ff;
+    font-weight: 100;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+`;
+
 export const LeftCheckoutContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: -webkit-fill-available;
   margin-right: 2em;
   height: min-content;
-`;
-
-export const NameFieldsContainer = styled.div`
-  display: flex;
-  flex-direction: row;
 `;
 
 export const OrderSummaryContainer = styled.div`
@@ -201,6 +196,42 @@ export const OrderSummaryFixed = styled.div`
   label {
     color: dimgrey;
   }
+`;
+
+export const OrderSummaryLine = styled.div`
+  ${(props) =>
+    props.singleLine
+      ? `
+      display: flex;
+
+      .ant-radio-wrapper {
+        margin-right: 1em;
+      }
+      `
+      : `
+    display: grid;
+    grid-template-columns: 6em 2fr 1fr;
+    text-align: start;
+    `}
+
+  .summary-line-label {
+    color: dimgray;
+  }
+
+  .ant-radio-checked .ant-radio-inner {
+    border-color: orange;
+  }
+  .ant-radio-inner::after {
+    background-color: orange;
+  }
+`;
+
+export const SummaryLineSeparator = styled.div`
+  width: 100%;
+  height: 1em;
+  padding-top: 1em;
+  margin-top: 1em;
+  border-top: 1px solid #d6d6d6;
 `;
 
 export const ItemContainer = styled.div`
