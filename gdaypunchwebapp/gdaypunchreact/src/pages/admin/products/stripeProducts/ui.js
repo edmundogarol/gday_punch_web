@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import PropTypes from "prop-types";
-import { loadStripe } from "@stripe/stripe-js";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import {
   Input,
@@ -28,12 +27,6 @@ import {
 
 const { Title } = Typography;
 
-const stripePromise = loadStripe(
-  process.env.NODE_ENV === "development"
-    ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
-    : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
-);
-
 const productType = {
   one_time: "Single",
   recurring: "Subscription",
@@ -54,7 +47,6 @@ function Ui(props) {
   });
 
   const stripe = useStripe();
-  const elements = useElements();
 
   const normaliseStripeProduct = () => {
     return stripeProductList.map((stripeProduct) => ({
@@ -78,7 +70,6 @@ function Ui(props) {
       return;
     }
 
-    const stripe = await stripePromise;
     const response = await gdayfetch("payments/create-checkout-session/", {
       method: "POST",
       body: {

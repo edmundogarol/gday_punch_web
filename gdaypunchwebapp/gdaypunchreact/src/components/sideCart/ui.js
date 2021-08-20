@@ -6,7 +6,7 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import { Typography, Select, Tooltip, Button, Input, message } from "antd";
-import { loadStripe } from "@stripe/stripe-js";
+import { useStripe } from "@stripe/react-stripe-js";
 
 import {
   SideCartContainer,
@@ -34,12 +34,6 @@ import { gdayfetch } from "utils/gdayfetch";
 
 const { Title } = Typography;
 const { Option } = Select;
-
-const stripePromise = loadStripe(
-  process.env.NODE_ENV === "development"
-    ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
-    : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
-);
 
 function Ui(props) {
   const {
@@ -80,7 +74,7 @@ function Ui(props) {
   };
 
   const handlePurchaseClick = async () => {
-    const stripe = await stripePromise;
+    const stripe = await useStripe();
     let stripe_prices = [];
     items.map((item) => {
       return item.stripe_prices.map((price) => {

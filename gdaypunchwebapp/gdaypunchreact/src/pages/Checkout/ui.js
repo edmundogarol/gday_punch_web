@@ -2,15 +2,14 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
 import { Typography, Select, Tooltip, Button, Radio, message } from "antd";
-import classNames from "classnames";
-import { loadStripe } from "@stripe/stripe-js";
-import { CardElement } from "@stripe/react-stripe-js";
+import { useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
 import "unfetch/polyfill";
 import "es6-promise/auto";
 
 import { AddressForm } from "@shopify/theme-addresses";
 
+import GPAddressForm from "./addressForm";
 import FeaturedSection from "components/featuredSection";
 import {
   App,
@@ -47,14 +46,18 @@ import {
 const { Title } = Typography;
 const { Option } = Select;
 
-const stripePromise = loadStripe(
-  process.env.NODE_ENV === "development"
-    ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
-    : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
-);
-
 const CARD_ELEMENT_OPTIONS = {
   style: {
+    base: {
+      color: "#32325d",
+      fontSmoothing: "antialiased",
+      fontSize: "1em",
+      height: "2em",
+      padding: "1em",
+      "::placeholder": {
+        color: "#797979",
+      },
+    },
     invalid: {
       color: "#fa755a",
       iconColor: "#fa755a",
@@ -86,20 +89,64 @@ function Ui(props) {
     company: { value: "", error: undefined },
     phone: { value: "", error: undefined },
   });
-  const [provinceCode, setProvinceCode] = useState("");
+  const [billingForm, updateBillingForm] = useState({
+    cardName: { value: "", error: undefined },
+    firstName: { value: "", error: undefined },
+    lastName: { value: "", error: undefined },
+    address1: { value: "", error: undefined },
+    address2: { value: "", error: undefined },
+    city: { value: "", error: undefined },
+    postcode: { value: "", error: undefined },
+    province: { value: "", error: undefined },
+    country: { value: locale || "AU", error: undefined },
+    phone: { value: "", error: undefined },
+  });
   const [customerDetailsOpen, toggleCustomerDetails] = useState(true);
   const [shippingMethodOpen, toggleShippingMethod] = useState(false);
 
+  const stripe = useStripe();
+  const elements = useElements();
+
   useEffect(() => {
-    const checkoutFormRoot = document.getElementById("checkout-root");
+    const cardNumberElement = elements?.create("cardNumber", {
+      placeholder: "Card number",
+      ...CARD_ELEMENT_OPTIONS,
+    });
+    const cardExpiryElement = elements?.create("cardExpiry", {
+      placeholder: "Expiration date (MM / YY)",
+      ...CARD_ELEMENT_OPTIONS,
+    });
+    const cardCvvElement = elements?.create("cardCvc", {
+      placeholder: "Security code",
+      ...CARD_ELEMENT_OPTIONS,
+    });
+
+    cardNumberElement?.mount("#card-number-element");
+    cardExpiryElement?.mount("#card-expiry-element");
+    cardCvvElement?.mount("#card-cvv-element");
+
+    return () => {
+      if (cardNumberElement) {
+        console.log("DEstroying");
+        cardNumberElement.destroy();
+        cardExpiryElement.destroy();
+        cardCvvElement.destroy();
+      }
+    };
+  }, []); // <-- empty dependency array to run once
+
+  useEffect(() => {
+    const shippingAddressRoot = document.getElementById(
+      "shipping-address-root"
+    );
 
     if (
       customerDetailsOpen &&
       !countriesDownloaded &&
-      checkoutFormRoot &&
+      shippingAddressRoot &&
       locale
     ) {
-      AddressForm(document.getElementById("checkout-root"), locale);
+      AddressForm(document.getElementById("shipping-address-root"), locale);
       updateCountriesDownloaded(true);
     }
   }, [customerDetailsOpen, countriesDownloaded, locale]);
@@ -179,7 +226,6 @@ function Ui(props) {
   };
 
   const handlePurchaseClick = async () => {
-    const stripe = await stripePromise;
     let stripe_prices = [];
     items.map((item) => {
       return item.stripe_prices.map((price) => {
@@ -244,38 +290,6 @@ function Ui(props) {
         </ItemSubtotalBinContainer>
       </ItemContainer>
     );
-  };
-
-  const handleUpdateCheckoutForm = (field, e) => {
-    // Value
-    let value = e.target.value;
-
-    if (field === "province") {
-      const select = e.target;
-      setProvinceCode(value);
-      value = select.options[select.selectedIndex].text;
-    }
-
-    // Error
-    const empty = !value.length;
-    let validator = undefined;
-
-    if (field === "phone") {
-      validator = phoneValidator;
-    }
-
-    const invalid = !empty && validator && !validator(value);
-
-    let currentError = empty ? "empty" : undefined;
-    currentError = invalid ? "invalid-format" : currentError;
-
-    updateCheckoutForm({
-      ...checkoutForm,
-      [field]: {
-        value,
-        error: currentError,
-      },
-    });
   };
 
   const validateCheckoutForm = () => {
@@ -354,210 +368,11 @@ function Ui(props) {
                 <br />
                 {customerDetailsOpen ? (
                   <>
-                    <form id="checkout-root" data-address="checkout-root">
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.email.error
-                        )}
-                        data-line-count="1"
-                      >
-                        <label>Email</label>
-                        <input
-                          type="text"
-                          id="AddressEmail"
-                          name="address[email]"
-                          value={checkoutForm.email.value}
-                          onChange={(e) => handleUpdateCheckoutForm("email", e)}
-                        />
-                      </div>
-
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.firstName.error
-                        )}
-                        data-line-count="2"
-                      >
-                        <label htmlFor="AddressFirstName">First Name</label>
-                        <input
-                          type="text"
-                          id="AddressFirstName"
-                          name="address[first_name]"
-                          value={checkoutForm.firstName.value}
-                          onChange={(e) =>
-                            handleUpdateCheckoutForm("firstName", e)
-                          }
-                        />
-                      </div>
-
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.lastName.error
-                        )}
-                        data-line-count="2"
-                      >
-                        <label htmlFor="AddressLastName">Last Name</label>
-                        <input
-                          type="text"
-                          id="AddressLastName"
-                          name="address[last_name]"
-                          value={checkoutForm.lastName.value}
-                          onChange={(e) =>
-                            handleUpdateCheckoutForm("lastName", e)
-                          }
-                        />
-                      </div>
-
-                      <div className="form-field" data-line-count="1">
-                        <label htmlFor="AddressCompany">Company</label>
-                        <input
-                          type="text"
-                          id="AddressCompany"
-                          name="address[company]"
-                          value={checkoutForm.company.value}
-                          onChange={(e) =>
-                            handleUpdateCheckoutForm("company", e)
-                          }
-                        />
-                      </div>
-
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.address1.error
-                        )}
-                        data-line-count="1"
-                      >
-                        <label htmlFor="AddressAddress1">Address Line 1</label>
-                        <input
-                          type="text"
-                          id="AddressAddress1"
-                          name="address[address1]"
-                          value={checkoutForm.address1.value}
-                          onChange={(e) =>
-                            handleUpdateCheckoutForm("address1", e)
-                          }
-                        />
-                      </div>
-
-                      <div className="form-field" data-line-count="1">
-                        <label htmlFor="AddressAddress2">Address Line 2</label>
-                        <input
-                          type="text"
-                          id="AddressAddress2"
-                          name="address[address2]"
-                          value={checkoutForm.address2.value}
-                          onChange={(e) =>
-                            handleUpdateCheckoutForm("address2", e)
-                          }
-                        />
-                      </div>
-
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.city.error
-                        )}
-                        data-line-count="1"
-                      >
-                        <label htmlFor="AddressCity">City</label>
-                        <input
-                          type="text"
-                          id="AddressCity"
-                          name="address[city]"
-                          value={checkoutForm.city.value}
-                          onChange={(e) => handleUpdateCheckoutForm("city", e)}
-                        />
-                      </div>
-
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.country.error
-                        )}
-                        data-line-count="3"
-                      >
-                        <label htmlFor="AddressCountry">Country</label>
-                        <select
-                          id="AddressCountry"
-                          name="address[country]"
-                          data-default={checkoutForm.country.value}
-                          onChange={(e) =>
-                            handleUpdateCheckoutForm("country", e)
-                          }
-                        >
-                          <option value="AU">Australia</option>
-                          <option value="US">United States</option>
-                          <option value="NZ">New Zealand</option>
-                          <option value="JP">Japan</option>
-                          <option value="GB">United Kingdom</option>
-                          <option disabled>_ _ _ _ _ _ _ _ _</option>
-                        </select>
-                      </div>
-
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.province.error
-                        )}
-                        data-line-count="3"
-                      >
-                        <label htmlFor="AddressProvince">Province</label>
-                        <select
-                          id="AddressProvince"
-                          name="address[province]"
-                          value={provinceCode || checkoutForm.province.value}
-                          data-default={provinceCode}
-                          onMouseUp={(e) =>
-                            handleUpdateCheckoutForm("province", e)
-                          }
-                          onChange={(e) => {
-                            handleUpdateCheckoutForm("province", e);
-                          }}
-                        ></select>
-                      </div>
-
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.postcode.error
-                        )}
-                        data-line-count="3"
-                      >
-                        <label htmlFor="AddressZip">Post Code</label>
-                        <input
-                          type="text"
-                          id="AddressZip"
-                          name="address[zip]"
-                          value={checkoutForm.postcode.value}
-                          onChange={(e) =>
-                            handleUpdateCheckoutForm("postcode", e)
-                          }
-                        />
-                      </div>
-
-                      <div
-                        className={classNames(
-                          "form-field",
-                          checkoutForm.phone.error
-                        )}
-                        data-line-count="1"
-                      >
-                        <label htmlFor="AddressPhone">Phone</label>
-                        <input
-                          type="tel"
-                          id="AddressPhone"
-                          name="address[phone]"
-                          value={checkoutForm.phone.value}
-                          onChange={(e) => handleUpdateCheckoutForm("phone", e)}
-                        />
-                        <label className="invalid-message">
-                          Please enter a valid phone number
-                        </label>
-                      </div>
-                    </form>
+                    <GPAddressForm
+                      type="shipping"
+                      addressForm={checkoutForm}
+                      updateAddressForm={updateCheckoutForm}
+                    />
                     <button
                       onClick={() => {
                         handleCustomerDetailsNext(validateCheckoutForm());
@@ -594,8 +409,31 @@ function Ui(props) {
                 </OrderSummaryLine>
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
-                <label>Payment</label>
-                <CardElement options={CARD_ELEMENT_OPTIONS} />
+                <CheckoutInnerSectionTitle>Payment</CheckoutInnerSectionTitle>
+                <br />
+                <form id="card-form" data-address={`card-form-root`}>
+                  <div id="card-number-element" data-line-count="1"></div>
+                  <div className={"form-field"} data-line-count="1">
+                    <input
+                      id="card-name"
+                      name="name"
+                      placeholder="Name on card"
+                      type="text"
+                      value={billingForm.cardName.value}
+                      onChange={(e) =>
+                        updateBillingForm({
+                          ...billingForm,
+                          cardName: {
+                            ...billingForm.cardName,
+                            value: e.target.value,
+                          },
+                        })
+                      }
+                    />
+                  </div>
+                  <div id="card-expiry-element" data-line-count="2"></div>
+                  <div id="card-cvv-element" data-line-count="2"></div>
+                </form>
               </CheckoutInnerSectionContainer>
             </LeftCheckoutContainer>
             <OrderSummaryContainer>

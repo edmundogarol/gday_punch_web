@@ -131,7 +131,8 @@ export const CheckoutInnerSectionContainer = styled.div`
     }
   }
 
-  [data-address="checkout-root"] {
+  [data-address="address-form-root"],
+  [data-address="card-form-root"] {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -178,6 +179,19 @@ export const LeftCheckoutContainer = styled.div`
   width: -webkit-fill-available;
   margin-right: 2em;
   height: min-content;
+
+  #card-form {
+    width: 100%;
+
+    .StripeElement {
+      width: 100%;
+      height: 3em;
+      padding: 1em;
+      border: 1px solid #b5b5b5;
+      border-radius: 0.3em;
+      margin-bottom: 1em;
+    }
+  }
 `;
 
 export const OrderSummaryContainer = styled.div`

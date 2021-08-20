@@ -6,7 +6,7 @@ import {
   DeleteOutlined,
 } from "@ant-design/icons";
 import { Typography, Select, Tooltip, Button, Input, message } from "antd";
-import { loadStripe } from "@stripe/stripe-js";
+import { useStripe } from "@stripe/react-stripe-js";
 
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
@@ -36,12 +36,6 @@ import { getGdayPunchStaticUrl } from "utils/utils";
 const { Title } = Typography;
 const { Option } = Select;
 
-const stripePromise = loadStripe(
-  process.env.NODE_ENV === "development"
-    ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
-    : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
-);
-
 function Ui(props) {
   const {
     cartState,
@@ -53,6 +47,8 @@ function Ui(props) {
     viewProduct,
     productList: cartItemsObject,
   } = props;
+
+  const stripe = useStripe();
 
   const items = Object.values(cartItemsObject)
     .map((item) => item)
@@ -81,7 +77,6 @@ function Ui(props) {
   };
 
   const handlePurchaseClick = async () => {
-    const stripe = await stripePromise;
     let stripe_prices = [];
     items.map((item) => {
       return item.stripe_prices.map((price) => {
