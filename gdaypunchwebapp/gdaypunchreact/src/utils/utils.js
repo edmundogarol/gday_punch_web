@@ -8,6 +8,10 @@ export function getImageModule(url) {
   return require(`../../public/static/images/${url}`).default;
 }
 
+export function getResourceImageModule(url) {
+  return require(`../../public/static/resources/${url}`).default;
+}
+
 export function getCoverImage(url) {
   return require(`../../public/${url}`).default;
 }

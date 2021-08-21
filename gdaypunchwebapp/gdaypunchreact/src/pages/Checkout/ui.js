@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
-import { Typography, Select, Tooltip, Button, Radio, message } from "antd";
+import {
+  Typography,
+  Select,
+  Tooltip,
+  Button,
+  Space,
+  Radio,
+  message,
+} from "antd";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
 import "unfetch/polyfill";
@@ -29,6 +37,7 @@ import {
   LeftCheckoutContainer,
   CheckoutInnerSectionContainer,
   CheckoutInnerSectionTitle,
+  PaymentMethodLogo,
   CartFooter,
   ItemTotal,
   TotalLabel,
@@ -39,6 +48,7 @@ import {
 import { gdayfetch } from "utils/gdayfetch";
 import {
   getGdayPunchStaticUrl,
+  getResourceImageModule,
   getImageModule,
   phoneValidator,
 } from "utils/utils";
@@ -103,11 +113,16 @@ function Ui(props) {
   });
   const [customerDetailsOpen, toggleCustomerDetails] = useState(true);
   const [shippingMethodOpen, toggleShippingMethod] = useState(false);
+  const [paymentOpen, togglePayment] = useState(false);
+
+  const freeShipping = checkoutForm.country.value === "AU";
 
   const stripe = useStripe();
   const elements = useElements();
 
   useEffect(() => {
+    if (!paymentOpen) return;
+
     const cardNumberElement = elements?.create("cardNumber", {
       placeholder: "Card number",
       ...CARD_ELEMENT_OPTIONS,
@@ -127,13 +142,12 @@ function Ui(props) {
 
     return () => {
       if (cardNumberElement) {
-        console.log("DEstroying");
         cardNumberElement.destroy();
         cardExpiryElement.destroy();
         cardCvvElement.destroy();
       }
     };
-  }, []); // <-- empty dependency array to run once
+  }, [paymentOpen]);
 
   useEffect(() => {
     const shippingAddressRoot = document.getElementById(
@@ -328,8 +342,10 @@ function Ui(props) {
     return !errors.length;
   };
 
-  const handleCustomerDetailsNext = (validated) => {
-    if (validated) toggleCustomerDetails(false);
+  const handleOpenSection = (section) => {
+    toggleCustomerDetails(section === "customer");
+    toggleShippingMethod(section === "shipping");
+    togglePayment(section === "payment");
     updateCountriesDownloaded(false);
   };
 
@@ -358,9 +374,9 @@ function Ui(props) {
                 selectImage={getImageModule("down-arrow.png")}
               >
                 <CheckoutInnerSectionTitle>
-                  Customer Details{" "}
+                  Customer Details
                   {!customerDetailsOpen && (
-                    <span onClick={() => toggleCustomerDetails(true)}>
+                    <span onClick={() => handleOpenSection("customer")}>
                       Edit
                     </span>
                   )}
@@ -375,7 +391,9 @@ function Ui(props) {
                     />
                     <button
                       onClick={() => {
-                        handleCustomerDetailsNext(validateCheckoutForm());
+                        if (validateCheckoutForm()) {
+                          handleOpenSection("shipping");
+                        }
                       }}
                     >
                       Next
@@ -399,41 +417,96 @@ function Ui(props) {
               <CheckoutInnerSectionContainer>
                 <CheckoutInnerSectionTitle>
                   Shipping Method
+                  {!shippingMethodOpen && (
+                    <span
+                      onClick={() => {
+                        if (validateCheckoutForm()) {
+                          handleOpenSection("shipping");
+                        }
+                      }}
+                    >
+                      Edit
+                    </span>
+                  )}
                 </CheckoutInnerSectionTitle>
                 <br />
-                <OrderSummaryLine singleLine>
-                  <div>
-                    <Radio buttonStyle={{ color: "dimgrey" }} checked />{" "}
-                    {`Free Standard Shipping Worldwide`}
-                  </div>
-                </OrderSummaryLine>
+                {shippingMethodOpen ? (
+                  <>
+                    <OrderSummaryLine singleLine>
+                      <Radio.Group
+                        value={freeShipping ? "free" : "international"}
+                      >
+                        <Space direction="vertical">
+                          <Radio value="free" disabled={!freeShipping}>
+                            Australia Free Standard Shipping
+                            <p>Free</p>
+                          </Radio>
+                          <Radio value="international" disabled={freeShipping}>
+                            International Standard Shipping
+                            <p>AUD$9.00</p>
+                          </Radio>
+                        </Space>
+                      </Radio.Group>
+                    </OrderSummaryLine>
+                    <button onClick={() => handleOpenSection("payment")}>
+                      Next
+                    </button>
+                  </>
+                ) : (
+                  <OrderSummaryLine singleLine>
+                    <div>
+                      {freeShipping ? (
+                        <p>
+                          Australia Free Standard Shipping<span>(Free)</span>
+                        </p>
+                      ) : (
+                        <p>
+                          International Standard Shipping
+                          <span>(AUD$9.00)</span>
+                        </p>
+                      )}
+                    </div>
+                  </OrderSummaryLine>
+                )}
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
-                <CheckoutInnerSectionTitle>Payment</CheckoutInnerSectionTitle>
-                <br />
-                <form id="card-form" data-address={`card-form-root`}>
-                  <div id="card-number-element" data-line-count="1"></div>
-                  <div className={"form-field"} data-line-count="1">
-                    <input
-                      id="card-name"
-                      name="name"
-                      placeholder="Name on card"
-                      type="text"
-                      value={billingForm.cardName.value}
-                      onChange={(e) =>
-                        updateBillingForm({
-                          ...billingForm,
-                          cardName: {
-                            ...billingForm.cardName,
-                            value: e.target.value,
-                          },
-                        })
-                      }
+                <CheckoutInnerSectionTitle>
+                  Payment
+                  <span className="no-hover">
+                    <PaymentMethodLogo
+                      src={getResourceImageModule("visa-logo.png")}
                     />
-                  </div>
-                  <div id="card-expiry-element" data-line-count="2"></div>
-                  <div id="card-cvv-element" data-line-count="2"></div>
-                </form>
+                    <PaymentMethodLogo
+                      src={getResourceImageModule("master-card-logo.png")}
+                    />
+                  </span>
+                </CheckoutInnerSectionTitle>
+                <br />
+                {paymentOpen && (
+                  <form id="card-form" data-address={`card-form-root`}>
+                    <div id="card-number-element" data-line-count="1"></div>
+                    <div className={"form-field"} data-line-count="1">
+                      <input
+                        id="card-name"
+                        name="name"
+                        placeholder="Name on card"
+                        type="text"
+                        value={billingForm.cardName.value}
+                        onChange={(e) =>
+                          updateBillingForm({
+                            ...billingForm,
+                            cardName: {
+                              ...billingForm.cardName,
+                              value: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                    <div id="card-expiry-element" data-line-count="2"></div>
+                    <div id="card-cvv-element" data-line-count="2"></div>
+                  </form>
+                )}
               </CheckoutInnerSectionContainer>
             </LeftCheckoutContainer>
             <OrderSummaryContainer>

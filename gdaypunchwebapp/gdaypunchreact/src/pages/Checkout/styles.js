@@ -166,11 +166,23 @@ export const CheckoutInnerSectionTitle = styled.label`
     text-decoration: underline;
     color: #7272ff;
     font-weight: 100;
+    display: flex;
 
-    &:hover {
+    &:not(.no-hover):hover {
       cursor: pointer;
     }
   }
+`;
+
+export const PaymentMethodLogo = styled.div`
+  background: url(${(props) => props.src});
+  border: 1px solid #cecece;
+  background-position: center;
+  border-radius: 5pt;
+  width: 3em;
+  height: 2em;
+  background-size: cover;
+  margin-left: 0.5em;
 `;
 
 export const LeftCheckoutContainer = styled.div`
@@ -213,6 +225,8 @@ export const OrderSummaryFixed = styled.div`
 `;
 
 export const OrderSummaryLine = styled.div`
+  width: 100%;
+
   ${(props) =>
     props.singleLine
       ? `
@@ -223,13 +237,44 @@ export const OrderSummaryLine = styled.div`
       }
       `
       : `
-    display: grid;
-    grid-template-columns: 6em 2fr 1fr;
-    text-align: start;
+      display: grid;
+      grid-template-columns: 5.1em auto 1fr;
+      text-align: start;
+      column-gap: 16px;
     `}
 
   .summary-line-label {
     color: dimgray;
+  }
+
+  .ant-radio-group {
+    text-align: start;
+    width: 100%;
+  }
+
+  .ant-space {
+    width: 100%;
+  }
+
+  .ant-radio-wrapper {
+    display: flex;
+    align-items: center;
+
+    span:not(.ant-radio, .ant-radio-inner) {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      width: 100%;
+      align-items: center;
+    }
+  }
+
+  .ant-space-item {
+    margin-bottom: 8px;
+    padding: 1em;
+    border: 1px solid #d0d0d0;
+    border-radius: 0.3em;
+    font-size: initial;
   }
 
   .ant-radio-checked .ant-radio-inner {
