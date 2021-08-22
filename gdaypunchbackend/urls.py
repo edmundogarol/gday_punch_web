@@ -33,7 +33,6 @@ from .gdaypunchapi.api.products import (
 )
 from .gdaypunchapi.api.stripe import (
     PriceView,
-    PaymentView,
     PaymentsWebhookHandler,
     StripeProductsViewSet,
     StripePriceViewSet,
@@ -71,8 +70,6 @@ urlpatterns = [
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'api/price/', PriceView.as_view()),
-    url(r'api/payments/create-checkout-session/',
-        csrf_exempt(PaymentView.as_view())),
     url(r'api/payments/webhooks/', csrf_exempt(PaymentsWebhookHandler)),
     url(r'api/stripe-products/', StripeProductsViewSet.as_view()),
     url(r'api/stripe-prices/',
