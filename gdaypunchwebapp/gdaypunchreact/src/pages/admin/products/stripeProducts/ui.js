@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import PropTypes from "prop-types";
-import { useStripe, useElements } from "@stripe/react-stripe-js";
 import {
   Input,
   Tooltip,
@@ -17,8 +14,6 @@ import {
   ShoppingOutlined,
 } from "@ant-design/icons";
 
-import { gdayfetch } from "utils/gdayfetch";
-
 import {
   StripeProductsContainer,
   StripeProductCreateContainer,
@@ -33,7 +28,12 @@ const productType = {
 };
 
 function Ui(props) {
-  const { productsState, fetchStripeProducts, registerStripePrice } = props;
+  const {
+    productsState,
+    fetchStripeProducts,
+    registerStripePrice,
+    createStripePrice,
+  } = props;
   const {
     stripeProductList,
     fetchingStripeProducts,
@@ -46,21 +46,19 @@ function Ui(props) {
     type: undefined,
   });
 
-  const stripe = useStripe();
-
   const normaliseStripeProduct = () => {
     return stripeProductList.map((stripeProduct) => ({
-      key: stripeProduct.price.id,
-      name: stripeProduct.product.name,
-      stripeId: stripeProduct.price.id,
-      type: productType[stripeProduct.price.type],
-      price_type: stripeProduct.price.type,
-      price: stripeProduct.price.unit_amount / 100,
+      key: stripeProduct.stripe_id,
+      name: stripeProduct.name,
+      stripeId: stripeProduct.stripe_id,
+      type: productType[stripeProduct.type],
+      price_type: stripeProduct.type,
+      price: stripeProduct.price,
       registered: stripeProduct.registered,
     }));
   };
 
-  const handleCreateStripe = async (event) => {
+  const handleCreateStripe = () => {
     if (
       !stripeProduct.name ||
       !stripeProduct.unit_amount ||
@@ -69,22 +67,7 @@ function Ui(props) {
       message.warn("Missing fields in submission");
       return;
     }
-
-    const response = await gdayfetch("payments/create-checkout-session/", {
-      method: "POST",
-      body: {
-        ...stripeProduct,
-        previous_url: window.location.href,
-      },
-    });
-
-    const result = await stripe.redirectToCheckout({
-      sessionId: response.data.id,
-    });
-
-    if (result.error) {
-      alert(result.error.message);
-    }
+    createStripePrice(stripeProduct);
   };
 
   const dataSource = stripeProductList?.length ? normaliseStripeProduct() : [];
@@ -99,7 +82,7 @@ function Ui(props) {
     {
       title: "Name",
       dataIndex: "name",
-      key: "name",
+      key: (value, instance) => `${instance.key}-name`,
     },
     {
       title: "Stripe Id",
@@ -109,15 +92,16 @@ function Ui(props) {
     {
       title: "Type",
       dataIndex: "type",
-      key: "type",
+      key: (value, instance) => `${instance.key}-type`,
     },
     {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (value) => `$${value}`,
+      key: (value, instance) => `${instance.key}-price`,
     },
     {
+      key: (value, instance) => `${instance.key}-registered-${value}`,
       title: (
         <Tooltip title="Activate Stripe Price in Gday Punch">Register</Tooltip>
       ),

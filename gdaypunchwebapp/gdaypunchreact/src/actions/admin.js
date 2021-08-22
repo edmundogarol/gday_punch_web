@@ -39,6 +39,7 @@ export const FINISHED_FETCHING_STRIPE_PRODUCTS =
   "admin/FINISHED_FETCHING_STRIPE_PRODUCTS";
 export const UPDATE_STRIPE_PRODUCTS = "admin/UPDATE_STRIPE_PRODUCTS";
 
+export const CREATE_STRIPE_PRICE = "admin/CREATE_STRIPE_PRICE";
 export const FETCH_STRIPE_PRICES = "admin/FETCH_STRIPE_PRICES";
 export const REGISTER_STRIPE_PRICE = "admin/REGISTER_STRIPE_PRICE";
 export const FETCHING_STRIPE_PRICES = "admin/FETCHING_STRIPE_PRICES";
@@ -231,6 +232,13 @@ export const setEditProduct = (productId) => ({
   type: SET_EDITING_PRODUCT,
   payload: {
     productId,
+  },
+});
+
+export const createStripePrice = (price) => ({
+  type: CREATE_STRIPE_PRICE,
+  payload: {
+    price,
   },
 });
 

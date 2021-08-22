@@ -154,6 +154,34 @@ class PaymentView(APIView):
         return Response(content)
 
 
+class PriceView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, format=None):
+
+        name = request.data.get("name", None)
+        unit_amount = request.data.get("unit_amount", None)
+        price_type = request.data.get("type", None)
+
+        price = stripe.Price.create(
+            unit_amount=int(float(unit_amount)*100),
+            currency="aud",
+            recurring={
+                "interval": "month",
+                "interval_count": 2,
+                "usage_type": "metered"
+            } if price_type == "recurring" else None,
+            product_data={
+                "name": name,
+            })
+
+        content = {
+            "id": price.id
+        }
+
+        return Response(content)
+
+
 def PaymentsWebhookHandler(request):
     payload = request.body
     event = None
@@ -293,9 +321,9 @@ class StripeProductsViewSet(APIView):
     def get(self, request, format=None):
 
         product_list = []
-        stripe_price = None
 
         for price in stripe.Price.list(limit=100):
+            stripe_price = None
             price_details = stripe.Price.retrieve(price.id)
             product_details = stripe.Product.retrieve(price_details.product)
 
@@ -307,8 +335,10 @@ class StripeProductsViewSet(APIView):
             if product_details.active:
                 product_list.append(
                     {
-                        'price': price_details,
-                        'product': product_details,
+                        'stripe_id': price_details.id,
+                        'name': product_details.name,
+                        'type': price_details.type,
+                        'price': price_details.unit_amount / 100,
                         'registered': False if stripe_price is None else True
                     }
                 )

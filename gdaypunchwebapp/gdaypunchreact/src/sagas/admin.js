@@ -38,6 +38,7 @@ import {
   finishedFetchingContactEntries,
   updateContactEntries,
   DELETE_CONTACT_ENTRY,
+  CREATE_STRIPE_PRICE,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -289,6 +290,24 @@ export function* fetchStripeProductsCall() {
   }
 }
 
+export function* createStripePriceCall(action) {
+  const response = yield call(api, "price/", {
+    method: "POST",
+    body: {
+      ...action.payload.price,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield call(fetchStripeProductsCall);
+    return data;
+  } else {
+    console.log("Creaate Stripe Price error", JSON.stringify(response));
+  }
+}
+
 export function* fetchAdminProductsCall() {
   yield put(fetchingAdminProducts());
   const response = yield call(api, "products/", {
@@ -477,6 +496,7 @@ export default function* adminSaga() {
     takeLatest(CREATE_PROMPT, createPromptCall),
     takeLatest(SELECT_PROMPT, selectPromptCall),
     takeLatest(FETCH_PANEL_STYLE_PROMPT, fetchPanelStylePromptCall),
+    takeLatest(CREATE_STRIPE_PRICE, createStripePriceCall),
     takeLatest(FETCH_STRIPE_PRODUCTS, fetchStripeProductsCall),
     takeLatest(FETCH_ADMIN_PRODUCTS, fetchAdminProductsCall),
     takeLatest(CREATE_ADMIN_PRODUCT, createProductCall),
