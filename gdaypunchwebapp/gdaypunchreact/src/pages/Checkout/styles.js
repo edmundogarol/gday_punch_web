@@ -76,6 +76,12 @@ export const CheckoutInnerSectionContainer = styled.div`
     align-items: self-end;
     min-width: 17em;
 
+    .ant-alert {
+      text-align: start;
+      margin-bottom: 1em;
+      width: 100%;
+    }
+
     label {
       font-weight: unset;
       color: #868686;
@@ -104,6 +110,10 @@ export const CheckoutInnerSectionContainer = styled.div`
   }
 
   .empty {
+    .invalid-message {
+      display: initial;
+    }
+
     input,
     select {
       color: #de5757;
@@ -242,6 +252,12 @@ export const OrderSummaryLine = styled.div`
       text-align: start;
       column-gap: 16px;
     `}
+
+  p {
+    span {
+      margin-left: 0.5em;
+    }
+  }
 
   .summary-line-label {
     color: dimgray;

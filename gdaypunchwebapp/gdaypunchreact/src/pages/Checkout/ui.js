@@ -53,9 +53,6 @@ import {
   phoneValidator,
 } from "utils/utils";
 
-const { Title } = Typography;
-const { Option } = Select;
-
 const CARD_ELEMENT_OPTIONS = {
   style: {
     base: {
@@ -83,10 +80,11 @@ function Ui(props) {
     productList: cartItemsObject,
   } = props;
   const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
-  const [fetchingLocale, updateFetchingLocale] = useState(false);
-  const [locale, setLocale] = useState(undefined);
-  const [submitting, toggleSubmitting] = useState(false);
   const [checkoutForm, updateCheckoutForm] = useState({
+    type: "shipping",
+    formOpen: true,
+    locale: undefined,
+    fetchingLocale: false,
     email: { value: "", error: undefined },
     firstName: { value: "", error: undefined },
     lastName: { value: "", error: undefined },
@@ -95,11 +93,16 @@ function Ui(props) {
     city: { value: "", error: undefined },
     postcode: { value: "", error: undefined },
     province: { value: "", error: undefined },
-    country: { value: locale || "AU", error: undefined },
+    country: { value: "AU", error: undefined },
     company: { value: "", error: undefined },
     phone: { value: "", error: undefined },
   });
   const [billingForm, updateBillingForm] = useState({
+    type: "billing",
+    formOpen: false,
+    locale: undefined,
+    fetchingLocale: false,
+    email: { value: "", error: undefined },
     cardName: { value: "", error: undefined },
     firstName: { value: "", error: undefined },
     lastName: { value: "", error: undefined },
@@ -108,17 +111,70 @@ function Ui(props) {
     city: { value: "", error: undefined },
     postcode: { value: "", error: undefined },
     province: { value: "", error: undefined },
-    country: { value: locale || "AU", error: undefined },
+    country: { value: "AU", error: undefined },
     phone: { value: "", error: undefined },
   });
-  const [customerDetailsOpen, toggleCustomerDetails] = useState(true);
+  const [useShippingDetails, toggleUseShippingDetails] = useState(true);
   const [shippingMethodOpen, toggleShippingMethod] = useState(false);
   const [paymentOpen, togglePayment] = useState(false);
+  const [submitting, toggleSubmitting] = useState(false);
 
   const freeShipping = checkoutForm.country.value === "AU";
 
   const stripe = useStripe();
   const elements = useElements();
+
+  const populateAddressForm = (form) => {
+    const addressRoot = document.getElementById(`${form.type}-address-root`);
+
+    if (!addressRoot || !form.formOpen) return;
+
+    if (!countriesDownloaded && form.locale) {
+      AddressForm(addressRoot, form.locale);
+      updateCountriesDownloaded(true);
+    }
+  };
+
+  const fetchLocale = (form) => {
+    const { locale, fetchingLocale } = form;
+    const updateForm =
+      form.type === "shipping" ? updateCheckoutForm : updateBillingForm;
+
+    if (!locale && !fetchingLocale) {
+      const getCountry = async () => {
+        const res = await axios
+          .get("https://geolocation-db.com/json/")
+          .catch((e) => console.error(e));
+        const country = res ? res.data.country_code : "AU";
+
+        updateForm({
+          ...form,
+          locale: country,
+          fetchingLocale: true,
+          country: { ...form.country, value: country },
+        });
+      };
+
+      getCountry();
+    }
+  };
+
+  useEffect(() => {
+    populateAddressForm(checkoutForm);
+    populateAddressForm(billingForm);
+  }, [
+    useShippingDetails,
+    countriesDownloaded,
+    billingForm.formOpen,
+    checkoutForm.formOpen,
+    billingForm.locale,
+    checkoutForm.locale,
+  ]);
+
+  useEffect(() => {
+    fetchLocale(checkoutForm);
+    fetchLocale(billingForm);
+  }, [checkoutForm.locale, billingForm.locale]);
 
   useEffect(() => {
     if (!paymentOpen) return;
@@ -148,40 +204,6 @@ function Ui(props) {
       }
     };
   }, [paymentOpen]);
-
-  useEffect(() => {
-    const shippingAddressRoot = document.getElementById(
-      "shipping-address-root"
-    );
-
-    if (
-      customerDetailsOpen &&
-      !countriesDownloaded &&
-      shippingAddressRoot &&
-      locale
-    ) {
-      AddressForm(document.getElementById("shipping-address-root"), locale);
-      updateCountriesDownloaded(true);
-    }
-  }, [customerDetailsOpen, countriesDownloaded, locale]);
-
-  useEffect(() => {
-    if (!locale && !fetchingLocale) {
-      const getCountry = async () => {
-        const res = await axios
-          .get("https://geolocation-db.com/json/")
-          .catch((e) => console.error(e));
-        const country = res ? res.data.country_code : "AU";
-        setLocale("US");
-        updateFetchingLocale(true);
-        updateCheckoutForm({
-          ...checkoutForm,
-          country: { ...checkoutForm.country, value: country },
-        });
-      };
-      getCountry();
-    }
-  }, [locale, fetchingLocale]);
 
   window.onscroll = () => scrollFunction();
 
@@ -306,10 +328,88 @@ function Ui(props) {
     );
   };
 
-  const validateCheckoutForm = () => {
-    let updatingForm = checkoutForm;
+  const renderAddressSummary = (form) => {
+    const addressTitle = form.type === "shipping" ? "Ship To" : "Address";
+    return (
+      <>
+        <OrderSummaryLine>
+          <label className="summary-line-label">Contact</label>
+          <div>{`${form.email.value}`}</div>
+          <div>{`${form.phone.value}`}</div>
+        </OrderSummaryLine>
+        <SummaryLineSeparator />
+        <OrderSummaryLine>
+          <label className="summary-line-label">{addressTitle}</label>
+          <div>{`${form.address1.value} ${form.address2.value}, ${form.city.value} ${form.province.value} ${form.postcode.value}, ${form.country.value}`}</div>
+        </OrderSummaryLine>
+      </>
+    );
+  };
+
+  const renderBillingView = () => {
+    const useShippingDetailsSelector = () => (
+      <>
+        <OrderSummaryLine singleLine>
+          <Radio.Group
+            onChange={(e) => {
+              const useShipping = e.target.value === "shipping";
+              toggleUseShippingDetails(useShipping);
+              if (useShipping) {
+                updateCountriesDownloaded(false);
+              }
+            }}
+            value={useShippingDetails ? "shipping" : "billing"}
+          >
+            <Space direction="vertical">
+              <Radio value="shipping">Same as shipping address</Radio>
+              <Radio value="billing">Use different billing address</Radio>
+            </Space>
+          </Radio.Group>
+        </OrderSummaryLine>
+        {useShippingDetails && (
+          <button onClick={() => handleOpenSection("payment")}>Next</button>
+        )}
+      </>
+    );
+
+    if (useShippingDetails) {
+      return useShippingDetailsSelector();
+    }
+
+    return (
+      <>
+        {useShippingDetailsSelector()}
+        <GPAddressForm
+          type="billing"
+          addressForm={billingForm}
+          updateAddressForm={updateBillingForm}
+        />
+        <button onClick={() => handleOpenSection("payment")}>Next</button>
+      </>
+    );
+  };
+
+  const validateForm = (form) => {
+    const doNotValidate = [
+      "type",
+      "formOpen",
+      "locale",
+      "fetchingLocale",
+      "cardName",
+      "company",
+    ];
+
+    if (!form.formOpen) return true;
+    if (form.type === "billing" && form.formOpen && useShippingDetails)
+      return true;
+
+    const updater =
+      form.type === "shipping" ? updateCheckoutForm : updateBillingForm;
+    let updatingForm = form;
 
     Object.keys(updatingForm).map((key) => {
+      if (doNotValidate.includes(key)) return;
+
       const empty = !updatingForm[key].value.length;
       let validator = undefined;
 
@@ -319,21 +419,19 @@ function Ui(props) {
       const invalid =
         !empty && validator && !validator(updatingForm[key].value);
 
-      if (key !== "company") {
-        let currentError = empty ? "empty" : undefined;
-        currentError = invalid ? "invalid-format" : currentError;
+      let currentError = empty ? "empty" : undefined;
+      currentError = invalid ? "invalid-format" : currentError;
 
-        updatingForm = {
-          ...updatingForm,
-          [key]: {
-            ...updatingForm[key],
-            error: currentError,
-          },
-        };
-      }
+      updatingForm = {
+        ...updatingForm,
+        [key]: {
+          ...updatingForm[key],
+          error: currentError,
+        },
+      };
     });
 
-    updateCheckoutForm(updatingForm);
+    updater(updatingForm);
 
     const errors = Object.values(updatingForm)
       .map((field) => field.error)
@@ -343,9 +441,21 @@ function Ui(props) {
   };
 
   const handleOpenSection = (section) => {
-    toggleCustomerDetails(section === "customer");
-    toggleShippingMethod(section === "shipping");
-    togglePayment(section === "payment");
+    const validForms = validateForm(checkoutForm) && validateForm(billingForm);
+
+    if (validForms) {
+      updateCheckoutForm({
+        ...checkoutForm,
+        formOpen: section === "customer",
+      });
+      updateBillingForm({
+        ...billingForm,
+        formOpen: section === "billing",
+      });
+      toggleShippingMethod(section === "shipping");
+      togglePayment(section === "payment");
+    }
+
     updateCountriesDownloaded(false);
   };
 
@@ -375,56 +485,33 @@ function Ui(props) {
               >
                 <CheckoutInnerSectionTitle>
                   Customer Details
-                  {!customerDetailsOpen && (
+                  {!checkoutForm.formOpen && (
                     <span onClick={() => handleOpenSection("customer")}>
                       Edit
                     </span>
                   )}
                 </CheckoutInnerSectionTitle>
                 <br />
-                {customerDetailsOpen ? (
+                {checkoutForm.formOpen ? (
                   <>
                     <GPAddressForm
                       type="shipping"
                       addressForm={checkoutForm}
                       updateAddressForm={updateCheckoutForm}
                     />
-                    <button
-                      onClick={() => {
-                        if (validateCheckoutForm()) {
-                          handleOpenSection("shipping");
-                        }
-                      }}
-                    >
+                    <button onClick={() => handleOpenSection("shipping")}>
                       Next
                     </button>
                   </>
                 ) : (
-                  <>
-                    <OrderSummaryLine>
-                      <label className="summary-line-label">Contact</label>
-                      <div>{`${checkoutForm.email.value}`}</div>
-                      <div>{`${checkoutForm.phone.value}`}</div>
-                    </OrderSummaryLine>
-                    <SummaryLineSeparator />
-                    <OrderSummaryLine>
-                      <label className="summary-line-label">Ship to</label>
-                      <div>{`${checkoutForm.address1.value} ${checkoutForm.address2.value}, ${checkoutForm.city.value} ${checkoutForm.province.value} ${checkoutForm.postcode.value}, ${checkoutForm.country.value}`}</div>
-                    </OrderSummaryLine>
-                  </>
+                  renderAddressSummary(checkoutForm)
                 )}
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
                 <CheckoutInnerSectionTitle>
                   Shipping Method
                   {!shippingMethodOpen && (
-                    <span
-                      onClick={() => {
-                        if (validateCheckoutForm()) {
-                          handleOpenSection("shipping");
-                        }
-                      }}
-                    >
+                    <span onClick={() => handleOpenSection("shipping")}>
                       Edit
                     </span>
                   )}
@@ -443,12 +530,12 @@ function Ui(props) {
                           </Radio>
                           <Radio value="international" disabled={freeShipping}>
                             International Standard Shipping
-                            <p>AUD$9.00</p>
+                            <p>AUD$13.00</p>
                           </Radio>
                         </Space>
                       </Radio.Group>
                     </OrderSummaryLine>
-                    <button onClick={() => handleOpenSection("payment")}>
+                    <button onClick={() => handleOpenSection("billing")}>
                       Next
                     </button>
                   </>
@@ -462,11 +549,39 @@ function Ui(props) {
                       ) : (
                         <p>
                           International Standard Shipping
-                          <span>(AUD$9.00)</span>
+                          <span>(AUD$13.00)</span>
                         </p>
                       )}
                     </div>
                   </OrderSummaryLine>
+                )}
+              </CheckoutInnerSectionContainer>
+              <CheckoutInnerSectionContainer
+                selectImage={getImageModule("down-arrow.png")}
+              >
+                <CheckoutInnerSectionTitle>
+                  Billing Address
+                  {!billingForm.formOpen && (
+                    <span onClick={() => handleOpenSection("billing")}>
+                      Edit
+                    </span>
+                  )}
+                </CheckoutInnerSectionTitle>
+                <br />
+                {billingForm.formOpen ? (
+                  renderBillingView()
+                ) : (
+                  <>
+                    {useShippingDetails ? (
+                      <OrderSummaryLine singleLine>
+                        <div>
+                          <p>Same as shipping address</p>
+                        </div>
+                      </OrderSummaryLine>
+                    ) : (
+                      renderAddressSummary(billingForm)
+                    )}
+                  </>
                 )}
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
@@ -481,31 +596,33 @@ function Ui(props) {
                     />
                   </span>
                 </CheckoutInnerSectionTitle>
-                <br />
                 {paymentOpen && (
-                  <form id="card-form" data-address={`card-form-root`}>
-                    <div id="card-number-element" data-line-count="1"></div>
-                    <div className={"form-field"} data-line-count="1">
-                      <input
-                        id="card-name"
-                        name="name"
-                        placeholder="Name on card"
-                        type="text"
-                        value={billingForm.cardName.value}
-                        onChange={(e) =>
-                          updateBillingForm({
-                            ...billingForm,
-                            cardName: {
-                              ...billingForm.cardName,
-                              value: e.target.value,
-                            },
-                          })
-                        }
-                      />
-                    </div>
-                    <div id="card-expiry-element" data-line-count="2"></div>
-                    <div id="card-cvv-element" data-line-count="2"></div>
-                  </form>
+                  <>
+                    <br />
+                    <form id="card-form" data-address={`card-form-root`}>
+                      <div id="card-number-element" data-line-count="1"></div>
+                      <div className={"form-field"} data-line-count="1">
+                        <input
+                          id="card-name"
+                          name="name"
+                          placeholder="Name on card"
+                          type="text"
+                          value={billingForm.cardName.value}
+                          onChange={(e) =>
+                            updateBillingForm({
+                              ...billingForm,
+                              cardName: {
+                                ...billingForm.cardName,
+                                value: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                      <div id="card-expiry-element" data-line-count="2"></div>
+                      <div id="card-cvv-element" data-line-count="2"></div>
+                    </form>
+                  </>
                 )}
               </CheckoutInnerSectionContainer>
             </LeftCheckoutContainer>
@@ -531,7 +648,7 @@ function Ui(props) {
                   <button
                     onClick={() => {
                       toggleSubmitting(true);
-                      console.log({ checkoutForm });
+                      console.log({ checkoutForm, billingForm });
                     }}
                   >
                     Pay Now

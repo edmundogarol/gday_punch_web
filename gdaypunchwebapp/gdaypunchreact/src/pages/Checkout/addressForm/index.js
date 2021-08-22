@@ -1,5 +1,6 @@
 import React from "react";
 import classNames from "classnames";
+import { Alert } from "antd";
 
 import { phoneValidator } from "utils/utils";
 
@@ -30,7 +31,8 @@ function Ui(props) {
 
     if (field === "province") {
       const select = e.target;
-      value = select.options[select.selectedIndex].text;
+      console.log({ options: select.options, selected: select.selectedIndex });
+      value = select.options ? select.options[select.selectedIndex].text : "-";
 
       return updateAddressForm({
         ...addressForm,
@@ -68,6 +70,11 @@ function Ui(props) {
           value={addressForm.email.value}
           onChange={(e) => handleUpdateAddressForm("email", e)}
         />
+        <Alert
+          className="invalid-message"
+          message="Enter an email address"
+          type="error"
+        />
       </div>
 
       <div
@@ -81,6 +88,11 @@ function Ui(props) {
           name="address[first_name]"
           value={addressForm.firstName.value}
           onChange={(e) => handleUpdateAddressForm("firstName", e)}
+        />
+        <Alert
+          className="invalid-message"
+          message="Enter a first name"
+          type="error"
         />
       </div>
 
@@ -96,15 +108,24 @@ function Ui(props) {
           value={addressForm.lastName.value}
           onChange={(e) => handleUpdateAddressForm("lastName", e)}
         />
+        <Alert
+          className="invalid-message"
+          message="Enter a last name"
+          type="error"
+        />
       </div>
 
-      <div className="form-field" data-line-count="1">
+      <div
+        className="form-field"
+        data-aria-hidden={addressForm.company ? "true" : "false"}
+        data-line-count="1"
+      >
         <label htmlFor="AddressCompany">Company</label>
         <input
           type="text"
           id="AddressCompany"
           name="address[company]"
-          value={addressForm.company.value}
+          value={addressForm.company ? addressForm.company.value : ""}
           onChange={(e) => handleUpdateAddressForm("company", e)}
         />
       </div>
@@ -120,6 +141,11 @@ function Ui(props) {
           name="address[address1]"
           value={addressForm.address1.value}
           onChange={(e) => handleUpdateAddressForm("address1", e)}
+        />
+        <Alert
+          className="invalid-message"
+          message="Enter an address"
+          type="error"
         />
       </div>
 
@@ -146,6 +172,11 @@ function Ui(props) {
           value={addressForm.city.value}
           onChange={(e) => handleUpdateAddressForm("city", e)}
         />
+        <Alert
+          className="invalid-message"
+          message="Enter a city"
+          type="error"
+        />
       </div>
 
       <div
@@ -166,6 +197,11 @@ function Ui(props) {
           <option value="GB">United Kingdom</option>
           <option disabled>_ _ _ _ _ _ _ _ _</option>
         </select>
+        <Alert
+          className="invalid-message"
+          message="Select a country"
+          type="error"
+        />
       </div>
 
       <div
@@ -183,6 +219,11 @@ function Ui(props) {
             handleUpdateAddressForm("province", e);
           }}
         ></select>
+        <Alert
+          className="invalid-message"
+          message="Select an option"
+          type="error"
+        />
       </div>
 
       <div
@@ -196,6 +237,11 @@ function Ui(props) {
           name="address[zip]"
           value={addressForm.postcode.value}
           onChange={(e) => handleUpdateAddressForm("postcode", e)}
+        />
+        <Alert
+          className="invalid-message"
+          message="Enter a post/zip code"
+          type="error"
         />
       </div>
 
@@ -211,9 +257,11 @@ function Ui(props) {
           value={addressForm.phone.value}
           onChange={(e) => handleUpdateAddressForm("phone", e)}
         />
-        <label className="invalid-message">
-          Please enter a valid phone number
-        </label>
+        <Alert
+          className="invalid-message"
+          message="Please enter a valid phone number"
+          type="error"
+        />
       </div>
     </form>
   );
