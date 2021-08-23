@@ -108,3 +108,8 @@ export const selectCartTotal = createSelector(
     return total;
   }
 );
+
+export const selectPaymentClientSecret = createSelector(
+  selectDomain,
+  ({ payment: { clientSecret } }) => clientSecret
+);

@@ -154,6 +154,31 @@ class PaymentView(APIView):
         return Response(content)
 
 
+class PaymentIntentView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, format=None):
+
+        try:
+            data = request.data
+            print(data)
+            intent = stripe.PaymentIntent.create(
+                # amount=calculate_order_amount(data['items']),
+                amount=1000,
+                currency='aud'
+            )
+            content = {
+                'clientSecret': intent['client_secret']
+            }
+
+        except Exception as e:
+            content = {
+                'error': str(e)
+            }
+
+        return Response(content)
+
+
 class PriceView(APIView):
     permission_classes = [permissions.AllowAny]
 

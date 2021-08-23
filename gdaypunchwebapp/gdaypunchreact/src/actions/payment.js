@@ -1,0 +1,43 @@
+export const PAYMENT_SUBMIT = "payment/PAYMENT_SUBMIT";
+export const PAYMENT_PROCESSING = "payment/PAYMENT_PROCESSING";
+export const PAYMENT_SUCCEEDED = "payment/PAYMENT_SUCCEEDED";
+export const PAYMENT_ERROR = "payment/PAYMENT_ERROR";
+
+export const PAYMENT_INTENT_FETCH = "payment/PAYMENT_INTENT_FETCH";
+export const PAYMENT_INTENT_UPDATE = "payment/PAYMENT_INTENT_UPDATE";
+
+export const paymentSubmit = (customerDetails) => ({
+  type: PAYMENT_SUBMIT,
+  payload: {
+    ...customerDetails,
+  },
+});
+
+export const paymentProcessing = (processing) => ({
+  type: PAYMENT_PROCESSING,
+  payload: {
+    processing,
+  },
+});
+
+export const paymentSucceeded = () => ({
+  type: PAYMENT_SUCCEEDED,
+});
+
+export const paymentError = () => ({
+  type: PAYMENT_ERROR,
+});
+
+export const paymentIntentFetch = (items) => ({
+  type: PAYMENT_INTENT_FETCH,
+  payload: {
+    items,
+  },
+});
+
+export const paymentIntentUpdate = (clientSecret) => ({
+  type: PAYMENT_INTENT_UPDATE,
+  payload: {
+    clientSecret,
+  },
+});

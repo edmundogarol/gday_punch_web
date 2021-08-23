@@ -34,7 +34,7 @@ export async function gdayfetch(url, params = {}) {
 
   const finalParams = {
     credentials: "same-origin",
-    ...inputParams
+    ...inputParams,
   };
 
   buildSearchParams(queryParams, composedURL.searchParams);
@@ -45,7 +45,7 @@ export async function gdayfetch(url, params = {}) {
     ...finalParams.headers,
     "Content-Type": contentType,
     Accept: accept,
-    "X-CSRFToken": csrftoken
+    "X-CSRFToken": csrftoken,
   };
 
   finalParams.body = JSON.stringify(finalParams.body);
@@ -67,7 +67,7 @@ export async function gdayfetch(url, params = {}) {
       ok: false,
       exception: true,
       status: 406,
-      statusText: "Not Acceptable"
+      statusText: "Not Acceptable",
     };
   }
 
@@ -93,7 +93,7 @@ export async function twitterFetch(url, params = {}) {
     embedId,
     statusId,
     retweetUrl,
-    accept = APPLICATION_JSON
+    accept = APPLICATION_JSON,
   } = params;
 
   const embeddedURL = `https://twitter.com/GdayManga/status/${embedId}`;
@@ -138,41 +138,41 @@ export async function twitterFetch(url, params = {}) {
     oauth_nonce: uuid.v1(),
     oauth_timestamp: Math.floor(moment.now() / 1000),
     oauth_signature_method: "HMAC-SHA1",
-    oauth_version: "1.0"
+    oauth_version: "1.0",
   };
 
   if (image) {
     parameters = {
       ...parameters,
       media_data: image,
-      media_category: "tweet_image"
+      media_category: "tweet_image",
     };
   } else if (mediaId) {
     parameters = {
       ...parameters,
       media_ids: mediaId,
-      status
+      status,
     };
   } else if (embedId) {
     parameters = {
       ...parameters,
-      url: embeddedURL
+      url: embeddedURL,
     };
   } else if (statusId) {
     parameters = {
       ...parameters,
-      id: statusId
+      id: statusId,
     };
   } else if (retweetUrl) {
     parameters = {
       ...parameters,
       status,
-      attachment_url: retweetUrl
+      attachment_url: retweetUrl,
     };
   } else {
     parameters = {
       ...parameters,
-      status
+      status,
     };
   }
 
@@ -220,7 +220,7 @@ export async function twitterFetch(url, params = {}) {
   const requestOptions = {
     method,
     headers: myHeaders,
-    redirect: "follow"
+    redirect: "follow",
   };
 
   if (!embedId) requestOptions.body = urlencoded;
@@ -242,7 +242,7 @@ export async function twitterFetch(url, params = {}) {
       ok: false,
       exception: true,
       status: 406,
-      statusText: "Not Acceptable"
+      statusText: "Not Acceptable",
     };
   }
 

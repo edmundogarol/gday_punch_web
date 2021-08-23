@@ -38,6 +38,7 @@ import {
   UPDATE_COMMENTS,
   UPDATE_COMMENT,
 } from "actions/manga";
+import { PAYMENT_INTENT_UPDATE } from "src/actions/payment";
 
 const INITIAL_STATE = {
   user: {
@@ -80,6 +81,10 @@ const INITIAL_STATE = {
     fetchingCartItems: false,
     finishedFetchingCartItems: false,
     sideCartOpen: false,
+  },
+
+  payment: {
+    clientSecret: undefined,
   },
 
   reader: {
@@ -362,6 +367,13 @@ const appReducer = (state = INITIAL_STATE, action) => {
         reader: {
           ...state.reader,
           comments: [...state.reader.comments, action.payload.comment],
+        },
+      };
+    case PAYMENT_INTENT_UPDATE:
+      return {
+        ...state,
+        payment: {
+          clientSecret: action.payload.clientSecret,
         },
       };
     default:

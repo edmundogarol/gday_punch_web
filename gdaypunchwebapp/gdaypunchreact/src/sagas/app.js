@@ -1,4 +1,6 @@
 import { call, all, takeLatest, select, put } from "redux-saga/effects";
+import { message } from "antd";
+
 import {
   DO_LOGIN,
   DO_LOGOUT,
@@ -26,12 +28,19 @@ import {
   finishedFetchingCartItems,
 } from "actions/cart";
 import {
+  paymentError,
+  paymentIntentUpdate,
+  paymentProcessing,
+  paymentSucceeded,
+  PAYMENT_INTENT_FETCH,
+  PAYMENT_SUBMIT,
+} from "src/actions/payment";
+import {
   selectPendingRegistration,
   selectPendingLogin,
   selectUser,
 } from "selectors/app";
 import { api } from "utils/api";
-import { message } from "antd";
 
 export function* register() {
   const pendingRegistration = yield select(selectPendingRegistration);
@@ -173,6 +182,40 @@ export function* fetchCartItemsCall() {
   }
 }
 
+export function* paymentIntentFetchCall(action) {
+  const response = yield call(api, "payment-intent/", {
+    method: "POST",
+    body: {
+      items: action.payload.items,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(paymentIntentUpdate(data.clientSecret));
+  } else {
+    console.log("Payment Intent Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* paymentSubmitCall(action) {
+  yield put(paymentProcessing(true));
+
+  const response = yield call(api, "payment-customer-details/", {
+    method: "POST",
+    body: {
+      ...action.payload.customerDetails,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    console.log(data);
+  } else {
+    console.log("Payment Submit error", JSON.stringify(response));
+  }
+}
+
 export default function* appSaga() {
   yield all([
     takeLatest(UPDATE_USER_DETAILS, patchUser),
@@ -182,5 +225,7 @@ export default function* appSaga() {
     takeLatest(DO_CHECK_LOGIN, checkLogin),
     takeLatest(SUBMIT_CONTACT_FORM, submitContactFormCall),
     takeLatest(FETCH_CART_ITEMS, fetchCartItemsCall),
+    // takeLatest(PAYMENT_SUBMIT, paymentSubmitCall),
+    takeLatest(PAYMENT_INTENT_FETCH, paymentIntentFetchCall),
   ]);
 }

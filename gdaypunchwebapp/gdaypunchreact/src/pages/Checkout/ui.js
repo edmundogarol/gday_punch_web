@@ -74,6 +74,9 @@ const CARD_ELEMENT_OPTIONS = {
 
 function Ui(props) {
   const {
+    paymentSubmit,
+    paymentIntentFetch,
+    clientSecret,
     toggleSideCart,
     cartTotal,
     viewProduct,
@@ -158,6 +161,24 @@ function Ui(props) {
       getCountry();
     }
   };
+
+  useEffect(() => {
+    const items = Object.values(cartItemsObject)
+      .map((item) => item)
+      .filter((item) => item.quantity);
+
+    let stripe_prices = [];
+    items.map((item) => {
+      return item.stripe_prices.map((price) => {
+        stripe_prices = [
+          ...stripe_prices,
+          ...Array.from({ length: item.quantity }).map((x) => price),
+        ];
+      });
+    });
+
+    if (stripe_prices.length) paymentIntentFetch(stripe_prices);
+  }, []);
 
   useEffect(() => {
     populateAddressForm(checkoutForm);
@@ -261,22 +282,42 @@ function Ui(props) {
     props.history.push(`/product/${product.id}/${perma_link}`);
   };
 
-  const handlePurchaseClick = async () => {
-    let stripe_prices = [];
-    items.map((item) => {
-      return item.stripe_prices.map((price) => {
-        stripe_prices = [
-          ...stripe_prices,
-          ...Array.from({ length: item.quantity }).map((x) => price),
-        ];
-      });
+  const handleSubmitPayment = async (ev) => {
+    ev.preventDefault();
+
+    const cardNumber = elements.getElement("cardNumber");
+
+    const response = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardNumber,
+      },
     });
 
+    console.log({ response });
+
+    if (response.error) {
+      message.error({
+        content: `Payment Failed: ${response.error.message}`,
+        className: "antd-message-capitalize",
+        style: {
+          textTransform: "capitalize",
+        },
+      });
+    } else {
+      message.success({
+        content: "Payment Successful.",
+        className: "antd-message-capitalize",
+        style: {
+          textTransform: "capitalize",
+        },
+      });
+    }
+  };
+
+  const handlePurchaseClick = async () => {
     const response = await gdayfetch("payments/create-checkout-session/", {
       method: "POST",
-      body: {
-        stripe_ids: stripe_prices,
-      },
+      body: {},
     });
 
     if (response && response.ok) {
@@ -646,9 +687,10 @@ function Ui(props) {
                 </ItemTotalContainer>
                 <CartFooter>
                   <button
-                    onClick={() => {
+                    onClick={(ev) => {
                       toggleSubmitting(true);
                       console.log({ checkoutForm, billingForm });
+                      handleSubmitPayment(ev);
                     }}
                   >
                     Pay Now
