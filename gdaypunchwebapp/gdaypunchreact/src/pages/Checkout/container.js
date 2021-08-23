@@ -14,6 +14,7 @@ import { setViewingProduct as setViewingProductAction } from "actions/products";
 import {
   paymentSubmit as paymentSubmitAction,
   paymentIntentFetch as paymentIntentFetchAction,
+  paymentIntentCancel as paymentIntentCancelAction,
 } from "actions/payment";
 
 const mapState = createStructuredSelector({
@@ -28,6 +29,7 @@ const mapDispatch = {
   viewProduct: setViewingProductAction,
   paymentSubmit: paymentSubmitAction,
   paymentIntentFetch: paymentIntentFetchAction,
+  paymentIntentCancel: paymentIntentCancelAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));

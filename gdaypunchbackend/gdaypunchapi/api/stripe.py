@@ -178,6 +178,23 @@ class PaymentIntentView(APIView):
 
         return Response(content)
 
+    def delete(self, request, format=None):
+
+        try:
+            data = request.data
+
+            intent = stripe.PaymentIntent.cancel(data['payment_intent_id'])
+            content = {
+                'payment_intent': intent['id']
+            }
+
+        except Exception as e:
+            content = {
+                'error': str(e)
+            }
+
+        return Response(content)
+
 
 class PriceView(APIView):
     permission_classes = [permissions.AllowAny]

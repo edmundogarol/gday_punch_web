@@ -5,11 +5,12 @@ export const PAYMENT_ERROR = "payment/PAYMENT_ERROR";
 
 export const PAYMENT_INTENT_FETCH = "payment/PAYMENT_INTENT_FETCH";
 export const PAYMENT_INTENT_UPDATE = "payment/PAYMENT_INTENT_UPDATE";
+export const PAYMENT_INTENT_CANCEL = "payment/PAYMENT_INTENT_CANCEL";
 
 export const paymentSubmit = (customerDetails) => ({
   type: PAYMENT_SUBMIT,
   payload: {
-    ...customerDetails,
+    customerDetails,
   },
 });
 
@@ -40,4 +41,8 @@ export const paymentIntentUpdate = (clientSecret) => ({
   payload: {
     clientSecret,
   },
+});
+
+export const paymentIntentCancel = () => ({
+  type: PAYMENT_INTENT_CANCEL,
 });

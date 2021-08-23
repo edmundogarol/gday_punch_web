@@ -76,6 +76,7 @@ function Ui(props) {
   const {
     paymentSubmit,
     paymentIntentFetch,
+    paymentIntentCancel,
     clientSecret,
     toggleSideCart,
     cartTotal,
@@ -178,6 +179,10 @@ function Ui(props) {
     });
 
     if (stripe_prices.length) paymentIntentFetch(stripe_prices);
+
+    return () => {
+      paymentIntentCancel();
+    };
   }, []);
 
   useEffect(() => {

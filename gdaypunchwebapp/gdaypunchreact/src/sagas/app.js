@@ -32,6 +32,7 @@ import {
   paymentIntentUpdate,
   paymentProcessing,
   paymentSucceeded,
+  PAYMENT_INTENT_CANCEL,
   PAYMENT_INTENT_FETCH,
   PAYMENT_SUBMIT,
 } from "src/actions/payment";
@@ -39,6 +40,7 @@ import {
   selectPendingRegistration,
   selectPendingLogin,
   selectUser,
+  selectPaymentClientSecret,
 } from "selectors/app";
 import { api } from "utils/api";
 
@@ -198,6 +200,25 @@ export function* paymentIntentFetchCall(action) {
   }
 }
 
+export function* paymentIntentCancelCall() {
+  const clientSecret = yield select(selectPaymentClientSecret);
+
+  if (!clientSecret) return;
+
+  const response = yield call(api, "payment-intent/", {
+    method: "DELETE",
+    body: {
+      payment_intent_id: clientSecret.match(/^.*?(?=_secret)/)[0],
+    },
+  });
+
+  if (response && response.ok) {
+    yield put(paymentIntentUpdate(undefined));
+  } else {
+    console.log("Payment Intent Fetch error", JSON.stringify(response));
+  }
+}
+
 export function* paymentSubmitCall(action) {
   yield put(paymentProcessing(true));
 
@@ -226,6 +247,7 @@ export default function* appSaga() {
     takeLatest(SUBMIT_CONTACT_FORM, submitContactFormCall),
     takeLatest(FETCH_CART_ITEMS, fetchCartItemsCall),
     // takeLatest(PAYMENT_SUBMIT, paymentSubmitCall),
+    takeLatest(PAYMENT_INTENT_CANCEL, paymentIntentCancelCall),
     takeLatest(PAYMENT_INTENT_FETCH, paymentIntentFetchCall),
   ]);
 }
