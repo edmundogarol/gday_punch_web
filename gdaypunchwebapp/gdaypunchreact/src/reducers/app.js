@@ -39,6 +39,7 @@ import {
   UPDATE_COMMENT,
 } from "actions/manga";
 import { PAYMENT_INTENT_UPDATE } from "src/actions/payment";
+import { CUSTOMER_SUBSCRIBE_FINISHED } from "src/actions/customer";
 
 const INITIAL_STATE = {
   user: {
@@ -85,6 +86,10 @@ const INITIAL_STATE = {
 
   payment: {
     clientSecret: undefined,
+  },
+
+  customer: {
+    subscribeCallFinished: false,
   },
 
   reader: {
@@ -374,6 +379,14 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         payment: {
           clientSecret: action.payload.clientSecret,
+        },
+      };
+    case CUSTOMER_SUBSCRIBE_FINISHED:
+      return {
+        ...state,
+        customer: {
+          ...state.customer,
+          subscribeCallFinished: true,
         },
       };
     default:

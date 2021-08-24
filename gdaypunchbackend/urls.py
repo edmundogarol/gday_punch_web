@@ -42,6 +42,10 @@ from .gdaypunchapi.api.contact import (
     ContactViewSet
 )
 
+from .gdaypunchapi.api.customer import (
+    CustomerViewSet
+)
+
 schema_view = get_swagger_view(title='Gday Punch Web App API')
 
 router = routers.DefaultRouter()
@@ -62,6 +66,7 @@ router.register(
 router.register(r'products', ProductViewSet, basename="products")
 router.register(r'product', ProductDetailView, basename="product")
 router.register(r'contact', ContactViewSet, basename="contact")
+router.register(r'customer', CustomerViewSet, basename="customer")
 
 urlpatterns = [
     url(r'^docs/', schema_view),

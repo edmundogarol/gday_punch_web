@@ -165,7 +165,11 @@ class PaymentIntentView(APIView):
             intent = stripe.PaymentIntent.create(
                 # amount=calculate_order_amount(data['items']),
                 amount=1000,
-                currency='aud'
+                currency='aud',
+                metadata={
+                    'gday_customer_name': 'Edmundo Garol',
+                    'gday_customer_address1': 'U 3/37 Riversdale Rd',
+                }
             )
             content = {
                 'clientSecret': intent['client_secret']
@@ -242,6 +246,12 @@ def PaymentsWebhookHandler(request):
         return HttpResponse(status=400)
     except KeyError:
         return HttpResponse(status=400)
+
+    # Handle creating payment intent
+    if event['type'] == 'payment_intent.created':
+        payment_intent = event['data']['object']
+
+        print(payment_intent)
 
     # Handle checkout complete
     if event['type'] == 'checkout.session.completed':

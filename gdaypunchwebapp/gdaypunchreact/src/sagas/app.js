@@ -43,6 +43,10 @@ import {
   selectPaymentClientSecret,
 } from "selectors/app";
 import { api } from "utils/api";
+import {
+  customerSubscribeFinished,
+  CUSTOMER_SUBSCRIBE,
+} from "src/actions/customer";
 
 export function* register() {
   const pendingRegistration = yield select(selectPendingRegistration);
@@ -237,6 +241,23 @@ export function* paymentSubmitCall(action) {
   }
 }
 
+export function* customerSubscribeCall(action) {
+  const response = yield call(api, "customer/", {
+    method: "POST",
+    body: {
+      ...action.payload.customer,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield call(checkLogin);
+    yield put(customerSubscribeFinished(data));
+  } else {
+    console.log("Customer subscribe error", JSON.stringify(response));
+  }
+}
+
 export default function* appSaga() {
   yield all([
     takeLatest(UPDATE_USER_DETAILS, patchUser),
@@ -249,5 +270,6 @@ export default function* appSaga() {
     // takeLatest(PAYMENT_SUBMIT, paymentSubmitCall),
     takeLatest(PAYMENT_INTENT_CANCEL, paymentIntentCancelCall),
     takeLatest(PAYMENT_INTENT_FETCH, paymentIntentFetchCall),
+    takeLatest(CUSTOMER_SUBSCRIBE, customerSubscribeCall),
   ]);
 }

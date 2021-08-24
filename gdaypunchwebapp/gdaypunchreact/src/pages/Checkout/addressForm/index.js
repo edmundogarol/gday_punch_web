@@ -31,7 +31,6 @@ function Ui(props) {
 
     if (field === "province") {
       const select = e.target;
-      console.log({ options: select.options, selected: select.selectedIndex });
       value = select.options ? select.options[select.selectedIndex].text : "-";
 
       return updateAddressForm({

@@ -100,7 +100,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     location = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
     roles = models.ManyToManyField(Role, blank=True)
-    subscribed = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
@@ -123,6 +122,18 @@ class User(AbstractBaseUser, PermissionsMixin):
             return self.email
 
         return full_name
+
+    @property
+    def subscribed(self):
+        try:
+            customer = Customer.objects.get(user=self.id)
+
+            if customer.subscribed is not 'not_subscribed':
+                return True
+            else:
+                return False
+        except Customer.DoesNotExist:
+            return False
 
 
 class Manga(models.Model):
@@ -260,13 +271,6 @@ class Prompt(models.Model):
     last_selected = models.DateField(null=True, blank=True)
 
 
-class StripeCustomer(models.Model):
-    customer_id = models.TextField(max_length=50, blank=False)
-    user = models.ForeignKey(
-        User,  on_delete=models.PROTECT, blank=True, null=True)
-    stripe_email = models.TextField(max_length=70, blank=False)
-
-
 class ProductType(models.Model):
     PHYSICAL = 1
     DIGITAL = 2
@@ -349,6 +353,43 @@ class Product(models.Model):
     def user_string(self):
         user = User.objects.get(email=self.user)
         return user.author_name
+
+
+class Customer(models.Model):
+    SUBSCRIBED_ONLY = 'subscribed_only'
+    PURCHASED_SUBSCRIBED = 'purchased_subscribed'
+    CHECKOUT_SUBSCRIBED = 'checkout_subscribed'
+    NOT_SUBSCRIBED = 'not_subscribed'
+    SUBSCRIPTION_TYPE = (
+        (SUBSCRIBED_ONLY, 'Subscribed Only'),
+        (PURCHASED_SUBSCRIBED, 'Purchased and Subscribed'),
+        (CHECKOUT_SUBSCRIBED, 'Subscribed at Checkout'),
+        (NOT_SUBSCRIBED, 'Not Subscribed'),
+    )
+
+    user = models.ForeignKey(
+        User,  on_delete=models.PROTECT, blank=True, null=True)
+    subscribed = models.TextField(
+        max_length=30, choices=SUBSCRIPTION_TYPE, default=SUBSCRIBED_ONLY)
+    email = models.TextField(max_length=100, unique=True, blank=False)
+    first_name = models.TextField(max_length=50, blank=False)
+    last_name = models.TextField(max_length=50, blank=False)
+    address_line_1 = models.TextField(max_length=50, blank=False)
+    address_line_2 = models.TextField(max_length=50, blank=True)
+    city = models.TextField(max_length=50, blank=False)
+    state = models.TextField(max_length=50, blank=False)
+    postcode = models.TextField(max_length=50, blank=False)
+    country = models.TextField(max_length=50, blank=False)
+    phone_number = models.TextField(max_length=50, blank=False)
+
+
+class StripeCustomer(models.Model):
+    customer_id = models.TextField(max_length=50, blank=False)
+    user = models.ForeignKey(
+        User,  on_delete=models.PROTECT, blank=True, null=True)
+    stripe_email = models.TextField(max_length=70, blank=False)
+    gp_customer = models.ForeignKey(
+        Customer,  on_delete=models.PROTECT, blank=True, null=True)
 
 
 class Order(models.Model):

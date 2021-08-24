@@ -74,9 +74,11 @@ const CARD_ELEMENT_OPTIONS = {
 
 function Ui(props) {
   const {
+    user,
     paymentSubmit,
     paymentIntentFetch,
     paymentIntentCancel,
+    customerSubscribe,
     clientSecret,
     toggleSideCart,
     cartTotal,
@@ -178,10 +180,10 @@ function Ui(props) {
       });
     });
 
-    if (stripe_prices.length) paymentIntentFetch(stripe_prices);
+    // if (stripe_prices.length) paymentIntentFetch(stripe_prices);
 
     return () => {
-      paymentIntentCancel();
+      // paymentIntentCancel();
     };
   }, []);
 
@@ -500,6 +502,28 @@ function Ui(props) {
       });
       toggleShippingMethod(section === "shipping");
       togglePayment(section === "payment");
+    }
+
+    if (
+      !user.subscribed &&
+      validForms &&
+      checkoutForm.formOpen &&
+      section !== "customer"
+    ) {
+      customerSubscribe({
+        user: null,
+        subscribed: "checkout_subscribed",
+        email: checkoutForm.email.value,
+        first_name: checkoutForm.firstName.value,
+        last_name: checkoutForm.lastName.value,
+        address_line_1: checkoutForm.address1.value,
+        address_line_2: checkoutForm.address2.value,
+        city: checkoutForm.city.value,
+        state: checkoutForm.province.value,
+        postcode: checkoutForm.postcode.value,
+        country: checkoutForm.country.value,
+        phone_number: checkoutForm.phone.value,
+      });
     }
 
     updateCountriesDownloaded(false);

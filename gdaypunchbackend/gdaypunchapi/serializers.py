@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
     StripeCustomer, Product, Privileges, StripePrice,
-    Contact
+    Contact, Customer
 )
 
 
@@ -41,7 +41,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", "last_name", "username", "email", "bio", "privileges",
-                  "location", "birth_date", "roles", "password", "id", "is_staff")
+                  "location", "birth_date", "roles", "password", "id", "is_staff", "subscribed")
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -83,10 +83,17 @@ class PromptSerializer(serializers.ModelSerializer):
         fields = ("id", "prompt", "meta", "user", "promptType", "is_selected")
 
 
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ("id", "user", "subscribed", "phone_number", "email", "first_name", "last_name",
+                  "address_line_1", "address_line_2", "city", "state", "postcode", "country")
+
+
 class StripeCustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = StripeCustomer
-        fields = ("id", "customer_id", "user", "stripe_email")
+        fields = ("id", "customer_id", "user", "stripe_email", "gp_customer")
 
 
 class ProductSerializer(serializers.ModelSerializer):
