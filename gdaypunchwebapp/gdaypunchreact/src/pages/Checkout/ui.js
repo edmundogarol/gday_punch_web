@@ -37,6 +37,7 @@ import {
   LeftCheckoutContainer,
   CheckoutInnerSectionContainer,
   CheckoutInnerSectionTitle,
+  SubscribeCondition,
   PaymentMethodLogo,
   CartFooter,
   ItemTotal,
@@ -74,7 +75,6 @@ const CARD_ELEMENT_OPTIONS = {
 
 function Ui(props) {
   const {
-    user,
     paymentSubmit,
     paymentIntentFetch,
     paymentIntentCancel,
@@ -120,6 +120,7 @@ function Ui(props) {
     country: { value: "AU", error: undefined },
     phone: { value: "", error: undefined },
   });
+  const [subscribeAgreed, toggleSubscribeAgreed] = useState(false);
   const [useShippingDetails, toggleUseShippingDetails] = useState(true);
   const [shippingMethodOpen, toggleShippingMethod] = useState(false);
   const [paymentOpen, togglePayment] = useState(false);
@@ -280,6 +281,10 @@ function Ui(props) {
     } else if (checkoutContSmaller) {
       orderSummaryCont.style.background = "initial";
     }
+  };
+
+  const handleSubscribeCheck = (e) => {
+    toggleSubscribeAgreed(e.target.checked);
   };
 
   const handleViewProduct = (product) => {
@@ -505,7 +510,7 @@ function Ui(props) {
     }
 
     if (
-      !user.subscribed &&
+      subscribeAgreed &&
       validForms &&
       checkoutForm.formOpen &&
       section !== "customer"
@@ -569,6 +574,14 @@ function Ui(props) {
                       addressForm={checkoutForm}
                       updateAddressForm={updateCheckoutForm}
                     />
+                    <SubscribeCondition>
+                      <input
+                        checked={subscribeAgreed}
+                        type="checkbox"
+                        onChange={handleSubscribeCheck}
+                      />
+                      <p>{"Keep me up to date with news and offers"}</p>
+                    </SubscribeCondition>
                     <button onClick={() => handleOpenSection("shipping")}>
                       Next
                     </button>

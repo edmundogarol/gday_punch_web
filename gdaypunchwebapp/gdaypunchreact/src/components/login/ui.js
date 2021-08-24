@@ -27,6 +27,7 @@ function Ui(props) {
   } = props;
   const [subscribeOpen, setSubscribeOpen] = useState(false);
   const [subscribeAgree, setSubscribeAgree] = useState(false);
+  const [registerSubscribeError, setRegisterSubscribeError] = useState(false);
   const [loginDetails, setLoginDetails] = useState({
     email: "",
     password: "",
@@ -45,19 +46,23 @@ function Ui(props) {
   const handleRegisterSubmit = () => {
     const { email, password } = loginDetails;
 
-    console.log({ email });
     // Remove space from end of email
     const emailSanitised =
       email.charAt(email.length - 1) === " " ? email.slice(0, -1) : email;
 
-    if (subscribeAgree) {
-      register({
-        email: emailSanitised,
-        password,
-      });
+    if (subscribeOpen) {
+      if (subscribeAgree) {
+        register({
+          email: emailSanitised,
+          password,
+        });
 
-      setSubscribeOpen(false);
-      setSubscribeAgree(false);
+        setSubscribeOpen(false);
+        setSubscribeAgree(false);
+        setRegisterSubscribeError(false);
+      } else {
+        setRegisterSubscribeError(true);
+      }
     } else {
       setSubscribeOpen(true);
     }
@@ -76,6 +81,10 @@ function Ui(props) {
           break;
       }
     }
+  };
+
+  const handleSubscribeCheck = (e) => {
+    setSubscribeAgree(e.target.checked);
   };
 
   const RegistrationContainer = loginView
@@ -124,10 +133,20 @@ function Ui(props) {
           </div>
         </ErrorField>
       )}
+      {registerSubscribeError && (
+        <ErrorField>
+          <div>
+            <label>Error:</label>
+            <span>
+              Please agree to sign up and subscribe to cool manga content
+            </span>
+          </div>
+        </ErrorField>
+      )}
       {subscribeOpen && (
         <ConditionsField>
           <div>
-            <input type="checkbox" onChange={() => setSubscribeAgree(true)} />
+            <input type="checkbox" onClick={handleSubscribeCheck} />
             <p>
               {
                 "I agree to sign up and subscribe to read and receive more, cool manga content!"

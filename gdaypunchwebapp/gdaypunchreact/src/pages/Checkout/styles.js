@@ -184,6 +184,17 @@ export const CheckoutInnerSectionTitle = styled.label`
   }
 `;
 
+export const SubscribeCondition = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em;
+
+  p {
+    margin-bottom: unset;
+    margin-left: 0.5em;
+  }
+`;
+
 export const PaymentMethodLogo = styled.div`
   background: url(${(props) => props.src});
   border: 1px solid #cecece;

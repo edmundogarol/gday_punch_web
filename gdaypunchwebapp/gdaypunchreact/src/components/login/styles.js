@@ -12,6 +12,8 @@ export const RegistrationContainerHidden = styled.div`
   min-height: 9em;
   animation: 0.5s ease-in 0s 1 slideOutToRight;
   display: none;
+  padding-top: 2em;
+  padding-bottom: 2em;
 `;
 
 export const RegistrationContainerVisible = styled(RegistrationContainerHidden)`
@@ -27,6 +29,7 @@ export const RegistrationInputsContainer = styled.div`
   flex-direction: column;
   justify-content: space-between;
   min-height: 5em;
+  margin-bottom: 1em;
 `;
 
 export const InputGroupContainer = styled.div`

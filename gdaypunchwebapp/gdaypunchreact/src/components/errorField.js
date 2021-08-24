@@ -15,16 +15,17 @@ export const ErrorField = styled.div`
     border-radius: 0.4em;
     border: 1px solid red;
     display: flex;
-    align-items: center;
+    align-items: start;
     padding: 1em;
     padding-left: 2em;
     padding-right: 2em;
     width: max-content;
     height: max-content;
-    flex-wrap: wrap;
     width: 100%;
     margin-top: 1em;
     margin-bottom: 1em;
+    white-space: initial;
+    text-align: start;
   }
 
   label {
