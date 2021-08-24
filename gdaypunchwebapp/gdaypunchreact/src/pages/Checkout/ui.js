@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
-import {
-  Typography,
-  Select,
-  Tooltip,
-  Button,
-  Space,
-  Radio,
-  message,
-} from "antd";
+import { Select, Tooltip, Button, Alert, Space, Radio, message } from "antd";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
+import classNames from "classnames";
 import axios from "axios";
 import "unfetch/polyfill";
 import "es6-promise/auto";
@@ -59,9 +52,6 @@ const CARD_ELEMENT_OPTIONS = {
     base: {
       color: "#32325d",
       fontSmoothing: "antialiased",
-      fontSize: "1em",
-      height: "2em",
-      padding: "1em",
       "::placeholder": {
         color: "#797979",
       },
@@ -124,6 +114,11 @@ function Ui(props) {
   const [useShippingDetails, toggleUseShippingDetails] = useState(true);
   const [shippingMethodOpen, toggleShippingMethod] = useState(false);
   const [paymentOpen, togglePayment] = useState(false);
+  const [cardErrors, updateCardErrors] = useState({
+    cardNumber: undefined,
+    cardExpiry: undefined,
+    cardCvc: undefined,
+  });
   const [submitting, toggleSubmitting] = useState(false);
 
   const freeShipping = checkoutForm.country.value === "AU";
@@ -164,6 +159,29 @@ function Ui(props) {
 
       getCountry();
     }
+  };
+
+  const createCardElement = (type, placeholder) => {
+    const newCardElement = elements?.create(type, {
+      placeholder,
+      ...CARD_ELEMENT_OPTIONS,
+    });
+
+    newCardElement.on("change", function (event) {
+      if (event.complete) {
+        updateCardErrors({
+          ...cardErrors,
+          [type]: undefined,
+        });
+      } else if (event.error) {
+        updateCardErrors({
+          ...cardErrors,
+          [type]: event.error.message,
+        });
+      }
+    });
+
+    return newCardElement;
   };
 
   useEffect(() => {
@@ -208,18 +226,12 @@ function Ui(props) {
   useEffect(() => {
     if (!paymentOpen) return;
 
-    const cardNumberElement = elements?.create("cardNumber", {
-      placeholder: "Card number",
-      ...CARD_ELEMENT_OPTIONS,
-    });
-    const cardExpiryElement = elements?.create("cardExpiry", {
-      placeholder: "Expiration date (MM / YY)",
-      ...CARD_ELEMENT_OPTIONS,
-    });
-    const cardCvvElement = elements?.create("cardCvc", {
-      placeholder: "Security code",
-      ...CARD_ELEMENT_OPTIONS,
-    });
+    const cardNumberElement = createCardElement("cardNumber", "Card number");
+    const cardExpiryElement = createCardElement(
+      "cardExpiry",
+      "Expiration date (MM / YY)"
+    );
+    const cardCvvElement = createCardElement("cardCvc", "Security code");
 
     cardNumberElement?.mount("#card-number-element");
     cardExpiryElement?.mount("#card-expiry-element");
@@ -297,6 +309,14 @@ function Ui(props) {
   const handleSubmitPayment = async (ev) => {
     ev.preventDefault();
 
+    if (!clientSecret) {
+      message.error({
+        content: "Payment error. Your card has not been charged.",
+        className: "antd-message-capitalize",
+      });
+      return;
+    }
+
     const cardNumber = elements.getElement("cardNumber");
 
     const response = await stripe.confirmCardPayment(clientSecret, {
@@ -311,17 +331,11 @@ function Ui(props) {
       message.error({
         content: `Payment Failed: ${response.error.message}`,
         className: "antd-message-capitalize",
-        style: {
-          textTransform: "capitalize",
-        },
       });
     } else {
       message.success({
         content: "Payment Successful.",
         className: "antd-message-capitalize",
-        style: {
-          textTransform: "capitalize",
-        },
       });
     }
   };
@@ -683,7 +697,19 @@ function Ui(props) {
                   <>
                     <br />
                     <form id="card-form" data-address={`card-form-root`}>
-                      <div id="card-number-element" data-line-count="1"></div>
+                      <div
+                        className={classNames("form-field", {
+                          "card-error": !!cardErrors.cardNumber,
+                        })}
+                        data-line-count="1"
+                      >
+                        <div id="card-number-element" data-line-count="1"></div>
+                        <Alert
+                          className="invalid-message"
+                          message={cardErrors.cardNumber}
+                          type="error"
+                        />
+                      </div>
                       <div className={"form-field"} data-line-count="1">
                         <input
                           id="card-name"
@@ -702,8 +728,32 @@ function Ui(props) {
                           }
                         />
                       </div>
-                      <div id="card-expiry-element" data-line-count="2"></div>
-                      <div id="card-cvv-element" data-line-count="2"></div>
+                      <div
+                        className={classNames("form-field", {
+                          "card-error": !!cardErrors.cardExpiry,
+                        })}
+                        data-line-count="2"
+                      >
+                        <div id="card-expiry-element" data-line-count="1"></div>
+                        <Alert
+                          className="invalid-message"
+                          message={cardErrors.cardExpiry}
+                          type="error"
+                        />
+                      </div>
+                      <div
+                        className={classNames("form-field", {
+                          "card-error": !!cardErrors.cardCvc,
+                        })}
+                        data-line-count="2"
+                      >
+                        <div id="card-cvv-element" data-line-count="1"></div>
+                        <Alert
+                          className="invalid-message"
+                          message={cardErrors.cardCvc}
+                          type="error"
+                        />
+                      </div>
                     </form>
                   </>
                 )}

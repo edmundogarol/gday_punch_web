@@ -75,6 +75,7 @@ export const CheckoutInnerSectionContainer = styled.div`
     flex-direction: column;
     align-items: self-end;
     min-width: 17em;
+    height: max-content;
 
     .ant-alert {
       text-align: start;
@@ -107,6 +108,12 @@ export const CheckoutInnerSectionContainer = styled.div`
 
   .invalid-message {
     display: none;
+  }
+
+  .card-error {
+    .invalid-message {
+      display: initial;
+    }
   }
 
   .empty {
