@@ -25,7 +25,7 @@ from .gdaypunchapi.views import (
     UserViewSet, LoginView, LogoutView, MangaDetailView,
     MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
     CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
-    PromptSelectedViewSet
+    PromptSelectedViewSet, ResetPasswordViewSet
 )
 from .gdaypunchapi.api.products import (
     ProductViewSet,
@@ -67,8 +67,11 @@ router.register(r'products', ProductViewSet, basename="products")
 router.register(r'product', ProductDetailView, basename="product")
 router.register(r'contact', ContactViewSet, basename="contact")
 router.register(r'customer', CustomerViewSet, basename="customer")
+router.register(r'reset-password', ResetPasswordViewSet,
+                basename="reset-password")
 
 urlpatterns = [
+    # url(r'admin/', admin.site.urls),
     url(r'^docs/', schema_view),
     url(r'api/login/', LoginView.as_view()),
     url(r'api/logout/', LogoutView.as_view()),
@@ -81,5 +84,6 @@ urlpatterns = [
     url(r'api/stripe-products/', StripeProductsViewSet.as_view()),
     url(r'api/stripe-prices/',
         StripePriceViewSet.as_view({'post': 'create', 'get': 'list'})),
-    url(r'', include('gdaypunchwebapp.urls'))
+    # url(r'accounts/', include('django.contrib.auth.urls')),
+    url(r'', include('gdaypunchwebapp.urls')),
 ]

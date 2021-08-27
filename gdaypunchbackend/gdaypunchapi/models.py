@@ -462,3 +462,10 @@ class Contact(models.Model):
         max_length=30, choices=CONTACT_REASONS, default=GENERAL)
     content = models.TextField(max_length=1000, blank=True)
     date_created = models.DateField(null=True, blank=True)
+
+
+class ResetPasswordSession(models.Model):
+    user = models.ForeignKey(
+        User,  on_delete=models.PROTECT, blank=False, null=True)
+    token = models.TextField(max_length=70, blank=False)
+    created_date = models.DateField(null=True, blank=False)

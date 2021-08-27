@@ -149,25 +149,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = '465'
+EMAIL_HOST_USER = 'edmundo.garol@gdaypunch.com'
+EMAIL_HOST_PASSWORD = 'ojsbXgWVqwpuMjX7DfTD'
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
 
-# Local SQLite3 database
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
-# To start postgres
-# pg_ctl -D /usr/local/var/postgres start
-
-# To access PSQL on local machine + commands to instantiate database
-# psql postgres // Enter PSQL CLI
-# create database gdaypunch; // Create database
-# create role gdayuser with login password 'gdaypassword'; // Create user + password
-# \q // exit PSQL CLI
 
 if 'DEVENV' in os.environ:
     dbconfig = "./gday-db-config.json"
@@ -235,6 +224,12 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
     os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
 ]
+
+SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
+
+TEMPLATE_DIRS = (
+    os.path.join(SETTINGS_PATH, 'templates'),
+)
 
 # Static file directory in the React app
 STATIC_URL = '/static/'

@@ -6,6 +6,7 @@ import {
   doRegistration,
   openRegistration,
   closeRegistration,
+  clearLoginError as clearLoginErrorAction,
 } from "actions/user";
 import {
   selectLoginViewToggle,
@@ -30,6 +31,7 @@ const mapDispatch = {
   register: doRegistration,
   openRegister: openRegistration,
   closeRegister: closeRegistration,
+  clearLoginError: clearLoginErrorAction,
 };
 
 export default connect(mapState, mapDispatch)(Ui);

@@ -14,6 +14,9 @@ import {
   registrationSuccess,
   updateLoginError,
   updateRegistrationError,
+  RESET_PASSWORD,
+  resetPasswordSubmitted,
+  updateContactResetPasswordErrors,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -172,6 +175,28 @@ export function* submitContactFormCall(action) {
   }
 }
 
+export function* resetPasswordCall(action) {
+  const response = yield call(api, "reset-password/", {
+    method: "POST",
+    body: {
+      email: action.payload.email || null,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    message.success(`Reset Password Submitted.`);
+    yield put(resetPasswordSubmitted(true));
+  } else {
+    const data = response.data;
+    console.log("Reset Password error", JSON.stringify(response));
+    message.error(
+      `Submitting Reset Password request failed. Please try again.`
+    );
+    yield put(updateContactResetPasswordErrors(data));
+  }
+}
+
 export function* fetchCartItemsCall() {
   yield put(fetchingCartItems());
   const response = yield call(api, "cart/", {
@@ -271,5 +296,6 @@ export default function* appSaga() {
     takeLatest(PAYMENT_INTENT_CANCEL, paymentIntentCancelCall),
     takeLatest(PAYMENT_INTENT_FETCH, paymentIntentFetchCall),
     takeLatest(CUSTOMER_SUBSCRIBE, customerSubscribeCall),
+    takeLatest(RESET_PASSWORD, resetPasswordCall),
   ]);
 }

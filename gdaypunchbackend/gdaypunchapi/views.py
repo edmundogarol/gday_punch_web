@@ -1,5 +1,6 @@
 import os
 import datetime
+from secrets import token_urlsafe
 from next_prev import next_in_order, prev_in_order
 
 from rest_framework import viewsets, permissions, exceptions, authentication, throttling
@@ -9,18 +10,24 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.permissions import BasePermission
+from rest_framework.authentication import SessionAuthentication
 
+from django.core.mail import send_mail
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.db.models import Q
 from django.db.utils import IntegrityError
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, password_validation
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
-from rest_framework.authentication import SessionAuthentication
+from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 
 from .models import (
-    User, Manga, Like, Comment, CommentLike, Prompt,
+    User, Manga, Like, Comment, CommentLike, Prompt, ResetPasswordSession
 )
 from .serializers import (
     UserSerializer,
@@ -30,6 +37,7 @@ from .serializers import (
     PromptSerializer,
     CommentSerializer,
     CommentLikeSerializer,
+    ResetPasswordSerializer,
 )
 
 
@@ -60,13 +68,20 @@ class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
         user = None
 
         try:
+            password_validation.validate_password(
+                validated_data.data["password"])
+        except ValidationError as error:
+            content = {"error": error}
+            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        try:
             user = User.objects.create_user(
                 email=validated_data.data["email"],
                 password=validated_data.data["password"],
             )
         except IntegrityError:
             content = {"error": "Duplicate email. User already exists."}
-            return Response(content, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(content, status=status.HTTP_409_CONFLICT)
 
         user.set_password(validated_data.data["password"])
         user.save()
@@ -85,11 +100,20 @@ class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
         return Response(serializer.data)
 
     def partial_update(self, request, *args, **kwargs):
+
+        try:
+            password_validation.validate_password(
+                request.data["password"])
+        except ValidationError as error:
+            content = {"error": error}
+            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         queryset = User.objects.all()
         user = queryset.get(pk=kwargs.get("pk"))
         serializer = UserSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
         return Response(serializer.data)
 
 
@@ -326,3 +350,91 @@ class MangaDetailView(UpdateModelMixin, viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class ResetPasswordViewSet(viewsets.ModelViewSet):
+    permission_classes = (PostOnlyPermissions, )
+
+    def create(self, request, *args, **kwargs):
+        email = request.data['email']
+
+        if email is None:
+            raise exceptions.ValidationError(
+                {
+                    'email': 'Missing Email field.'
+                })
+
+        try:
+            validate_email(email)
+        except ValidationError as e:
+            raise exceptions.ValidationError(
+                {
+                    'email': 'Invalid format. Check and try again.'
+                })
+
+        try:
+            user = User.objects.get(email=email)
+
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_200_OK)
+
+        try:
+            reset_session = ResetPasswordSession.objects.get(user=user.id)
+            reset_session.token = token_urlsafe(user.id)
+            reset_session.created_date = datetime.datetime.now()
+            reset_session.save()
+
+            email_template_name = "templates/reset_password_email.txt"
+            c = {
+                "email": user.email,
+                'domain': '127.0.0.1:8000',
+                'site_name': 'Website',
+                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                "user": user,
+                'token': reset_session.token,
+                'protocol': 'http',
+            }
+            email = render_to_string(email_template_name, c)
+
+            send_mail(
+                'Reset Password Request',
+                email,
+                'noreply@gdaypunch.com',
+                [user.email],
+                fail_silently=False,
+            )
+
+            return Response(status=status.HTTP_200_OK)
+
+        except ResetPasswordSession.DoesNotExist:
+            token = token_urlsafe(user.id)
+            created_date = datetime.datetime.now()
+
+            reset_session = ResetPasswordSession.objects.create(
+                user=user,
+                token=token,
+                created_date=created_date,
+            )
+            reset_session.save()
+
+            email_template_name = "templates/reset_password_email.txt"
+            c = {
+                "email": user.email,
+                'domain': '127.0.0.1:8000',
+                'site_name': 'Website',
+                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
+                "user": user,
+                'token': token,
+                'protocol': 'http',
+            }
+            email = render_to_string(email_template_name, c)
+
+            send_mail(
+                'Reset Password Request',
+                email,
+                'noreply@gdaypunch.com',
+                [user.email],
+                fail_silently=False,
+            )
+
+        return Response(status=status.HTTP_200_OK)

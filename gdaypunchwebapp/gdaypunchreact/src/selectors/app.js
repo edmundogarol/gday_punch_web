@@ -80,6 +80,11 @@ export const selectContactState = createSelector(
   ({ contact }) => contact
 );
 
+export const selectResetPasswordState = createSelector(
+  selectDomain,
+  ({ resetPassword }) => resetPassword
+);
+
 export const selectCartState = createSelector(selectDomain, ({ cart }) => cart);
 
 export const selectSideCartOpen = createSelector(

@@ -12,6 +12,9 @@ import {
   REGISTRATION_SUCCESS,
   SUGGEST_REGISTER_TO_CONTINUE,
   UPDATE_USER,
+  CLEAR_LOGIN_ERROR,
+  UPDATE_RESET_PASSWORD_ERRORS,
+  RESET_PASSWORD_SUBMITTED,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -64,6 +67,11 @@ const INITIAL_STATE = {
   pendingRegistration: {},
   suggestRegistration: undefined,
 
+  resetPassword: {
+    errors: [],
+    submitted: false,
+  },
+
   products: {
     productList: {},
     fetchingProducts: false,
@@ -112,6 +120,11 @@ const appReducer = (state = INITIAL_STATE, action) => {
         registrationError: undefined,
         suggestRegistration: undefined,
         loginError: payload.error,
+      };
+    case CLEAR_LOGIN_ERROR:
+      return {
+        ...state,
+        loginError: undefined,
       };
     case UPDATE_REGISTRATION_ERROR:
       return {
@@ -215,6 +228,23 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         contact: {
           ...state.contact,
+          submitted: payload.submitted,
+          errors: [],
+        },
+      };
+    case UPDATE_RESET_PASSWORD_ERRORS:
+      return {
+        ...state,
+        resetPassword: {
+          ...state.resetPassword,
+          errors: payload.errors,
+        },
+      };
+    case RESET_PASSWORD_SUBMITTED:
+      return {
+        ...state,
+        resetPassword: {
+          ...state.resetPassword,
           submitted: payload.submitted,
           errors: [],
         },

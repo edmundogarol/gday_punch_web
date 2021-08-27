@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
     StripeCustomer, Product, Privileges, StripePrice,
-    Contact, Customer
+    Contact, Customer, ResetPasswordSession
 )
 
 
@@ -21,22 +21,6 @@ class PrivilegeSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     privileges = PrivilegeSerializer(many=True)
-
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data['email'],
-            password=validated_data['password'],
-        )
-
-        user.set_password(validated_data['password'])
-        user.save()
-
-        content = {
-            'user': str(user),
-            'logged_in': True,  # None
-        }
-
-        return user
 
     class Meta:
         model = User
@@ -115,3 +99,9 @@ class ContactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contact
         fields = ("id", "name", "email", "reason", "content", "date_created")
+
+
+class ResetPasswordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ResetPasswordSession
+        fields = ("id", "user", "token", "created_date")

@@ -1,3 +1,4 @@
+import { NavLink } from "react-router-dom";
 import styled from "styled-components";
 
 export const RegistrationContainerHidden = styled.div`
@@ -76,4 +77,16 @@ export const SignUpButton = styled.button`
   letter-spacing: 2pt;
   background: #e0811f;
   border: none;
+`;
+
+export const ForgotPassword = styled(NavLink)`
+  color: white;
+  font-size: 0.7em;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 1em;
+
+  &:hover {
+    color: white;
+  }
 `;

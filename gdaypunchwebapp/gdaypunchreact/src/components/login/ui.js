@@ -13,13 +13,16 @@ import {
   InputGroupContainer,
   AccountActionButtons,
   SignUpButton,
+  ForgotPassword,
 } from "./styles";
+import { NavLink } from "react-router-dom";
 
 function Ui(props) {
   const {
     loggedIn,
     loginView,
     loginError,
+    clearLoginError,
     registrationError,
     suggestRegistration,
     login,
@@ -45,6 +48,8 @@ function Ui(props) {
 
   const handleRegisterSubmit = () => {
     const { email, password } = loginDetails;
+
+    if (loginError) clearLoginError();
 
     // Remove space from end of email
     const emailSanitised =
@@ -95,7 +100,7 @@ function Ui(props) {
     <RegistrationContainer>
       <RegistrationInputsContainer>
         <InputGroupContainer>
-          <label htmlFor="email">Emails</label>
+          <label htmlFor="email">Email</label>
           <div>
             <input
               type="text"
@@ -182,6 +187,9 @@ function Ui(props) {
           Login
         </SignUpButton>
       </AccountActionButtons>
+      <ForgotPassword to="/forgot-password">
+        Forgot Your Password?
+      </ForgotPassword>
     </RegistrationContainer>
   );
 }
