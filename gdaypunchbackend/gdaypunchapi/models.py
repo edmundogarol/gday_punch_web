@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -465,7 +466,10 @@ class Contact(models.Model):
 
 
 class ResetPasswordSession(models.Model):
+    fmt = '%Y-%m-%d %H:%M:%S'
+
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=False, null=True)
     token = models.TextField(max_length=70, blank=False)
-    created_date = models.DateField(null=True, blank=False)
+    created_date = models.TextField(
+        max_length=40, blank=False, null=False, default=datetime.now().strftime(fmt))

@@ -1,5 +1,4 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
 const path = require("path");
 
 const isDevelopment = process.env.NODE_ENV === "development";
@@ -12,9 +11,6 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: require.resolve("babel-loader"),
-          options: {
-            plugins: [require.resolve("react-refresh/babel")],
-          },
         },
       },
       {
@@ -75,6 +71,5 @@ module.exports = {
       filename: "main.css",
       chunkFilename: "main.css",
     }),
-    new ReactRefreshWebpackPlugin(),
   ],
 };

@@ -12,7 +12,6 @@
     "@fortawesome/free-brands-svg-icons": "^5.13.1",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@fortawesome/react-fontawesome": "^0.1.9",
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.4.3",
     "@shopify/theme-addresses": "^4.1.1",
     "@stripe/react-stripe-js": "^1.4.1",
     "@stripe/stripe-js": "^1.15.0",
@@ -61,7 +60,7 @@
   "scripts": {
     "start": "react-scripts start",
     "dev": "NODE_ENV=development webpack --mode development ./src/index.js --output ../../gdaypunchbackend/build/main.js",
-    "devwatch": "FAST_REFRESH=true NODE_ENV=development webpack --watch --mode development --hot --inline ./src/index.js --output ../../gdaypunchbackend/build/main.js",
+    "devwatch": "NODE_ENV=development webpack --watch --mode development ./src/index.js --output ../../gdaypunchbackend/build/main.js",
     "build": "NODE_ENV=production webpack --mode production -p ./src/index.js --output ../../gdaypunchbackend/build/main.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

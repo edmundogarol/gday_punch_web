@@ -25,7 +25,10 @@ from .gdaypunchapi.views import (
     UserViewSet, LoginView, LogoutView, MangaDetailView,
     MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
     CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
-    PromptSelectedViewSet, ResetPasswordViewSet
+    PromptSelectedViewSet
+)
+from .gdaypunchapi.api.reset_password import (
+    ResetPasswordViewSet
 )
 from .gdaypunchapi.api.products import (
     ProductViewSet,
@@ -41,7 +44,6 @@ from .gdaypunchapi.api.stripe import (
 from .gdaypunchapi.api.contact import (
     ContactViewSet
 )
-
 from .gdaypunchapi.api.customer import (
     CustomerViewSet
 )

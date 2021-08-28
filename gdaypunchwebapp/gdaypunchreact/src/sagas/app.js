@@ -7,6 +7,8 @@ import {
   DO_REGISTRATION,
   DO_CHECK_LOGIN,
   UPDATE_USER_DETAILS,
+  RESET_PASSWORD_VERIFY,
+  RESET_PASSWORD,
   doCheckLogin,
   doLogin,
   logoutSuccess,
@@ -14,7 +16,6 @@ import {
   registrationSuccess,
   updateLoginError,
   updateRegistrationError,
-  RESET_PASSWORD,
   resetPasswordSubmitted,
   updateContactResetPasswordErrors,
 } from "actions/user";
@@ -197,6 +198,23 @@ export function* resetPasswordCall(action) {
   }
 }
 
+export function* resetPasswordVerifyCall(action) {
+  const response = yield call(api, "reset-password/verify/", {
+    method: "POST",
+    body: {
+      consumer: action.payload.consumer,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+  } else {
+    const data = response.data;
+    console.log("Reset Password verification error", JSON.stringify(response));
+    message.error(`Error: ${data.error}`, 4);
+  }
+}
+
 export function* fetchCartItemsCall() {
   yield put(fetchingCartItems());
   const response = yield call(api, "cart/", {
@@ -297,5 +315,6 @@ export default function* appSaga() {
     takeLatest(PAYMENT_INTENT_FETCH, paymentIntentFetchCall),
     takeLatest(CUSTOMER_SUBSCRIBE, customerSubscribeCall),
     takeLatest(RESET_PASSWORD, resetPasswordCall),
+    takeLatest(RESET_PASSWORD_VERIFY, resetPasswordVerifyCall),
   ]);
 }

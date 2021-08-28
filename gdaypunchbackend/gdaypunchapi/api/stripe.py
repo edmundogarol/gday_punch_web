@@ -27,7 +27,7 @@ if 'DEVENV' in os.environ:
     domain = "http://localhost:8000"
 else:
     stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
-    domain = "https://www.beta-gdaypunch:com"
+    domain = "https://www.beta-gdaypunch.com"
 
 # price_type: one_time, recurring
 

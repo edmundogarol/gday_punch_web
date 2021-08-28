@@ -121,6 +121,11 @@ function Root(props) {
             <Route exact path="/forgot-password" component={ResetPassword} />
             <Route
               exact
+              path="/password-reset-confirm/:consumer"
+              component={ResetPassword}
+            />
+            <Route
+              exact
               path="/refunds-and-returns"
               component={RefundsAndReturns}
             />

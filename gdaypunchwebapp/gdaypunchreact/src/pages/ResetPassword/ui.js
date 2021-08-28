@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Input, Button } from "antd";
-import moment from "moment";
 
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
+import LoadingSpinner from "components/loadingSpinner";
 
 import {
   App,
@@ -15,9 +16,24 @@ import {
 import { ErrorField } from "src/components/errorField";
 
 function Ui(props) {
-  const { resetPassword, resetPasswordState, resetPasswordSubmitted } = props;
-  const { errors: resetErrors, submitted } = resetPasswordState;
+  const {
+    resetPassword,
+    resetPasswordState,
+    resetPasswordSubmitted,
+    resetPasswordVerify,
+    history,
+  } = props;
+  const { errors: resetErrors, submitted, submitting } = resetPasswordState;
   const [resetEmail, updateResetEmail] = useState(undefined);
+  const { consumer } = useParams();
+
+  console.log({ consumer });
+
+  useEffect(() => {
+    if (consumer) {
+      resetPasswordVerify(consumer, history);
+    }
+  }, [consumer]);
 
   useEffect(() => {
     if (submitted) {
@@ -53,7 +69,8 @@ function Ui(props) {
             </p>
           </SuccessLabel>
         )}
-        {!submitted && (
+        {submitting && <LoadingSpinner />}
+        {!submitted && !submitting && (
           <ResetForm>
             <h3>
               Forgotten your password? Enter your email address below, and we'll
@@ -64,6 +81,7 @@ function Ui(props) {
                 Email<RequiredField>*</RequiredField>
               </h4>
               <Input
+                name="email"
                 placeholder={"Email"}
                 value={resetEmail}
                 onChange={(e) => updateResetEmail(e.target.value)}

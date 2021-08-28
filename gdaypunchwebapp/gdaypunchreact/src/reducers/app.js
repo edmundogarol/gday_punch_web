@@ -15,6 +15,7 @@ import {
   CLEAR_LOGIN_ERROR,
   UPDATE_RESET_PASSWORD_ERRORS,
   RESET_PASSWORD_SUBMITTED,
+  RESET_PASSWORD,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -69,6 +70,7 @@ const INITIAL_STATE = {
 
   resetPassword: {
     errors: [],
+    submitting: false,
     submitted: false,
   },
 
@@ -232,12 +234,21 @@ const appReducer = (state = INITIAL_STATE, action) => {
           errors: [],
         },
       };
+    case RESET_PASSWORD:
+      return {
+        ...state,
+        resetPassword: {
+          ...state.resetPassword,
+          submitting: true,
+        },
+      };
     case UPDATE_RESET_PASSWORD_ERRORS:
       return {
         ...state,
         resetPassword: {
           ...state.resetPassword,
           errors: payload.errors,
+          submitting: false,
         },
       };
     case RESET_PASSWORD_SUBMITTED:
@@ -247,6 +258,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
           ...state.resetPassword,
           submitted: payload.submitted,
           errors: [],
+          submitting: false,
         },
       };
     case UPDATE_CART_ITEM_QUANTITY:

@@ -19,7 +19,7 @@ dev:
 	python -m venv venv && source venv/bin/activate && brew services start postgresql
 
 build:
-	pip install --user -r requirements.txt 
+	pip install --upgrade pip && pip install --user -r requirements.txt && pip list
 
 env: dev build
 
@@ -36,6 +36,8 @@ migrations: makemigrations migrate
 
 server:
 	DEVENV=development python manage.py runserver 0.0.0.0:8000
+
+buildrun: env server
 
 resetdb: deletemigrations deletedb makemigrations migrate
 

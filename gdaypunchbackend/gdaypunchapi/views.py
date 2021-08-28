@@ -1,33 +1,29 @@
-import os
 import datetime
-from secrets import token_urlsafe
-from next_prev import next_in_order, prev_in_order
+from next_prev import next_in_order
 
-from rest_framework import viewsets, permissions, exceptions, authentication, throttling
 from rest_framework import status
-from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.throttling import UserRateThrottle
+from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
-from rest_framework.permissions import BasePermission
 from rest_framework.authentication import SessionAuthentication
 
-from django.core.mail import send_mail
-from django.core.exceptions import ValidationError
-from django.core.validators import validate_email
+from rest_framework.viewsets import (ViewSet, ModelViewSet)
+from rest_framework.exceptions import (ValidationError, AuthenticationFailed)
+from rest_framework.permissions import (
+    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission)
+
 from django.db.models import Q
+from django.core.validators import validate_email
 from django.db.utils import IntegrityError
-from django.contrib.auth import authenticate, login, logout, password_validation
+from django.contrib.auth import login, logout, password_validation
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
-from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
 
 from .models import (
-    User, Manga, Like, Comment, CommentLike, Prompt, ResetPasswordSession
+    User, Manga, Like, Comment, CommentLike, Prompt
 )
 from .serializers import (
     UserSerializer,
@@ -52,7 +48,7 @@ class PostOnlyPermissions(BasePermission):
         )
 
 
-class PostUserRateThrottle(throttling.UserRateThrottle):
+class PostUserRateThrottle(UserRateThrottle):
     scope = "post_user"
 
     def allow_request(self, request, view):
@@ -61,7 +57,7 @@ class PostUserRateThrottle(throttling.UserRateThrottle):
         return super().allow_request(request, view)
 
 
-class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
+class UserViewSet(UpdateModelMixin, ViewSet):
     permission_classes = (PostOnlyPermissions, )
 
     def create(self, validated_data):
@@ -117,10 +113,10 @@ class UserViewSet(UpdateModelMixin, viewsets.ViewSet):
         return Response(serializer.data)
 
 
-class GroupViewSet(viewsets.ModelViewSet):
+class GroupViewSet(ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
 class LogoutView(APIView):
@@ -136,7 +132,7 @@ class LogoutView(APIView):
 
 class LoginView(APIView):
     authentication_classes = (SessionAuthentication,)
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [AllowAny]
 
     def get(self, request, format=None):
         if str(self.request.user) != "AnonymousUser":
@@ -159,20 +155,20 @@ class LoginView(APIView):
         password = request.data.get("password", None)
 
         if not email or not password:
-            raise exceptions.AuthenticationFailed("No credentials provided.")
+            raise AuthenticationFailed("No credentials provided.")
 
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise exceptions.AuthenticationFailed("User does not exist.")
+            raise AuthenticationFailed("User does not exist.")
 
         if user is None or not check_password(password, user.password):
-            raise exceptions.AuthenticationFailed("Invalid username/password.")
+            raise AuthenticationFailed("Invalid username/password.")
         else:
             login(request, user)
 
         if not user.is_active:
-            raise exceptions.AuthenticationFailed("User inactive or deleted.")
+            raise AuthenticationFailed("User inactive or deleted.")
 
         user = User.objects.get(email=self.request.user)
         serializer = UserSerializer(user)
@@ -183,10 +179,10 @@ class LoginView(APIView):
         return Response(content)
 
 
-class LikeViewSet(viewsets.ModelViewSet):
+class LikeViewSet(ModelViewSet):
     queryset = Like.objects.none()
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         user = User.objects.get(email=self.request.user)
@@ -203,16 +199,16 @@ class LikeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class CommentLikeViewSet(viewsets.ModelViewSet):
+class CommentLikeViewSet(ModelViewSet):
     queryset = CommentLike.objects.none()
     serializer_class = CommentLikeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
-class PromptViewSet(viewsets.ModelViewSet):
+class PromptViewSet(ModelViewSet):
     queryset = Prompt.objects.all()
     serializer_class = PromptSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request, *args, **kwargs):
         queryset = Prompt.objects.all().order_by('-id')
@@ -233,10 +229,10 @@ class PromptViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class PromptRandomStylePanelViewSet(viewsets.ModelViewSet):
+class PromptRandomStylePanelViewSet(ModelViewSet):
     queryset = Prompt.objects.none()
     serializer_class = PromptSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request, *args, **kwargs):
         style = Prompt.objects.filter(promptType=2).order_by('?')[:1].get()
@@ -253,10 +249,10 @@ class PromptRandomStylePanelViewSet(viewsets.ModelViewSet):
         return Response(response)
 
 
-class PromptSelectedViewSet(viewsets.ModelViewSet):
+class PromptSelectedViewSet(ModelViewSet):
     queryset = Prompt.objects.none()
     serializer_class = PromptSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def list(self, request, *args, **kwargs):
         today = datetime.datetime.now()
@@ -295,11 +291,11 @@ class PromptSelectedViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(ModelViewSet):
     throttle_classes = [PostUserRateThrottle]
     queryset = Comment.objects.none()
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def retrieve(self, request, pk=None):
         queryset = Comment.objects.all()
@@ -308,9 +304,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class MangaCommentsViewSet(viewsets.ModelViewSet):
+class MangaCommentsViewSet(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def retrieve(self, request, pk=None):
         queryset = Comment.objects.all()
@@ -319,10 +315,10 @@ class MangaCommentsViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class MangaViewSet(viewsets.ModelViewSet):
+class MangaViewSet(ModelViewSet):
     queryset = Manga.objects.none()
     serializer_class = MangaSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_user(self):
         return self.request.user
@@ -334,8 +330,8 @@ class MangaViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-class MangaDetailView(UpdateModelMixin, viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class MangaDetailView(UpdateModelMixin, ViewSet):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def retrieve(self, request, pk=None):
         queryset = Manga.objects.all()
@@ -350,91 +346,3 @@ class MangaDetailView(UpdateModelMixin, viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
-
-
-class ResetPasswordViewSet(viewsets.ModelViewSet):
-    permission_classes = (PostOnlyPermissions, )
-
-    def create(self, request, *args, **kwargs):
-        email = request.data['email']
-
-        if email is None:
-            raise exceptions.ValidationError(
-                {
-                    'email': 'Missing Email field.'
-                })
-
-        try:
-            validate_email(email)
-        except ValidationError as e:
-            raise exceptions.ValidationError(
-                {
-                    'email': 'Invalid format. Check and try again.'
-                })
-
-        try:
-            user = User.objects.get(email=email)
-
-        except User.DoesNotExist:
-            return Response(status=status.HTTP_200_OK)
-
-        try:
-            reset_session = ResetPasswordSession.objects.get(user=user.id)
-            reset_session.token = token_urlsafe(user.id)
-            reset_session.created_date = datetime.datetime.now()
-            reset_session.save()
-
-            email_template_name = "templates/reset_password_email.txt"
-            c = {
-                "email": user.email,
-                'domain': '127.0.0.1:8000',
-                'site_name': 'Website',
-                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                "user": user,
-                'token': reset_session.token,
-                'protocol': 'http',
-            }
-            email = render_to_string(email_template_name, c)
-
-            send_mail(
-                'Reset Password Request',
-                email,
-                'noreply@gdaypunch.com',
-                [user.email],
-                fail_silently=False,
-            )
-
-            return Response(status=status.HTTP_200_OK)
-
-        except ResetPasswordSession.DoesNotExist:
-            token = token_urlsafe(user.id)
-            created_date = datetime.datetime.now()
-
-            reset_session = ResetPasswordSession.objects.create(
-                user=user,
-                token=token,
-                created_date=created_date,
-            )
-            reset_session.save()
-
-            email_template_name = "templates/reset_password_email.txt"
-            c = {
-                "email": user.email,
-                'domain': '127.0.0.1:8000',
-                'site_name': 'Website',
-                "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                "user": user,
-                'token': token,
-                'protocol': 'http',
-            }
-            email = render_to_string(email_template_name, c)
-
-            send_mail(
-                'Reset Password Request',
-                email,
-                'noreply@gdaypunch.com',
-                [user.email],
-                fail_silently=False,
-            )
-
-        return Response(status=status.HTTP_200_OK)

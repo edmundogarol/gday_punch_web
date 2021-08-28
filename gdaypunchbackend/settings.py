@@ -90,6 +90,7 @@ INSTALLED_APPS = [
     'gdaypunchbackend.gdaypunchapi',
     'gdaypunchbackend',
     'gdaypunchwebapp',
+    'gdaypunchbackend.gdaypunchapi.templates',
     'rest_framework_swagger',
 ]
 
@@ -133,7 +134,10 @@ ROOT_URLCONF = 'gdaypunchbackend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(
+                BASE_DIR, 'gdaypunchbackend/gdaypunchapi/templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -208,7 +212,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -224,12 +228,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
     os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
 ]
-
-SETTINGS_PATH = os.path.dirname(os.path.dirname(__file__))
-
-TEMPLATE_DIRS = (
-    os.path.join(SETTINGS_PATH, 'templates'),
-)
 
 # Static file directory in the React app
 STATIC_URL = '/static/'
