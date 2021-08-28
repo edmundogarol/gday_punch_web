@@ -9,6 +9,7 @@ import {
   UPDATE_USER_DETAILS,
   RESET_PASSWORD_VERIFY,
   RESET_PASSWORD,
+  RESET_PASSWORD_SUBMIT_NEW,
   doCheckLogin,
   doLogin,
   logoutSuccess,
@@ -17,7 +18,8 @@ import {
   updateLoginError,
   updateRegistrationError,
   resetPasswordSubmitted,
-  updateContactResetPasswordErrors,
+  updateResetPasswordErrors,
+  resetPasswordVerificationToken,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -194,7 +196,7 @@ export function* resetPasswordCall(action) {
     message.error(
       `Submitting Reset Password request failed. Please try again.`
     );
-    yield put(updateContactResetPasswordErrors(data));
+    yield put(updateResetPasswordErrors(data));
   }
 }
 
@@ -208,10 +210,34 @@ export function* resetPasswordVerifyCall(action) {
 
   if (response && response.ok) {
     const data = response.data;
+    yield put(resetPasswordVerificationToken(data["verified-token"]));
+    action.payload.history.push("/password-reset-confirm/");
   } else {
     const data = response.data;
     console.log("Reset Password verification error", JSON.stringify(response));
     message.error(`Error: ${data.error}`, 4);
+  }
+}
+
+export function* resetPasswordSubmitNewCall(action) {
+  const response = yield call(api, "reset-password/submit/", {
+    method: "POST",
+    body: {
+      new_password: action.payload.newPassword || null,
+      verified_token: action.payload.verifiedToken || null,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(resetPasswordSubmitted(true));
+    yield put(updateResetPasswordErrors({}));
+  } else {
+    const data = response.data;
+    console.log("Reset Password submit error", JSON.stringify(response));
+    message.error(`Error: ${Object.values(data.error)[0]}`, 4);
+    yield put(updateResetPasswordErrors(data));
+    yield put(resetPasswordSubmitted(true, true));
   }
 }
 
@@ -316,5 +342,6 @@ export default function* appSaga() {
     takeLatest(CUSTOMER_SUBSCRIBE, customerSubscribeCall),
     takeLatest(RESET_PASSWORD, resetPasswordCall),
     takeLatest(RESET_PASSWORD_VERIFY, resetPasswordVerifyCall),
+    takeLatest(RESET_PASSWORD_SUBMIT_NEW, resetPasswordSubmitNewCall),
   ]);
 }

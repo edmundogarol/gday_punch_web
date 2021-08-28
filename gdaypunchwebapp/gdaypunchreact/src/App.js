@@ -31,6 +31,7 @@ import Shop from "pages/Shop";
 import About from "pages/About";
 import Contact from "pages/Contact";
 import ResetPassword from "pages/ResetPassword";
+import ResetPasswordNewPassword from "pages/ResetPassword/newPassword";
 import Cart from "pages/Cart";
 import Checkout from "pages/Checkout";
 import RefundsAndReturns from "pages/RefundsAndReturns";
@@ -123,6 +124,11 @@ function Root(props) {
               exact
               path="/password-reset-consume/:consumer"
               component={ResetPassword}
+            />
+            <Route
+              exact
+              path="/password-reset-confirm"
+              component={ResetPasswordNewPassword}
             />
             <Route
               exact

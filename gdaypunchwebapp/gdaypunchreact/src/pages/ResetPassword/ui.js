@@ -27,8 +27,6 @@ function Ui(props) {
   const [resetEmail, updateResetEmail] = useState(undefined);
   const { consumer } = useParams();
 
-  console.log({ consumer });
-
   useEffect(() => {
     if (consumer) {
       resetPasswordVerify(consumer, history);

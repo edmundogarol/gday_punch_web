@@ -16,6 +16,8 @@ import {
   UPDATE_RESET_PASSWORD_ERRORS,
   RESET_PASSWORD_SUBMITTED,
   RESET_PASSWORD,
+  RESET_PASSWORD_VERIFICATION_TOKEN,
+  RESET_PASSWORD_SUBMIT_NEW,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -69,9 +71,10 @@ const INITIAL_STATE = {
   suggestRegistration: undefined,
 
   resetPassword: {
-    errors: [],
+    errors: {},
     submitting: false,
     submitted: false,
+    verifiedToken: undefined,
   },
 
   products: {
@@ -257,8 +260,24 @@ const appReducer = (state = INITIAL_STATE, action) => {
         resetPassword: {
           ...state.resetPassword,
           submitted: payload.submitted,
-          errors: [],
+          errors: payload.keepErrors ? state.resetPassword.errors : [],
           submitting: false,
+        },
+      };
+    case RESET_PASSWORD_VERIFICATION_TOKEN:
+      return {
+        ...state,
+        resetPassword: {
+          ...state.resetPassword,
+          verifiedToken: payload.token,
+        },
+      };
+    case RESET_PASSWORD_SUBMIT_NEW:
+      return {
+        ...state,
+        resetPassword: {
+          ...state.resetPassword,
+          submitting: true,
         },
       };
     case UPDATE_CART_ITEM_QUANTITY:
@@ -352,7 +371,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         reader: {
           ...state.reader,
-          mangaId: action.payload.mangaId,
+          mangaId: payload.mangaId,
         },
       };
     case UPDATE_MANGA:
@@ -402,25 +421,25 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         reader: {
           ...state.reader,
-          comments: action.payload.comments,
+          comments: payload.comments,
         },
       };
     case UPDATE_COMMENT:
       remove(state.reader.comments, (comment) => {
-        return comment.id === action.payload.comment.id;
+        return comment.id === payload.comment.id;
       });
       return {
         ...state,
         reader: {
           ...state.reader,
-          comments: [...state.reader.comments, action.payload.comment],
+          comments: [...state.reader.comments, payload.comment],
         },
       };
     case PAYMENT_INTENT_UPDATE:
       return {
         ...state,
         payment: {
-          clientSecret: action.payload.clientSecret,
+          clientSecret: payload.clientSecret,
         },
       };
     case CUSTOMER_SUBSCRIBE_FINISHED:

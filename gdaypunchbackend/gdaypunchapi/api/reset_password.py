@@ -16,6 +16,8 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.contrib.sessions.models import Session
+from django.contrib.auth import password_validation
 
 from ..models import (
     User, ResetPasswordSession
@@ -58,6 +60,7 @@ def send_password_reset_email(user, token):
 
 def reset_password(email):
     fmt = '%Y-%m-%d %H:%M:%S'
+    user = None
 
     try:
         user = User.objects.get(email=email)
@@ -65,28 +68,51 @@ def reset_password(email):
     except User.DoesNotExist:
         pass
 
-    try:
-        reset_session = ResetPasswordSession.objects.get(user=user.id)
-        reset_session.token = token_urlsafe(user.id)
-        reset_session.created_date = datetime.now().strftime(fmt)
-        reset_session.save()
+    if user is not None:
+        try:
+            reset_session = ResetPasswordSession.objects.get(user=user.id)
 
-        Thread(target=send_password_reset_email,
-               args=(user, reset_session.token,)).start()
+            if reset_session.verified_token is not None:
+                reset_session.verified_token = None
 
-    except ResetPasswordSession.DoesNotExist:
-        token = token_urlsafe(user.id)
-        created_date = datetime.now()
+            reset_session.token = token_urlsafe(user.id)
+            reset_session.created_date = datetime.now().strftime(fmt)
+            reset_session.save()
 
-        reset_session = ResetPasswordSession.objects.create(
-            user=user,
-            token=token,
-            created_date=created_date.strftime(fmt),
-        )
-        reset_session.save()
+            Thread(target=send_password_reset_email,
+                   args=(user, reset_session.token,)).start()
 
-        Thread(target=send_password_reset_email,
-               args=(user, token,)).start()
+        except ResetPasswordSession.DoesNotExist:
+            token = token_urlsafe(user.id)
+            created_date = datetime.now()
+
+            reset_session = ResetPasswordSession.objects.create(
+                user=user,
+                token=token,
+                created_date=created_date.strftime(fmt),
+            )
+            reset_session.save()
+
+            Thread(target=send_password_reset_email,
+                   args=(user, token,)).start()
+
+
+def all_unexpired_sessions_for_user(user):
+    user_sessions = []
+    all_sessions = Session.objects.filter(
+        expire_date__gte=datetime.datetime.now())
+    for session in all_sessions:
+        session_data = session.get_decoded()
+        if user.pk == session_data.get('_auth_user_id'):
+            user_sessions.append(session.pk)
+    return Session.objects.filter(pk__in=user_sessions)
+
+
+def delete_all_unexpired_sessions_for_user(user, session_to_omit=None):
+    session_list = all_unexpired_sessions_for_user(user)
+    if session_to_omit is not None:
+        session_list.exclude(session_key=session_to_omit.session_key)
+    session_list.delete()
 
 
 class ResetPasswordViewSet(viewsets.ModelViewSet):
@@ -125,7 +151,7 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
             token_date = datetime.strptime(resetSession.created_date, fmt)
 
             minutes_diff = (now - token_date).total_seconds() / 60.0
-            reset_expiry_minutes = 1  # 20
+            reset_expiry_minutes = 20  # 20
 
             if minutes_diff > reset_expiry_minutes:
                 resetSession.delete()
@@ -135,11 +161,71 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_401_UNAUTHORIZED
                 )
             else:
-                print('Token less than 1 minute old')
+                resetSession.verified_token = token_urlsafe(
+                    resetSession.user.id)
+                resetSession.save()
+
+                return Response(
+                    {'verified-token': resetSession.verified_token}
+                )
 
         except ResetPasswordSession.DoesNotExist:
             return Response(
                 {'error': 'Invalid reset password link. Please try another link or create a new reset password request'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
+        return Response(status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], url_path='submit')
+    def submit(self, request, *args, **kwargs):
+        password = request.data['new_password']
+        token = request.data['verified_token']
+
+        if password is None:
+            content = {"error": {
+                'invalid': 'Missing password field'
+            }}
+            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        try:
+            password_validation.validate_password(password)
+        except ValidationError as error:
+            content = {"error": {
+                'invalid': error
+            }}
+            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        try:
+            resetSession = ResetPasswordSession.objects.get(
+                verified_token=token)
+
+            fmt = '%Y-%m-%d %H:%M:%S'
+            now = datetime.strptime(datetime.now().strftime(fmt), fmt)
+            token_date = datetime.strptime(resetSession.created_date, fmt)
+
+            minutes_diff = (now - token_date).total_seconds() / 60.0
+            reset_expiry_minutes = 5  # 5
+
+            if minutes_diff > reset_expiry_minutes:
+                resetSession.delete()
+
+                return Response(
+                    {'error': {
+                        'expired': 'Reset password token has expired. Please create a new reset password request'
+                    }},
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+            else:
+                print("setting new password")
+                resetSession.delete()
+                return Response(status=status.HTTP_200_OK)
+
+        except ResetPasswordSession.DoesNotExist:
+            return Response(
+                {'error': {
+                    'not_found': 'Invalid reset password token. Please create a new reset password request'
+                }},
                 status=status.HTTP_401_UNAUTHORIZED
             )
 

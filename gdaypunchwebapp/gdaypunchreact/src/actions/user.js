@@ -19,6 +19,9 @@ export const RESET_PASSWORD = "user/RESET_PASSWORD";
 export const UPDATE_RESET_PASSWORD_ERRORS = "user/UPDATE_RESET_PASSWORD_ERRORS";
 export const RESET_PASSWORD_SUBMITTED = "user/RESET_PASSWORD_SUBMITTED";
 export const RESET_PASSWORD_VERIFY = "user/RESET_PASSWORD_VERIFY";
+export const RESET_PASSWORD_VERIFICATION_TOKEN =
+  "user/RESET_PASSWORD_VERIFICATION_TOKEN";
+export const RESET_PASSWORD_SUBMIT_NEW = "user/RESET_PASSWORD_SUBMIT_NEW";
 
 export const updateUser = (user) => ({
   type: UPDATE_USER,
@@ -106,17 +109,26 @@ export const resetPassword = (email) => ({
   },
 });
 
-export const updateContactResetPasswordErrors = (errors) => ({
+export const resetPasswordSubmitNew = (newPassword, verifiedToken) => ({
+  type: RESET_PASSWORD_SUBMIT_NEW,
+  payload: {
+    newPassword,
+    verifiedToken,
+  },
+});
+
+export const updateResetPasswordErrors = (errors) => ({
   type: UPDATE_RESET_PASSWORD_ERRORS,
   payload: {
     errors,
   },
 });
 
-export const resetPasswordSubmitted = (submitted) => ({
+export const resetPasswordSubmitted = (submitted, keepErrors) => ({
   type: RESET_PASSWORD_SUBMITTED,
   payload: {
     submitted,
+    keepErrors,
   },
 });
 
@@ -125,5 +137,12 @@ export const resetPasswordVerify = (consumer, history) => ({
   payload: {
     consumer,
     history,
+  },
+});
+
+export const resetPasswordVerificationToken = (token) => ({
+  type: RESET_PASSWORD_VERIFICATION_TOKEN,
+  payload: {
+    token,
   },
 });

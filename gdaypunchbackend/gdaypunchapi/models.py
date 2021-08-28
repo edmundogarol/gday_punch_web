@@ -471,5 +471,6 @@ class ResetPasswordSession(models.Model):
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=False, null=True)
     token = models.TextField(max_length=70, blank=False)
+    verified_token = models.TextField(max_length=70, blank=False, null=True)
     created_date = models.TextField(
         max_length=40, blank=False, null=False, default=datetime.now().strftime(fmt))
