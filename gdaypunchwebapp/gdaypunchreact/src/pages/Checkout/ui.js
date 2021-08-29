@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
-import { Select, Tooltip, Button, Alert, Space, Radio, message } from "antd";
+import { Space, Radio, message } from "antd";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
-import classNames from "classnames";
 import axios from "axios";
 import "unfetch/polyfill";
 import "es6-promise/auto";
 
 import { AddressForm } from "@shopify/theme-addresses";
 
-import GPAddressForm from "./addressForm";
 import FeaturedSection from "components/featuredSection";
+import GPAddressForm from "./addressForm";
+import AddressSummary from "./addressSummary";
+import BillingSection from "./billingSection";
+import PaymentSection from "./paymentSection";
+import CartItem from "./cartItem";
 import {
   App,
   CheckoutContainer,
@@ -20,13 +23,6 @@ import {
   OrderSummaryContainer,
   OrderSummaryFixed,
   OrderSummaryLine,
-  SummaryLineSeparator,
-  ItemContainer,
-  ItemImage,
-  ItemTitleMetaContainer,
-  ItemMeta,
-  ItemSubtotal,
-  ItemSubtotalBinContainer,
   LeftCheckoutContainer,
   CheckoutInnerSectionContainer,
   CheckoutInnerSectionTitle,
@@ -41,27 +37,10 @@ import {
 } from "./styles";
 import { gdayfetch } from "utils/gdayfetch";
 import {
-  getGdayPunchStaticUrl,
   getResourceImageModule,
   getImageModule,
   phoneValidator,
 } from "utils/utils";
-
-const CARD_ELEMENT_OPTIONS = {
-  style: {
-    base: {
-      color: "#32325d",
-      fontSmoothing: "antialiased",
-      "::placeholder": {
-        color: "#797979",
-      },
-    },
-    invalid: {
-      color: "#fa755a",
-      iconColor: "#fa755a",
-    },
-  },
-};
 
 function Ui(props) {
   const {
@@ -114,11 +93,7 @@ function Ui(props) {
   const [useShippingDetails, toggleUseShippingDetails] = useState(true);
   const [shippingMethodOpen, toggleShippingMethod] = useState(false);
   const [paymentOpen, togglePayment] = useState(false);
-  const [cardErrors, updateCardErrors] = useState({
-    cardNumber: undefined,
-    cardExpiry: undefined,
-    cardCvc: undefined,
-  });
+
   const [submitting, toggleSubmitting] = useState(false);
 
   const freeShipping = checkoutForm.country.value === "AU";
@@ -161,29 +136,6 @@ function Ui(props) {
     }
   };
 
-  const createCardElement = (type, placeholder) => {
-    const newCardElement = elements?.create(type, {
-      placeholder,
-      ...CARD_ELEMENT_OPTIONS,
-    });
-
-    newCardElement.on("change", function (event) {
-      if (event.complete) {
-        updateCardErrors({
-          ...cardErrors,
-          [type]: undefined,
-        });
-      } else if (event.error) {
-        updateCardErrors({
-          ...cardErrors,
-          [type]: event.error.message,
-        });
-      }
-    });
-
-    return newCardElement;
-  };
-
   useEffect(() => {
     const items = Object.values(cartItemsObject)
       .map((item) => item)
@@ -223,29 +175,6 @@ function Ui(props) {
     fetchLocale(billingForm);
   }, [checkoutForm.locale, billingForm.locale]);
 
-  useEffect(() => {
-    if (!paymentOpen) return;
-
-    const cardNumberElement = createCardElement("cardNumber", "Card number");
-    const cardExpiryElement = createCardElement(
-      "cardExpiry",
-      "Expiration date (MM / YY)"
-    );
-    const cardCvvElement = createCardElement("cardCvc", "Security code");
-
-    cardNumberElement?.mount("#card-number-element");
-    cardExpiryElement?.mount("#card-expiry-element");
-    cardCvvElement?.mount("#card-cvv-element");
-
-    return () => {
-      if (cardNumberElement) {
-        cardNumberElement.destroy();
-        cardExpiryElement.destroy();
-        cardCvvElement.destroy();
-      }
-    };
-  }, [paymentOpen]);
-
   window.onscroll = () => scrollFunction();
 
   const scrollFunction = () => {
@@ -262,7 +191,6 @@ function Ui(props) {
     }
 
     // Handle order summary style
-
     const orderSummaryCont = document.getElementById("order-summary");
     const checkoutCont = document.getElementById("left-checkout-container");
 
@@ -364,96 +292,6 @@ function Ui(props) {
         },
       });
     }
-  };
-
-  const cartItem = (item) => {
-    const { id, image, title, product_type, active_price, quantity } = item;
-
-    return (
-      <ItemContainer key={id}>
-        <ItemImage src={getGdayPunchStaticUrl(image)} />
-        <ItemTitleMetaContainer>
-          <a onClick={() => handleViewProduct(item)}>
-            <h3>{title}</h3>
-          </a>
-          <ItemMeta>
-            <p>{`A$${active_price}`}</p>
-            <p className="spacer">QTY:</p>
-            {quantity}
-          </ItemMeta>
-        </ItemTitleMetaContainer>
-        <ItemSubtotalBinContainer>
-          <ItemSubtotal>
-            <h4>{`A$${(quantity
-              ? quantity * active_price
-              : active_price
-            ).toFixed(2)}`}</h4>
-            <p>Subtotal</p>
-          </ItemSubtotal>
-        </ItemSubtotalBinContainer>
-      </ItemContainer>
-    );
-  };
-
-  const renderAddressSummary = (form) => {
-    const addressTitle = form.type === "shipping" ? "Ship To" : "Address";
-    return (
-      <>
-        <OrderSummaryLine>
-          <label className="summary-line-label">Contact</label>
-          <div>{`${form.email.value}`}</div>
-          <div>{`${form.phone.value}`}</div>
-        </OrderSummaryLine>
-        <SummaryLineSeparator />
-        <OrderSummaryLine>
-          <label className="summary-line-label">{addressTitle}</label>
-          <div>{`${form.address1.value} ${form.address2.value}, ${form.city.value} ${form.province.value} ${form.postcode.value}, ${form.country.value}`}</div>
-        </OrderSummaryLine>
-      </>
-    );
-  };
-
-  const renderBillingView = () => {
-    const useShippingDetailsSelector = () => (
-      <>
-        <OrderSummaryLine singleLine>
-          <Radio.Group
-            onChange={(e) => {
-              const useShipping = e.target.value === "shipping";
-              toggleUseShippingDetails(useShipping);
-              if (useShipping) {
-                updateCountriesDownloaded(false);
-              }
-            }}
-            value={useShippingDetails ? "shipping" : "billing"}
-          >
-            <Space direction="vertical">
-              <Radio value="shipping">Same as shipping address</Radio>
-              <Radio value="billing">Use different billing address</Radio>
-            </Space>
-          </Radio.Group>
-        </OrderSummaryLine>
-        {useShippingDetails && (
-          <button onClick={() => handleOpenSection("payment")}>Next</button>
-        )}
-      </>
-    );
-
-    if (useShippingDetails) {
-      return useShippingDetailsSelector();
-    }
-
-    return (
-      <>
-        {useShippingDetailsSelector()}
-        <GPAddressForm
-          type="billing"
-          addressForm={billingForm}
-          updateAddressForm={updateBillingForm}
-        />
-        <button onClick={() => handleOpenSection("payment")}>Next</button>
-      </>
-    );
   };
 
   const validateForm = (form) => {
@@ -601,7 +439,7 @@ function Ui(props) {
                     </button>
                   </>
                 ) : (
-                  renderAddressSummary(checkoutForm)
+                  <AddressSummary form={checkoutForm} />
                 )}
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
@@ -666,7 +504,14 @@ function Ui(props) {
                 </CheckoutInnerSectionTitle>
                 <br />
                 {billingForm.formOpen ? (
-                  renderBillingView()
+                  <BillingSection
+                    billingForm={billingForm}
+                    useShippingDetails={useShippingDetails}
+                    toggleUseShippingDetails={toggleUseShippingDetails}
+                    updateCountriesDownloaded={updateCountriesDownloaded}
+                    updateBillingForm={updateBillingForm}
+                    handleOpenSection={handleOpenSection}
+                  />
                 ) : (
                   <>
                     {useShippingDetails ? (
@@ -676,7 +521,7 @@ function Ui(props) {
                         </div>
                       </OrderSummaryLine>
                     ) : (
-                      renderAddressSummary(billingForm)
+                      <AddressSummary form={billingForm} />
                     )}
                   </>
                 )}
@@ -693,69 +538,13 @@ function Ui(props) {
                     />
                   </span>
                 </CheckoutInnerSectionTitle>
+                <br />
                 {paymentOpen && (
-                  <>
-                    <br />
-                    <form id="card-form" data-address={`card-form-root`}>
-                      <div
-                        className={classNames("form-field", {
-                          "card-error": !!cardErrors.cardNumber,
-                        })}
-                        data-line-count="1"
-                      >
-                        <div id="card-number-element" data-line-count="1"></div>
-                        <Alert
-                          className="invalid-message"
-                          message={cardErrors.cardNumber}
-                          type="error"
-                        />
-                      </div>
-                      <div className={"form-field"} data-line-count="1">
-                        <input
-                          id="card-name"
-                          name="name"
-                          placeholder="Name on card"
-                          type="text"
-                          value={billingForm.cardName.value}
-                          onChange={(e) =>
-                            updateBillingForm({
-                              ...billingForm,
-                              cardName: {
-                                ...billingForm.cardName,
-                                value: e.target.value,
-                              },
-                            })
-                          }
-                        />
-                      </div>
-                      <div
-                        className={classNames("form-field", {
-                          "card-error": !!cardErrors.cardExpiry,
-                        })}
-                        data-line-count="2"
-                      >
-                        <div id="card-expiry-element" data-line-count="1"></div>
-                        <Alert
-                          className="invalid-message"
-                          message={cardErrors.cardExpiry}
-                          type="error"
-                        />
-                      </div>
-                      <div
-                        className={classNames("form-field", {
-                          "card-error": !!cardErrors.cardCvc,
-                        })}
-                        data-line-count="2"
-                      >
-                        <div id="card-cvv-element" data-line-count="1"></div>
-                        <Alert
-                          className="invalid-message"
-                          message={cardErrors.cardCvc}
-                          type="error"
-                        />
-                      </div>
-                    </form>
-                  </>
+                  <PaymentSection
+                    paymentOpen={paymentOpen}
+                    billingForm={billingForm}
+                    updateBillingForm={updateBillingForm}
+                  />
                 )}
               </CheckoutInnerSectionContainer>
             </LeftCheckoutContainer>
@@ -763,7 +552,13 @@ function Ui(props) {
               <OrderSummaryFixed id="order-summary">
                 <label>Order Summary</label>
                 <SideCartItemsList>
-                  {items.map((item) => cartItem(item))}
+                  {items.map((item) => (
+                    <CartItem
+                      key={item.id}
+                      item={item}
+                      handleViewProduct={handleViewProduct}
+                    />
+                  ))}
                 </SideCartItemsList>
                 <ItemTotalContainer>
                   <NavLink target="_blank" to="/refunds-and-returns">
