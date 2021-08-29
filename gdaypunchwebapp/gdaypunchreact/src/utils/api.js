@@ -1,6 +1,8 @@
-import { call } from "redux-saga/effects";
+import { call, put } from "redux-saga/effects";
+import { message } from "antd";
 
 import { gdayfetch, twitterFetch } from "./gdayfetch";
+import { doCheckLogin, logoutSuccess } from "src/actions/user";
 
 /**
  * Make an API call or yield a redirect to the login page.
@@ -20,6 +22,20 @@ export function* api(...args) {
       console.debug("Ok!", response);
     } else if (response.status === 403) {
       console.debug("Login required");
+
+      if (
+        response.data.detail &&
+        response.data.detail.includes(
+          "Authentication credentials were not provided."
+        )
+      ) {
+        message.error(
+          `You have been logged out. Please log in again to continue.`,
+          4
+        );
+        yield put(logoutSuccess());
+        yield put(doCheckLogin());
+      }
     } else if (response.status === 503) {
       console.error("Timeout", response);
     } else {
@@ -38,7 +54,7 @@ export function* api(...args) {
       exception: true,
       status: exc.name,
       statusText: exc.toString(),
-      data: exc
+      data: exc,
     };
   }
 }

@@ -1,4 +1,5 @@
 import os
+import pdb
 from datetime import datetime
 from threading import Thread
 from secrets import token_urlsafe
@@ -97,22 +98,13 @@ def reset_password(email):
                    args=(user, token,)).start()
 
 
-def all_unexpired_sessions_for_user(user):
-    user_sessions = []
+def delete_all_unexpired_sessions_for_user(user):
     all_sessions = Session.objects.filter(
-        expire_date__gte=datetime.datetime.now())
+        expire_date__gte=datetime.now())
     for session in all_sessions:
         session_data = session.get_decoded()
-        if user.pk == session_data.get('_auth_user_id'):
-            user_sessions.append(session.pk)
-    return Session.objects.filter(pk__in=user_sessions)
-
-
-def delete_all_unexpired_sessions_for_user(user, session_to_omit=None):
-    session_list = all_unexpired_sessions_for_user(user)
-    if session_to_omit is not None:
-        session_list.exclude(session_key=session_to_omit.session_key)
-    session_list.delete()
+        if user.pk == int(session_data.get('_auth_user_id')):
+            session.delete()
 
 
 class ResetPasswordViewSet(viewsets.ModelViewSet):
@@ -217,8 +209,23 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_401_UNAUTHORIZED
                 )
             else:
-                print("setting new password")
+                try:
+                    user = User.objects.get(id=resetSession.user.id)
+
+                except User.DoesNotExist:
+                    return Response(
+                        {'error': {
+                            'not_found': 'Invalid reset password token. Please create a new reset password request'
+                        }},
+                        status=status.HTTP_401_UNAUTHORIZED
+                    )
+
+                delete_all_unexpired_sessions_for_user(user)
                 resetSession.delete()
+
+                user.set_password(password)
+                user.save()
+
                 return Response(status=status.HTTP_200_OK)
 
         except ResetPasswordSession.DoesNotExist:
