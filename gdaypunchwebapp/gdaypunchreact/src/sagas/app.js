@@ -258,22 +258,6 @@ export function* fetchCartItemsCall() {
   }
 }
 
-export function* paymentIntentFetchCall(action) {
-  const response = yield call(api, "payment-intent/", {
-    method: "POST",
-    body: {
-      items: action.payload.items,
-    },
-  });
-
-  if (response && response.ok) {
-    const data = response.data;
-    yield put(paymentIntentUpdate(data.clientSecret));
-  } else {
-    console.log("Payment Intent Fetch error", JSON.stringify(response));
-  }
-}
-
 export function* paymentIntentCancelCall() {
   const clientSecret = yield select(selectPaymentClientSecret);
 
@@ -296,16 +280,18 @@ export function* paymentIntentCancelCall() {
 export function* paymentSubmitCall(action) {
   yield put(paymentProcessing(true));
 
-  const response = yield call(api, "payment-customer-details/", {
+  const response = yield call(api, "payment-submit/", {
     method: "POST",
     body: {
-      ...action.payload.customerDetails,
+      customer_details: action.payload.customerDetails,
+      items: action.payload.items,
     },
   });
 
   if (response && response.ok) {
     const data = response.data;
     console.log(data);
+    yield put(paymentIntentUpdate(data.clientSecret));
   } else {
     console.log("Payment Submit error", JSON.stringify(response));
   }
@@ -337,9 +323,8 @@ export default function* appSaga() {
     takeLatest(DO_CHECK_LOGIN, checkLogin),
     takeLatest(SUBMIT_CONTACT_FORM, submitContactFormCall),
     takeLatest(FETCH_CART_ITEMS, fetchCartItemsCall),
-    // takeLatest(PAYMENT_SUBMIT, paymentSubmitCall),
+    takeLatest(PAYMENT_SUBMIT, paymentSubmitCall),
     takeLatest(PAYMENT_INTENT_CANCEL, paymentIntentCancelCall),
-    takeLatest(PAYMENT_INTENT_FETCH, paymentIntentFetchCall),
     takeLatest(CUSTOMER_SUBSCRIBE, customerSubscribeCall),
     takeLatest(RESET_PASSWORD, resetPasswordCall),
     takeLatest(RESET_PASSWORD_VERIFY, resetPasswordVerifyCall),

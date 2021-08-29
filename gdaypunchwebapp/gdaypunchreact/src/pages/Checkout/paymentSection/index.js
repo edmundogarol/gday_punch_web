@@ -57,23 +57,32 @@ function Ui(props) {
 
   useEffect(() => {
     if (!paymentOpen) return;
+    const cardNumberRef = elements.getElement("cardNumber");
+    const cardExpiryRef = elements.getElement("cardExpiry");
+    const cardCvvRef = elements.getElement("cardCvc");
 
-    const cardNumberElement = createCardElement("cardNumber", "Card number");
-    const cardExpiryElement = createCardElement(
-      "cardExpiry",
-      "Expiration date (MM / YY)"
-    );
-    const cardCvvElement = createCardElement("cardCvc", "Security code");
+    if (cardNumberRef) {
+      cardNumberRef.mount("#card-number-element");
+      cardExpiryRef.mount("#card-expiry-element");
+      cardCvvRef.mount("#card-cvv-element");
+    } else {
+      const cardNumberElement = createCardElement("cardNumber", "Card number");
+      const cardExpiryElement = createCardElement(
+        "cardExpiry",
+        "Expiration date (MM / YY)"
+      );
+      const cardCvvElement = createCardElement("cardCvc", "Security code");
 
-    cardNumberElement?.mount("#card-number-element");
-    cardExpiryElement?.mount("#card-expiry-element");
-    cardCvvElement?.mount("#card-cvv-element");
+      cardNumberElement?.mount("#card-number-element");
+      cardExpiryElement?.mount("#card-expiry-element");
+      cardCvvElement?.mount("#card-cvv-element");
+    }
 
     return () => {
-      if (cardNumberElement) {
-        cardNumberElement.destroy();
-        cardExpiryElement.destroy();
-        cardCvvElement.destroy();
+      if (cardNumberRef) {
+        cardNumberRef.destroy();
+        cardExpiryRef.destroy();
+        cardCvvRef.destroy();
       }
     };
   }, [paymentOpen]);

@@ -7,10 +7,11 @@ export const PAYMENT_INTENT_FETCH = "payment/PAYMENT_INTENT_FETCH";
 export const PAYMENT_INTENT_UPDATE = "payment/PAYMENT_INTENT_UPDATE";
 export const PAYMENT_INTENT_CANCEL = "payment/PAYMENT_INTENT_CANCEL";
 
-export const paymentSubmit = (customerDetails) => ({
+export const paymentSubmit = (customerDetails, items) => ({
   type: PAYMENT_SUBMIT,
   payload: {
     customerDetails,
+    items,
   },
 });
 

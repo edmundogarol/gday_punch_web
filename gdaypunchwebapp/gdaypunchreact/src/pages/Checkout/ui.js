@@ -101,6 +101,23 @@ function Ui(props) {
   const stripe = useStripe();
   const elements = useElements();
 
+  const customerDetailsPayload = {
+    email: checkoutForm.email.value,
+    first_name: checkoutForm.firstName.value,
+    last_name: checkoutForm.lastName.value,
+    address_line_1: checkoutForm.address1.value,
+    address_line_2: checkoutForm.address2.value,
+    city: checkoutForm.city.value,
+    state: checkoutForm.province.value,
+    postcode: checkoutForm.postcode.value,
+    country: checkoutForm.country.value,
+    phone_number: checkoutForm.phone.value,
+  };
+
+  const items = Object.values(cartItemsObject)
+    .map((item) => item)
+    .filter((item) => item.quantity);
+
   const populateAddressForm = (form) => {
     const addressRoot = document.getElementById(`${form.type}-address-root`);
 
@@ -135,28 +152,6 @@ function Ui(props) {
       getCountry();
     }
   };
-
-  useEffect(() => {
-    const items = Object.values(cartItemsObject)
-      .map((item) => item)
-      .filter((item) => item.quantity);
-
-    let stripe_prices = [];
-    items.map((item) => {
-      return item.stripe_prices.map((price) => {
-        stripe_prices = [
-          ...stripe_prices,
-          ...Array.from({ length: item.quantity }).map((x) => price),
-        ];
-      });
-    });
-
-    // if (stripe_prices.length) paymentIntentFetch(stripe_prices);
-
-    return () => {
-      // paymentIntentCancel();
-    };
-  }, []);
 
   useEffect(() => {
     populateAddressForm(checkoutForm);
@@ -237,19 +232,40 @@ function Ui(props) {
   const handleSubmitPayment = async (ev) => {
     ev.preventDefault();
 
-    if (!clientSecret) {
-      message.error({
-        content: "Payment error. Your card has not been charged.",
-        className: "antd-message-capitalize",
+    let stripe_prices = [];
+    items.map((item) => {
+      return item.stripe_prices.map((price) => {
+        stripe_prices = [
+          ...stripe_prices,
+          ...Array.from({ length: item.quantity }).map((x) => price),
+        ];
       });
-      return;
-    }
+    });
 
+    if (stripe_prices.length) {
+      paymentSubmit(customerDetailsPayload, stripe_prices);
+    }
+  };
+
+  const processPayment = async () => {
     const cardNumber = elements.getElement("cardNumber");
 
     const response = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: cardNumber,
+        billing_details: {
+          name: `${billingForm.firstName.value} ${billingForm.lastName.value}`,
+          email: billingForm.email.value,
+          phone: billingForm.phone.value,
+          address: {
+            city: billingForm.city.value,
+            country: billingForm.country.value,
+            line1: billingForm.address1.value,
+            line2: billingForm.address2.value,
+            postal_code: billingForm.postcode.value,
+            state: billingForm.province.value,
+          },
+        },
       },
     });
 
@@ -267,6 +283,12 @@ function Ui(props) {
       });
     }
   };
+
+  useEffect(() => {
+    if (clientSecret) {
+      processPayment();
+    }
+  }, [clientSecret]);
 
   const handlePurchaseClick = async () => {
     const response = await gdayfetch("payments/create-checkout-session/", {
@@ -302,6 +324,7 @@ function Ui(props) {
       "fetchingLocale",
       "cardName",
       "company",
+      "address2",
     ];
 
     if (!form.formOpen) return true;
@@ -370,25 +393,12 @@ function Ui(props) {
       customerSubscribe({
         user: null,
         subscribed: "checkout_subscribed",
-        email: checkoutForm.email.value,
-        first_name: checkoutForm.firstName.value,
-        last_name: checkoutForm.lastName.value,
-        address_line_1: checkoutForm.address1.value,
-        address_line_2: checkoutForm.address2.value,
-        city: checkoutForm.city.value,
-        state: checkoutForm.province.value,
-        postcode: checkoutForm.postcode.value,
-        country: checkoutForm.country.value,
-        phone_number: checkoutForm.phone.value,
+        ...customerDetailsPayload,
       });
     }
 
     updateCountriesDownloaded(false);
   };
-
-  const items = Object.values(cartItemsObject)
-    .map((item) => item)
-    .filter((item) => item.quantity);
 
   return (
     <App id="top" className="App">

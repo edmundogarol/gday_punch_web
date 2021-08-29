@@ -82,7 +82,6 @@ def StripePriceCreator(price):
 def get_customer_details(user_email):
 
     customer = None
-    customer_email = None
 
     gday_stripe_customer = None
     stripe_customer = None
@@ -98,7 +97,6 @@ def get_customer_details(user_email):
 
         except StripeCustomer.DoesNotExist:
             print("User id not associated with GP_StripeCustomer")
-            customer_email = user_email
 
         if customer is None:
             # Check if user email is associated with a previous stripe purchase
@@ -111,12 +109,8 @@ def get_customer_details(user_email):
     print("gday_stripe_customer", gday_stripe_customer)
     print("stripe_customer", stripe_customer)
     print("customer", customer)
-    print("customer_email", customer_email)
 
-    return {
-        'customer': customer,
-        'customer_email': customer_email,
-    }
+    return customer
 
 
 class PaymentView(APIView):
@@ -154,23 +148,54 @@ class PaymentView(APIView):
         return Response(content)
 
 
-class PaymentIntentView(APIView):
+class PaymentSubmitView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, format=None):
 
         try:
             data = request.data
-            print(data)
+            customer_payload = data['customer_details']
+
+            customer = get_customer_details(self.request.user)
+
+            address_payload = {
+                'city': customer_payload['city'],
+                'country': customer_payload['country'],
+                'line1': customer_payload['address_line_1'],
+                'line2': customer_payload['address_line_2'],
+                'postal_code': customer_payload['postcode'],
+                'state': customer_payload['state'],
+            }
+
+            if customer is None:
+                customer = stripe.Customer.create(
+                    name=customer_payload['first_name'] +
+                    " " + customer_payload['last_name'],
+                    email=customer_payload['email'],
+                    address=address_payload,
+                    phone=customer_payload['phone_number'],
+                    shipping={
+                        'name': customer_payload['first_name'] +
+                        " " + customer_payload['last_name'],
+                        'address': address_payload,
+                        'phone': customer_payload['phone_number'],
+                    }
+                )
+
             intent = stripe.PaymentIntent.create(
                 # amount=calculate_order_amount(data['items']),
+                customer=customer,
                 amount=1000,
                 currency='aud',
+                receipt_email=customer.email,
+                setup_future_usage='off_session',
                 metadata={
                     'gday_customer_name': 'Edmundo Garol',
                     'gday_customer_address1': 'U 3/37 Riversdale Rd',
                 }
             )
+
             content = {
                 'clientSecret': intent['client_secret']
             }
@@ -247,8 +272,8 @@ def PaymentsWebhookHandler(request):
     except KeyError:
         return HttpResponse(status=400)
 
-    # Handle creating payment intent
-    if event['type'] == 'payment_intent.created':
+    # Handle payment intent succeeded
+    if event['type'] == 'payment_intent.succeeded':
         payment_intent = event['data']['object']
 
         print(payment_intent)
