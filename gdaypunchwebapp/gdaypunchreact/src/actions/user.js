@@ -109,10 +109,15 @@ export const resetPassword = (email) => ({
   },
 });
 
-export const resetPasswordSubmitNew = (newPassword, verifiedToken) => ({
+export const resetPasswordSubmitNew = (
+  newPassword,
+  confirmPassword,
+  verifiedToken
+) => ({
   type: RESET_PASSWORD_SUBMIT_NEW,
   payload: {
     newPassword,
+    confirmPassword,
     verifiedToken,
   },
 });

@@ -172,11 +172,18 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], url_path='submit')
     def submit(self, request, *args, **kwargs):
         password = request.data['new_password']
+        confirm_password = request.data['confirm_password']
         token = request.data['verified_token']
 
         if password is None:
             content = {"error": {
-                'invalid': 'Missing password field'
+                'invalid': 'Missing password field.'
+            }}
+            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        if password != confirm_password:
+            content = {"error": {
+                'invalid': 'Confirm passwords must match.'
             }}
             return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
@@ -204,7 +211,7 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
 
                 return Response(
                     {'error': {
-                        'expired': 'Reset password token has expired. Please create a new reset password request'
+                        'expired': 'Reset password token has expired. Please create a new reset password request.'
                     }},
                     status=status.HTTP_401_UNAUTHORIZED
                 )
@@ -215,7 +222,7 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
                 except User.DoesNotExist:
                     return Response(
                         {'error': {
-                            'not_found': 'Invalid reset password token. Please create a new reset password request'
+                            'not_found': 'Invalid reset password token. Please create a new reset password request.'
                         }},
                         status=status.HTTP_401_UNAUTHORIZED
                     )
@@ -231,7 +238,7 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
         except ResetPasswordSession.DoesNotExist:
             return Response(
                 {'error': {
-                    'not_found': 'Invalid reset password token. Please create a new reset password request'
+                    'not_found': 'Invalid reset password token. Please create a new reset password request.'
                 }},
                 status=status.HTTP_401_UNAUTHORIZED
             )

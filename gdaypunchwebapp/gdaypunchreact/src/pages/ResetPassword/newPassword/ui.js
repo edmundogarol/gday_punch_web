@@ -47,7 +47,7 @@ function Ui(props) {
   }, [submitted]);
 
   const handleSubmitForm = () => {
-    resetPasswordSubmitNew(newPassword, verifiedToken);
+    resetPasswordSubmitNew(newPassword, confirmPassword, verifiedToken);
   };
 
   const submissionSuccess = submitted && !resetErrors.error;

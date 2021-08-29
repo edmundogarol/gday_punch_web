@@ -224,6 +224,7 @@ export function* resetPasswordSubmitNewCall(action) {
     method: "POST",
     body: {
       new_password: action.payload.newPassword || null,
+      confirm_password: action.payload.confirmPassword || null,
       verified_token: action.payload.verifiedToken || null,
     },
   });
