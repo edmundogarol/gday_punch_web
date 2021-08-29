@@ -160,7 +160,7 @@ class LoginView(APIView):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise AuthenticationFailed("User does not exist.")
+            raise AuthenticationFailed("Invalid username/password.")
 
         if user is None or not check_password(password, user.password):
             raise AuthenticationFailed("Invalid username/password.")
