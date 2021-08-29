@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
-import { Space, Radio, message } from "antd";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { message } from "antd";
 import axios from "axios";
 import "unfetch/polyfill";
 import "es6-promise/auto";
@@ -10,10 +10,10 @@ import "es6-promise/auto";
 import { AddressForm } from "@shopify/theme-addresses";
 
 import FeaturedSection from "components/featuredSection";
-import GPAddressForm from "./addressForm";
-import AddressSummary from "./addressSummary";
 import BillingSection from "./billingSection";
 import PaymentSection from "./paymentSection";
+import ShippingSection from "./shippingSection";
+import CustomerDetailsSection from "./customerDetailsSection";
 import CartItem from "./cartItem";
 import {
   App,
@@ -419,28 +419,13 @@ function Ui(props) {
                   )}
                 </CheckoutInnerSectionTitle>
                 <br />
-                {checkoutForm.formOpen ? (
-                  <>
-                    <GPAddressForm
-                      type="shipping"
-                      addressForm={checkoutForm}
-                      updateAddressForm={updateCheckoutForm}
-                    />
-                    <SubscribeCondition>
-                      <input
-                        checked={subscribeAgreed}
-                        type="checkbox"
-                        onChange={handleSubscribeCheck}
-                      />
-                      <p>{"Keep me up to date with news and offers"}</p>
-                    </SubscribeCondition>
-                    <button onClick={() => handleOpenSection("shipping")}>
-                      Next
-                    </button>
-                  </>
-                ) : (
-                  <AddressSummary form={checkoutForm} />
-                )}
+                <CustomerDetailsSection
+                  checkoutForm={checkoutForm}
+                  updateCheckoutForm={updateCheckoutForm}
+                  subscribeAgreed={subscribeAgreed}
+                  handleSubscribeCheck={handleSubscribeCheck}
+                  handleOpenSection={handleOpenSection}
+                />
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
                 <CheckoutInnerSectionTitle>
@@ -452,44 +437,11 @@ function Ui(props) {
                   )}
                 </CheckoutInnerSectionTitle>
                 <br />
-                {shippingMethodOpen ? (
-                  <>
-                    <OrderSummaryLine singleLine>
-                      <Radio.Group
-                        value={freeShipping ? "free" : "international"}
-                      >
-                        <Space direction="vertical">
-                          <Radio value="free" disabled={!freeShipping}>
-                            Australia Free Standard Shipping
-                            <p>Free</p>
-                          </Radio>
-                          <Radio value="international" disabled={freeShipping}>
-                            International Standard Shipping
-                            <p>AUD$13.00</p>
-                          </Radio>
-                        </Space>
-                      </Radio.Group>
-                    </OrderSummaryLine>
-                    <button onClick={() => handleOpenSection("billing")}>
-                      Next
-                    </button>
-                  </>
-                ) : (
-                  <OrderSummaryLine singleLine>
-                    <div>
-                      {freeShipping ? (
-                        <p>
-                          Australia Free Standard Shipping<span>(Free)</span>
-                        </p>
-                      ) : (
-                        <p>
-                          International Standard Shipping
-                          <span>(AUD$13.00)</span>
-                        </p>
-                      )}
-                    </div>
-                  </OrderSummaryLine>
-                )}
+                <ShippingSection
+                  shippingMethodOpen={shippingMethodOpen}
+                  freeShipping={freeShipping}
+                  handleOpenSection={handleOpenSection}
+                />
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer
                 selectImage={getImageModule("down-arrow.png")}
@@ -503,28 +455,14 @@ function Ui(props) {
                   )}
                 </CheckoutInnerSectionTitle>
                 <br />
-                {billingForm.formOpen ? (
-                  <BillingSection
-                    billingForm={billingForm}
-                    useShippingDetails={useShippingDetails}
-                    toggleUseShippingDetails={toggleUseShippingDetails}
-                    updateCountriesDownloaded={updateCountriesDownloaded}
-                    updateBillingForm={updateBillingForm}
-                    handleOpenSection={handleOpenSection}
-                  />
-                ) : (
-                  <>
-                    {useShippingDetails ? (
-                      <OrderSummaryLine singleLine>
-                        <div>
-                          <p>Same as shipping address</p>
-                        </div>
-                      </OrderSummaryLine>
-                    ) : (
-                      <AddressSummary form={billingForm} />
-                    )}
-                  </>
-                )}
+                <BillingSection
+                  billingForm={billingForm}
+                  useShippingDetails={useShippingDetails}
+                  toggleUseShippingDetails={toggleUseShippingDetails}
+                  updateCountriesDownloaded={updateCountriesDownloaded}
+                  updateBillingForm={updateBillingForm}
+                  handleOpenSection={handleOpenSection}
+                />
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
                 <CheckoutInnerSectionTitle>
@@ -539,13 +477,11 @@ function Ui(props) {
                   </span>
                 </CheckoutInnerSectionTitle>
                 <br />
-                {paymentOpen && (
-                  <PaymentSection
-                    paymentOpen={paymentOpen}
-                    billingForm={billingForm}
-                    updateBillingForm={updateBillingForm}
-                  />
-                )}
+                <PaymentSection
+                  paymentOpen={paymentOpen}
+                  billingForm={billingForm}
+                  updateBillingForm={updateBillingForm}
+                />
               </CheckoutInnerSectionContainer>
             </LeftCheckoutContainer>
             <OrderSummaryContainer>

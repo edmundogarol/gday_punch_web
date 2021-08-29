@@ -22,6 +22,8 @@ const CARD_ELEMENT_OPTIONS = {
 function Ui(props) {
   const { paymentOpen, billingForm, updateBillingForm } = props;
 
+  if (!paymentOpen) return null;
+
   const [cardErrors, updateCardErrors] = useState({
     cardNumber: undefined,
     cardExpiry: undefined,

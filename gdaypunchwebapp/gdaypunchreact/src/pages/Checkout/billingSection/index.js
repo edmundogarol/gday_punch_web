@@ -3,6 +3,7 @@ import { Radio, Space } from "antd";
 
 import { OrderSummaryLine } from "../styles";
 import GPAddressForm from "../addressForm";
+import AddressSummary from "../addressSummary";
 
 function Ui(props) {
   const {
@@ -39,21 +40,34 @@ function Ui(props) {
     </>
   );
 
-  if (useShippingDetails) {
-    return useShippingDetailsSelector();
+  if (billingForm.formOpen) {
+    if (useShippingDetails) {
+      return useShippingDetailsSelector();
+    }
+    return (
+      <>
+        {useShippingDetailsSelector()}
+        <GPAddressForm
+          type="billing"
+          addressForm={billingForm}
+          updateAddressForm={updateBillingForm}
+        />
+        <button onClick={() => handleOpenSection("payment")}>Next</button>
+      </>
+    );
+  } else {
+    if (useShippingDetails) {
+      return (
+        <OrderSummaryLine singleLine>
+          <div>
+            <p>Same as shipping address</p>
+          </div>
+        </OrderSummaryLine>
+      );
+    } else {
+      return <AddressSummary form={billingForm} />;
+    }
   }
-
-  return (
-    <>
-      {useShippingDetailsSelector()}
-      <GPAddressForm
-        type="billing"
-        addressForm={billingForm}
-        updateAddressForm={updateBillingForm}
-      />
-      <button onClick={() => handleOpenSection("payment")}>Next</button>
-    </>
-  );
 }
 
 export default Ui;
