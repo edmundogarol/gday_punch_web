@@ -104,6 +104,7 @@ export function* patchUser(action) {
 export function* checkLogin() {
   const response = yield call(api, "login-check/", {
     method: "GET",
+    loggedOutNotification: false,
   });
 
   if (response && response.ok) {

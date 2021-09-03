@@ -249,21 +249,22 @@ function Ui(props) {
 
   const processPayment = async () => {
     const cardNumber = elements.getElement("cardNumber");
+    const billingAddress = useShippingDetails ? checkoutForm : billingForm;
 
     const response = await stripe.confirmCardPayment(clientSecret, {
       payment_method: {
         card: cardNumber,
         billing_details: {
-          name: `${billingForm.firstName.value} ${billingForm.lastName.value}`,
-          email: billingForm.email.value,
-          phone: billingForm.phone.value,
+          name: `${billingAddress.firstName.value} ${billingAddress.lastName.value}`,
+          email: billingAddress.email.value,
+          phone: billingAddress.phone.value,
           address: {
-            city: billingForm.city.value,
-            country: billingForm.country.value,
-            line1: billingForm.address1.value,
-            line2: billingForm.address2.value,
-            postal_code: billingForm.postcode.value,
-            state: billingForm.province.value,
+            city: billingAddress.city.value,
+            country: billingAddress.country.value,
+            line1: billingAddress.address1.value,
+            line2: billingAddress.address2.value,
+            postal_code: billingAddress.postcode.value,
+            state: billingAddress.province.value,
           },
         },
       },

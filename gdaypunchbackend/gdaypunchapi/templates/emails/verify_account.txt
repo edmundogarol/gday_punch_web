@@ -1,0 +1,15 @@
+{% autoescape off %}
+G'day!
+
+Verify your account today to read all the free manga in the Gday Punch Web App!
+
+To complete account registration: verify your email address to keep your account secure and provide a way to recover your password.
+
+{{ website }}/verify-account/{{ token }}
+
+If you did not make this request, you can simply ignore this email.
+
+Sincerely,
+Gday Punch Team
+
+{% endautoescape %}

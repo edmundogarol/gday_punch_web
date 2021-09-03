@@ -1,13 +1,12 @@
 import os
+import stripe
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from django.db.models import Q
 from django.http import HttpResponse
-
-import stripe
+from django.db.models import Q
 
 from ..models import (
     User, StripeCustomer, StripePrice
@@ -29,123 +28,146 @@ else:
     stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
     domain = "https://www.beta-gdaypunch.com"
 
-# price_type: one_time, recurring
+
+def calculate_order_amount(customer, items_list):
+    order_amount = 0
+    subscription_items = []
+
+    for stripe_id in items_list:
+        stripe_price = StripePrice.objects.get(id=stripe_id)
+
+        order_amount = order_amount + stripe_price.price_amount
+
+        if stripe_price.price_type == "recurring":
+            subscription_items.append({"price", stripe_price.price_id})
+
+        if subscription_items:
+            stripe.Subscription.create(
+                customer=customer,
+                items=subscription_items,
+            )
+
+        return int(order_amount * 100)
 
 
-def StripePriceCreator(price):
-    prices = []
-    name = price.get("name", None)
-    unit_amount = price.get("unit_amount", None)
-    price_type = price.get("type", None)
-    stripe_ids = price.get("stripe_ids", None)
-    has_subscription = False
+def get_customer_details(user_email, customer_payload):
 
-    if name is not None:
-        prices.append({
-            'price': stripe.Price.create(
-                unit_amount=int(float(unit_amount)*100),
-                currency="aud",
-                recurring={
-                    "interval": "month",
-                    "interval_count": 2,
-                    "usage_type": "metered"
-                } if price_type == "recurring" else None,
-                product_data={
-                    "name": name,
-                }),
-            'quantity': 1 if price_type == "one_time" else None
-        })
-    elif stripe_ids is not None:
-        for stripe_id in stripe_ids:
-            stripe_price = StripePrice.objects.get(id=stripe_id)
-            append = True
-
-            if stripe_price.price_type == "recurring":
-                has_subscription = True
-
-            if len(prices):
-                for entry in prices:
-                    if entry['price'] == stripe_price.price_id:
-                        prices[prices.index(entry)]['quantity'] = prices[prices.index(
-                            entry)]['quantity'] + 1
-                        append = False
-
-            if append:
-                prices.append({
-                    'price': stripe_price.price_id,
-                    'quantity': 1 if stripe_price.price_type == "one_time" else None
-                })
-
-    return {"prices": prices, "type":  has_subscription}
-
-
-def get_customer_details(user_email):
-
+    user = None
     customer = None
-
     gday_stripe_customer = None
     stripe_customer = None
 
+    address_payload = {
+        'city': customer_payload['city'],
+        'country': customer_payload['country'],
+        'line1': customer_payload['address_line_1'],
+        'line2': customer_payload['address_line_2'],
+        'postal_code': customer_payload['postcode'],
+        'state': customer_payload['state'],
+    }
+
+    payment_email = customer_payload['email']
+
+    # User Logged In
     if str(user_email) != "AnonymousUser":
         user = User.objects.get(email=user_email)
 
         # Check if user has a GP_StripeCustomer
+        #
+        #   - User has purchased through the site logged in
         try:
             gday_stripe_customer = StripeCustomer.objects.get(
                 user_id=user.id)
             customer = gday_stripe_customer.customer_id
 
+            # Check if GP_StripeCustomer email matches payment email
+            #
+            #   - Replace GP_StripeCustomer email with payment email
+            if gday_stripe_customer.stripe_email != payment_email:
+                gday_stripe_customer.stripe_email = payment_email
+                gday_stripe_customer.save()
+
         except StripeCustomer.DoesNotExist:
             print("User id not associated with GP_StripeCustomer")
 
+        # Check if user email is associated with a GP_StripeCustomer
+        #
+        #   - User email has been used in purchase through the site
         if customer is None:
-            # Check if user email is associated with a previous stripe purchase
+            try:
+                gday_stripe_customer = StripeCustomer.objects.get(
+                    stripe_email=user_email)
+
+                # Check if GP_StripeCustomer has a user associated already
+                #
+                #   - User email has been used in purchase through the site
+                if gday_stripe_customer.user is not None:
+
+                    stripe_customer = StripeCustomer(
+                        customer_id=customer.id,
+                        stripe_email=payment_email,
+                        user=user
+                    )
+
+                customer = gday_stripe_customer.customer_id
+
+                gday_stripe_customer.user = user
+
+                # Check if GP_StripeCustomer email matches payment email
+                #
+                #   - Replace GP_StripeCustomer email with payment email
+                if gday_stripe_customer.stripe_email != payment_email:
+                    gday_stripe_customer.stripe_email = payment_email
+                    gday_stripe_customer.save()
+
+            except StripeCustomer.DoesNotExist:
+                print("Email id not associated with GP_StripeCustomer")
+
+        # Check if user email is associated with a previous Stripe purchase (not through new website)
+        if customer is None:
             stripe_customer = stripe.Customer.list(
                 limit=1, email=user_email)
 
             if len(stripe_customer.data) > 0:
                 customer = stripe_customer.data[0]
 
-    print("gday_stripe_customer", gday_stripe_customer)
-    print("stripe_customer", stripe_customer)
-    print("customer", customer)
+    # User Logged Out
+    if user is None:
+        # Check if email has a GP_StripeCustomer
+        #
+        #   - Email is associated with a purchase created through the website (logged in)
+        try:
+            gday_stripe_customer = StripeCustomer.objects.get(
+                email=payment_email)
+            customer = gday_stripe_customer.customer_id
 
-    return customer
+        except StripeCustomer.DoesNotExist:
+            print("User id not associated with GP_StripeCustomer")
 
-
-class PaymentView(APIView):
-    permission_classes = [permissions.AllowAny]
-
-    def post(self, request, format=None):
-
-        customer_details = get_customer_details(self.request.user)
-        customer = customer_details['customer']
-        customer_email = customer_details['customer_email']
-
-        price_creator = StripePriceCreator(request.data)
-        subscriptionMode = (request.data.get(
-            "type", None) == "recurring") or price_creator["type"]
-
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            billing_address_collection='required',
-            shipping_address_collection={
-                'allowed_countries': ['AU']
-            },
-            customer=customer,
-            customer_email=customer_email,
-            line_items=price_creator["prices"],
-            mode='subscription' if subscriptionMode else 'payment',
-            success_url=domain+'/',
-            cancel_url=request.data.get(
-                "previous_url", domain),
+    # If email is not in Stripe, create Stripe customer
+    if customer is None:
+        customer = stripe.Customer.create(
+            name=customer_payload['first_name'] +
+            " " + customer_payload['last_name'],
+            email=customer_payload['email'],
+            address=address_payload,
+            phone=customer_payload['phone_number'],
+            shipping={
+                'name': customer_payload['first_name'] +
+                " " + customer_payload['last_name'],
+                'address': address_payload,
+                'phone': customer_payload['phone_number'],
+            }
         )
 
-        content = {
-            "id": session.id,
-        }
+        stripe_customer = StripeCustomer(
+            customer_id=customer.id,
+            stripe_email=payment_email,
+            user=None
+        )
+        stripe_customer.save()
 
-        return Response(content)
+    return customer
 
 
 class PaymentSubmitView(APIView):
@@ -156,44 +178,17 @@ class PaymentSubmitView(APIView):
         try:
             data = request.data
             customer_payload = data['customer_details']
+            items_list = data['items']
 
-            customer = get_customer_details(self.request.user)
-
-            address_payload = {
-                'city': customer_payload['city'],
-                'country': customer_payload['country'],
-                'line1': customer_payload['address_line_1'],
-                'line2': customer_payload['address_line_2'],
-                'postal_code': customer_payload['postcode'],
-                'state': customer_payload['state'],
-            }
-
-            if customer is None:
-                customer = stripe.Customer.create(
-                    name=customer_payload['first_name'] +
-                    " " + customer_payload['last_name'],
-                    email=customer_payload['email'],
-                    address=address_payload,
-                    phone=customer_payload['phone_number'],
-                    shipping={
-                        'name': customer_payload['first_name'] +
-                        " " + customer_payload['last_name'],
-                        'address': address_payload,
-                        'phone': customer_payload['phone_number'],
-                    }
-                )
+            customer = get_customer_details(
+                self.request.user, customer_payload)
 
             intent = stripe.PaymentIntent.create(
-                # amount=calculate_order_amount(data['items']),
+                amount=calculate_order_amount(customer.id, items_list),
                 customer=customer,
-                amount=1000,
                 currency='aud',
                 receipt_email=customer.email,
                 setup_future_usage='off_session',
-                metadata={
-                    'gday_customer_name': 'Edmundo Garol',
-                    'gday_customer_address1': 'U 3/37 Riversdale Rd',
-                }
             )
 
             content = {

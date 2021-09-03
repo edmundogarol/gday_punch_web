@@ -1,12 +1,15 @@
-from django.db import models
+import random
 from datetime import datetime
+
+from rest_framework import exceptions
+
+from django.db import models
+from django.utils import timezone
+from django.db.models import Count
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.contrib.auth import get_user_model
-from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from rest_framework import exceptions
-from django.db.models import Count
 from django.contrib.postgres.fields import ArrayField
 from django_currentuser.middleware import (
     get_current_user, get_current_authenticated_user)
@@ -106,6 +109,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(default=timezone.now)
     last_login = models.DateTimeField(null=True)
     privileges = models.ManyToManyField(Privileges, blank=True)
+    verified = models.TextField(max_length=50, blank=False, null=True)
 
     objects = UserManager()
 
@@ -473,4 +477,4 @@ class ResetPasswordSession(models.Model):
     token = models.TextField(max_length=70, blank=False)
     verified_token = models.TextField(max_length=70, blank=False, null=True)
     created_date = models.TextField(
-        max_length=40, blank=False, null=False, default=datetime.now().strftime(fmt))
+        max_length=40, blank=False, null=False)

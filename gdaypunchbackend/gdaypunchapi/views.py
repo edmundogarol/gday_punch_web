@@ -1,5 +1,7 @@
 import datetime
 from next_prev import next_in_order
+from secrets import token_urlsafe
+from threading import Thread
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -9,12 +11,13 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.authentication import SessionAuthentication
 
 from rest_framework.viewsets import (ViewSet, ModelViewSet)
-from rest_framework.exceptions import (ValidationError, AuthenticationFailed)
+from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.permissions import (
     AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission)
 
 from django.db.models import Q
 from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.contrib.auth import login, logout, password_validation
 from django.contrib.auth.hashers import check_password
@@ -22,6 +25,7 @@ from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
 
+from .api.verify_account import send_account_verification_email
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt
 )
@@ -63,6 +67,10 @@ class UserViewSet(UpdateModelMixin, ViewSet):
     def create(self, validated_data):
         user = None
 
+        if not validated_data.data["password"] or not validated_data.data["email"]:
+            content = {"error": "Please provide both email and password."}
+            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         try:
             password_validation.validate_password(
                 validated_data.data["password"])
@@ -79,8 +87,12 @@ class UserViewSet(UpdateModelMixin, ViewSet):
             content = {"error": "Duplicate email. User already exists."}
             return Response(content, status=status.HTTP_409_CONFLICT)
 
+        user.verified = token_urlsafe(user.id)
         user.set_password(validated_data.data["password"])
         user.save()
+
+        Thread(target=send_account_verification_email,
+               args=(user, user.verified,)).start()
 
         content = {
             "user": str(user),
