@@ -24,6 +24,7 @@ export function* api(...args) {
       console.debug("Login required");
 
       if (
+        args[3] &&
         !args[3].loggedOutNotification &&
         response.data.detail &&
         response.data.detail.includes(

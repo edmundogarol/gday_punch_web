@@ -8,7 +8,7 @@ import {
   faTwitter,
   faPinterest,
 } from "@fortawesome/free-brands-svg-icons";
-import { Typography, Image, Select, Spin } from "antd";
+import { Typography, Image, Select, Spin, message } from "antd";
 import moment from "moment";
 const { Title } = Typography;
 const { Option } = Select;
@@ -52,6 +52,7 @@ const ageRating = {
 
 function Ui(props) {
   const {
+    user,
     productState,
     fetchViewingProduct,
     setViewingProduct,
@@ -122,11 +123,18 @@ function Ui(props) {
   };
 
   const handleReadManga = () => {
+    const unverified = user.verified !== "verified";
+
     if (!loggedIn) {
       scrollToTop();
       props.history.push("/#top");
       openRegister();
       suggestRegister("Info: Sign up or Log in to read this manga!");
+    } else if (unverified) {
+      message.warn(
+        "Please check your email and verify your account first to be able to read our manga!",
+        5
+      );
     } else {
       props.history.push(`/manga/${product.manga_details.id}`);
     }

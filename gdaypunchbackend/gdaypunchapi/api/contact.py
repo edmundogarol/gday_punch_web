@@ -1,9 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 
-from ..views import (
-    PostOnlyPermissions
-)
+from ..utils import PostOnlyPermissions
 from ..models import (
     Contact
 )

@@ -32,6 +32,7 @@ import About from "pages/About";
 import Contact from "pages/Contact";
 import ResetPassword from "pages/ResetPassword";
 import ResetPasswordNewPassword from "pages/ResetPassword/newPassword";
+import VerifyEmail from "pages/VerifyEmail";
 import Cart from "pages/Cart";
 import Checkout from "pages/Checkout";
 import RefundsAndReturns from "pages/RefundsAndReturns";
@@ -132,6 +133,11 @@ function Root(props) {
             />
             <Route
               exact
+              path="/verify-account/:token"
+              component={VerifyEmail}
+            />
+            <Route
+              exact
               path="/refunds-and-returns"
               component={RefundsAndReturns}
             />
@@ -140,7 +146,8 @@ function Root(props) {
               path="/product/:productId/:productUri"
               component={ProductDetail}
             />
-            {loginCheckFinished && !user.logged_in ? (
+            {(loginCheckFinished && !user.logged_in) ||
+            user.verified !== "verified" ? (
               <Redirect to="/" />
             ) : (
               <Route exact path="/manga/:id" component={Reader} />

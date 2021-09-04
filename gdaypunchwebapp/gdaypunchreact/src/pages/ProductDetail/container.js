@@ -3,7 +3,7 @@ import { createStructuredSelector } from "reselect";
 import { withRouter } from "react-router-dom";
 
 import { openRegistration, doSuggestRegister } from "actions/user";
-import { selectProductsState, selectLoggedIn } from "selectors/app";
+import { selectProductsState, selectLoggedIn, selectUser } from "selectors/app";
 import {
   fetchViewingProduct as fetchViewingProductAction,
   setViewingProduct as setViewingProductAction,
@@ -13,6 +13,7 @@ import { updateCartItemQuantity as updateCartItemQuantityAction } from "actions/
 import Ui from "./ui";
 
 const mapState = createStructuredSelector({
+  user: selectUser,
   productState: selectProductsState,
   loggedIn: selectLoggedIn,
 });

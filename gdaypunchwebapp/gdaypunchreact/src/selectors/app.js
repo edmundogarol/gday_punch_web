@@ -45,6 +45,11 @@ export const selectSuggestRegistration = createSelector(
   ({ suggestRegistration }) => suggestRegistration || ""
 );
 
+export const selectEmailVerificationState = createSelector(
+  selectDomain,
+  ({ emailVerification }) => emailVerification
+);
+
 export const selectProductsState = createSelector(
   selectDomain,
   ({ products }) => products

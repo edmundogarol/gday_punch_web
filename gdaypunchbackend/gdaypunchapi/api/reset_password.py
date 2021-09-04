@@ -20,12 +20,9 @@ from django.core.exceptions import ValidationError
 from django.contrib.sessions.models import Session
 from django.contrib.auth import password_validation
 
+from ..utils import PostOnlyPermissions
 from ..models import (
     User, ResetPasswordSession
-)
-
-from ..views import (
-    PostOnlyPermissions
 )
 
 if 'DEVENV' in os.environ:

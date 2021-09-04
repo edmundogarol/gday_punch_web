@@ -30,6 +30,9 @@ from .gdaypunchapi.views import (
 from .gdaypunchapi.api.reset_password import (
     ResetPasswordViewSet
 )
+from .gdaypunchapi.api.verify_account import (
+    VerifyAccountViewSet
+)
 from .gdaypunchapi.api.products import (
     ProductViewSet,
     ProductDetailView
@@ -73,19 +76,19 @@ router.register(r'reset-password', ResetPasswordViewSet,
                 basename="reset-password")
 
 urlpatterns = [
-    # url(r'admin/', admin.site.urls),
     url(r'^docs/', schema_view),
     url(r'api/login/', LoginView.as_view()),
     url(r'api/logout/', LogoutView.as_view()),
     url(r'api/login-check/', LoginView.as_view()),
     path('api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'api/verify-account/',
+        VerifyAccountViewSet.as_view({'post': 'email'})),
     url(r'api/price/', PriceView.as_view()),
     url(r'api/payment-submit/', PaymentSubmitView.as_view()),
     url(r'api/payments/webhooks/', csrf_exempt(PaymentsWebhookHandler)),
     url(r'api/stripe-products/', StripeProductsViewSet.as_view()),
     url(r'api/stripe-prices/',
         StripePriceViewSet.as_view({'post': 'create', 'get': 'list'})),
-    # url(r'accounts/', include('django.contrib.auth.urls')),
     url(r'', include('gdaypunchwebapp.urls')),
 ]

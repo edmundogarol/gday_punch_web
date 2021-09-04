@@ -18,6 +18,9 @@ import {
   RESET_PASSWORD,
   RESET_PASSWORD_VERIFICATION_TOKEN,
   RESET_PASSWORD_SUBMIT_NEW,
+  VERIFYING_EMAIL,
+  VERIFYING_EMAIL_FINISHED,
+  EMAIL_VERIFIED,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -60,6 +63,13 @@ const INITIAL_STATE = {
     logged_in: false,
     is_staff: false,
     roles: [],
+    verified: false,
+  },
+
+  emailVerification: {
+    verifying: false,
+    verifyingFinished: false,
+    error: undefined,
   },
 
   loginView: false,
@@ -185,6 +195,33 @@ const appReducer = (state = INITIAL_STATE, action) => {
         loginView: false,
         user: INITIAL_STATE.user,
         loginCheckFinished: true,
+      };
+    case VERIFYING_EMAIL:
+      return {
+        ...state,
+        emailVerification: {
+          ...state.emailVerification,
+          verifying: true,
+          verifyingFinished: false,
+        },
+      };
+    case VERIFYING_EMAIL_FINISHED:
+      return {
+        ...state,
+        emailVerification: {
+          ...state.emailVerification,
+          verifying: false,
+          verifyingFinished: true,
+          error: payload.error,
+        },
+      };
+    case EMAIL_VERIFIED:
+      return {
+        ...state,
+        user: {
+          ...payload.user,
+          verified: true,
+        },
       };
     case UPDATE_PRODUCTS:
       const { adding } = payload;

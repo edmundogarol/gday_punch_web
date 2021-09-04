@@ -1,6 +1,3 @@
-from ..views import (
-    PostOnlyPermissions
-)
 from ..models import (
     Contact
 )

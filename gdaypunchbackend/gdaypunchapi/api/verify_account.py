@@ -1,9 +1,17 @@
 import os
-
 from smtplib import SMTPAuthenticationError
 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+
+from rest_framework import status, viewsets
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.decorators import action
+
+from ..models import User
+from ..serializers import UserSerializer
+from ..utils import PostOnlyPermissions
 
 if 'DEVENV' in os.environ:
     website = "http://localhost:8000"
@@ -34,3 +42,32 @@ def send_account_verification_email(user, token):
 
     except SMTPAuthenticationError:
         print("Username and Password not accepted for smtp email config.")
+
+
+class VerifyAccountViewSet(viewsets.ModelViewSet):
+    permission_classes = (PostOnlyPermissions,)
+
+    @action(detail=False, methods=['post'], url_path='email')
+    def email(self, request, *args, **kwargs):
+        data = request.data
+        token = data['token']
+
+        try:
+            user = User.objects.get(verified=token)
+            user.verified = "verified"
+            user.save()
+
+            serializer = UserSerializer(user)
+
+            content = {
+                "user": serializer.data,
+                # "logged_in": True,
+                "logged_in": True,
+            }
+            return Response(content)
+
+        except User.DoesNotExist:
+            return Response(
+                {'error': 'Email Verification link expired. Please create another email verification request.'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )

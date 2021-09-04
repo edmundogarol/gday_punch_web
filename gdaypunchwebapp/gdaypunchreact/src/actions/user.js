@@ -23,6 +23,11 @@ export const RESET_PASSWORD_VERIFICATION_TOKEN =
   "user/RESET_PASSWORD_VERIFICATION_TOKEN";
 export const RESET_PASSWORD_SUBMIT_NEW = "user/RESET_PASSWORD_SUBMIT_NEW";
 
+export const VERIFY_EMAIL = "user/VERIFY_EMAIL";
+export const VERIFYING_EMAIL = "user/VERIFYING_EMAIL";
+export const VERIFYING_EMAIL_FINISHED = "user/VERIFYING_EMAIL_FINISHED";
+export const EMAIL_VERIFIED = "user/EMAIL_VERIFIED";
+
 export const updateUser = (user) => ({
   type: UPDATE_USER,
   payload: {
@@ -149,5 +154,30 @@ export const resetPasswordVerificationToken = (token) => ({
   type: RESET_PASSWORD_VERIFICATION_TOKEN,
   payload: {
     token,
+  },
+});
+
+export const verifyEmail = (token) => ({
+  type: VERIFY_EMAIL,
+  payload: {
+    token,
+  },
+});
+
+export const verifyingEmail = () => ({
+  type: VERIFYING_EMAIL,
+});
+
+export const verifyingEmailFinished = (error) => ({
+  type: VERIFYING_EMAIL_FINISHED,
+  payload: {
+    error,
+  },
+});
+
+export const emailVerified = (user) => ({
+  type: EMAIL_VERIFIED,
+  payload: {
+    user,
   },
 });

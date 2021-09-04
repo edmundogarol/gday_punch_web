@@ -20,6 +20,10 @@ import {
   resetPasswordSubmitted,
   updateResetPasswordErrors,
   resetPasswordVerificationToken,
+  verifyingEmail,
+  emailVerified,
+  verifyingEmailFinished,
+  VERIFY_EMAIL,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -71,6 +75,10 @@ export function* register() {
     yield put(updateUser(user));
     yield put(doLogin(pendingRegistration));
     yield put(registrationSuccess());
+    message.success(
+      "Sign up success. Please check your email to verify your account to start reading manga!",
+      5
+    );
   } else {
     console.log("Registration error", JSON.stringify(response));
     yield put(updateRegistrationError(response.data));
@@ -243,6 +251,37 @@ export function* resetPasswordSubmitNewCall(action) {
   }
 }
 
+export function* verifyEmailCall(action) {
+  yield put(verifyingEmail());
+  const response = yield call(api, "verify-account/email/", {
+    method: "POST",
+    body: {
+      token: action.payload.token,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    console.log({ data });
+
+    yield put(emailVerified());
+    yield put(verifyingEmailFinished());
+    yield put(doCheckLogin());
+  } else {
+    const data = response.data;
+    console.log(
+      "Email verification verification error",
+      JSON.stringify(response)
+    );
+    if (data.error) {
+      message.error(`Error: ${data.error}`, 4);
+    } else {
+      message.error("Email verification request error", 4);
+    }
+    yield put(verifyingEmailFinished("Email verification verification error"));
+  }
+}
+
 export function* fetchCartItemsCall() {
   yield put(fetchingCartItems());
   const response = yield call(api, "cart/", {
@@ -330,5 +369,6 @@ export default function* appSaga() {
     takeLatest(RESET_PASSWORD, resetPasswordCall),
     takeLatest(RESET_PASSWORD_VERIFY, resetPasswordVerifyCall),
     takeLatest(RESET_PASSWORD_SUBMIT_NEW, resetPasswordSubmitNewCall),
+    takeLatest(VERIFY_EMAIL, verifyEmailCall),
   ]);
 }

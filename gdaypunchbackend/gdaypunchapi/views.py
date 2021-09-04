@@ -25,6 +25,7 @@ from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
 
+from .utils import PostOnlyPermissions
 from .api.verify_account import send_account_verification_email
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt
@@ -39,17 +40,6 @@ from .serializers import (
     CommentLikeSerializer,
     ResetPasswordSerializer,
 )
-
-
-class PostOnlyPermissions(BasePermission):
-    def has_permission(self, request, view):
-        WRITE_METHODS = ["POST", ]
-
-        return (
-            request.method in WRITE_METHODS or
-            request.user and
-            request.user.is_authenticated
-        )
 
 
 class PostUserRateThrottle(UserRateThrottle):
