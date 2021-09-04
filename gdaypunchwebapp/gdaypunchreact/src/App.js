@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { Component, useEffect } from "react";
 import { Provider, connect } from "react-redux";
 import {
   BrowserRouter as Router,
@@ -82,6 +82,15 @@ function Root(props) {
 
   const orientation = "japanese";
 
+  class ProtectedRoute extends Component {
+    render() {
+      const { ...props } = this.props;
+
+      if (props.condition) return <Route {...props} />;
+      return <Redirect to="/" />;
+    }
+  }
+
   return (
     <Router history={history}>
       <Switch>
@@ -146,21 +155,34 @@ function Root(props) {
               path="/product/:productId/:productUri"
               component={ProductDetail}
             />
-            {(loginCheckFinished && !user.logged_in) ||
-            user.verified !== "verified" ? (
-              <Redirect to="/" />
-            ) : (
-              <Route exact path="/manga/:id" component={Reader} />
-            )}
-            {user.is_staff ? (
-              <Switch>
-                <Route exact path="/admin" component={Admin} />
-                <Route exact path="/admin/:app" component={Admin} />
-                <Route exact path="/admin/:app/:productId" component={Admin} />
-              </Switch>
-            ) : (
-              <Redirect to="/" />
-            )}
+            <ProtectedRoute
+              condition={
+                loginCheckFinished &&
+                user.logged_in &&
+                user.verified === "verified"
+              }
+              exact
+              path="/manga/:id"
+              component={Reader}
+            />
+            <ProtectedRoute
+              exact
+              condition={user.is_staff}
+              path="/admin"
+              component={Admin}
+            />
+            <ProtectedRoute
+              exact
+              condition={user.is_staff}
+              path="/admin/:app"
+              component={Admin}
+            />
+            <ProtectedRoute
+              exact
+              condition={user.is_staff}
+              path="/admin/:app/:productId"
+              component={Admin}
+            />
             <Route component={PageNotFound} />
           </Switch>
           <Footer />

@@ -29,7 +29,7 @@ function Ui(props) {
       <FeaturedSection top>
         <SectionTitle>Email Verification</SectionTitle>
         {verifying && <LoadingSpinner />}
-        {finishedLoading && user.verified && !error && (
+        {finishedLoading && user.verified === "verified" && !error && (
           <SuccessLabel>
             Successfully verified your email! You now have access to all the
             Australian made manga in the Gday Punch Web App

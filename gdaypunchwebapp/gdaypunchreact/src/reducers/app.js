@@ -220,7 +220,6 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         user: {
           ...payload.user,
-          verified: true,
         },
       };
     case UPDATE_PRODUCTS:

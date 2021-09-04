@@ -102,6 +102,7 @@ function Ui(props) {
     const { setReadingManga, manga } = props;
     const newManga = manga?.id !== mangaId;
 
+    // console.log({ manga, mangaId, newManga });
     if (manga === undefined || newManga) {
       setReadingManga(mangaId);
       getManga(mangaId);
