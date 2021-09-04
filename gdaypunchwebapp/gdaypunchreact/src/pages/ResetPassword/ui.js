@@ -42,6 +42,8 @@ function Ui(props) {
       if (submitted) {
         updateResetEmail(undefined);
         resetPasswordSubmitted(false);
+      } else {
+        resetPasswordSubmitted(false);
       }
     };
   }, [submitted]);

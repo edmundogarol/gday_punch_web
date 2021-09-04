@@ -70,7 +70,7 @@ class UserViewSet(UpdateModelMixin, ViewSet):
 
         try:
             user = User.objects.create_user(
-                email=validated_data.data["email"],
+                email=validated_data.data["email"].lower(),
                 password=validated_data.data["password"],
             )
         except IntegrityError:
@@ -160,7 +160,7 @@ class LoginView(APIView):
             raise AuthenticationFailed("No credentials provided.")
 
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email=email.lower())
         except User.DoesNotExist:
             raise AuthenticationFailed("Invalid username/password.")
 

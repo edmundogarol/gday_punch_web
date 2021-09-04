@@ -32,6 +32,7 @@ export const ResetForm = styled.div`
     text-transform: uppercase;
     letter-spacing: 1pt;
     border-radius: 3pt;
+    min-width: min-content;
 
     &:hover {
       background: #eaac4e;

@@ -42,6 +42,12 @@ export const ProductDetailLeftContainer = styled.div`
   .ant-image-img {
     max-height: 29em;
     width: unset;
+    max-width: 17em;
+  }
+
+  .ant-image {
+    display: flex;
+    justify-content: center;
   }
 `;
 

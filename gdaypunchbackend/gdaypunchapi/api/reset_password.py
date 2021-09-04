@@ -116,6 +116,8 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
                     'email': 'Missing Email field.'
                 })
 
+        email = email.lower()
+
         try:
             validate_email(email)
         except ValidationError as e:

@@ -262,7 +262,6 @@ export function* verifyEmailCall(action) {
 
   if (response && response.ok) {
     const data = response.data;
-    console.log({ data });
 
     yield put(emailVerified());
     yield put(verifyingEmailFinished());

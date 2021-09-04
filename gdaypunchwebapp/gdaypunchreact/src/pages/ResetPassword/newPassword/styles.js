@@ -13,8 +13,7 @@ export const ResetForm = styled.div`
   margin-bottom: 2em;
   margin-right: 2em;
   margin-left: 2em;
-
-  width: 48em;
+  width: unset;
   border: 1px solid #d6d6d6;
   padding: 2em;
   border-radius: 0.3em;
@@ -29,7 +28,7 @@ export const ResetForm = styled.div`
 
   button {
     margin-top: 2em;
-    width: 50%;
+    width: unset;
     background: #f7b757;
     border: none;
     color: white;
@@ -42,6 +41,14 @@ export const ResetForm = styled.div`
       background: #eaac4e;
       color: white;
     }
+
+    @media ${device.laptop} {
+      width: 50%;
+    }
+  }
+
+  @media ${device.laptop} {
+    width: 48em;
   }
 `;
 
@@ -56,7 +63,13 @@ export const EmailContainer = styled.div`
   }
 
   input {
-    width: 50%;
+    width: 100%;
+  }
+
+  @media ${device.laptop} {
+    input {
+      width: 50%;
+    }
   }
 `;
 
