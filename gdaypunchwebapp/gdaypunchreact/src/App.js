@@ -128,7 +128,6 @@ function Root(props) {
             <Route exact path="/shop" component={Shop} />
             <Route exact path="/contact" component={Contact} />
             <Route exact path="/about" component={About} />
-            <Route exact path="/account" component={Account} />
             <Route exact path="/cart" component={Cart} />
             <Route exact path="/checkout" component={Checkout} />
             <Route exact path="/forgot-password" component={ResetPassword} />
@@ -156,6 +155,12 @@ function Root(props) {
               exact
               path="/product/:productId/:productUri"
               component={ProductDetail}
+            />
+            <ProtectedRoute
+              condition={loginCheckFinished && user.logged_in}
+              exact
+              path="/account"
+              component={Account}
             />
             <ProtectedRoute
               condition={
