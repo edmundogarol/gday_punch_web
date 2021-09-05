@@ -20,64 +20,39 @@ export const App = styled.div`
       width: unset;
     }
   }
-`;
 
-export const ContactForm = styled.div`
-  height: 480pt;
-  width: 100%;
-  justify-content: space-evenly;
-  display: flex;
-  flex-direction: column;
-  text-align: start;
-  margin-bottom: 2em;
-
-  @media ${device.laptop} {
-    width: 24em;
-  }
-
-  .ant-select {
+  .ant-tabs-content {
     text-align: start;
-    width: 100%;
-    margin-bottom: 1em;
   }
 
-  label {
-    font-size: 1.2em;
-  }
-
-  button {
+  .non-first-tab {
     margin-top: 1em;
-    background: #f7b757;
-    border: none;
-    color: white;
-    height: 3em;
-    text-transform: uppercase;
-    letter-spacing: 1pt;
-    border-radius: 3pt;
+  }
 
-    &:hover {
-      background: #eaac4e;
-      color: white;
+  .ant-card-extra {
+    .disabled {
+      color: rgba(0, 0, 0, 0.25);
+
+      &:hover {
+        opacity: 1 !important;
+      }
     }
   }
 `;
 
-export const RequiredField = styled.span`
-  color: red;
-  margin-left: 0.5em;
-`;
+export const DetailField = styled.div`
+  display: grid;
+  grid-template-columns: 9.1em auto 1fr 1fr;
+  text-align: start;
+  column-gap: 16px;
 
-export const ContactImageContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  margin-right: 2em;
-  margin-left: 2em;
-  justify-content: center;
+  .unset {
+    color: #b7b7b7;
+  }
 
-  img {
-    height: fit-content;
+  .error {
+    color: #ff5656;
+    text-align: end;
   }
 `;
 

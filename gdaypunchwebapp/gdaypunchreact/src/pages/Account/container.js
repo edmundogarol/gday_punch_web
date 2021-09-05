@@ -3,11 +3,11 @@ import { createStructuredSelector } from "reselect";
 
 import Ui from "./ui";
 
-import { selectContactState } from "selectors/app";
+import { selectUser } from "selectors/app";
 import { submitContactForm as submitContactFormAction } from "actions/app";
 
 const mapState = createStructuredSelector({
-  contactState: selectContactState,
+  user: selectUser,
 });
 
 const mapDispatch = {
