@@ -121,6 +121,14 @@ function Ui(props) {
           >
             {"Contact"}
           </HeaderLink>
+          <HeaderLink
+            to="/account"
+            $adminLink
+            $current={location === "/account"}
+            onClick={() => toggleMiniNav(false)}
+          >
+            {"Account"}
+          </HeaderLink>
           {user.is_staff && (
             <HeaderLink
               to="/admin"
@@ -160,6 +168,9 @@ function Ui(props) {
           {/* <UserProfile>
             {user.username && user.username.length ? user.username : user.email}
           </UserProfile> */}
+          <HeaderLink to="/account" $current={location === "/account"}>
+            {"Account"}
+          </HeaderLink>
           {user.is_staff && (
             <HeaderLink to="/admin" $current={location === "/admin"}>
               {"Admin"}

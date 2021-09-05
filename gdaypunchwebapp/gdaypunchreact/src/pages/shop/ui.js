@@ -7,6 +7,7 @@ import ProductTile from "components/productTile";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
+import LoadingSpinner from "components/loadingSpinner";
 
 import { App } from "./styles";
 
@@ -34,6 +35,7 @@ function Ui(props) {
 
   return (
     <App id="top" className="App">
+      {fetchingProducts && <LoadingSpinner />}
       {!isEmpty(buyableProducts) && (
         <FeaturedSection top>
           <SectionTitle id="magazines">Magazines</SectionTitle>

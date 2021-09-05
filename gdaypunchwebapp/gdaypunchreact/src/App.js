@@ -30,6 +30,7 @@ import Admin from "pages/Admin";
 import Shop from "pages/Shop";
 import About from "pages/About";
 import Contact from "pages/Contact";
+import Account from "pages/Account";
 import ResetPassword from "pages/ResetPassword";
 import ResetPasswordNewPassword from "pages/ResetPassword/newPassword";
 import VerifyEmail from "pages/VerifyEmail";
@@ -127,6 +128,7 @@ function Root(props) {
             <Route exact path="/shop" component={Shop} />
             <Route exact path="/contact" component={Contact} />
             <Route exact path="/about" component={About} />
+            <Route exact path="/account" component={Account} />
             <Route exact path="/cart" component={Cart} />
             <Route exact path="/checkout" component={Checkout} />
             <Route exact path="/forgot-password" component={ResetPassword} />

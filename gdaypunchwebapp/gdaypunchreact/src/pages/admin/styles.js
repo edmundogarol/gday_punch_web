@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const AdminNav = styled.div`
   width: 30vh;
-  padding-top: 10vh;
+  padding-top: 11vh;
   background: #f1f1f1;
   display: flex;
   flex-direction: column;
