@@ -21,6 +21,8 @@ import {
   VERIFYING_EMAIL,
   VERIFYING_EMAIL_FINISHED,
   EMAIL_VERIFIED,
+  REQUESTING_EMAIL_VERIFICATION,
+  REQUEST_EMAIL_VERIFICATION_FINISHED,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -70,6 +72,9 @@ const INITIAL_STATE = {
     verifying: false,
     verifyingFinished: false,
     error: undefined,
+    requesting: false,
+    requestingFinished: false,
+    requestingErrors: undefined,
   },
 
   loginView: false,
@@ -213,6 +218,25 @@ const appReducer = (state = INITIAL_STATE, action) => {
           verifying: false,
           verifyingFinished: true,
           error: payload.error,
+        },
+      };
+    case REQUESTING_EMAIL_VERIFICATION:
+      return {
+        ...state,
+        emailVerification: {
+          ...state.emailVerification,
+          requesting: true,
+          requestingFinished: false,
+        },
+      };
+    case REQUEST_EMAIL_VERIFICATION_FINISHED:
+      return {
+        ...state,
+        emailVerification: {
+          ...state.emailVerification,
+          requesting: false,
+          requestingFinished: true,
+          requestingErrors: payload.errors,
         },
       };
     case EMAIL_VERIFIED:

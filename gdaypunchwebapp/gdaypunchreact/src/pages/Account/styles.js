@@ -38,6 +38,12 @@ export const App = styled.div`
       }
     }
   }
+
+  .ant-card-body {
+    .spinner {
+      margin-left: 50%;
+    }
+  }
 `;
 
 export const DetailField = styled.div`

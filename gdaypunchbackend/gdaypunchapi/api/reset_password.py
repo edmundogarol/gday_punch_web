@@ -73,7 +73,7 @@ def reset_password(email):
             if reset_session.verified_token is not None:
                 reset_session.verified_token = None
 
-            reset_session.token = token_urlsafe(user.id)
+            reset_session.token = token_urlsafe(20)
             reset_session.created_date = datetime.now().strftime(fmt)
             reset_session.save()
 
@@ -81,7 +81,7 @@ def reset_password(email):
                    args=(user, reset_session.token,)).start()
 
         except ResetPasswordSession.DoesNotExist:
-            token = token_urlsafe(user.id)
+            token = token_urlsafe(20)
             created_date = datetime.now()
 
             reset_session = ResetPasswordSession.objects.create(
@@ -152,8 +152,7 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
                     status=status.HTTP_401_UNAUTHORIZED
                 )
             else:
-                resetSession.verified_token = token_urlsafe(
-                    resetSession.user.id)
+                resetSession.verified_token = token_urlsafe(20)
                 resetSession.save()
 
                 return Response(

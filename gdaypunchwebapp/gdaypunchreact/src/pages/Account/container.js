@@ -3,15 +3,16 @@ import { createStructuredSelector } from "reselect";
 
 import Ui from "./ui";
 
-import { selectUser } from "selectors/app";
-import { submitContactForm as submitContactFormAction } from "actions/app";
+import { selectEmailVerificationState, selectUser } from "selectors/app";
+import { requestEmailVerification as requestEmailVerificationAction } from "src/actions/user";
 
 const mapState = createStructuredSelector({
   user: selectUser,
+  emailVerificationState: selectEmailVerificationState,
 });
 
 const mapDispatch = {
-  submitContactForm: submitContactFormAction,
+  requestEmailVerification: requestEmailVerificationAction,
 };
 
 export default connect(mapState, mapDispatch)(Ui);

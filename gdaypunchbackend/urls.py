@@ -31,7 +31,8 @@ from .gdaypunchapi.api.reset_password import (
     ResetPasswordViewSet
 )
 from .gdaypunchapi.api.verify_account import (
-    VerifyAccountViewSet
+    VerifyAccountViewSet,
+    RequestVerificationViewSet,
 )
 from .gdaypunchapi.api.products import (
     ProductViewSet,
@@ -84,6 +85,8 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'api/verify-account/',
         VerifyAccountViewSet.as_view({'post': 'email'})),
+    url(r'api/request-verification/',
+        RequestVerificationViewSet.as_view({'post': 'email'})),
     url(r'api/price/', PriceView.as_view()),
     url(r'api/payment-submit/', PaymentSubmitView.as_view()),
     url(r'api/payments/webhooks/', csrf_exempt(PaymentsWebhookHandler)),

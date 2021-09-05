@@ -77,7 +77,7 @@ class UserViewSet(UpdateModelMixin, ViewSet):
             content = {"error": "Duplicate email. User already exists."}
             return Response(content, status=status.HTTP_409_CONFLICT)
 
-        user.verified = token_urlsafe(user.id)
+        user.verified = token_urlsafe(20)
         user.set_password(validated_data.data["password"])
         user.save()
 
@@ -98,13 +98,15 @@ class UserViewSet(UpdateModelMixin, ViewSet):
         return Response(serializer.data)
 
     def partial_update(self, request, *args, **kwargs):
+        password = request.data.get("password", None)
 
-        try:
-            password_validation.validate_password(
-                request.data["password"])
-        except ValidationError as error:
-            content = {"error": error}
-            return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+        if password is not None:
+            try:
+                password_validation.validate_password(
+                    request.data["password"])
+            except ValidationError as error:
+                content = {"error": error}
+                return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         queryset = User.objects.all()
         user = queryset.get(pk=kwargs.get("pk"))

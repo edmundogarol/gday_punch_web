@@ -28,6 +28,12 @@ export const VERIFYING_EMAIL = "user/VERIFYING_EMAIL";
 export const VERIFYING_EMAIL_FINISHED = "user/VERIFYING_EMAIL_FINISHED";
 export const EMAIL_VERIFIED = "user/EMAIL_VERIFIED";
 
+export const REQUEST_EMAIL_VERIFICATION = "user/REQUEST_EMAIL_VERIFICATION";
+export const REQUESTING_EMAIL_VERIFICATION =
+  "user/REQUESTING_EMAIL_VERIFICATION";
+export const REQUEST_EMAIL_VERIFICATION_FINISHED =
+  "user/REQUEST_EMAIL_VERIFICATION_FINISHED";
+
 export const updateUser = (user) => ({
   type: UPDATE_USER,
   payload: {
@@ -179,5 +185,20 @@ export const emailVerified = (user) => ({
   type: EMAIL_VERIFIED,
   payload: {
     user,
+  },
+});
+
+export const requestEmailVerification = () => ({
+  type: REQUEST_EMAIL_VERIFICATION,
+});
+
+export const requestingEmailVerification = () => ({
+  type: REQUESTING_EMAIL_VERIFICATION,
+});
+
+export const requestEmailVerificationFinished = (errors) => ({
+  type: REQUEST_EMAIL_VERIFICATION_FINISHED,
+  payload: {
+    errors,
   },
 });

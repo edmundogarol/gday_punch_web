@@ -10,6 +10,8 @@ import {
   RESET_PASSWORD_VERIFY,
   RESET_PASSWORD,
   RESET_PASSWORD_SUBMIT_NEW,
+  VERIFY_EMAIL,
+  REQUEST_EMAIL_VERIFICATION,
   doCheckLogin,
   doLogin,
   logoutSuccess,
@@ -23,7 +25,8 @@ import {
   verifyingEmail,
   emailVerified,
   verifyingEmailFinished,
-  VERIFY_EMAIL,
+  requestingEmailVerification,
+  requestEmailVerificationFinished,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -268,16 +271,38 @@ export function* verifyEmailCall(action) {
     yield put(doCheckLogin());
   } else {
     const data = response.data;
-    console.log(
-      "Email verification verification error",
-      JSON.stringify(response)
-    );
-    if (data.error) {
+    console.log("Email verification error", JSON.stringify(response));
+    if (data && data.error) {
       message.error(`Error: ${data.error}`, 4);
     } else {
       message.error("Email verification request error", 4);
     }
-    yield put(verifyingEmailFinished("Email verification verification error"));
+    yield put(verifyingEmailFinished("Email verification error"));
+  }
+}
+
+export function* requestEmailVerificationCall() {
+  yield put(requestingEmailVerification());
+  const response = yield call(api, "request-verification/email/", {
+    method: "POST",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(requestEmailVerificationFinished());
+    yield put(doCheckLogin());
+  } else {
+    const data = response.data;
+    console.log("Email verification request error", JSON.stringify(response));
+    if (data && data.error) {
+      message.error(`Error: ${data.error}`, 4);
+    } else {
+      message.error("Email verification request error", 4);
+    }
+    yield put(
+      requestEmailVerificationFinished("Email verification request error")
+    );
   }
 }
 
@@ -369,5 +394,6 @@ export default function* appSaga() {
     takeLatest(RESET_PASSWORD_VERIFY, resetPasswordVerifyCall),
     takeLatest(RESET_PASSWORD_SUBMIT_NEW, resetPasswordSubmitNewCall),
     takeLatest(VERIFY_EMAIL, verifyEmailCall),
+    takeLatest(REQUEST_EMAIL_VERIFICATION, requestEmailVerificationCall),
   ]);
 }

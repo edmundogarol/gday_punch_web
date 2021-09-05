@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, Badge, Tabs, Tooltip } from "antd";
+import { Button, Card, Badge, Tabs, Tooltip, Result } from "antd";
+import { CheckCircleOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 const { TabPane } = Tabs;
 
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
+import LoadingSpinner from "components/loadingSpinner";
 
 import { App, DetailField } from "./styles";
-import { ErrorField } from "src/components/errorField";
 
 function Ui(props) {
-  const { user } = props;
+  const { user, emailVerificationState, requestEmailVerification } = props;
+  const {
+    requesting,
+    requestingFinished,
+    requestingErrors: errors,
+  } = emailVerificationState;
 
   const attentionNeeded = (section) => {
     if (!user.email) return false;
@@ -25,16 +31,10 @@ function Ui(props) {
     }
   };
 
-  console.log({ user });
   return (
     <App id="top" className="App">
       <FeaturedSection top>
         <SectionTitle>Account</SectionTitle>
-        {/* {submitted && (
-          <SuccessLabel>
-            Thank You! - we will get back to you as soon as possible.
-          </SuccessLabel>
-        )} */}
         <Tabs defaultActiveKey="1">
           <TabPane
             tab={<Badge dot={attentionNeeded("profile")}>Profile</Badge>}
@@ -59,9 +59,16 @@ function Ui(props) {
                       unset: !user.username || !user.username.length,
                     })}
                   >
-                    {!user.username || !user.username.length
-                      ? "Unset"
-                      : user.username}
+                    {!user.username || !user.username.length ? (
+                      <Tooltip
+                        placement="top"
+                        title={"Set username by commenting on a manga :)"}
+                      >
+                        Unset
+                      </Tooltip>
+                    ) : (
+                      user.username
+                    )}
                   </p>
                 </DetailField>
               </Card>
@@ -75,14 +82,31 @@ function Ui(props) {
                 }
                 loading={!user.email}
                 extra={
-                  <Tooltip
-                    placement="top"
-                    title={"Request a verification email"}
-                  >
-                    <a href="#">Verify</a>
-                  </Tooltip>
+                  user.verified !== "verified" ? (
+                    <Tooltip
+                      placement="top"
+                      title={"Request a verification email"}
+                    >
+                      <a href="#" onClick={() => requestEmailVerification()}>
+                        Verify
+                      </a>
+                    </Tooltip>
+                  ) : (
+                    <Tooltip placement="top" title={"Email verified"}>
+                      <CheckCircleOutlined />
+                    </Tooltip>
+                  )
                 }
               >
+                {requesting ? <LoadingSpinner /> : null}
+                {requestingFinished && !errors && (
+                  <Result
+                    status="success"
+                    title="Verification email has been sent!"
+                    subTitle="Please check your inbox or junk folder."
+                    extra={<Button>Request Another</Button>}
+                  />
+                )}
                 <DetailField>
                   <p>{user.email}</p>
                   <span />
