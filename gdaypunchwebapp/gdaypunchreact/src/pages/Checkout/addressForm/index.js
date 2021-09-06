@@ -63,6 +63,7 @@ function Ui(props) {
       >
         <label>Email</label>
         <input
+          disabled={type === "shipping"}
           type="text"
           id="AddressEmail"
           name="address[email]"

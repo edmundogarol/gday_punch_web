@@ -99,6 +99,7 @@ class UserViewSet(UpdateModelMixin, ViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         password = request.data.get("password", None)
+        email = request.data.get("email", None)
 
         if password is not None:
             try:
@@ -108,11 +109,26 @@ class UserViewSet(UpdateModelMixin, ViewSet):
                 content = {"error": error}
                 return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
+        if email is not None:
+            try:
+                validate_email(email)
+            except ValidationError as e:
+                content = {"error": e}
+                return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         queryset = User.objects.all()
         user = queryset.get(pk=kwargs.get("pk"))
         serializer = UserSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        if email is not None:
+            user = User.objects.get(id=user.id)
+            user.verified = None
+            user.save()
+
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
 
         return Response(serializer.data)
 

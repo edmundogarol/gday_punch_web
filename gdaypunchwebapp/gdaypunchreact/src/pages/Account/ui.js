@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, Badge, Tabs, Tooltip, Result } from "antd";
+import { Input, Button, Card, Badge, Tabs, Tooltip, Result } from "antd";
 import { CheckCircleOutlined } from "@ant-design/icons";
 import classNames from "classnames";
 const { TabPane } = Tabs;
@@ -7,16 +7,26 @@ const { TabPane } = Tabs;
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
 import LoadingSpinner from "components/loadingSpinner";
+import { ErrorField } from "components/errorField";
 
-import { App, DetailField } from "./styles";
+import { App, DetailField, EditButton } from "./styles";
 
 function Ui(props) {
-  const { user, emailVerificationState, requestEmailVerification } = props;
+  const {
+    user,
+    emailVerificationState,
+    requestEmailVerification,
+    updateUserDetails,
+    userUpdateError,
+    updateUserDetailsError,
+  } = props;
   const {
     requesting,
     requestingFinished,
     requestingErrors: errors,
   } = emailVerificationState;
+  const [editingEmail, toggleEditingEmail] = useState(false);
+  const [email, updateEmail] = useState(user.email);
 
   const attentionNeeded = (section) => {
     if (!user.email) return false;
@@ -31,16 +41,50 @@ function Ui(props) {
     }
   };
 
+  const handleUpdateEmail = () => {
+    if (email === user.email) {
+      toggleEditingEmail(false);
+    } else {
+      updateUserDetails({ email });
+    }
+  };
+
+  const editSaveCancelRender = (header) => {
+    if (!editingEmail) {
+      return (
+        <EditButton separator={header} onClick={() => toggleEditingEmail(true)}>
+          Edit
+        </EditButton>
+      );
+    }
+    return (
+      <div>
+        <EditButton separator="true" onClick={() => handleUpdateEmail()}>
+          Save
+        </EditButton>
+        <EditButton
+          separator={header}
+          onClick={() => {
+            toggleEditingEmail(false);
+            updateUserDetailsError(undefined);
+          }}
+        >
+          Cancel
+        </EditButton>
+      </div>
+    );
+  };
+
   return (
     <App id="top" className="App">
       <FeaturedSection top>
         <SectionTitle>Account</SectionTitle>
         <Tabs defaultActiveKey="1">
           <TabPane
-            tab={<Badge dot={attentionNeeded("profile")}>Profile</Badge>}
+            tab={<Badge dot={attentionNeeded("profile")}>Details</Badge>}
             key="1"
           >
-            <Card title="Account Details" loading={!user.email}>
+            <Card title="Profile" loading={!user.email}>
               <Card
                 type="inner"
                 title="User"
@@ -83,14 +127,17 @@ function Ui(props) {
                 loading={!user.email}
                 extra={
                   user.verified !== "verified" ? (
-                    <Tooltip
-                      placement="top"
-                      title={"Request a verification email"}
-                    >
-                      <a href="#" onClick={() => requestEmailVerification()}>
-                        Verify
-                      </a>
-                    </Tooltip>
+                    <>
+                      {editSaveCancelRender(true)}
+                      <Tooltip
+                        placement="top"
+                        title={"Request a verification email"}
+                      >
+                        <a href="#" onClick={() => requestEmailVerification()}>
+                          Verify
+                        </a>
+                      </Tooltip>
+                    </>
                   ) : (
                     <Tooltip placement="top" title={"Email verified"}>
                       <CheckCircleOutlined />
@@ -107,14 +154,36 @@ function Ui(props) {
                     extra={<Button>Request Another</Button>}
                   />
                 )}
-                <DetailField>
-                  <p>{user.email}</p>
-                  <span />
+                <DetailField noLabel="true">
+                  {editingEmail ? (
+                    <Input
+                      name="email"
+                      value={email}
+                      onChange={(e) => updateEmail(e.target.value)}
+                    />
+                  ) : (
+                    <p>{user.email}</p>
+                  )}
                   <span />
                   {user.verified !== "verified" ? (
                     <p className="error">Email Verification Needed</p>
-                  ) : null}
+                  ) : (
+                    editSaveCancelRender()
+                  )}
                 </DetailField>
+                {userUpdateError && (
+                  <ErrorField>
+                    <div>
+                      {Object.keys(userUpdateError).map((field) => (
+                        <p key={field}>
+                          <span>{field} - </span>
+                          {userUpdateError[field]}
+                          &nbsp;
+                        </p>
+                      ))}
+                    </div>
+                  </ErrorField>
+                )}
               </Card>
             </Card>
           </TabPane>

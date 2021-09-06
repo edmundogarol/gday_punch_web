@@ -8,6 +8,7 @@ import {
   selectCartTotal,
   selectPaymentClientSecret,
   selectProductList,
+  selectUser,
 } from "selectors/app";
 import { toggleSideCart as toggleSideCartAction } from "actions/cart";
 import { setViewingProduct as setViewingProductAction } from "actions/products";
@@ -19,6 +20,7 @@ import {
 import { customerSubscribe as customerSubscribeAction } from "actions/customer";
 
 const mapState = createStructuredSelector({
+  user: selectUser,
   productList: selectProductList,
   cartCount: selectCartCount,
   cartTotal: selectCartTotal,

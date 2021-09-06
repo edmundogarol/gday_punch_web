@@ -66,6 +66,7 @@ const INITIAL_STATE = {
     is_staff: false,
     roles: [],
     verified: false,
+    errors: undefined,
   },
 
   emailVerification: {

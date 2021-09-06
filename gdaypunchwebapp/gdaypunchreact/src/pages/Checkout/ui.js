@@ -44,6 +44,7 @@ import {
 
 function Ui(props) {
   const {
+    user,
     paymentSubmit,
     paymentIntentFetch,
     paymentIntentCancel,
@@ -60,7 +61,7 @@ function Ui(props) {
     formOpen: true,
     locale: undefined,
     fetchingLocale: false,
-    email: { value: "", error: undefined },
+    email: { value: user.email || "", error: undefined },
     firstName: { value: "", error: undefined },
     lastName: { value: "", error: undefined },
     address1: { value: "", error: undefined },

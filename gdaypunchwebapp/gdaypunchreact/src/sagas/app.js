@@ -94,7 +94,7 @@ export function* patchUser(action) {
   const response = yield call(api, `user/${currentUser.id}/`, {
     method: "PATCH",
     body: {
-      username: action.payload.user.username,
+      ...action.payload.user,
     },
   });
 
@@ -105,7 +105,7 @@ export function* patchUser(action) {
     };
 
     yield put(updateUser(user));
-    message.success(`Successfully updated username to: ${user.username}`);
+    message.success(`Successfully updated profile`);
   } else {
     console.log("Update user details error", JSON.stringify(response));
     yield put(updateRegistrationError(response.data));
