@@ -87,38 +87,6 @@ function Ui(props) {
             <Card title="Profile" loading={!user.email}>
               <Card
                 type="inner"
-                title="User"
-                extra={
-                  <Tooltip placement="top" title={"Edit not available yet"}>
-                    <a href="#" className="disabled">
-                      Edit
-                    </a>
-                  </Tooltip>
-                }
-              >
-                <DetailField>
-                  <label>Username</label>
-                  <p
-                    className={classNames({
-                      unset: !user.username || !user.username.length,
-                    })}
-                  >
-                    {!user.username || !user.username.length ? (
-                      <Tooltip
-                        placement="top"
-                        title={"Set username by commenting on a manga :)"}
-                      >
-                        Unset
-                      </Tooltip>
-                    ) : (
-                      user.username
-                    )}
-                  </p>
-                </DetailField>
-              </Card>
-              <Card
-                className="non-first-tab"
-                type="inner"
                 title={
                   <Badge dot={user.verified !== "verified"} offset={[5]}>
                     Email
@@ -184,6 +152,38 @@ function Ui(props) {
                     </div>
                   </ErrorField>
                 )}
+              </Card>
+              <Card
+                className="non-first-tab"
+                type="inner"
+                title="User"
+                extra={
+                  <Tooltip placement="top" title={"Edit not available yet"}>
+                    <a href="#" className="disabled">
+                      Edit
+                    </a>
+                  </Tooltip>
+                }
+              >
+                <DetailField>
+                  <label>Username</label>
+                  <p
+                    className={classNames({
+                      unset: !user.username || !user.username.length,
+                    })}
+                  >
+                    {!user.username || !user.username.length ? (
+                      <Tooltip
+                        placement="top"
+                        title={"Set username by commenting on a manga :)"}
+                      >
+                        Unset
+                      </Tooltip>
+                    ) : (
+                      user.username
+                    )}
+                  </p>
+                </DetailField>
               </Card>
             </Card>
           </TabPane>
