@@ -48,6 +48,7 @@ import {
   PAYMENT_INTENT_CANCEL,
   PAYMENT_INTENT_FETCH,
   PAYMENT_SUBMIT,
+  PAYMENT_SUCCESS_CONFIRM,
 } from "src/actions/payment";
 import {
   selectPendingRegistration,
@@ -344,7 +345,7 @@ export function* paymentIntentCancelCall() {
 export function* paymentSubmitCall(action) {
   yield put(paymentProcessing(true));
 
-  const response = yield call(api, "payment-submit/", {
+  const response = yield call(api, "payment-submit/create/", {
     method: "POST",
     body: {
       customer_details: action.payload.customerDetails,
@@ -358,6 +359,22 @@ export function* paymentSubmitCall(action) {
     yield put(paymentIntentUpdate(data.clientSecret));
   } else {
     console.log("Payment Submit error", JSON.stringify(response));
+  }
+}
+
+export function* paymentSuccessConfirmCall(action) {
+  const response = yield call(api, "payment-submit/confirm/", {
+    method: "POST",
+    body: {
+      token: action.payload.token,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    console.log(data);
+  } else {
+    console.log("Payment Success Confirm error", JSON.stringify(response));
   }
 }
 
@@ -395,5 +412,6 @@ export default function* appSaga() {
     takeLatest(RESET_PASSWORD_SUBMIT_NEW, resetPasswordSubmitNewCall),
     takeLatest(VERIFY_EMAIL, verifyEmailCall),
     takeLatest(REQUEST_EMAIL_VERIFICATION, requestEmailVerificationCall),
+    takeLatest(PAYMENT_SUCCESS_CONFIRM, paymentSuccessConfirmCall),
   ]);
 }

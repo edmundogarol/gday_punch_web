@@ -48,6 +48,7 @@ function Ui(props) {
     paymentSubmit,
     paymentIntentFetch,
     paymentIntentCancel,
+    paymentSuccessConfirm,
     customerSubscribe,
     clientSecret,
     toggleSideCart,
@@ -253,6 +254,7 @@ function Ui(props) {
     const billingAddress = useShippingDetails ? checkoutForm : billingForm;
 
     const response = await stripe.confirmCardPayment(clientSecret, {
+      receipt_email: checkoutForm.email.value,
       payment_method: {
         card: cardNumber,
         billing_details: {
@@ -269,9 +271,19 @@ function Ui(props) {
           },
         },
       },
+      shipping: {
+        name: `${checkoutForm.firstName.value} ${checkoutForm.lastName.value}`,
+        phone: checkoutForm.phone.value,
+        address: {
+          city: checkoutForm.city.value,
+          country: checkoutForm.country.value,
+          line1: checkoutForm.address1.value,
+          line2: checkoutForm.address2.value,
+          postal_code: checkoutForm.postcode.value,
+          state: checkoutForm.province.value,
+        },
+      },
     });
-
-    console.log({ response });
 
     if (response.error) {
       message.error({

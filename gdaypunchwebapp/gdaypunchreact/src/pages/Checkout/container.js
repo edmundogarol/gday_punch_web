@@ -16,6 +16,7 @@ import {
   paymentSubmit as paymentSubmitAction,
   paymentIntentFetch as paymentIntentFetchAction,
   paymentIntentCancel as paymentIntentCancelAction,
+  paymentSuccessConfirm as paymentSuccessConfirmAction,
 } from "actions/payment";
 import { customerSubscribe as customerSubscribeAction } from "actions/customer";
 
@@ -34,6 +35,7 @@ const mapDispatch = {
   paymentIntentFetch: paymentIntentFetchAction,
   paymentIntentCancel: paymentIntentCancelAction,
   customerSubscribe: customerSubscribeAction,
+  paymentSuccessConfirm: paymentSuccessConfirmAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));

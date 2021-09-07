@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
-from ..models import User
+from ..models import (User, StripeCustomer)
 from ..utils import PostOnlyPermissions
 
 if 'DEVENV' in os.environ:
@@ -57,6 +57,19 @@ class VerifyAccountViewSet(viewsets.ModelViewSet):
         try:
             user = User.objects.get(verified=token)
             user.verified = "verified"
+
+            # On email verify, check if User has associated GP_StripeCustomer
+            #
+            #   - Update GP_StripeCustomer to newly verified email
+            try:
+                gday_stripe_customer = StripeCustomer.objects.get(
+                    user_id=user.id)
+
+                gday_stripe_customer.email = user.email
+
+            except StripeCustomer.DoesNotExist:
+                print("User does not have GP_StripeCustomer")
+
             user.save()
 
             content = {'detail': 'Verification complete.'}

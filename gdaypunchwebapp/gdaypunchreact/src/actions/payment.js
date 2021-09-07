@@ -2,6 +2,7 @@ export const PAYMENT_SUBMIT = "payment/PAYMENT_SUBMIT";
 export const PAYMENT_PROCESSING = "payment/PAYMENT_PROCESSING";
 export const PAYMENT_SUCCEEDED = "payment/PAYMENT_SUCCEEDED";
 export const PAYMENT_ERROR = "payment/PAYMENT_ERROR";
+export const PAYMENT_SUCCESS_CONFIRM = "payment/PAYMENT_SUCCESS_CONFIRM";
 
 export const PAYMENT_INTENT_FETCH = "payment/PAYMENT_INTENT_FETCH";
 export const PAYMENT_INTENT_UPDATE = "payment/PAYMENT_INTENT_UPDATE";
@@ -12,6 +13,13 @@ export const paymentSubmit = (customerDetails, items) => ({
   payload: {
     customerDetails,
     items,
+  },
+});
+
+export const paymentSuccessConfirm = (token) => ({
+  type: PAYMENT_SUCCESS_CONFIRM,
+  payload: {
+    token,
   },
 });
 

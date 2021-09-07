@@ -4,6 +4,7 @@ import stripe
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 
 from django.http import HttpResponse
 from django.db.models import Q
@@ -18,6 +19,10 @@ from ..serializers import (
 
 from .orders import (
     handle_create_order
+)
+
+from ..utils import (
+    PostOnlyPermissions
 )
 
 if 'DEVENV' in os.environ:
@@ -69,6 +74,9 @@ def get_customer_details(user_email, customer_payload):
     payment_email = customer_payload['email']
 
     # User Logged In
+    #
+    #   - payment_email is ALWAYS User email when logged in.
+    # (It is unique and has been checked through server validation/verification)
     if str(user_email) != "AnonymousUser":
         user = User.objects.get(email=user_email)
 
@@ -82,54 +90,52 @@ def get_customer_details(user_email, customer_payload):
 
             # Check if GP_StripeCustomer email matches payment email
             #
-            #   - Replace GP_StripeCustomer email with payment email
+            #   - User has changed email through Account - update GP_StripeCustomer
             if gday_stripe_customer.stripe_email != payment_email:
                 gday_stripe_customer.stripe_email = payment_email
                 gday_stripe_customer.save()
 
         except StripeCustomer.DoesNotExist:
-            print("User id not associated with GP_StripeCustomer")
+            print("User not associated with GP_StripeCustomer")
 
-        # Check if user email is associated with a GP_StripeCustomer
+        # ====> Logged in User has not purchased through website
+        # Check if payment email is associated with a GP_StripeCustomer
         #
-        #   - User email has been used in purchase through the site
+        #   - Payment Email has been used to purchase through the site
         if customer is None:
             try:
                 gday_stripe_customer = StripeCustomer.objects.get(
-                    stripe_email=user_email)
-
-                # Check if GP_StripeCustomer has a user associated already
-                #
-                #   - User email has been used in purchase through the site
-                if gday_stripe_customer.user is not None:
-
-                    stripe_customer = StripeCustomer(
-                        customer_id=customer.id,
-                        stripe_email=payment_email,
-                        user=user
-                    )
+                    stripe_email=payment_email)
 
                 customer = gday_stripe_customer.customer_id
-
-                gday_stripe_customer.user = user
-
-                # Check if GP_StripeCustomer email matches payment email
+                # Check if GP_StripeCustomer has email and no user
                 #
-                #   - Replace GP_StripeCustomer email with payment email
-                if gday_stripe_customer.stripe_email != payment_email:
-                    gday_stripe_customer.stripe_email = payment_email
-                    gday_stripe_customer.save()
+                #   - Payment email has been used in purchase through the site
+                if gday_stripe_customer.user is None:
+                    gday_stripe_customer.user = user
+
+                else:
+                    print(
+                        "GP_StripeCustomer has an email and user, that is not the current logged in User")
 
             except StripeCustomer.DoesNotExist:
-                print("Email id not associated with GP_StripeCustomer")
+                print("Payment email not associated with GP_StripeCustomer")
 
-        # Check if user email is associated with a previous Stripe purchase (not through new website)
+        # Check if payment email is associated with a previous Stripe purchase (not through new website)
         if customer is None:
             stripe_customer = stripe.Customer.list(
-                limit=1, email=user_email)
+                limit=1, email=payment_email)
 
             if len(stripe_customer.data) > 0:
                 customer = stripe_customer.data[0]
+
+                new_stripe_customer = StripeCustomer(
+                    customer_id=customer.id,
+                    stripe_email=payment_email,
+                    user=user
+                )
+                new_stripe_customer.save()
+                customer = new_stripe_customer.customer_id
 
     # User Logged Out
     if user is None:
@@ -146,7 +152,7 @@ def get_customer_details(user_email, customer_payload):
 
     # If email is not in Stripe, create Stripe customer
     if customer is None:
-        customer = stripe.Customer.create(
+        new_customer = stripe.Customer.create(
             name=customer_payload['first_name'] +
             " " + customer_payload['last_name'],
             email=customer_payload['email'],
@@ -160,20 +166,23 @@ def get_customer_details(user_email, customer_payload):
             }
         )
 
-        stripe_customer = StripeCustomer(
-            customer_id=customer.id,
+        gday_stripe_customer = StripeCustomer(
+            customer_id=new_customer.id,
             stripe_email=payment_email,
-            user=None
+            user=user if user is not None else None
         )
-        stripe_customer.save()
+        gday_stripe_customer.save()
+
+        customer = gday_stripe_customer.customer_id
 
     return customer
 
 
-class PaymentSubmitView(APIView):
-    permission_classes = [permissions.AllowAny]
+class PaymentSubmitView(viewsets.ModelViewSet):
+    permission_classes = (PostOnlyPermissions,)
 
-    def post(self, request, format=None):
+    @action(detail=False, methods=['post'], url_path='create')
+    def create(self, request, *args, **kwargs):
 
         try:
             data = request.data
@@ -184,10 +193,9 @@ class PaymentSubmitView(APIView):
                 self.request.user, customer_payload)
 
             intent = stripe.PaymentIntent.create(
-                amount=calculate_order_amount(customer.id, items_list),
+                amount=calculate_order_amount(customer, items_list),
                 customer=customer,
                 currency='aud',
-                receipt_email=customer.email,
                 setup_future_usage='off_session',
             )
 
@@ -200,6 +208,16 @@ class PaymentSubmitView(APIView):
                 'error': str(e)
             }
 
+        return Response(content)
+
+    @action(detail=False, methods=['post'], url_path='confirm')
+    def confirm(self, request, *args, **kwargs):
+        data = request.data
+        token = data['token']
+
+        content = {
+            'token': token
+        }
         return Response(content)
 
     def delete(self, request, format=None):
@@ -272,117 +290,6 @@ def PaymentsWebhookHandler(request):
         payment_intent = event['data']['object']
 
         print(payment_intent)
-
-    # Handle checkout complete
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-
-        customer_id = session.customer
-        customer_email = session.customer_details.email
-        payment_email_exists = False
-        subscription_payment = False
-        transaction = None
-
-        shipping = session.shipping.address
-        billing = None
-
-        if session.payment_intent is None:
-            transaction = stripe.Subscription.retrieve(session.subscription)
-            subscription_payment = True
-        else:
-            transaction = stripe.PaymentIntent.retrieve(session.payment_intent)
-
-        if subscription_payment:
-            payment_method = stripe.PaymentMethod.retrieve(
-                transaction.default_payment_method)
-            billing = payment_method.billing_details.address
-        else:
-            billing = transaction.charges.data[0].billing_details.address
-
-        line_items = stripe.checkout.Session.list_line_items(session.id)
-
-        print('session', session)
-        print('transaction', transaction)
-
-        print('line_items', line_items)
-        print('shipping', shipping)
-        print('billing', billing)
-
-        # Get GP_StripeCustomer with checkout email or customer_id
-        stripe_customer = StripeCustomer.objects.filter(
-            Q(stripe_email=customer_email) | Q(customer_id=customer_id)
-        ).first()
-
-        # User is buying a product with an email that exists as a GP_StripeCustomer
-        if stripe_customer and stripe_customer.customer_id != transaction.customer:
-            stripe_customer = None
-            payment_email_exists = True
-            print(
-                'Unregistered payment email is associated with a GP_StripeCustomer')
-
-        # GP_StripeCustomer is making a payment
-        if stripe_customer:
-            try:
-                # If GP_StripeCustomer is associated with a user
-                user = User.objects.get(id=stripe_customer.user_id)
-
-                # If GP_StripeCustomer is using another email - update GP_StripeCustomer
-                if stripe_customer.stripe_email != customer_email:
-                    stripe_customer.stripe_email = customer_email
-                    stripe_customer.save()
-
-                    handle_create_order()
-
-            except User.DoesNotExist:
-                print("GP_StripeCustomer not associated with user ")
-
-                stripe_customer.user = None
-                stripe_customer.stripe_email = customer_email
-                stripe_customer.save()
-
-        else:
-            try:
-                # If payment email is associated with a user
-                user = User.objects.get(email=customer_email)
-
-                # Payment email associated with existing GP_StripeCustomer,
-                # delete new payment customer
-                if payment_email_exists:
-                    stripe_customer = StripeCustomer.objects.get(
-                        stripe_email=customer_email)
-
-                    stripe.Customer.delete(transaction.customer)
-
-                else:
-                    stripe_customer = StripeCustomer(
-                        customer_id=customer_id,
-                        stripe_email=customer_email,
-                        user=user
-                    )
-                    stripe_customer.save()
-
-            except User.DoesNotExist:
-                print("Payment email is not associated with user ")
-
-                # Payment email associated with existing GP_StripeCustomer,
-                # delete new payment customer
-                if payment_email_exists:
-                    stripe_customer = StripeCustomer.objects.get(
-                        stripe_email=customer_email)
-
-                    stripe.Customer.delete(transaction.customer)
-
-                else:
-                    stripe_customer = StripeCustomer(
-                        customer_id=customer_id,
-                        stripe_email=customer_email,
-                        user=None
-                    )
-                    stripe_customer.save()
-
-    else:
-        if 'DEVENV' in os.environ:
-            print('Unhandled event type {}'.format(event.type))
 
     return HttpResponse(status=200)
 
