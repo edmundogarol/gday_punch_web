@@ -5,7 +5,7 @@ import { Alert } from "antd";
 import { phoneValidator } from "utils/utils";
 
 function Ui(props) {
-  const { addressForm, updateAddressForm, type } = props;
+  const { addressForm, updateAddressForm, type, loggedIn } = props;
 
   const formTypes = {
     shipping: "shipping",
@@ -63,7 +63,7 @@ function Ui(props) {
       >
         <label>Email</label>
         <input
-          disabled={type === "shipping"}
+          disabled={type === "shipping" && loggedIn}
           type="text"
           id="AddressEmail"
           name="address[email]"

@@ -6,6 +6,7 @@ import AddressSummary from "../addressSummary";
 
 function Ui(props) {
   const {
+    loggedIn,
     checkoutForm,
     updateCheckoutForm,
     subscribeAgreed,
@@ -20,6 +21,7 @@ function Ui(props) {
           type="shipping"
           addressForm={checkoutForm}
           updateAddressForm={updateCheckoutForm}
+          loggedIn={loggedIn}
         />
         <SubscribeCondition>
           <input

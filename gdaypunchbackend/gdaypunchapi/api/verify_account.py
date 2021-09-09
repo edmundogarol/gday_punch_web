@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
-from ..models import (User, StripeCustomer)
+from ..models import (User, StripeCustomer, Customer)
 from ..utils import PostOnlyPermissions
 
 if 'DEVENV' in os.environ:
@@ -46,6 +46,44 @@ def send_account_verification_email(user, token):
         print("Username and Password not accepted for smtp email config.")
 
 
+def update_stripe_and_gp_customer(user):
+    gday_stripe_customer = None
+
+    # On email verify, check if User or User email has associated GP_StripeCustomer
+    #
+    #   - Update GP_StripeCustomer with new email or new verified user
+    try:
+        gday_stripe_customer = StripeCustomer.objects.get(
+            user_id=user.id)
+
+        gday_stripe_customer.email = user.email
+        gday_stripe_customer.save()
+
+    except StripeCustomer.DoesNotExist:
+        print("User does not have GP_StripeCustomer, try Email")
+
+        try:
+            gday_stripe_customer = StripeCustomer.objects.get(
+                stripe_email=user.email)
+
+            gday_stripe_customer.user = user
+            gday_stripe_customer.save()
+
+        except StripeCustomer.DoesNotExist:
+            print("User email does not have GP_StripeCustomer")
+
+    if gday_stripe_customer is not None:
+        try:
+            gp_customer = Customer.objects.get(
+                email=user.email)
+
+            gp_customer.user = user
+            gp_customer.save()
+
+        except Customer.DoesNotExist:
+            print("User does not have GP_Customer")
+
+
 class VerifyAccountViewSet(viewsets.ModelViewSet):
     permission_classes = (PostOnlyPermissions,)
 
@@ -58,17 +96,7 @@ class VerifyAccountViewSet(viewsets.ModelViewSet):
             user = User.objects.get(verified=token)
             user.verified = "verified"
 
-            # On email verify, check if User has associated GP_StripeCustomer
-            #
-            #   - Update GP_StripeCustomer to newly verified email
-            try:
-                gday_stripe_customer = StripeCustomer.objects.get(
-                    user_id=user.id)
-
-                gday_stripe_customer.email = user.email
-
-            except StripeCustomer.DoesNotExist:
-                print("User does not have GP_StripeCustomer")
+            Thread(target=update_stripe_and_gp_customer, args=(user,)).start()
 
             user.save()
 

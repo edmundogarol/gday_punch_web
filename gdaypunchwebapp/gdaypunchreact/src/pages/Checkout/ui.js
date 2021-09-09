@@ -114,6 +114,7 @@ function Ui(props) {
     postcode: checkoutForm.postcode.value,
     country: checkoutForm.country.value,
     phone_number: checkoutForm.phone.value,
+    billing_same_as_shipping: useShippingDetails,
   };
 
   const items = Object.values(cartItemsObject)
@@ -234,18 +235,13 @@ function Ui(props) {
   const handleSubmitPayment = async (ev) => {
     ev.preventDefault();
 
-    let stripe_prices = [];
+    let products = [];
     items.map((item) => {
-      return item.stripe_prices.map((price) => {
-        stripe_prices = [
-          ...stripe_prices,
-          ...Array.from({ length: item.quantity }).map((x) => price),
-        ];
-      });
+      products = [...products, { id: item.id, qty: item.quantity }];
     });
 
-    if (stripe_prices.length) {
-      paymentSubmit(customerDetailsPayload, stripe_prices);
+    if (products.length) {
+      paymentSubmit(customerDetailsPayload, products);
     }
   };
 
@@ -375,8 +371,10 @@ function Ui(props) {
 
     updater(updatingForm);
 
-    const errors = Object.values(updatingForm)
-      .map((field) => field.error)
+    const errors = Object.entries(updatingForm)
+      .map((key, value) =>
+        doNotValidate.includes(key) ? undefined : value.error
+      )
       .filter((error) => error !== undefined);
 
     return !errors.length;
@@ -449,6 +447,7 @@ function Ui(props) {
                   subscribeAgreed={subscribeAgreed}
                   handleSubscribeCheck={handleSubscribeCheck}
                   handleOpenSection={handleOpenSection}
+                  loggedIn={user.logged_in}
                 />
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
