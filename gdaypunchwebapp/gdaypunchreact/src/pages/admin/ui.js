@@ -1,5 +1,12 @@
 import React from "react";
 import { NavLink, useParams } from "react-router-dom";
+import {
+  HomeOutlined,
+  ShopOutlined,
+  ShareAltOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+
 import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
@@ -7,13 +14,17 @@ import Contacts from "./contacts";
 import StripeProducts from "./products/stripeProducts";
 import ProductDetail from "./products/productDetails";
 
-import { AdminNav, AdminContentContainer } from "./styles";
+import { AdminContainer, AdminNav, AdminContentContainer } from "./styles";
 
 function Ui(props) {
   const { user } = props;
   const { app } = useParams();
+  const dashboard = app === "";
+  const store = app === "store";
+  const socials = app === "socials";
   const twitter = app === "twitter";
   const prompts = app === "prompts";
+  const orders = app === "orders";
   const products = app === "products";
   const contacts = app === "contacts";
   const stripeProducts = app === "stripe-products";
@@ -29,25 +40,53 @@ function Ui(props) {
   }
 
   return (
-    <div className="admin">
+    <AdminContainer className="admin">
       <AdminNav>
-        <NavLink exact to="/">
-          Home
+        <NavLink className="desktop-mobile" exact to="/admin/">
+          <HomeOutlined className="site-form-item-icon mobile-only" />
+          Dashboard
         </NavLink>
+        {hasPrivilege("admin") && (
+          <NavLink className="mobile-only" to="/admin/store">
+            <ShopOutlined className="site-form-item-icon" />
+            Store
+          </NavLink>
+        )}
+        {hasPrivilege("admin") && (
+          <NavLink className="mobile-only" to="/admin/socials">
+            <ShareAltOutlined className="site-form-item-icon" />
+            Socials
+          </NavLink>
+        )}
         {hasPrivilege("twitter") && (
-          <NavLink to="/admin/twitter">Twitter</NavLink>
+          <NavLink className="desktop-only" to="/admin/twitter">
+            Twitter
+          </NavLink>
         )}
         {hasPrivilege("instagram") && (
-          <NavLink to="/admin/instagram">Instagram</NavLink>
+          <NavLink className="desktop-only" to="/admin/instagram">
+            Instagram
+          </NavLink>
         )}
         {hasPrivilege("admin") && (
-          <NavLink to="/admin/contacts">Contacts</NavLink>
+          <NavLink className="desktop-only" to="/admin/contacts">
+            Contacts
+          </NavLink>
         )}
         {hasPrivilege("admin") && (
-          <NavLink to="/admin/prompts">Prompts</NavLink>
+          <NavLink className="desktop-only" to="/admin/prompts">
+            Prompts
+          </NavLink>
         )}
         {hasPrivilege("admin") && (
-          <NavLink to="/admin/products">Products</NavLink>
+          <NavLink className="desktop-only" to="/admin/orders">
+            Orders
+          </NavLink>
+        )}
+        {hasPrivilege("admin") && (
+          <NavLink className="desktop-only" to="/admin/products">
+            Products
+          </NavLink>
         )}
       </AdminNav>
       <AdminContentContainer>
@@ -58,7 +97,7 @@ function Ui(props) {
         {stripeProducts && <StripeProducts />}
         {productDetail && <ProductDetail />}
       </AdminContentContainer>
-    </div>
+    </AdminContainer>
   );
 }
 

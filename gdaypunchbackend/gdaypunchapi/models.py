@@ -398,10 +398,26 @@ class StripeCustomer(models.Model):
 
 
 class Order(models.Model):
+    PENDING = 'pending'
+    SHIPPED = 'shipped'
+    DECLINED = 'declined'
+    REFUNDED = 'refunded'
+    PARTIALLY_REFUNDED = 'partially_refunded'
+    ORDER_STATUSES = (
+        (PENDING, 'Pending'),
+        (SHIPPED, 'Shipped'),
+        (DECLINED, 'Declined'),
+        (REFUNDED, 'Refunded'),
+        (PARTIALLY_REFUNDED, 'Partially Refunded'),
+    )
+
     customer = models.ForeignKey(
         StripeCustomer,  on_delete=models.PROTECT, blank=False, null=True)
     products_qty = models.TextField(max_length=500, blank=False, default='{}')
     number = models.TextField(max_length=20, blank=True)
+    date_created = models.DateField(null=True, blank=True)
+    status = models.TextField(
+        max_length=30, choices=ORDER_STATUSES, default=PENDING)
     email = models.TextField(max_length=100, blank=False)
     first_name = models.TextField(max_length=50, blank=False)
     last_name = models.TextField(max_length=50, blank=False)
@@ -426,6 +442,27 @@ class Order(models.Model):
     last_four = models.TextField(max_length=10, blank=False)
     exp_month = models.TextField(max_length=10, blank=False)
     exp_year = models.TextField(max_length=10, blank=False)
+
+
+class OrderStatusUpdate(models.Model):
+    PENDING = 'pending'
+    SHIPPED = 'shipped'
+    DECLINED = 'declined'
+    REFUNDED = 'refunded'
+    PARTIALLY_REFUNDED = 'partially_refunded'
+    ORDER_STATUSES = (
+        (PENDING, 'Pending'),
+        (SHIPPED, 'Shipped'),
+        (DECLINED, 'Declined'),
+        (REFUNDED, 'Refunded'),
+        (PARTIALLY_REFUNDED, 'Partially Refunded'),
+    )
+
+    status = models.TextField(
+        max_length=30, choices=ORDER_STATUSES, default=PENDING)
+    update_date = models.DateField(null=True, blank=True)
+    order = models.ForeignKey(
+        Order,  on_delete=models.PROTECT, blank=False, null=False)
 
 
 class ProductSEO(models.Model):

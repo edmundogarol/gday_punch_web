@@ -1,11 +1,53 @@
 import styled from "styled-components";
+import { device } from "utils/styles";
+
+export const AdminContainer = styled.div`
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+
+  @media ${device.laptop} {
+    flex-direction: row;
+  }
+
+  .desktop-mobile,
+  .mobile-only:not(.anticon) {
+    height: unset;
+    flex-direction: column;
+    padding: 1em;
+  }
+
+  .desktop-only {
+    display: none;
+  }
+
+  .mobile-only {
+    display: flex;
+  }
+
+  @media ${device.laptop} {
+    .desktop-mobile {
+      padding: unset;
+      height: 3em;
+    }
+
+    .desktop-only {
+      display: flex;
+    }
+
+    .mobile-only {
+      display: none;
+    }
+  }
+`;
 
 export const AdminNav = styled.div`
-  width: 30vh;
+  width: 100%;
   padding-top: 11vh;
   background: #f1f1f1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 
   a {
     width: 100%;
@@ -28,6 +70,11 @@ export const AdminNav = styled.div`
     background: #ec9900;
     color: white;
     font-weight: 500;
+  }
+
+  @media ${device.laptop} {
+    width: 30vh;
+    flex-direction: column;
   }
 `;
 

@@ -496,11 +496,6 @@ code {
 }
 
 .admin {
-  min-height: 80vh;
-  display: flex;
-  flex-direction: row;
-  overflow: scroll;
-
   .twitter {
     position: relative;
     display: flex;
