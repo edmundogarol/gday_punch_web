@@ -38,9 +38,9 @@ import {
 import { getGdayPunchStaticUrl, scrollToTop } from "utils/utils";
 
 const productType = {
-  1: "Paperback",
-  2: "Digital",
-  3: "Subscription",
+  physical: "Paperback",
+  digital: "Digital",
+  subscription: "Subscription",
 };
 
 const ageRating = {
@@ -72,7 +72,7 @@ function Ui(props) {
   const { productId } = useParams();
 
   const freeProduct = product && product.active_price === 0;
-  const digitalProduct = product && product.product_type !== 1;
+  const digitalProduct = product && product.product_type !== "physical";
   const qtyRange = digitalProduct && quantity ? 1 : 10;
 
   useEffect(() => {

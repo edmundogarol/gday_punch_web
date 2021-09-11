@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from django.shortcuts import get_object_or_404
 
-from ..utils import PostOnlyPermissions
+from ..utils import AuthenticatedOrPostOnly
 from ..models import (
     Customer, User
 )
@@ -15,7 +15,7 @@ from ..serializers import (
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = (PostOnlyPermissions, )
+    permission_classes = (AuthenticatedOrPostOnly, )
 
     def partial_update(self, request, *args, **kwargs):
         queryset = Customer.objects.all()

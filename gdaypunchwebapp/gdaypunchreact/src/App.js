@@ -17,6 +17,7 @@ import appSaga from "sagas/app";
 import mangaSaga from "sagas/manga";
 import adminSaga from "sagas/admin";
 import productSaga from "./sagas/products";
+import customerSaga from "./sagas/customer";
 
 import appReducer from "reducers/app";
 
@@ -51,7 +52,13 @@ import "./App.scss";
  * Set up and run app sagas listening for events
  */
 function* rootSaga() {
-  yield all([appSaga(), mangaSaga(), adminSaga(), productSaga()]);
+  yield all([
+    appSaga(),
+    mangaSaga(),
+    adminSaga(),
+    productSaga(),
+    customerSaga(),
+  ]);
 }
 
 const stripePromise = loadStripe(

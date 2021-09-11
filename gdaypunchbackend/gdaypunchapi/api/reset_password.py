@@ -24,6 +24,7 @@ from ..utils import PostOnlyPermissions
 from ..models import (
     User, ResetPasswordSession
 )
+from ..serializers import ResetPasswordSerializer
 
 if 'DEVENV' in os.environ:
     website = "http://localhost:8000"
@@ -105,6 +106,7 @@ def delete_all_unexpired_sessions_for_user(user):
 
 
 class ResetPasswordViewSet(viewsets.ModelViewSet):
+    serializer_class = ResetPasswordSerializer
     permission_classes = (PostOnlyPermissions, )
 
     def create(self, request, *args, **kwargs):

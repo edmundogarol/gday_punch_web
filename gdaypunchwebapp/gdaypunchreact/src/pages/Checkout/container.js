@@ -18,7 +18,13 @@ import {
   paymentIntentCancel as paymentIntentCancelAction,
   paymentSuccessConfirm as paymentSuccessConfirmAction,
 } from "actions/payment";
-import { customerSubscribe as customerSubscribeAction } from "actions/customer";
+import {
+  customerFetchFinished as customerFetchFinishedAction,
+  customerFetch as customerFetchAction,
+  customerSubscribe as customerSubscribeAction,
+  customerUpdate as customerUpdateAction,
+} from "actions/customer";
+import { selectCustomerState } from "src/selectors/customer";
 
 const mapState = createStructuredSelector({
   user: selectUser,
@@ -26,6 +32,7 @@ const mapState = createStructuredSelector({
   cartCount: selectCartCount,
   cartTotal: selectCartTotal,
   clientSecret: selectPaymentClientSecret,
+  customerState: selectCustomerState,
 });
 
 const mapDispatch = {
@@ -36,6 +43,9 @@ const mapDispatch = {
   paymentIntentCancel: paymentIntentCancelAction,
   customerSubscribe: customerSubscribeAction,
   paymentSuccessConfirm: paymentSuccessConfirmAction,
+  customerFetch: customerFetchAction,
+  customerUpdate: customerUpdateAction,
+  customerFetchFinished: customerFetchFinishedAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));

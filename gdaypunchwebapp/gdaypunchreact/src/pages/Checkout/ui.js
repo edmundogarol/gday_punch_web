@@ -9,6 +9,7 @@ import "es6-promise/auto";
 
 import { AddressForm } from "@shopify/theme-addresses";
 
+import LoadingSpinner from "components/loadingSpinner";
 import FeaturedSection from "components/featuredSection";
 import BillingSection from "./billingSection";
 import PaymentSection from "./paymentSection";
@@ -49,6 +50,12 @@ function Ui(props) {
     paymentIntentFetch,
     paymentIntentCancel,
     paymentSuccessConfirm,
+    customerState: {
+      customer = {},
+      fetching: fetchingCustomer,
+      fetchingFinished: fetchingCustomerFinished,
+    },
+    customerFetch,
     customerSubscribe,
     clientSecret,
     toggleSideCart,
@@ -57,12 +64,14 @@ function Ui(props) {
     productList: cartItemsObject,
   } = props;
   const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
+  const [customerDetailsReplaced, updateCustomerDetailsReplaced] =
+    useState(false);
   const [checkoutForm, updateCheckoutForm] = useState({
     type: "shipping",
     formOpen: true,
     locale: undefined,
     fetchingLocale: false,
-    email: { value: user.email || "", error: undefined },
+    email: { value: "", error: undefined },
     firstName: { value: "", error: undefined },
     lastName: { value: "", error: undefined },
     address1: { value: "", error: undefined },
@@ -155,6 +164,54 @@ function Ui(props) {
       getCountry();
     }
   };
+
+  useEffect(() => {
+    if (
+      items.length &&
+      user.id &&
+      !customer.email &&
+      !fetchingCustomer &&
+      !fetchingCustomerFinished
+    ) {
+      customerFetch(user.customer_id);
+    }
+  }, [items, customer, fetchingCustomer, fetchingCustomerFinished]);
+
+  useEffect(() => {
+    if (
+      fetchingCustomerFinished &&
+      customer.email &&
+      !customerDetailsReplaced &&
+      countriesDownloaded
+    ) {
+      updateCheckoutForm({
+        ...checkoutForm,
+        email: { ...checkoutForm.email, value: customer.email },
+        firstName: { ...checkoutForm.firstName, value: customer.first_name },
+        lastName: { ...checkoutForm.lastName, value: customer.last_name },
+        address1: {
+          ...checkoutForm.address1,
+          value: customer.address_line_1,
+        },
+        address2: {
+          ...checkoutForm.address2,
+          value: customer.address_line_2,
+        },
+        city: { ...checkoutForm.city, value: customer.city },
+        postcode: { ...checkoutForm.postcode, value: customer.postcode },
+        province: { ...checkoutForm.province, value: customer.state },
+        country: { ...checkoutForm.country, value: customer.country },
+        phone: { ...checkoutForm.phone, value: customer.phone_number },
+      });
+      updateCustomerDetailsReplaced(true);
+    }
+  }, [
+    customer,
+    checkoutForm,
+    fetchingCustomerFinished,
+    customerDetailsReplaced,
+    countriesDownloaded,
+  ]);
 
   useEffect(() => {
     populateAddressForm(checkoutForm);
@@ -441,14 +498,18 @@ function Ui(props) {
                   )}
                 </CheckoutInnerSectionTitle>
                 <br />
-                <CustomerDetailsSection
-                  checkoutForm={checkoutForm}
-                  updateCheckoutForm={updateCheckoutForm}
-                  subscribeAgreed={subscribeAgreed}
-                  handleSubscribeCheck={handleSubscribeCheck}
-                  handleOpenSection={handleOpenSection}
-                  loggedIn={user.logged_in}
-                />
+                {fetchingCustomer ? (
+                  <LoadingSpinner />
+                ) : (
+                  <CustomerDetailsSection
+                    checkoutForm={checkoutForm}
+                    updateCheckoutForm={updateCheckoutForm}
+                    subscribeAgreed={subscribeAgreed}
+                    handleSubscribeCheck={handleSubscribeCheck}
+                    handleOpenSection={handleOpenSection}
+                    loggedIn={user.logged_in}
+                  />
+                )}
               </CheckoutInnerSectionContainer>
               <CheckoutInnerSectionContainer>
                 <CheckoutInnerSectionTitle>

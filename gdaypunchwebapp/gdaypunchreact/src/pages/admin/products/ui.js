@@ -39,9 +39,9 @@ const { TextArea } = Input;
 const { Title } = Typography;
 
 const productType = {
-  1: "Physical",
-  2: "Digital",
-  3: "Subscription",
+  physical: "Physical",
+  digital: "Digital",
+  subscription: "Subscription",
 };
 
 function Ui(props) {
@@ -76,7 +76,7 @@ function Ui(props) {
     visible: false,
     stock: undefined,
     sku: undefined,
-    product_type: 1,
+    product_type: "physical",
     price: 0,
     stripe_prices: productPrices,
   });
@@ -307,9 +307,9 @@ function Ui(props) {
             }
             value={newProduct.product_type}
           >
-            <Radio value={1}>Physical</Radio>
-            <Radio value={2}>Digital</Radio>
-            <Radio value={3}>Subscription</Radio>
+            <Radio value={"physical"}>Physical</Radio>
+            <Radio value={"digital"}>Digital</Radio>
+            <Radio value={"subscription"}>Subscription</Radio>
           </Radio.Group>
         </ProductLeftContainer>
         <ProductRightContainer>

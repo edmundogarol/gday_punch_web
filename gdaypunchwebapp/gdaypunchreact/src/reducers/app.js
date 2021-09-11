@@ -1,6 +1,5 @@
 import { set, unset, remove } from "lodash";
 import { combineReducers } from "redux";
-import { adminReducer } from "./admin";
 import {
   DO_LOGIN,
   LOGOUT_SUCESS,
@@ -50,7 +49,9 @@ import {
   UPDATE_COMMENT,
 } from "actions/manga";
 import { PAYMENT_INTENT_UPDATE } from "src/actions/payment";
-import { CUSTOMER_SUBSCRIBE_FINISHED } from "src/actions/customer";
+
+import { adminReducer } from "./admin";
+import { customerReducer } from "./customer";
 
 const INITIAL_STATE = {
   user: {
@@ -115,10 +116,6 @@ const INITIAL_STATE = {
 
   payment: {
     clientSecret: undefined,
-  },
-
-  customer: {
-    subscribeCallFinished: false,
   },
 
   reader: {
@@ -503,14 +500,6 @@ const appReducer = (state = INITIAL_STATE, action) => {
           clientSecret: payload.clientSecret,
         },
       };
-    case CUSTOMER_SUBSCRIBE_FINISHED:
-      return {
-        ...state,
-        customer: {
-          ...state.customer,
-          subscribeCallFinished: true,
-        },
-      };
     default:
       return state;
   }
@@ -519,4 +508,5 @@ const appReducer = (state = INITIAL_STATE, action) => {
 export default combineReducers({
   app: appReducer,
   admin: adminReducer,
+  customer: customerReducer,
 });

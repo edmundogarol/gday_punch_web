@@ -13,6 +13,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 
 from ..models import (User, StripeCustomer, Customer)
+from ..serializers import UserSerializer
 from ..utils import PostOnlyPermissions
 
 if 'DEVENV' in os.environ:
@@ -85,6 +86,7 @@ def update_stripe_and_gp_customer(user):
 
 
 class VerifyAccountViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
     permission_classes = (PostOnlyPermissions,)
 
     @action(detail=False, methods=['post'], url_path='email')
@@ -111,6 +113,7 @@ class VerifyAccountViewSet(viewsets.ModelViewSet):
 
 
 class RequestVerificationViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
     permission_classes = (IsAuthenticated,)
 
     @action(detail=False, methods=['post'], url_path='email')

@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
     StripeCustomer, Product, Privileges, StripePrice,
-    Contact, Customer, ResetPasswordSession
+    Contact, Customer, ResetPasswordSession, Order
 )
 
 
@@ -25,7 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("first_name", "last_name", "username", "email", "bio", "privileges", "verified",
-                  "location", "birth_date", "roles", "password", "id", "is_staff", "subscribed")
+                  "location", "birth_date", "roles", "password", "id", "is_staff", "subscribed",
+                  "customer_id")
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -86,6 +87,17 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = ("id", "title", "description", "image", "product_type", "active_price",
                   "sale_price", "visible", "stock", "stripe_prices", "manga_details", "sku",
                   "manga", "user", "user_string")
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ("id", "customer", "products_qty", "number", "date_created", "status",
+                  "email", "first_name", "last_name", "address_line_1", "address_line_2", "city",
+                  "state", "postcode", "country", "phone_number", "billing_same_address", "billing_email",
+                  "billing_first_name", "billing_last_name", "billing_address_line_1", "billing_address_line_2",
+                  "billing_city", "billing_state", "billing_postcode", "billing_country", "billing_number",
+                  "last_four", "exp_month", "exp_year")
 
 
 class StripePriceSerializer(serializers.ModelSerializer):

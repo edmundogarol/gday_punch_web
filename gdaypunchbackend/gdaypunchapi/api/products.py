@@ -5,8 +5,9 @@ from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 
+from ..constants import *
 from ..models import (
-    User, Product, ProductType, StripePrice
+    User, Product, StripePrice
 )
 from ..serializers import (
     ProductSerializer, StripePriceSerializer
@@ -35,7 +36,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         create_stripe_price = not free and not use_existing_price
 
         if create_stripe_price:
-            recurring = request.data['product_type'] == 3
+            recurring = request.data['product_type'] == 'subscription'
 
             stripe_price = stripe.Price.create(
                 unit_amount=int(float(request.data['active_price'])*100),
@@ -69,8 +70,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             visible=request.data['visible'],
             stock=request.data['stock'],
             sku=request.data['sku'],
-            product_type=ProductType.objects.get(
-                id=request.data['product_type']),
+            product_type=request.data['product_type'],
             user=User.objects.get(email=self.request.user)
         )
 
@@ -107,7 +107,7 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
         create_stripe_price = not free and not use_existing_price
 
         if create_stripe_price:
-            recurring = request.data['product_type'] == 3
+            recurring = request.data['product_type'] == 'subscription'
 
             stripe_price = stripe.Price.create(
                 unit_amount=int(float(request.data['active_price'])*100),

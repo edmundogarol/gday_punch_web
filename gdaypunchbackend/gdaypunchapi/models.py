@@ -15,6 +15,8 @@ from django_currentuser.middleware import (
     get_current_user, get_current_authenticated_user)
 from django_currentuser.db.models import CurrentUserField
 
+from .constants import *
+
 
 class UserManager(BaseUserManager):
     use_in_migrations = True
@@ -139,6 +141,15 @@ class User(AbstractBaseUser, PermissionsMixin):
                 return False
         except Customer.DoesNotExist:
             return False
+
+    @property
+    def customer_id(self):
+        try:
+            customer = Customer.objects.get(user=self.id)
+
+            return customer.id
+        except Customer.DoesNotExist:
+            return None
 
 
 class Manga(models.Model):
@@ -276,24 +287,6 @@ class Prompt(models.Model):
     last_selected = models.DateField(null=True, blank=True)
 
 
-class ProductType(models.Model):
-    PHYSICAL = 1
-    DIGITAL = 2
-    SUBSCRIPTION = 3
-    PRODUCT_TYPES = (
-        (PHYSICAL, 'physical'),
-        (DIGITAL, 'digital'),
-        (SUBSCRIPTION, 'subscription'),
-    )
-
-    id = models.PositiveSmallIntegerField(
-        choices=PRODUCT_TYPES, primary_key=True)
-    name = models.TextField(max_length=20, blank=True)
-
-    def __str__(self):
-        return self.get_id_display()
-
-
 class StripePrice(models.Model):
     price_amount = models.FloatField(blank=False)
     price_id = models.TextField(max_length=50, blank=False)
@@ -309,8 +302,8 @@ class Product(models.Model):
     sale_price = models.FloatField(blank=True)
     visible = models.BooleanField(default=False)
     stock = models.IntegerField(blank=True)
-    product_type = models.ForeignKey(
-        ProductType,  on_delete=models.PROTECT)
+    product_type = models.TextField(
+        max_length=30, choices=PRODUCT_TYPES, default=PHYSICAL)
     stripe_prices = models.ManyToManyField(StripePrice, blank=True)
     sku = models.TextField(max_length=30, blank=True)
     manga = models.ManyToManyField(Manga, blank=True)
@@ -398,19 +391,6 @@ class StripeCustomer(models.Model):
 
 
 class Order(models.Model):
-    PENDING = 'pending'
-    SHIPPED = 'shipped'
-    DECLINED = 'declined'
-    REFUNDED = 'refunded'
-    PARTIALLY_REFUNDED = 'partially_refunded'
-    ORDER_STATUSES = (
-        (PENDING, 'Pending'),
-        (SHIPPED, 'Shipped'),
-        (DECLINED, 'Declined'),
-        (REFUNDED, 'Refunded'),
-        (PARTIALLY_REFUNDED, 'Partially Refunded'),
-    )
-
     customer = models.ForeignKey(
         StripeCustomer,  on_delete=models.PROTECT, blank=False, null=True)
     products_qty = models.TextField(max_length=500, blank=False, default='{}')
@@ -431,7 +411,7 @@ class Order(models.Model):
     billing_same_address = models.BooleanField(default=True)
     billing_email = models.TextField(max_length=100, blank=True, null=True)
     billing_first_name = models.TextField(max_length=50, blank=True)
-    billing_last_name = models.TextField(max_length=50, blank=True)
+    billing_last_name = models.TextField(max_length=50, blank=True, null=True)
     billing_address_line_1 = models.TextField(max_length=50, blank=True)
     billing_address_line_2 = models.TextField(max_length=50, blank=True)
     billing_city = models.TextField(max_length=50, blank=True)
@@ -445,19 +425,6 @@ class Order(models.Model):
 
 
 class OrderStatusUpdate(models.Model):
-    PENDING = 'pending'
-    SHIPPED = 'shipped'
-    DECLINED = 'declined'
-    REFUNDED = 'refunded'
-    PARTIALLY_REFUNDED = 'partially_refunded'
-    ORDER_STATUSES = (
-        (PENDING, 'Pending'),
-        (SHIPPED, 'Shipped'),
-        (DECLINED, 'Declined'),
-        (REFUNDED, 'Refunded'),
-        (PARTIALLY_REFUNDED, 'Partially Refunded'),
-    )
-
     status = models.TextField(
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
     update_date = models.DateField(null=True, blank=True)

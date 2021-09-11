@@ -114,7 +114,7 @@ function Ui(props) {
 
   const cartItem = (item) => {
     const { id, image, title, product_type, active_price, quantity } = item;
-    const digitalProduct = product_type !== 1;
+    const digitalProduct = product_type !== "physical";
     const qtyRange = digitalProduct && quantity ? 1 : 10;
 
     return (

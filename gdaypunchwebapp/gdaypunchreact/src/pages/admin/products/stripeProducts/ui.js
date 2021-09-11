@@ -22,7 +22,7 @@ import {
 
 const { Title } = Typography;
 
-const productType = {
+const stripProductType = {
   one_time: "Single",
   recurring: "Subscription",
 };
@@ -51,7 +51,7 @@ function Ui(props) {
       key: stripeProduct.stripe_id,
       name: stripeProduct.name,
       stripeId: stripeProduct.stripe_id,
-      type: productType[stripeProduct.type],
+      type: stripProductType[stripeProduct.type],
       price_type: stripeProduct.type,
       price: stripeProduct.price,
       registered: stripeProduct.registered,

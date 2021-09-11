@@ -1,7 +1,5 @@
 import os
 import stripe
-import random
-import json
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
@@ -16,7 +14,7 @@ from ..models import (
 )
 
 from ..serializers import (
-    StripePriceSerializer
+    StripePriceSerializer, OrderSerializer
 )
 
 from .orders import (
@@ -60,7 +58,7 @@ def calculate_order_amount(customer, items_list):
     }
 
 
-def create_gp_customer(email, customer_payload, subscribe_type):
+def get_gp_customer(email, customer_payload, subscribe_type):
     user = None
     existing_customer = None
 
@@ -141,7 +139,7 @@ def get_customer_details(user_email, customer_payload):
     if str(user_email) != "AnonymousUser":
         user = User.objects.get(email=user_email)
 
-        gp_customer = create_gp_customer(
+        gp_customer = get_gp_customer(
             payment_email, customer_payload, 'purchased_subscribed')
 
         # Check if user has a GP_StripeCustomer
@@ -213,7 +211,7 @@ def get_customer_details(user_email, customer_payload):
         except User.DoesNotExist:
             print("Guest email not associated with user")
 
-        gp_customer = create_gp_customer(
+        gp_customer = get_gp_customer(
             payment_email, customer_payload, 'purchased_subscribed')
 
         # Check if email has a GP_StripeCustomer
@@ -277,6 +275,7 @@ def get_customer_details(user_email, customer_payload):
 
 
 class PaymentSubmitView(viewsets.ModelViewSet):
+    serializer_class = OrderSerializer
     permission_classes = (PostOnlyPermissions,)
 
     @action(detail=False, methods=['post'], url_path='create')
@@ -302,7 +301,7 @@ class PaymentSubmitView(viewsets.ModelViewSet):
                 metadata={
                     'billing_same_as_shipping': data['customer_details']['billing_same_as_shipping'],
                     'items': str(items_list),
-                    'subscriptions': str(order_subscriptions),
+                    'subscriptions': str(order_subscriptions) if order_subscriptions else None,
                 }
             )
 
@@ -346,7 +345,7 @@ class PaymentSubmitView(viewsets.ModelViewSet):
 
 
 class PriceView(APIView):
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, format=None):
 
@@ -371,15 +370,6 @@ class PriceView(APIView):
         }
 
         return Response(content)
-
-
-def generate_order_number():
-    order_number = ''
-    random_array = random.sample(range(10, 1000), 3)
-    for elem in random_array:
-        order_number = order_number + str(elem)
-
-    return order_number
 
 
 def PaymentsWebhookHandler(request):
@@ -408,76 +398,16 @@ def PaymentsWebhookHandler(request):
         stripe_customer = StripeCustomer.objects.get(
             customer_id=payment_intent.customer)
         gp_customer = Customer.objects.get(id=stripe_customer.gp_customer.id)
-        intent_data = payment_intent.charges.data[0]
-        use_order_number = None
 
-        while use_order_number is None:
-            try:
-                new_order_number = generate_order_number()
-                existing_order = Order.objects.get(number=new_order_number)
-            except Order.DoesNotExist:
-                use_order_number = new_order_number
+        items = payment_intent.metadata['items']
+        subscriptions = payment_intent.metadata['subscriptions'] if 'subscriptions' in payment_intent.metadata else None
+        shipping = payment_intent.shipping
+        billing = payment_intent.charges.data[0].billing_details
+        card = payment_intent.charges.data[0].payment_method_details.card
+        billing_same_as_shipping = payment_intent.metadata['billing_same_as_shipping'] == "True"
 
-        if payment_intent.metadata.billing_same_as_shipping == "True":
-            order = Order.objects.create(
-                customer=stripe_customer,
-                products_qty=payment_intent.metadata['items'],
-                number=use_order_number,
-                email=stripe_customer.stripe_email,
-                first_name=gp_customer.first_name,
-                last_name=gp_customer.last_name,
-                address_line_1=payment_intent.shipping.address.line1,
-                address_line_2=payment_intent.shipping.address.line2,
-                city=payment_intent.shipping.address.city,
-                state=payment_intent.shipping.address.state,
-                postcode=payment_intent.shipping.address.postal_code,
-                country=payment_intent.shipping.address.country,
-                phone_number=payment_intent.shipping.phone,
-                last_four=intent_data.payment_method_details.card.last4,
-                exp_month=intent_data.payment_method_details.card.exp_month,
-                exp_year=intent_data.payment_method_details.card.exp_year,
-            )
-            order.save()
-        else:
-            order = Order.objects.create(
-                customer=stripe_customer,
-                products_qty=payment_intent.metadata['items'],
-                number=use_order_number,
-                email=stripe_customer.stripe_email,
-                first_name=gp_customer.first_name,
-                last_name=gp_customer.last_name,
-                address_line_1=payment_intent.shipping.address.line1,
-                address_line_2=payment_intent.shipping.address.line2,
-                city=payment_intent.shipping.address.city,
-                state=payment_intent.shipping.address.state,
-                postcode=payment_intent.shipping.address.postal_code,
-                country=payment_intent.shipping.address.country,
-                phone_number=payment_intent.shipping.phone,
-                billing_same_address=False,
-                billing_email=stripe_customer.stripe_email,
-                billing_first_name=gp_customer.first_name,
-                billing_last_name=gp_customer.last_name,
-                billing_address_line_1=payment_intent.shipping.address.line1,
-                billing_address_line_2=payment_intent.shipping.address.line2,
-                billing_city=payment_intent.shipping.address.city,
-                billing_state=payment_intent.shipping.address.state,
-                billing_postcode=payment_intent.shipping.address.postal_code,
-                billing_country=payment_intent.shipping.address.country,
-                billing_number=payment_intent.shipping.phone,
-                last_four=intent_data.payment_method_details.card.last4,
-                exp_month=intent_data.payment_method_details.card.exp_month,
-                exp_year=intent_data.payment_method_details.card.exp_year,
-            )
-            order.save()
-
-        subscriptions = json.loads(
-            payment_intent.metadata['subscriptions'].replace("\'", "\""))
-
-        if subscriptions:
-            stripe.Subscription.create(
-                customer=stripe_customer.customer_id,
-                items=subscriptions,
-            )
+        handle_create_order(stripe_customer, gp_customer, items,
+                            subscriptions, shipping, billing, billing_same_as_shipping, card)
 
     return HttpResponse(status=200)
 

@@ -18,10 +18,6 @@ import {
   LikeCommentConainer,
 } from "./styles";
 
-const productType = {
-  1: "Physical",
-};
-
 function Ui(props) {
   const {
     loggedIn,
@@ -58,7 +54,7 @@ function Ui(props) {
 
   const perma_link = product.title.toLowerCase().split(" ").join("-");
   const buyableProduct = active_price && active_price > 0;
-  const digitalProduct = !productType[product_type];
+  const digitalProduct = product_type !== "physical";
 
   const handleAddToCart = () => {
     updateCartItemQuantity(id, 1, true);
@@ -123,7 +119,7 @@ function Ui(props) {
         <ProductAuthor>{author || creator}</ProductAuthor>
         <PriceLikeCommentConainer>
           {buyableProduct ? <p>{`A$${active_price}`}</p> : <p>{`FREE`}</p>}
-          {!productType[product_type] && (
+          {digitalProduct && (
             <LikeCommentConainer>
               <a onClick={() => handleLikeClick()}>
                 <FontAwesomeIcon
