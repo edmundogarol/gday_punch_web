@@ -6,7 +6,6 @@ import Ui from "./ui";
 import {
   selectCartCount,
   selectCartTotal,
-  selectPaymentClientSecret,
   selectProductList,
   selectUser,
 } from "selectors/app";
@@ -25,13 +24,14 @@ import {
   customerUpdate as customerUpdateAction,
 } from "actions/customer";
 import { selectCustomerState } from "src/selectors/customer";
+import { selectPaymentState } from "src/selectors/payment";
 
 const mapState = createStructuredSelector({
   user: selectUser,
   productList: selectProductList,
   cartCount: selectCartCount,
   cartTotal: selectCartTotal,
-  clientSecret: selectPaymentClientSecret,
+  paymentState: selectPaymentState,
   customerState: selectCustomerState,
 });
 
@@ -39,10 +39,7 @@ const mapDispatch = {
   toggleSideCart: toggleSideCartAction,
   viewProduct: setViewingProductAction,
   paymentSubmit: paymentSubmitAction,
-  paymentIntentFetch: paymentIntentFetchAction,
-  paymentIntentCancel: paymentIntentCancelAction,
   customerSubscribe: customerSubscribeAction,
-  paymentSuccessConfirm: paymentSuccessConfirmAction,
   customerFetch: customerFetchAction,
   customerUpdate: customerUpdateAction,
   customerFetchFinished: customerFetchFinishedAction,

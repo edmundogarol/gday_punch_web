@@ -436,6 +436,9 @@ class OrderStatusUpdate(models.Model):
 
 class Coupon(models.Model):
     name = models.TextField(max_length=20, blank=False)
+    coupon_type = models.TextField(
+        max_length=30, choices=COUPON_TYPES, default=PERCENT)
+    amount = models.FloatField(blank=False, default=0)
     date_created = models.DateField(null=False, blank=False)
     expiry_date = models.DateField(null=True, blank=True)
 

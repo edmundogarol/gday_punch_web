@@ -47,17 +47,14 @@ function Ui(props) {
   const {
     user,
     paymentSubmit,
-    paymentIntentFetch,
-    paymentIntentCancel,
-    paymentSuccessConfirm,
     customerState: {
       customer = {},
       fetching: fetchingCustomer,
       fetchingFinished: fetchingCustomerFinished,
     },
+    paymentState: { coupon, clientSecret },
     customerFetch,
     customerSubscribe,
-    clientSecret,
     toggleSideCart,
     cartTotal,
     viewProduct,

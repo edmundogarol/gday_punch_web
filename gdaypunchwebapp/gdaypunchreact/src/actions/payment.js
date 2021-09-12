@@ -8,6 +8,12 @@ export const PAYMENT_INTENT_FETCH = "payment/PAYMENT_INTENT_FETCH";
 export const PAYMENT_INTENT_UPDATE = "payment/PAYMENT_INTENT_UPDATE";
 export const PAYMENT_INTENT_CANCEL = "payment/PAYMENT_INTENT_CANCEL";
 
+export const PAYMENT_APPLY_COUPON = "payment/PAYMENT_APPLY_COUPON";
+export const PAYMENT_COUPON_UPDATE = "payment/PAYMENT_COUPON_UPDATE";
+export const PAYMENT_COUPON_APPLYING = "payment/PAYMENT_COUPON_APPLYING";
+export const PAYMENT_COUPON_APPLYING_FINISHED =
+  "payment/PAYMENT_COUPON_APPLYING_FINISHED";
+
 export const paymentSubmit = (customerDetails, items) => ({
   type: PAYMENT_SUBMIT,
   payload: {
@@ -54,4 +60,26 @@ export const paymentIntentUpdate = (clientSecret) => ({
 
 export const paymentIntentCancel = () => ({
   type: PAYMENT_INTENT_CANCEL,
+});
+
+export const paymentApplyCoupon = (coupon) => ({
+  type: PAYMENT_APPLY_COUPON,
+  payload: {
+    coupon,
+  },
+});
+
+export const updateCoupon = (coupon) => ({
+  type: PAYMENT_COUPON_UPDATE,
+  payload: {
+    coupon,
+  },
+});
+
+export const couponApplying = () => ({
+  type: PAYMENT_COUPON_APPLYING,
+});
+
+export const couponApplyingFinished = () => ({
+  type: PAYMENT_COUPON_APPLYING_FINISHED,
 });

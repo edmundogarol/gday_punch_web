@@ -76,7 +76,8 @@ def get_gp_customer(email, customer_payload, subscribe_type):
             existing_customer.save()
 
         if (existing_customer.postcode != customer_payload['postcode']
-                or existing_customer.address_line_1 != customer_payload['address_line_1']):
+                or existing_customer.address_line_1 != customer_payload['address_line_1']
+                or existing_customer.first_name != customer_payload['first_name']):
             existing_customer.subscribed = subscribe_type
             existing_customer.first_name = customer_payload['first_name']
             existing_customer.last_name = customer_payload['last_name']

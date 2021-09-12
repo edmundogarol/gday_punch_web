@@ -4,7 +4,6 @@ import { createStructuredSelector } from "reselect";
 import Ui from "./ui";
 
 import {
-  selectCartState,
   selectCartCount,
   selectCartTotal,
   selectProductList,
@@ -15,15 +14,22 @@ import {
   removeCartItem as removeCartItemAction,
 } from "actions/cart";
 import { setViewingProduct as setViewingProductAction } from "actions/products";
+import {
+  paymentApplyCoupon,
+  updateCoupon as updateCouponAction,
+} from "src/actions/payment";
+import { selectPaymentState } from "src/selectors/payment";
 
 const mapState = createStructuredSelector({
-  cartState: selectCartState,
+  paymentState: selectPaymentState,
   productList: selectProductList,
   cartCount: selectCartCount,
   cartTotal: selectCartTotal,
 });
 
 const mapDispatch = {
+  updateCoupon: updateCouponAction,
+  applyCoupon: paymentApplyCoupon,
   toggleSideCart: toggleSideCartAction,
   updateCartItemQuantity: updateCartItemQuantityAction,
   removeCartItem: removeCartItemAction,

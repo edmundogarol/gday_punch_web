@@ -18,6 +18,7 @@ import mangaSaga from "sagas/manga";
 import adminSaga from "sagas/admin";
 import productSaga from "./sagas/products";
 import customerSaga from "./sagas/customer";
+import checkoutSaga from "./sagas/checkout";
 
 import appReducer from "reducers/app";
 
@@ -58,6 +59,7 @@ function* rootSaga() {
     adminSaga(),
     productSaga(),
     customerSaga(),
+    checkoutSaga(),
   ]);
 }
 

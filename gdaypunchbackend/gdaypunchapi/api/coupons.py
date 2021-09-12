@@ -29,6 +29,8 @@ class CouponApplyViewSet(viewsets.ViewSet):
 
         try:
             existing_coupon = Coupon.objects.get(name=coupon)
-            print(existing_coupon, existing_coupon.name)
+            serializer = CouponSerializer(existing_coupon)
+            return Response(serializer.data)
+
         except Coupon.DoesNotExist:
             return Response({'error': 'Invalid coupon.'},  status=status.HTTP_404_NOT_FOUND)

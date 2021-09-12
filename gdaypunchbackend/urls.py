@@ -73,7 +73,7 @@ router.register(r'products', ProductViewSet, basename="products")
 router.register(r'product', ProductDetailView, basename="product")
 router.register(r'contact', ContactViewSet, basename="contact")
 router.register(r'customer', CustomerViewSet, basename="customer")
-router.register(r'coupon', CouponViewSet, basename="customer")
+router.register(r'coupons', CouponViewSet, basename="customer")
 router.register(r'reset-password', ResetPasswordViewSet,
                 basename="reset-password")
 

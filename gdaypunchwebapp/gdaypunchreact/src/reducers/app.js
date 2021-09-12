@@ -48,10 +48,10 @@ import {
   UPDATE_COMMENTS,
   UPDATE_COMMENT,
 } from "actions/manga";
-import { PAYMENT_INTENT_UPDATE } from "src/actions/payment";
 
 import { adminReducer } from "./admin";
 import { customerReducer } from "./customer";
+import { paymentReducer } from "./payment";
 
 const INITIAL_STATE = {
   user: {
@@ -112,10 +112,6 @@ const INITIAL_STATE = {
     fetchingCartItems: false,
     finishedFetchingCartItems: false,
     sideCartOpen: false,
-  },
-
-  payment: {
-    clientSecret: undefined,
   },
 
   reader: {
@@ -493,13 +489,6 @@ const appReducer = (state = INITIAL_STATE, action) => {
           comments: [...state.reader.comments, payload.comment],
         },
       };
-    case PAYMENT_INTENT_UPDATE:
-      return {
-        ...state,
-        payment: {
-          clientSecret: payload.clientSecret,
-        },
-      };
     default:
       return state;
   }
@@ -509,4 +498,5 @@ export default combineReducers({
   app: appReducer,
   admin: adminReducer,
   customer: customerReducer,
+  payment: paymentReducer,
 });

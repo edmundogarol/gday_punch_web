@@ -1,6 +1,5 @@
 
 # Product Types
-
 PHYSICAL = 'physical'
 DIGITAL = 'digital'
 SUBSCRIPTION = 'subscription'
@@ -11,7 +10,6 @@ PRODUCT_TYPES = (
 )
 
 # Order Statuses
-
 PENDING = 'pending'
 SHIPPED = 'shipped'
 DECLINED = 'declined'
@@ -26,4 +24,13 @@ ORDER_STATUSES = (
     (PURCHASED, 'Purchased'),
     (REFUNDED, 'Refunded'),
     (PARTIALLY_REFUNDED, 'Partially Refunded'),
+)
+
+# Coupon Types
+PERCENT = 'percent'
+AMOUNT = 'amount'
+
+COUPON_TYPES = (
+    (PERCENT, 'Percent'),
+    (AMOUNT, 'Amount'),
 )

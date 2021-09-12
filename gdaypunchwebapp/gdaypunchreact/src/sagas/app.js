@@ -41,26 +41,11 @@ import {
   finishedFetchingCartItems,
 } from "actions/cart";
 import {
-  paymentError,
-  paymentIntentUpdate,
-  paymentProcessing,
-  paymentSucceeded,
-  PAYMENT_INTENT_CANCEL,
-  PAYMENT_INTENT_FETCH,
-  PAYMENT_SUBMIT,
-  PAYMENT_SUCCESS_CONFIRM,
-} from "src/actions/payment";
-import {
   selectPendingRegistration,
   selectPendingLogin,
   selectUser,
-  selectPaymentClientSecret,
 } from "selectors/app";
 import { api } from "utils/api";
-import {
-  customerSubscribeFinished,
-  CUSTOMER_SUBSCRIBE,
-} from "src/actions/customer";
 
 export function* register() {
   const pendingRegistration = yield select(selectPendingRegistration);
@@ -323,78 +308,6 @@ export function* fetchCartItemsCall() {
   }
 }
 
-export function* paymentIntentCancelCall() {
-  const clientSecret = yield select(selectPaymentClientSecret);
-
-  if (!clientSecret) return;
-
-  const response = yield call(api, "payment-intent/", {
-    method: "DELETE",
-    body: {
-      payment_intent_id: clientSecret.match(/^.*?(?=_secret)/)[0],
-    },
-  });
-
-  if (response && response.ok) {
-    yield put(paymentIntentUpdate(undefined));
-  } else {
-    console.log("Payment Intent Fetch error", JSON.stringify(response));
-  }
-}
-
-export function* paymentSubmitCall(action) {
-  yield put(paymentProcessing(true));
-
-  const response = yield call(api, "payment-submit/create/", {
-    method: "POST",
-    body: {
-      customer_details: action.payload.customerDetails,
-      items: action.payload.items,
-    },
-  });
-
-  if (response && response.ok) {
-    const data = response.data;
-    console.log(data);
-    yield put(paymentIntentUpdate(data.clientSecret));
-  } else {
-    console.log("Payment Submit error", JSON.stringify(response));
-  }
-}
-
-export function* paymentSuccessConfirmCall(action) {
-  const response = yield call(api, "payment-submit/confirm/", {
-    method: "POST",
-    body: {
-      token: action.payload.token,
-    },
-  });
-
-  if (response && response.ok) {
-    const data = response.data;
-    console.log(data);
-  } else {
-    console.log("Payment Success Confirm error", JSON.stringify(response));
-  }
-}
-
-export function* customerSubscribeCall(action) {
-  const response = yield call(api, "customer/", {
-    method: "POST",
-    body: {
-      ...action.payload.customer,
-    },
-  });
-
-  if (response && response.ok) {
-    const data = response.data;
-    yield call(checkLogin);
-    yield put(customerSubscribeFinished(data));
-  } else {
-    console.log("Customer subscribe error", JSON.stringify(response));
-  }
-}
-
 export default function* appSaga() {
   yield all([
     takeLatest(UPDATE_USER_DETAILS, patchUser),
@@ -404,14 +317,10 @@ export default function* appSaga() {
     takeLatest(DO_CHECK_LOGIN, checkLogin),
     takeLatest(SUBMIT_CONTACT_FORM, submitContactFormCall),
     takeLatest(FETCH_CART_ITEMS, fetchCartItemsCall),
-    takeLatest(PAYMENT_SUBMIT, paymentSubmitCall),
-    takeLatest(PAYMENT_INTENT_CANCEL, paymentIntentCancelCall),
-    takeLatest(CUSTOMER_SUBSCRIBE, customerSubscribeCall),
     takeLatest(RESET_PASSWORD, resetPasswordCall),
     takeLatest(RESET_PASSWORD_VERIFY, resetPasswordVerifyCall),
     takeLatest(RESET_PASSWORD_SUBMIT_NEW, resetPasswordSubmitNewCall),
     takeLatest(VERIFY_EMAIL, verifyEmailCall),
     takeLatest(REQUEST_EMAIL_VERIFICATION, requestEmailVerificationCall),
-    takeLatest(PAYMENT_SUCCESS_CONFIRM, paymentSuccessConfirmCall),
   ]);
 }

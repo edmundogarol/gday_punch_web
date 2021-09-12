@@ -5,9 +5,9 @@ import {
   ShopOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Typography, Select, Tooltip, Button, Input, message } from "antd";
-import { useStripe } from "@stripe/react-stripe-js";
+import { Select, Tooltip, Button, Input, message } from "antd";
 
+import LoadingSpinner from "components/loadingSpinner";
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
 import {
@@ -30,15 +30,15 @@ import {
   EmptyCartMessage,
   CheckoutButtonContainer,
 } from "./styles";
-import { gdayfetch } from "utils/gdayfetch";
 import { getGdayPunchStaticUrl } from "utils/utils";
 
-const { Title } = Typography;
 const { Option } = Select;
 
 function Ui(props) {
   const {
-    cartState,
+    paymentState: { coupon, applyingCoupon, applyingCouponFinished },
+    updateCoupon,
+    applyCoupon,
     cartCount,
     toggleSideCart,
     updateCartItemQuantity,
@@ -48,70 +48,15 @@ function Ui(props) {
     productList: cartItemsObject,
   } = props;
 
-  const stripe = useStripe();
-
   const items = Object.values(cartItemsObject)
     .map((item) => item)
     .filter((item) => item.quantity);
-
-  window.onscroll = () => scrollFunction();
-
-  const scrollFunction = () => {
-    if (
-      document.body.scrollTop > 50 ||
-      document.documentElement.scrollTop > 50
-    ) {
-      document.getElementById("navbar").style.minHeight = "8vh";
-      document.getElementById("navbar").style.fontSize = "14px";
-    } else {
-      document.getElementById("navbar").style.minHeight = "11.5vh";
-      document.getElementById("navbar").style.fontSize = "15px";
-    }
-  };
 
   const handleViewProduct = (product) => {
     viewProduct(product.id);
     toggleSideCart(false);
     const perma_link = product.title.toLowerCase().split(" ").join("-");
     props.history.push(`/product/${product.id}/${perma_link}`);
-  };
-
-  const handlePurchaseClick = async () => {
-    let stripe_prices = [];
-    items.map((item) => {
-      return item.stripe_prices.map((price) => {
-        stripe_prices = [
-          ...stripe_prices,
-          ...Array.from({ length: item.quantity }).map((x) => price),
-        ];
-      });
-    });
-
-    const response = await gdayfetch("payments/create-checkout-session/", {
-      method: "POST",
-      body: {
-        stripe_ids: stripe_prices,
-      },
-    });
-
-    if (response && response.ok) {
-      const result = await stripe.redirectToCheckout({
-        sessionId: response.data.id,
-      });
-
-      if (result.error) {
-        alert(result.error.message);
-      }
-    } else {
-      console.log("Checkout Purchase error", JSON.stringify(response));
-      message.error({
-        content: "Checkout Purchase error",
-        className: "antd-message-capitalize",
-        style: {
-          textTransform: "capitalize",
-        },
-      });
-    }
   };
 
   const cartItem = (item) => {
@@ -187,8 +132,25 @@ function Ui(props) {
             </SideCartItemsList>
             <CartFooter>
               <ItemCoupon>
-                <Input placeholder="Enter Coupon Code" />
-                <Button>Apply Discount</Button>
+                {applyingCoupon ? (
+                  <LoadingSpinner />
+                ) : (
+                  <>
+                    <Input
+                      value={coupon.name}
+                      placeholder="Enter Coupon Code"
+                      onChange={(e) =>
+                        updateCoupon({
+                          ...coupon,
+                          name: e.target.value.toUpperCase(),
+                        })
+                      }
+                    />
+                    <Button onClick={() => applyCoupon(coupon)}>
+                      Apply Discount
+                    </Button>
+                  </>
+                )}
               </ItemCoupon>
               <ItemTotalContainer>
                 <NavLink target="_blank" to="/refunds-and-returns">
@@ -206,7 +168,6 @@ function Ui(props) {
                 <SideCartCheckoutButton
                   onClick={() => {
                     props.history.push("/checkout");
-                    // handlePurchaseClick();
                   }}
                 >
                   Checkout
