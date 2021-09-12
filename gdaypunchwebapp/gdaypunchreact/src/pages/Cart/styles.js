@@ -107,7 +107,7 @@ export const ItemMeta = styled.div`
   }
 `;
 
-export const ItemSubtotal = styled.div`
+export const ItemTileSubtotal = styled.div`
   h4 {
     margin-bottom: unset;
   }
@@ -216,6 +216,14 @@ export const ItemTotal = styled.div`
   h3 {
     margin: unset;
     margin-left: 1em;
+  }
+`;
+
+export const ItemSubtotal = styled(ItemTotal)`
+  color: dimgrey;
+
+  h3 {
+    color: dimgrey;
   }
 `;
 

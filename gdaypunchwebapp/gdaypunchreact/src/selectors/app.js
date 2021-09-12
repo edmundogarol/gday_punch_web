@@ -1,5 +1,6 @@
 import { createSelector } from "reselect";
 import { orderBy } from "lodash";
+import { selectPaymentState } from "./payment";
 
 const selectDomain = (state) => state.app;
 
@@ -108,7 +109,7 @@ export const selectCartCount = createSelector(
   }
 );
 
-export const selectCartTotal = createSelector(
+export const selectCartSubtotal = createSelector(
   selectDomain,
   ({ products: { productList } }) => {
     let total = 0;
@@ -116,5 +117,38 @@ export const selectCartTotal = createSelector(
       if (product.quantity) total += product.quantity * product.active_price;
     });
     return total;
+  }
+);
+
+export const selectCartTotal = createSelector(
+  selectCartSubtotal,
+  selectPaymentState,
+  (subtotal, { coupon: { coupon_type, amount } }) => {
+    let total = subtotal;
+
+    if (coupon_type) {
+      if (coupon_type === "percentage") {
+        const percentAmount = (amount / 100) * total;
+        total = total - percentAmount;
+      } else {
+        total = total - amount;
+      }
+    }
+
+    return total;
+  }
+);
+
+export const selectDiscountAmount = createSelector(
+  selectCartSubtotal,
+  selectPaymentState,
+  (subtotal, { coupon: { coupon_type, amount } }) => {
+    if (coupon_type) {
+      if (coupon_type === "percentage") {
+        return (amount / 100) * subtotal;
+      } else {
+        return amount;
+      }
+    }
   }
 );

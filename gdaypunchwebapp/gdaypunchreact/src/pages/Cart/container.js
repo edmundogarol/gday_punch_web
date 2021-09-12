@@ -5,7 +5,9 @@ import Ui from "./ui";
 
 import {
   selectCartCount,
+  selectCartSubtotal,
   selectCartTotal,
+  selectDiscountAmount,
   selectProductList,
 } from "selectors/app";
 import {
@@ -14,10 +16,7 @@ import {
   removeCartItem as removeCartItemAction,
 } from "actions/cart";
 import { setViewingProduct as setViewingProductAction } from "actions/products";
-import {
-  paymentApplyCoupon,
-  updateCoupon as updateCouponAction,
-} from "src/actions/payment";
+import { paymentApplyCoupon } from "src/actions/payment";
 import { selectPaymentState } from "src/selectors/payment";
 
 const mapState = createStructuredSelector({
@@ -25,10 +24,11 @@ const mapState = createStructuredSelector({
   productList: selectProductList,
   cartCount: selectCartCount,
   cartTotal: selectCartTotal,
+  cartSubtotal: selectCartSubtotal,
+  discountAmount: selectDiscountAmount,
 });
 
 const mapDispatch = {
-  updateCoupon: updateCouponAction,
   applyCoupon: paymentApplyCoupon,
   toggleSideCart: toggleSideCartAction,
   updateCartItemQuantity: updateCartItemQuantityAction,

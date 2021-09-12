@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import {
   ShoppingCartOutlined,
@@ -19,6 +19,7 @@ import {
   ItemTitleMetaContainer,
   ItemMeta,
   ItemSubtotal,
+  ItemTileSubtotal,
   ItemSubtotalBinContainer,
   CartFooter,
   ItemCoupon,
@@ -37,16 +38,20 @@ const { Option } = Select;
 function Ui(props) {
   const {
     paymentState: { coupon, applyingCoupon, applyingCouponFinished },
-    updateCoupon,
     applyCoupon,
     cartCount,
     toggleSideCart,
     updateCartItemQuantity,
     removeCartItem,
     cartTotal,
+    cartSubtotal,
+    discountAmount,
     viewProduct,
     productList: cartItemsObject,
   } = props;
+  const [submitCoupon, updateSubmitCoupon] = useState({
+    name: "",
+  });
 
   const items = Object.values(cartItemsObject)
     .map((item) => item)
@@ -90,13 +95,13 @@ function Ui(props) {
           </ItemMeta>
         </ItemTitleMetaContainer>
         <ItemSubtotalBinContainer>
-          <ItemSubtotal>
+          <ItemTileSubtotal>
             <h4>{`A$${(quantity
               ? quantity * active_price
               : active_price
             ).toFixed(2)}`}</h4>
             <p>Subtotal</p>
-          </ItemSubtotal>
+          </ItemTileSubtotal>
           <Tooltip title="Remove Item from Cart">
             <Button onClick={() => removeCartItem(id)}>
               <DeleteOutlined className="site-form-item-icon" />
@@ -137,16 +142,16 @@ function Ui(props) {
                 ) : (
                   <>
                     <Input
-                      value={coupon.name}
+                      value={submitCoupon.name}
                       placeholder="Enter Coupon Code"
                       onChange={(e) =>
-                        updateCoupon({
-                          ...coupon,
+                        updateSubmitCoupon({
+                          ...submitCoupon,
                           name: e.target.value.toUpperCase(),
                         })
                       }
                     />
-                    <Button onClick={() => applyCoupon(coupon)}>
+                    <Button onClick={() => applyCoupon(submitCoupon)}>
                       Apply Discount
                     </Button>
                   </>
@@ -157,6 +162,20 @@ function Ui(props) {
                   <p className="website">Refunds & Returns Policy</p>
                 </NavLink>
                 <div>
+                  <ItemSubtotal>
+                    <TotalLabel>Subtotal:</TotalLabel>
+                    <h3>A${cartSubtotal.toFixed(2)}</h3>
+                  </ItemSubtotal>
+                  {coupon.coupon_type ? (
+                    <ItemSubtotal>
+                      <TotalLabel>{`Discount [${coupon.name} ${
+                        coupon.coupon_type === "percentage"
+                          ? coupon.amount + "%"
+                          : "A$" + coupon.amount
+                      } off ]:`}</TotalLabel>
+                      <h3>- A${discountAmount.toFixed(2)}</h3>
+                    </ItemSubtotal>
+                  ) : null}
                   <ItemTotal>
                     <TotalLabel>Total:</TotalLabel>
                     <h3>A${cartTotal.toFixed(2)}</h3>
