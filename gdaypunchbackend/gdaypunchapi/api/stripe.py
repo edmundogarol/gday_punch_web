@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from django.db.models import Q
 
 from ..models import (
-    User, StripeCustomer, StripePrice, Customer, Order, Product
+    User, StripeCustomer, StripePrice, Customer, Order, Product, Coupon
 )
 
 from ..serializers import (
@@ -34,7 +34,7 @@ else:
     domain = "https://www.beta-gdaypunch.com"
 
 
-def calculate_order_amount(customer, items_list):
+def calculate_order_amount(customer, items_list, coupon):
     order_amount = 0
     subscription_items = []
 
@@ -52,8 +52,19 @@ def calculate_order_amount(customer, items_list):
 
             qty = qty + 1
 
+    dollar_amount = order_amount
+
+    if coupon:
+        coupon = Coupon.objects.get(name=coupon)
+
+        if coupon.coupon_type == "percentage":
+            amount_off = (coupon.amount / 100) * dollar_amount
+            dollar_amount = dollar_amount - amount_off
+        else:
+            dollar_amount = dollar_amount - coupon.amount
+
     return {
-        'amount': int(order_amount * 100),
+        'amount': int(dollar_amount * 100),
         'subscriptions': subscription_items
     }
 
@@ -286,11 +297,13 @@ class PaymentSubmitView(viewsets.ModelViewSet):
             data = request.data
             customer_payload = data['customer_details']
             items_list = data['items']
+            coupon = data.get('coupon')
 
             customer = get_customer_details(
                 self.request.user, customer_payload)
 
-            order_amount_details = calculate_order_amount(customer, items_list)
+            order_amount_details = calculate_order_amount(
+                customer, items_list, coupon)
             order_amount = order_amount_details['amount']
             order_subscriptions = order_amount_details['subscriptions']
 
@@ -303,6 +316,7 @@ class PaymentSubmitView(viewsets.ModelViewSet):
                     'billing_same_as_shipping': data['customer_details']['billing_same_as_shipping'],
                     'items': str(items_list),
                     'subscriptions': str(order_subscriptions) if order_subscriptions else None,
+                    'coupon': coupon,
                 }
             )
 
@@ -402,6 +416,7 @@ def PaymentsWebhookHandler(request):
 
         charge = payment_intent.charges.data[0]
         items = payment_intent.metadata['items']
+        coupon = payment_intent.metadata['coupon']
         subscriptions = payment_intent.metadata['subscriptions'] if 'subscriptions' in payment_intent.metadata else None
         shipping = payment_intent.shipping
         billing = charge.billing_details
@@ -409,7 +424,7 @@ def PaymentsWebhookHandler(request):
         card = charge.payment_method_details.card
         billing_same_as_shipping = payment_intent.metadata['billing_same_as_shipping'] == "True"
 
-        handle_create_order(stripe_customer, gp_customer, items, amount,
+        handle_create_order(stripe_customer, gp_customer, items, amount, coupon,
                             subscriptions, shipping, billing, billing_same_as_shipping, card)
 
     return HttpResponse(status=200)

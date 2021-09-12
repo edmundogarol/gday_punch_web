@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 
 from ..constants import *
 from ..models import (
-    Order, Product
+    Order, Product, Coupon
 )
 # from ..serializers import (
 #
@@ -27,13 +27,16 @@ else:
     domain = "https://www.beta-gdaypunch.com"
 
 
-def send_email_receipt(customer, order, items):
+def send_email_receipt(customer, order, items, coupon_details):
     email_template_name = "emails/receipt.html"
 
     email_config = {
         "customer": customer,
         "order": order,
-        "items": items
+        "items": items,
+        "coupon_details": coupon_details,
+        "subtotal": order.amount + coupon_details['amount'],
+        "tax": "{:.2f}".format(order.amount / 11)
     }
 
     try:
@@ -61,7 +64,7 @@ def generate_order_number():
     return order_number
 
 
-def handle_create_order(stripe_customer, customer, items, amount, subscriptions,
+def handle_create_order(stripe_customer, customer, items, amount, coupon, subscriptions,
                         shipping, billing, billing_same_as_shipping, card):
 
     order = None
@@ -81,6 +84,7 @@ def handle_create_order(stripe_customer, customer, items, amount, subscriptions,
         order = Order.objects.create(
             customer=stripe_customer,
             amount=amount,
+            coupon=coupon,
             date_created=datetime.now(),
             products_qty=items,
             number=use_order_number,
@@ -103,6 +107,7 @@ def handle_create_order(stripe_customer, customer, items, amount, subscriptions,
         order = Order.objects.create(
             customer=stripe_customer,
             amount=amount,
+            coupon=coupon,
             date_created=datetime.now(),
             products_qty=items,
             number=use_order_number,
@@ -151,14 +156,14 @@ def handle_create_order(stripe_customer, customer, items, amount, subscriptions,
                 order.save()
 
     # Update order status for digital purchases only // Calculate item prices
+    total_items_price = 0
     digital_purchase = 0
     for item in items:
-        product_price = 0
         product = Product.objects.get(id=item['id'])
 
-        product_price = product_price + product.active_price
         item_details.append({'desc': product.title, 'qty': item['qty'], 'total': int(
-            item['qty']) * product_price})
+            item['qty']) * product.active_price})
+        total_items_price = total_items_price + product.active_price
 
         if product.product_type == DIGITAL:
             digital_purchase = digital_purchase + 1
@@ -179,5 +184,22 @@ def handle_create_order(stripe_customer, customer, items, amount, subscriptions,
         order.billing_country = order.country
         order.billing_number = order.phone_number
 
+    coupon_details = None
+    if coupon:
+        current_coupon = Coupon.objects.get(name=coupon)
+
+        if current_coupon.coupon_type == "percentage":
+            coupon_details = {
+                'amount_desc': current_coupon.amount,
+                'percentage': current_coupon.coupon_type == "percentage",
+                'amount': (current_coupon.amount / 100) * total_items_price
+            }
+        else:
+            coupon_details = {
+                'amount_desc': current_coupon.amount,
+                'percentage': current_coupon.coupon_type == "percentage",
+                'amount': current_coupon.amount
+            }
+
     Thread(target=send_email_receipt, args=(
-        customer, order, item_details,)).start()
+        customer, order, item_details, coupon_details,)).start()

@@ -1,4 +1,4 @@
-import { call, all, takeLatest, put } from "redux-saga/effects";
+import { call, all, takeLatest, put, select } from "redux-saga/effects";
 import { message } from "antd";
 
 import {
@@ -14,16 +14,19 @@ import {
 } from "src/actions/payment";
 
 import { api } from "utils/api";
-import { selectPaymentClientSecret } from "src/selectors/payment";
+import { selectCoupon, selectPaymentClientSecret } from "src/selectors/payment";
 
 export function* paymentSubmitCall(action) {
   yield put(paymentProcessing(true));
+
+  const coupon = yield select(selectCoupon);
 
   const response = yield call(api, "payment-submit/create/", {
     method: "POST",
     body: {
       customer_details: action.payload.customerDetails,
       items: action.payload.items,
+      coupon,
     },
   });
 

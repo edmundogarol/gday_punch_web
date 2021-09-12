@@ -113,7 +113,7 @@
             Subtotal
           </td>
           <td>
-            A$18.50
+            A${{ subtotal }}
           </td>
         </tr>
         <tr>
@@ -124,12 +124,22 @@
             A$0.00
           </td>
         </tr>
+        {% if coupon_details %}
         <tr>
           <td style="padding: 0.4em; width: 80%;">
-            Tax
+            Discount [{{order.coupon}} {% if coupon_details.percentage %}{{ coupon_details.amount_desc }}%{% else %}A${{ coupon_details.amount_desc }}{% endif %} off]
           </td>
           <td>
-            A$0.00
+            {{ coupon_details.amount }}
+          </td>
+        </tr>
+        {% endif %}
+        <tr>
+          <td style="padding: 0.4em; width: 80%;">
+            GST
+          </td>
+          <td>
+            A${{ tax }}
           </td>
         </tr>
       </table>

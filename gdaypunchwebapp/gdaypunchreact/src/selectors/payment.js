@@ -11,3 +11,8 @@ export const selectPaymentState = createSelector(
   selectDomain,
   (paymentState) => paymentState
 );
+
+export const selectCoupon = createSelector(
+  selectDomain,
+  ({ coupon: { name } }) => name
+);
