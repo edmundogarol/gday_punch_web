@@ -2,7 +2,13 @@ import os
 import random
 import stripe
 import json
+
+from threading import Thread
 from datetime import datetime
+from smtplib import SMTPAuthenticationError
+
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from ..constants import *
 from ..models import (
@@ -21,6 +27,31 @@ else:
     domain = "https://www.beta-gdaypunch.com"
 
 
+def send_email_receipt(customer, order, items):
+    email_template_name = "emails/receipt.html"
+
+    email_config = {
+        "customer": customer,
+        "order": order,
+        "items": items
+    }
+
+    try:
+        email = render_to_string(email_template_name, email_config)
+
+        send_mail(
+            subject='Thank you for your order!',
+            message='Thank you for your order!',
+            html_message=email,
+            from_email='noreply@gdaypunch.com',
+            recipient_list=["edmundo.a.garol@outlook.com"],
+            fail_silently=False,
+        )
+
+    except SMTPAuthenticationError:
+        print("Username and Password not accepted for smtp email config.")
+
+
 def generate_order_number():
     order_number = ''
     random_array = random.sample(range(10, 1000), 3)
@@ -30,10 +61,11 @@ def generate_order_number():
     return order_number
 
 
-def handle_create_order(stripe_customer, customer, items, subscriptions,
+def handle_create_order(stripe_customer, customer, items, amount, subscriptions,
                         shipping, billing, billing_same_as_shipping, card):
 
     order = None
+    item_details = []
     use_order_number = None
     shipping_address = shipping.address
     billing_address = billing.address
@@ -48,6 +80,7 @@ def handle_create_order(stripe_customer, customer, items, subscriptions,
     if billing_same_as_shipping:
         order = Order.objects.create(
             customer=stripe_customer,
+            amount=amount,
             date_created=datetime.now(),
             products_qty=items,
             number=use_order_number,
@@ -69,6 +102,7 @@ def handle_create_order(stripe_customer, customer, items, subscriptions,
     else:
         order = Order.objects.create(
             customer=stripe_customer,
+            amount=amount,
             date_created=datetime.now(),
             products_qty=items,
             number=use_order_number,
@@ -85,7 +119,7 @@ def handle_create_order(stripe_customer, customer, items, subscriptions,
             billing_same_address=False,
             billing_email=billing.email,
             billing_first_name=billing.name,
-            billing_last_name=None,
+            billing_last_name="",
             billing_address_line_1=billing_address.line1,
             billing_address_line_2=billing_address.line2,
             billing_city=billing_address.city,
@@ -116,10 +150,15 @@ def handle_create_order(stripe_customer, customer, items, subscriptions,
                 order.status = PURCHASED
                 order.save()
 
-    # Update order status for digital purchases only
+    # Update order status for digital purchases only // Calculate item prices
     digital_purchase = 0
     for item in items:
+        product_price = 0
         product = Product.objects.get(id=item['id'])
+
+        product_price = product_price + product.active_price
+        item_details.append({'desc': product.title, 'qty': item['qty'], 'total': int(
+            item['qty']) * product_price})
 
         if product.product_type == DIGITAL:
             digital_purchase = digital_purchase + 1
@@ -127,3 +166,18 @@ def handle_create_order(stripe_customer, customer, items, subscriptions,
     if digital_purchase == len(items):
         order.status = PURCHASED
         order.save()
+
+    if order.billing_same_address:
+        order.billing_email = order.email
+        order.billing_first_name = order.first_name
+        order.billing_last_name = order.last_name
+        order.billing_address_line_1 = order.address_line_1
+        order.billing_address_line_2 = order.address_line_2
+        order.billing_city = order.city
+        order.billing_state = order.state
+        order.billing_postcode = order.postcode
+        order.billing_country = order.country
+        order.billing_number = order.phone_number
+
+    Thread(target=send_email_receipt, args=(
+        customer, order, item_details,)).start()

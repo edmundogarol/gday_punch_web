@@ -393,11 +393,13 @@ class StripeCustomer(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(
         StripeCustomer,  on_delete=models.PROTECT, blank=False, null=True)
+    amount = models.FloatField(blank=False, default=0)
     products_qty = models.TextField(max_length=500, blank=False, default='{}')
     number = models.TextField(max_length=20, blank=True)
     date_created = models.DateField(null=True, blank=True)
     status = models.TextField(
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
+    coupon = models.TextField(max_length=20, blank=True, null=True)
     email = models.TextField(max_length=100, blank=False)
     first_name = models.TextField(max_length=50, blank=False)
     last_name = models.TextField(max_length=50, blank=False)
@@ -430,6 +432,12 @@ class OrderStatusUpdate(models.Model):
     update_date = models.DateField(null=True, blank=True)
     order = models.ForeignKey(
         Order,  on_delete=models.PROTECT, blank=False, null=False)
+
+
+class Coupon(models.Model):
+    name = models.TextField(max_length=20, blank=False)
+    date_created = models.DateField(null=False, blank=False)
+    expiry_date = models.DateField(null=True, blank=True)
 
 
 class ProductSEO(models.Model):

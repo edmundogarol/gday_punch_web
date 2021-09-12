@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
     StripeCustomer, Product, Privileges, StripePrice,
-    Contact, Customer, ResetPasswordSession, Order
+    Contact, Customer, ResetPasswordSession, Order,
+    Coupon
 )
 
 
@@ -98,6 +99,12 @@ class OrderSerializer(serializers.ModelSerializer):
                   "billing_first_name", "billing_last_name", "billing_address_line_1", "billing_address_line_2",
                   "billing_city", "billing_state", "billing_postcode", "billing_country", "billing_number",
                   "last_four", "exp_month", "exp_year")
+
+
+class CouponSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Coupon
+        fields = ("id", "name", "date_created", "expiry_date")
 
 
 class StripePriceSerializer(serializers.ModelSerializer):

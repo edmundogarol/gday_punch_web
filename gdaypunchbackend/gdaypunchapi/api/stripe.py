@@ -399,14 +399,16 @@ def PaymentsWebhookHandler(request):
             customer_id=payment_intent.customer)
         gp_customer = Customer.objects.get(id=stripe_customer.gp_customer.id)
 
+        charge = payment_intent.charges.data[0]
         items = payment_intent.metadata['items']
         subscriptions = payment_intent.metadata['subscriptions'] if 'subscriptions' in payment_intent.metadata else None
         shipping = payment_intent.shipping
-        billing = payment_intent.charges.data[0].billing_details
-        card = payment_intent.charges.data[0].payment_method_details.card
+        billing = charge.billing_details
+        amount = charge.amount / 100
+        card = charge.payment_method_details.card
         billing_same_as_shipping = payment_intent.metadata['billing_same_as_shipping'] == "True"
 
-        handle_create_order(stripe_customer, gp_customer, items,
+        handle_create_order(stripe_customer, gp_customer, items, amount,
                             subscriptions, shipping, billing, billing_same_as_shipping, card)
 
     return HttpResponse(status=200)
