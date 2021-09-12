@@ -11,6 +11,7 @@ import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
 import Contacts from "./contacts";
+import Coupons from "./coupons";
 import StripeProducts from "./products/stripeProducts";
 import ProductDetail from "./products/productDetails";
 
@@ -25,6 +26,7 @@ function Ui(props) {
   const twitter = app === "twitter";
   const prompts = app === "prompts";
   const orders = app === "orders";
+  const coupons = app === "coupons";
   const products = app === "products";
   const contacts = app === "contacts";
   const stripeProducts = app === "stripe-products";
@@ -88,10 +90,16 @@ function Ui(props) {
             Products
           </NavLink>
         )}
+        {hasPrivilege("admin") && (
+          <NavLink className="desktop-only" to="/admin/coupons">
+            Coupons
+          </NavLink>
+        )}
       </AdminNav>
       <AdminContentContainer>
         {twitter && <Twitter />}
         {prompts && <Prompts />}
+        {coupons && <Coupons />}
         {products && <Products />}
         {contacts && <Contacts />}
         {stripeProducts && <StripeProducts />}

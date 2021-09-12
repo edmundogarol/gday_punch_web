@@ -27,10 +27,10 @@ ORDER_STATUSES = (
 )
 
 # Coupon Types
-PERCENT = 'percent'
+PERCENT = 'percentage'
 AMOUNT = 'amount'
 
 COUPON_TYPES = (
-    (PERCENT, 'Percent'),
+    (PERCENT, 'Percentage'),
     (AMOUNT, 'Amount'),
 )

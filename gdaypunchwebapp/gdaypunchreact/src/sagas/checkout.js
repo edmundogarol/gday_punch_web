@@ -84,7 +84,7 @@ export function* paymentApplyCouponCall(action) {
   if (response && response.ok) {
     const data = response.data;
     console.log(data);
-    message.error("Coupon applied successfully!", 3);
+    message.success("Coupon applied successfully!", 3);
     yield put(updateCoupon(data));
     yield put(couponApplyingFinished());
   } else {

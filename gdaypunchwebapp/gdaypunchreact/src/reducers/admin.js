@@ -27,6 +27,9 @@ import {
   FETCHING_CONTACT_ENTRIES,
   FINISHED_FETCHING_CONTACT_ENTRIES,
   UPDATE_CONTACT_ENTRIES,
+  FETCHING_COUPONS,
+  FINISHED_FETCHING_COUPONS,
+  UPDATE_COUPONS,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -69,6 +72,12 @@ const INITIAL_STATE = {
     contactEntries: [],
     fetchingContactEntries: false,
     finishedFetchingContactEntries: false,
+  },
+
+  coupons: {
+    couponList: [],
+    fetching: false,
+    finishedFetching: false,
   },
 };
 
@@ -282,6 +291,32 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
           ...state.contacts,
           fetchingContactEntries: false,
           finishedFetchingContactEntries: true,
+        },
+      };
+    case UPDATE_COUPONS:
+      return {
+        ...state,
+        coupons: {
+          ...state.coupons,
+          couponList: action.payload.coupons,
+        },
+      };
+    case FETCHING_COUPONS:
+      return {
+        ...state,
+        coupons: {
+          ...state.coupons,
+          fetching: true,
+          finishedFetching: false,
+        },
+      };
+    case FINISHED_FETCHING_COUPONS:
+      return {
+        ...state,
+        coupons: {
+          ...state.coupons,
+          fetching: false,
+          finishedFetching: true,
         },
       };
     default:

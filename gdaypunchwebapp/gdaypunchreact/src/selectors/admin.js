@@ -71,3 +71,8 @@ export const selectContactsState = createSelector(
   selectDomain,
   ({ contacts }) => contacts
 );
+
+export const selectCouponState = createSelector(
+  selectDomain,
+  ({ coupons }) => coupons
+);

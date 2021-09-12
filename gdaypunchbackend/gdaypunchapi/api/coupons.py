@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
@@ -29,6 +31,12 @@ class CouponApplyViewSet(viewsets.ViewSet):
 
         try:
             existing_coupon = Coupon.objects.get(name=coupon)
+
+            if existing_coupon.expiry_date < datetime.now().date():
+                existing_coupon.delete()
+
+                return Response({'error': 'Invalid coupon.'},  status=status.HTTP_404_NOT_FOUND)
+
             serializer = CouponSerializer(existing_coupon)
             return Response(serializer.data)
 

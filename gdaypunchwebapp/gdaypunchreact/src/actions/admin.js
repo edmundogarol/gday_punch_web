@@ -54,6 +54,12 @@ export const FINISHED_FETCHING_CONTACT_ENTRIES =
 export const UPDATE_CONTACT_ENTRIES = "admin/UPDATE_CONTACT_ENTRIES";
 export const DELETE_CONTACT_ENTRY = "admin/DELETE_CONTACT_ENTRY";
 
+export const FETCH_COUPONS = "admin/FETCH_COUPONS";
+export const FETCHING_COUPONS = "admin/FETCHING_COUPONS";
+export const FINISHED_FETCHING_COUPONS = "admin/FINISHED_FETCHING_COUPONS";
+export const UPDATE_COUPONS = "admin/UPDATE_COUPONS";
+export const CREATE_COUPON = "admin/CREATE_COUPON";
+
 export const doTweet = () => ({
   type: DO_TWEET,
 });
@@ -291,5 +297,31 @@ export const deleteContactEntry = (entryId) => ({
   type: DELETE_CONTACT_ENTRY,
   payload: {
     entryId,
+  },
+});
+
+export const fetchCoupons = () => ({
+  type: FETCH_COUPONS,
+});
+
+export const updateCoupons = (coupons) => ({
+  type: UPDATE_COUPONS,
+  payload: {
+    coupons,
+  },
+});
+
+export const fetchingCoupons = () => ({
+  type: FETCHING_COUPONS,
+});
+
+export const finishedFetchingCoupons = () => ({
+  type: FINISHED_FETCHING_COUPONS,
+});
+
+export const createCoupon = (coupon) => ({
+  type: CREATE_COUPON,
+  payload: {
+    coupon,
   },
 });

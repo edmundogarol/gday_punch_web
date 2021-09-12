@@ -104,7 +104,8 @@ class OrderSerializer(serializers.ModelSerializer):
 class CouponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coupon
-        fields = ("id", "name", "date_created", "expiry_date")
+        fields = ("id", "name", "date_created",
+                  "expiry_date", "coupon_type", "amount")
 
 
 class StripePriceSerializer(serializers.ModelSerializer):

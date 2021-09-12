@@ -1,5 +1,6 @@
 import { call, all, takeLatest, select, put } from "redux-saga/effects";
 import { message } from "antd";
+import moment from "moment";
 import { api } from "utils/api";
 import {
   DO_TWEET,
@@ -39,6 +40,11 @@ import {
   updateContactEntries,
   DELETE_CONTACT_ENTRY,
   CREATE_STRIPE_PRICE,
+  FETCH_COUPONS,
+  fetchingCoupons,
+  finishedFetchingCoupons,
+  updateCoupons,
+  CREATE_COUPON,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -488,6 +494,41 @@ export function* deleteContactEntryCall(action) {
   }
 }
 
+export function* fetchCouponsCall() {
+  yield put(fetchingCoupons());
+  const response = yield call(api, "coupons/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateCoupons(data.results));
+    yield put(finishedFetchingCoupons());
+  } else {
+    yield put(finishedFetchingCoupons());
+    console.log("Coupons Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* createCouponCall(action) {
+  const response = yield call(api, "coupons/", {
+    method: "POST",
+    body: {
+      ...action.payload.coupon,
+      expiry_date: moment(action.payload.coupon.expiry_date).format(
+        "YYYY-MM-DD"
+      ),
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield call(fetchCouponsCall);
+  } else {
+    console.log("Create coupon error", JSON.stringify(response));
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -506,5 +547,7 @@ export default function* adminSaga() {
     takeLatest(UPDATE_ADMIN_PRODUCT, updateProductCall),
     takeLatest(FETCH_CONTACT_ENTRIES, fetchContactEntriesCall),
     takeLatest(DELETE_CONTACT_ENTRY, deleteContactEntryCall),
+    takeLatest(FETCH_COUPONS, fetchCouponsCall),
+    takeLatest(CREATE_COUPON, createCouponCall),
   ]);
 }
