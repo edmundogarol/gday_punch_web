@@ -30,17 +30,22 @@ else:
 def send_email_receipt(customer, order, items, coupon_details):
     email_template_name = "emails/receipt.html"
 
+    total = order.amount
+    subtotal = order.amount if order.country == "AU" else order.amount - 13
+    subtotal = subtotal + \
+        coupon_details['amount'] if coupon_details else subtotal
+
     email_config = {
         "customer": customer,
         "order": order,
         "items": items,
-        "order_total": "{:.2f}".format(order.amount),
+        "order_total": "{:.2f}".format(total),
         "aus_shipping": order.country == "AU",
         "coupon_percentage": coupon_details['percentage'],
         "coupon_amount": "{:.2f}".format(coupon_details['amount']),
         "coupon_amount_desc": coupon_details['amount_desc'],
-        "subtotal": "{:.2f}".format(order.amount + coupon_details['amount']) if coupon_details else "0.00",
-        "tax": "{:.2f}".format(order.amount / 11)
+        "subtotal": "{:.2f}".format(subtotal),
+        "tax": "{:.2f}".format(total / 11)
     }
 
     try:

@@ -120,6 +120,16 @@
             A${{ subtotal }}
           </td>
         </tr>
+        {% if coupon_amount_desc %}
+        <tr>
+          <td style="padding: 0.4em; width: 80%;">
+            Discount [{{order.coupon}} {% if coupon_percentage %}{{ coupon_amount_desc }}%{% else %}A${{ coupon_amount_desc }}{% endif %} off]
+          </td>
+          <td>
+            - A${{ coupon_amount }}
+          </td>
+        </tr>
+        {% endif %}
         <tr>
           {% if aus_shipping %}
           <td style="padding: 0.4em; width: 80%;">
@@ -137,16 +147,6 @@
           </td>
           {% endif %}
         </tr>
-        {% if coupon_amount_desc %}
-        <tr>
-          <td style="padding: 0.4em; width: 80%;">
-            Discount [{{order.coupon}} {% if coupon_percentage %}{{ coupon_amount_desc }}%{% else %}A${{ coupon_amount_desc }}{% endif %} off]
-          </td>
-          <td>
-            - A${{ coupon_amount }}
-          </td>
-        </tr>
-        {% endif %}
         <tr>
           <td style="padding: 0.4em; width: 80%;">
             GST

@@ -34,7 +34,7 @@ else:
     domain = "https://www.beta-gdaypunch.com"
 
 
-def calculate_order_amount(customer, items_list, coupon):
+def calculate_order_amount(customer, items_list, coupon, au_shipping):
     order_amount = 0
     subscription_items = []
 
@@ -62,6 +62,9 @@ def calculate_order_amount(customer, items_list, coupon):
             dollar_amount = dollar_amount - amount_off
         else:
             dollar_amount = dollar_amount - coupon.amount
+
+    if not au_shipping:
+        dollar_amount = dollar_amount + 13
 
     return {
         'amount': int(dollar_amount * 100),
@@ -303,7 +306,7 @@ class PaymentSubmitView(viewsets.ModelViewSet):
                 self.request.user, customer_payload)
 
             order_amount_details = calculate_order_amount(
-                customer, items_list, coupon)
+                customer, items_list, coupon, customer_payload['country'] == "AU")
             order_amount = order_amount_details['amount']
             order_subscriptions = order_amount_details['subscriptions']
 
