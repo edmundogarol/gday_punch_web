@@ -30,7 +30,7 @@
         Total:
       </label>
       <span style="font-size: 1.3em; font-weight: 600; color: #737373;">
-        A${{ order.amount }}
+        A${{ order_total }}
       </span>
     </div>
     <div>
@@ -90,6 +90,9 @@
               Item
             </th>
             <th style="padding: 1em; font-weight: 100; background: #eaeaea; width: 20%; text-align: end;">
+              Price
+            </th>
+            <th style="padding: 1em; font-weight: 100; background: #eaeaea; width: 10%; text-align: end;">
               Qty
             </th>
             <th style="padding: 1em; font-weight: 100; background: #eaeaea; width: 20%; text-align: end;">
@@ -101,8 +104,9 @@
               <td style="padding: 1em; font-weight: 600; color: #949494;">
                 {{ item.desc }}
               </td>
-              <td style="padding: 1em;  width: 20%; text-align: end;">{{ item.qty }}</td>
-              <td style="padding: 1em;  width: 20%; text-align: end;">$A{{ item.total }}</td>
+              <td style="padding: 1em;  width: 20%; text-align: end;">A${{ item.price }}</td>
+              <td style="padding: 1em;  width: 10%; text-align: end;">{{ item.qty }}</td>
+              <td style="padding: 1em;  width: 20%; text-align: end;">A${{ item.total }}</td>
             </tr>
           {% endfor %}
         </table>
@@ -117,20 +121,29 @@
           </td>
         </tr>
         <tr>
+          {% if aus_shipping %}
           <td style="padding: 0.4em; width: 80%;">
             Shipping - Free Australian Standard Shipping
           </td>
           <td>
             A$0.00
           </td>
-        </tr>
-        {% if coupon_details %}
-        <tr>
+          {% else %}
           <td style="padding: 0.4em; width: 80%;">
-            Discount [{{order.coupon}} {% if coupon_details.percentage %}{{ coupon_details.amount_desc }}%{% else %}A${{ coupon_details.amount_desc }}{% endif %} off]
+            Shipping - International Standard Shipping
           </td>
           <td>
-            {{ coupon_details.amount }}
+            A$13.00
+          </td>
+          {% endif %}
+        </tr>
+        {% if coupon_amount_desc %}
+        <tr>
+          <td style="padding: 0.4em; width: 80%;">
+            Discount [{{order.coupon}} {% if coupon_percentage %}{{ coupon_amount_desc }}%{% else %}A${{ coupon_amount_desc }}{% endif %} off]
+          </td>
+          <td>
+            - A${{ coupon_amount }}
           </td>
         </tr>
         {% endif %}
@@ -149,7 +162,7 @@
             Total
           </td>
           <td style="padding: 0.4em;">
-            A${{ order.amount }}
+            A${{ order_total }}
           </td>
         </tr>
       </table>

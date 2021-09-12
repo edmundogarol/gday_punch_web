@@ -34,8 +34,12 @@ def send_email_receipt(customer, order, items, coupon_details):
         "customer": customer,
         "order": order,
         "items": items,
-        "coupon_details": coupon_details,
-        "subtotal": order.amount + coupon_details['amount'],
+        "order_total": "{:.2f}".format(order.amount),
+        "aus_shipping": order.country == "AU",
+        "coupon_percentage": coupon_details['percentage'],
+        "coupon_amount": "{:.2f}".format(coupon_details['amount']),
+        "coupon_amount_desc": coupon_details['amount_desc'],
+        "subtotal": "{:.2f}".format(order.amount + coupon_details['amount']) if coupon_details else "0.00",
         "tax": "{:.2f}".format(order.amount / 11)
     }
 
@@ -47,7 +51,7 @@ def send_email_receipt(customer, order, items, coupon_details):
             message='Thank you for your order!',
             html_message=email,
             from_email='noreply@gdaypunch.com',
-            recipient_list=["edmundo.a.garol@outlook.com"],
+            recipient_list=[order.email],
             fail_silently=False,
         )
 
@@ -161,9 +165,10 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
     for item in items:
         product = Product.objects.get(id=item['id'])
 
-        item_details.append({'desc': product.title, 'qty': item['qty'], 'total': int(
-            item['qty']) * product.active_price})
-        total_items_price = total_items_price + product.active_price
+        item_details.append({'desc': product.title, 'price': product.active_price,
+                            'qty': item['qty'], 'total': int(item['qty']) * product.active_price})
+        total_items_price = total_items_price + \
+            (int(item['qty']) * product.active_price)
 
         if product.product_type == DIGITAL:
             digital_purchase = digital_purchase + 1
