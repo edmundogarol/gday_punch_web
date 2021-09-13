@@ -3,6 +3,7 @@
 PHYSICAL = 'physical'
 DIGITAL = 'digital'
 SUBSCRIPTION = 'subscription'
+
 PRODUCT_TYPES = (
     (PHYSICAL, 'Physical'),
     (DIGITAL, 'Digital'),
@@ -24,6 +25,15 @@ ORDER_STATUSES = (
     (PURCHASED, 'Purchased'),
     (REFUNDED, 'Refunded'),
     (PARTIALLY_REFUNDED, 'Partially Refunded'),
+)
+
+# Fulfillment Type
+SHIPPING = 'shipping'
+ACCESS = 'access'
+
+FULFILLMENT_TYPE = (
+    (SHIPPING, 'Shipping'),
+    (ACCESS, 'Access'),
 )
 
 # Coupon Types

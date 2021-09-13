@@ -22,7 +22,7 @@ from .orders import (
 )
 
 from ..utils import (
-    PostOnlyPermissions
+    PostOnly
 )
 
 if 'DEVENV' in os.environ:
@@ -291,7 +291,7 @@ def get_customer_details(user_email, customer_payload):
 
 class PaymentSubmitView(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
-    permission_classes = (PostOnlyPermissions,)
+    permission_classes = (PostOnly,)
 
     @action(detail=False, methods=['post'], url_path='create')
     def create(self, request, *args, **kwargs):

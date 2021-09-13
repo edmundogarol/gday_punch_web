@@ -5,7 +5,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated)
 
-from ..utils import PostOnlyPermissions
+from ..utils import (
+    PostOnly
+)
 from ..models import (
     Coupon
 )
@@ -21,11 +23,11 @@ class CouponViewSet(viewsets.ModelViewSet):
 
 
 class CouponApplyViewSet(viewsets.ViewSet):
-    permission_classes = (PostOnlyPermissions, )
+    permission_classes = (PostOnly, )
 
     @action(detail=False, methods=['post'], url_path='apply')
     def apply(self, request, *args, **kwargs):
-        permission_classes = (PostOnlyPermissions, )
+        permission_classes = (PostOnly, )
         data = request.data
         coupon = data['coupon']
 
@@ -33,12 +35,10 @@ class CouponApplyViewSet(viewsets.ViewSet):
             existing_coupon = Coupon.objects.get(name=coupon)
 
             if existing_coupon.expiry_date < datetime.now().date():
-                existing_coupon.delete()
-
-                return Response({'error': 'Invalid coupon.'},  status=status.HTTP_404_NOT_FOUND)
+                return Response({'error': 'Expired or invalid Coupon.'},  status=status.HTTP_404_NOT_FOUND)
 
             serializer = CouponSerializer(existing_coupon)
             return Response(serializer.data)
 
         except Coupon.DoesNotExist:
-            return Response({'error': 'Invalid coupon.'},  status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'Expired or invalid coupon.'},  status=status.HTTP_404_NOT_FOUND)

@@ -1,3 +1,4 @@
+import json
 import random
 from datetime import datetime
 
@@ -424,6 +425,44 @@ class Order(models.Model):
     last_four = models.TextField(max_length=10, blank=False)
     exp_month = models.TextField(max_length=10, blank=False)
     exp_year = models.TextField(max_length=10, blank=False)
+
+    @property
+    def product_qty_details(self):
+        order = Order.objects.get(id=self.id)
+        items = json.loads(order.products_qty)
+        item_details = []
+
+        for item in items:
+            product = Product.objects.get(id=item.id)
+            item_details.append({'product': product.title, 'qty': item.qty})
+
+        return item_details
+
+    @property
+    def products_total_price(self):
+        order = Order.objects.get(id=self.id)
+        items = json.loads(order.products_qty)
+        total = 0
+
+        for item in items:
+            product = Product.objects.get(id=item.id)
+            total = total + (product.active_price * item.qty)
+
+        return total
+
+    @property
+    def fulfillment_type(self):
+        fulfillment = SHIPPING
+        order = Order.objects.get(id=self.id)
+        items = json.loads(order.products_qty)
+
+        for item in items:
+            product = Product.objects.get(id=item.id)
+
+            if product.product_type != PHYSICAL:
+                fulfillment = ACCESS
+
+        return fulfillment
 
 
 class OrderStatusUpdate(models.Model):

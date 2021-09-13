@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions
 from rest_framework.response import Response
 
-from ..utils import PostOnlyPermissions
+from ..utils import PostOnly
 from ..models import (
     Contact
 )
@@ -13,7 +13,7 @@ from ..serializers import (
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
-    permission_classes = (PostOnlyPermissions, )
+    permission_classes = (PostOnly, )
 
     def list(self, request, *args, **kwargs):
         queryset = Contact.objects.all().order_by('-id')

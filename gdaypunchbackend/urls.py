@@ -25,7 +25,7 @@ from .gdaypunchapi.views import (
     UserViewSet, LoginView, LogoutView, MangaDetailView,
     MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
     CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
-    PromptSelectedViewSet
+    PromptSelectedViewSet, SwaggerSchemaView
 )
 from .gdaypunchapi.api.reset_password import (
     ResetPasswordViewSet
@@ -54,8 +54,9 @@ from .gdaypunchapi.api.customer import (
 from .gdaypunchapi.api.coupons import (
     CouponViewSet, CouponApplyViewSet
 )
-
-schema_view = get_swagger_view(title='Gday Punch Web App API')
+from .gdaypunchapi.api.orders import (
+    OrderViewSet
+)
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet, basename='user')
@@ -74,12 +75,13 @@ router.register(r'product', ProductDetailView, basename="product")
 router.register(r'contact', ContactViewSet, basename="contact")
 router.register(r'customer', CustomerViewSet, basename="customer")
 router.register(r'coupons', CouponViewSet, basename="customer")
+router.register(r'orders', OrderViewSet, basename="orders")
 router.register(r'reset-password', ResetPasswordViewSet,
                 basename="reset-password")
 
 urlpatterns = [
     # Docs
-    url(r'^docs/', schema_view),
+    url(r'^docs/', SwaggerSchemaView.as_view()),
 
     # Login
     url(r'api/login/', LoginView.as_view()),

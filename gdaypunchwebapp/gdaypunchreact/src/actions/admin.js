@@ -60,6 +60,11 @@ export const FINISHED_FETCHING_COUPONS = "admin/FINISHED_FETCHING_COUPONS";
 export const UPDATE_COUPONS = "admin/UPDATE_COUPONS";
 export const CREATE_COUPON = "admin/CREATE_COUPON";
 
+export const FETCH_ORDERS = "admin/FETCH_ORDERS";
+export const UPDATE_ORDERS = "admin/UPDATE_ORDERS";
+export const FETCHING_ORDERS = "admin/FETCHING_ORDERS";
+export const FINISHED_FETCHING_ORDERS = "admin/FINISHED_FETCHING_ORDERS";
+
 export const doTweet = () => ({
   type: DO_TWEET,
 });
@@ -324,4 +329,23 @@ export const createCoupon = (coupon) => ({
   payload: {
     coupon,
   },
+});
+
+export const fetchOrders = () => ({
+  type: FETCH_ORDERS,
+});
+
+export const updateOrders = (orders) => ({
+  type: UPDATE_ORDERS,
+  payload: {
+    orders,
+  },
+});
+
+export const fetchingOrders = () => ({
+  type: FETCHING_ORDERS,
+});
+
+export const finishedFetchingOrders = () => ({
+  type: FINISHED_FETCHING_ORDERS,
 });

@@ -14,7 +14,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from ..models import (User, StripeCustomer, Customer)
 from ..serializers import UserSerializer
-from ..utils import PostOnlyPermissions
+from ..utils import PostOnly
 
 if 'DEVENV' in os.environ:
     website = "http://localhost:8000"
@@ -87,7 +87,7 @@ def update_stripe_and_gp_customer(user):
 
 class VerifyAccountViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    permission_classes = (PostOnlyPermissions,)
+    permission_classes = (PostOnly,)
 
     @action(detail=False, methods=['post'], url_path='email')
     def email(self, request, *args, **kwargs):

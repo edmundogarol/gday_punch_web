@@ -17,6 +17,11 @@ import {
   FETCH_STRIPE_PRICES,
   UPDATE_ADMIN_PRODUCT,
   FETCH_CONTACT_ENTRIES,
+  DELETE_CONTACT_ENTRY,
+  CREATE_STRIPE_PRICE,
+  FETCH_COUPONS,
+  CREATE_COUPON,
+  FETCH_ORDERS,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -38,13 +43,12 @@ import {
   fetchingContactEntries,
   finishedFetchingContactEntries,
   updateContactEntries,
-  DELETE_CONTACT_ENTRY,
-  CREATE_STRIPE_PRICE,
-  FETCH_COUPONS,
   fetchingCoupons,
   finishedFetchingCoupons,
   updateCoupons,
-  CREATE_COUPON,
+  fetchingOrders,
+  updateOrders,
+  finishedFetchingOrders,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -529,6 +533,22 @@ export function* createCouponCall(action) {
   }
 }
 
+export function* fetchOrdersCall() {
+  yield put(fetchingOrders());
+  const response = yield call(api, "orders/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateOrders(data.results));
+    yield put(finishedFetchingOrders());
+  } else {
+    yield put(finishedFetchingOrders());
+    console.log("Orders Fetch error", JSON.stringify(response));
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -549,5 +569,6 @@ export default function* adminSaga() {
     takeLatest(DELETE_CONTACT_ENTRY, deleteContactEntryCall),
     takeLatest(FETCH_COUPONS, fetchCouponsCall),
     takeLatest(CREATE_COUPON, createCouponCall),
+    takeLatest(FETCH_ORDERS, fetchOrdersCall),
   ]);
 }

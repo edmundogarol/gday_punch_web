@@ -93,12 +93,12 @@ class ProductSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ("id", "customer", "products_qty", "number", "date_created", "status",
-                  "email", "first_name", "last_name", "address_line_1", "address_line_2", "city",
+        fields = ("id", "customer", "amount", "products_total_price", "products_qty", "number", "date_created",
+                  "status", "email", "first_name", "last_name", "address_line_1", "address_line_2", "city",
                   "state", "postcode", "country", "phone_number", "billing_same_address", "billing_email",
                   "billing_first_name", "billing_last_name", "billing_address_line_1", "billing_address_line_2",
                   "billing_city", "billing_state", "billing_postcode", "billing_country", "billing_number",
-                  "last_four", "exp_month", "exp_year")
+                  "last_four", "exp_month", "exp_year", "product_qty_details", "fulfillment_type")
 
 
 class CouponSerializer(serializers.ModelSerializer):

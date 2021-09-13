@@ -10,13 +10,16 @@ from smtplib import SMTPAuthenticationError
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
+from rest_framework import viewsets, permissions, status
+from rest_framework.permissions import (IsAuthenticated)
+
 from ..constants import *
 from ..models import (
     Order, Product, Coupon
 )
-# from ..serializers import (
-#
-# )
+from ..serializers import (
+    OrderSerializer
+)
 
 if 'DEVENV' in os.environ:
     stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
@@ -25,6 +28,12 @@ if 'DEVENV' in os.environ:
 else:
     stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
     domain = "https://www.beta-gdaypunch.com"
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    permission_classes = (IsAuthenticated, )
 
 
 def send_email_receipt(customer, order, items, coupon_details):
@@ -45,7 +54,8 @@ def send_email_receipt(customer, order, items, coupon_details):
         "coupon_amount": "{:.2f}".format(coupon_details['amount']),
         "coupon_amount_desc": coupon_details['amount_desc'],
         "subtotal": "{:.2f}".format(subtotal),
-        "tax": "{:.2f}".format(total / 11)
+        "tax": "{:.2f}".format(total / 11),
+        "website": domain
     }
 
     try:

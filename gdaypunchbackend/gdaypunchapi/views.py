@@ -9,9 +9,12 @@ from rest_framework.throttling import UserRateThrottle
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import api_view
 
 from rest_framework.viewsets import (ViewSet, ModelViewSet)
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_swagger import renderers
+from rest_framework.schemas import SchemaGenerator
 from rest_framework.permissions import (
     AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission)
 
@@ -25,7 +28,15 @@ from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
 
-from .utils import PostOnlyPermissions
+from .utils import (
+    AdminOnly,
+    PostOnly,
+    AuthenticatedCreateOnly,
+    AuthenticatedCreateAndEditOnly
+)
+from .api_permissions import (
+    CommentPermissions
+)
 from .api.verify_account import send_account_verification_email
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt
@@ -42,6 +53,20 @@ from .serializers import (
 )
 
 
+class SwaggerSchemaView(APIView):
+    permission_classes = [IsAuthenticated]
+    renderer_classes = [
+        renderers.OpenAPIRenderer,
+        renderers.SwaggerUIRenderer
+    ]
+
+    def get(self, request):
+        generator = SchemaGenerator()
+        schema = generator.get_schema(request=request)
+
+        return Response(schema)
+
+
 class PostUserRateThrottle(UserRateThrottle):
     scope = "post_user"
 
@@ -52,7 +77,7 @@ class PostUserRateThrottle(UserRateThrottle):
 
 
 class UserViewSet(UpdateModelMixin, ViewSet):
-    permission_classes = (PostOnlyPermissions, )
+    permission_classes = (PostOnly, )
 
     def create(self, validated_data):
         user = None
@@ -222,7 +247,9 @@ class LikeViewSet(ModelViewSet):
 class CommentLikeViewSet(ModelViewSet):
     queryset = CommentLike.objects.none()
     serializer_class = CommentLikeSerializer
-    permission_classes = [IsAuthenticated]
+
+    # Only allow logged in users to like comments (create)
+    permission_classes = [AuthenticatedCreateOnly]
 
 
 class PromptViewSet(ModelViewSet):
@@ -315,7 +342,7 @@ class CommentViewSet(ModelViewSet):
     throttle_classes = [PostUserRateThrottle]
     queryset = Comment.objects.none()
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [CommentPermissions]
 
     def retrieve(self, request, pk=None):
         queryset = Comment.objects.all()

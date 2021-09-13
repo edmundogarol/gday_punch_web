@@ -20,7 +20,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.sessions.models import Session
 from django.contrib.auth import password_validation
 
-from ..utils import PostOnlyPermissions
+from ..utils import PostOnly
 from ..models import (
     User, ResetPasswordSession
 )
@@ -107,7 +107,7 @@ def delete_all_unexpired_sessions_for_user(user):
 
 class ResetPasswordViewSet(viewsets.ModelViewSet):
     serializer_class = ResetPasswordSerializer
-    permission_classes = (PostOnlyPermissions, )
+    permission_classes = (PostOnly, )
 
     def create(self, request, *args, **kwargs):
         email = request.data['email']
