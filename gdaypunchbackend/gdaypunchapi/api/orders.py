@@ -9,11 +9,14 @@ from smtplib import SMTPAuthenticationError
 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.shortcuts import get_list_or_404
 
 from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import (IsAuthenticated)
+from rest_framework.response import Response
 
 from ..constants import *
+from ..api_permissions import OrdersByUserPermissions
 from ..models import (
     Order, Product, Coupon
 )
@@ -31,9 +34,15 @@ else:
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all()
+    queryset = Order.objects.all().order_by('-id')
     serializer_class = OrderSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (OrdersByUserPermissions, )
+
+    def retrieve(self, request, pk=None):
+        queryset = Order.objects.all().order_by('-id')
+        orders = get_list_or_404(queryset, customer=pk)
+        serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
 
 
 def send_email_receipt(customer, order, items, coupon_details):

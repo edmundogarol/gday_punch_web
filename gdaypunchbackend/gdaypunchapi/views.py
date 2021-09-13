@@ -34,10 +34,15 @@ from .utils import (
     AuthenticatedCreateOnly,
     AuthenticatedCreateAndEditOnly
 )
-from .api_permissions import (
-    CommentPermissions
-)
+
 from .api.verify_account import send_account_verification_email
+
+from .api_permissions import (
+    CommentPermissions,
+    MangaCommentsPermissions,
+    LikePermissions,
+    MangaDetailPermissions
+)
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt
 )
@@ -54,7 +59,7 @@ from .serializers import (
 
 
 class SwaggerSchemaView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     renderer_classes = [
         renderers.OpenAPIRenderer,
         renderers.SwaggerUIRenderer
@@ -227,7 +232,7 @@ class LoginView(APIView):
 class LikeViewSet(ModelViewSet):
     queryset = Like.objects.none()
     serializer_class = LikeSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [LikePermissions]
 
     def create(self, request, *args, **kwargs):
         user = User.objects.get(email=self.request.user)
@@ -353,7 +358,7 @@ class CommentViewSet(ModelViewSet):
 
 class MangaCommentsViewSet(ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [MangaCommentsPermissions]
 
     def retrieve(self, request, pk=None):
         queryset = Comment.objects.all()
@@ -378,7 +383,7 @@ class MangaViewSet(ModelViewSet):
 
 
 class MangaDetailView(UpdateModelMixin, ViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [MangaDetailPermissions]
 
     def retrieve(self, request, pk=None):
         queryset = Manga.objects.all()

@@ -429,24 +429,25 @@ class Order(models.Model):
     @property
     def product_qty_details(self):
         order = Order.objects.get(id=self.id)
-        items = json.loads(order.products_qty)
+        items = json.loads(order.products_qty.replace("\'", "\""))
         item_details = []
 
         for item in items:
-            product = Product.objects.get(id=item.id)
-            item_details.append({'product': product.title, 'qty': item.qty})
+            product = Product.objects.get(id=item['id'])
+            print('product', product)
+            item_details.append({'product': product.title, 'qty': item['qty']})
 
         return item_details
 
     @property
     def products_total_price(self):
         order = Order.objects.get(id=self.id)
-        items = json.loads(order.products_qty)
+        items = json.loads(order.products_qty.replace("\'", "\""))
         total = 0
 
         for item in items:
-            product = Product.objects.get(id=item.id)
-            total = total + (product.active_price * item.qty)
+            product = Product.objects.get(id=item['id'])
+            total = total + (product.active_price * item['qty'])
 
         return total
 
@@ -454,10 +455,10 @@ class Order(models.Model):
     def fulfillment_type(self):
         fulfillment = SHIPPING
         order = Order.objects.get(id=self.id)
-        items = json.loads(order.products_qty)
+        items = json.loads(order.products_qty.replace("\'", "\""))
 
         for item in items:
-            product = Product.objects.get(id=item.id)
+            product = Product.objects.get(id=item['id'])
 
             if product.product_type != PHYSICAL:
                 fulfillment = ACCESS

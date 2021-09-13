@@ -14,12 +14,15 @@ from ..models import (
 from ..serializers import (
     CouponSerializer,
 )
+from ..utils import (
+    AdminOnly,
+)
 
 
 class CouponViewSet(viewsets.ModelViewSet):
     queryset = Coupon.objects.all()
     serializer_class = CouponSerializer
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AdminOnly, )
 
 
 class CouponApplyViewSet(viewsets.ViewSet):
@@ -27,7 +30,6 @@ class CouponApplyViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'], url_path='apply')
     def apply(self, request, *args, **kwargs):
-        permission_classes = (PostOnly, )
         data = request.data
         coupon = data['coupon']
 

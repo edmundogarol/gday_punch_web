@@ -61,7 +61,6 @@ from .gdaypunchapi.api.orders import (
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet, basename='user')
 router.register(r'manga', MangaDetailView, basename='manga')
-router.register(r'mangas', MangaViewSet, basename='mangas')
 router.register(r'like', LikeViewSet, basename="like")
 router.register(r'comment', CommentViewSet, basename="comment")
 router.register(r'comments', MangaCommentsViewSet, basename="comments")
@@ -78,6 +77,9 @@ router.register(r'coupons', CouponViewSet, basename="customer")
 router.register(r'orders', OrderViewSet, basename="orders")
 router.register(r'reset-password', ResetPasswordViewSet,
                 basename="reset-password")
+
+# Inactive endpoints
+# router.register(r'mangas', MangaViewSet, basename='mangas')
 
 urlpatterns = [
     # Docs

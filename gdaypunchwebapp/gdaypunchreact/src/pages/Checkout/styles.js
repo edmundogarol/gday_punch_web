@@ -73,9 +73,9 @@ export const CheckoutInnerSectionContainer = styled.div`
   .form-field {
     display: flex;
     flex-direction: column;
-    align-items: self-end;
     min-width: 17em;
     height: max-content;
+    align-items: flex-start;
 
     .ant-alert {
       text-align: start;
@@ -162,12 +162,15 @@ export const CheckoutInnerSectionContainer = styled.div`
 
   [data-line-count="1"] {
     flex-basis: 100%;
+    display: flex;
   }
   [data-line-count="2"] {
     flex-basis: 49%;
+    display: flex;
   }
   [data-line-count="3"] {
     flex-basis: 32%;
+    display: flex;
   }
 `;
 

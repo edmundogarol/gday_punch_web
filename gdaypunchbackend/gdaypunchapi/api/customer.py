@@ -1,7 +1,7 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 
-from ..utils import AuthenticatedOrPostOnly
+from ..api_permissions import CustomerPermissions
 from ..models import (
     Customer, User
 )
@@ -13,7 +13,7 @@ from ..serializers import (
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-    permission_classes = (AuthenticatedOrPostOnly, )
+    permission_classes = (CustomerPermissions, )
 
     def partial_update(self, request, *args, **kwargs):
         queryset = Customer.objects.all()
