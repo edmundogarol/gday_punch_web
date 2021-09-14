@@ -17,7 +17,18 @@
           <img style="height: 4em;" src="https://gdaypunch-static.s3.us-west-2.amazonaws.com/gday.png">
         </td>
         <td style="text-align: end;">
-          Order No. {{ order.number }}
+          <table style="width: 100%;">
+            <tr>
+              <td>
+                Order No. {{ order.number }}
+              </td>
+            </tr>
+            <tr>
+              <td>
+                {{ order.date_created }}
+              </td>
+            </tr>
+          </table>
         </td>
       </tr>
     </table>
@@ -149,7 +160,7 @@
         </tr>
         <tr>
           <td style="padding: 0.4em; width: 80%;">
-            GST
+            Taxes included in item price (GST)
           </td>
           <td>
             A${{ tax }}
