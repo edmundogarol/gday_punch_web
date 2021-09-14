@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 
 from ..constants import *
+from ..api_permissions import ProductPermissions
 from ..models import (
     User, Product, StripePrice
 )
@@ -27,7 +28,7 @@ else:
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [ProductPermissions]
 
     def create(self, request, *args, **kwargs):
 
@@ -88,6 +89,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = Product.objects.all().order_by('-id')
         price_filter = request.query_params.get('price')
 
+        user = None
+        try:
+            user = User.objects.get(email=self.request.user)
+        except User.DoesNotExist:
+            print("Anonymous User")
+
+        if ((not user.is_staff) or user is None):
+            queryset = queryset.filter(visible=True)
+
         if price_filter:
             queryset = queryset.filter(active_price=price_filter)
 
@@ -96,7 +106,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 
 class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [ProductPermissions]
 
     def partial_update(self, request, *args, **kwargs):
         queryset = Product.objects.all()

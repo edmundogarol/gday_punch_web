@@ -56,11 +56,13 @@ function Ui(props) {
   };
 
   useEffect(() => {
+    console.log({ paymentOpen });
     if (!paymentOpen) return;
     const cardNumberRef = elements.getElement("cardNumber");
     const cardExpiryRef = elements.getElement("cardExpiry");
     const cardCvvRef = elements.getElement("cardCvc");
 
+    console.log({ cardNumberRef, cardExpiryRef, cardCvvRef });
     if (cardNumberRef) {
       cardNumberRef.mount("#card-number-element");
       cardExpiryRef.mount("#card-expiry-element");

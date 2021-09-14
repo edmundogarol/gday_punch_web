@@ -21,6 +21,7 @@ import {
 } from "actions/products";
 import { api } from "utils/api";
 import { arrayIdsMapToObject } from "utils/utils";
+import { selectUser } from "src/selectors/app";
 
 export function* fetchProductsCall(action) {
   const fetchedProducts = yield all(
@@ -41,6 +42,10 @@ export function* getProduct(productId) {
     return data;
   } else {
     console.log("Product fetch error", JSON.stringify(response));
+    if (response.data.detail.includes("You do not have permission")) {
+      message.error("This product is currently unavailable.");
+      return undefined;
+    }
   }
 }
 
@@ -64,14 +69,8 @@ export function* fetchAllProductsCall(addItems = false) {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(
-      updateProducts(
-        arrayIdsMapToObject(
-          data.filter((product) => product.visible),
-          addItems
-        )
-      )
-    );
+
+    yield put(updateProducts(arrayIdsMapToObject(data, addItems)));
     yield put(finishedFetchingProducts());
   } else {
     console.log("All Products fetch error", JSON.stringify(response));

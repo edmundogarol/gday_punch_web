@@ -36,6 +36,7 @@ function Ui(props) {
     active_price,
     product_type,
     quantity,
+    visible,
     user_string: creator,
   } = product;
   const {
@@ -110,11 +111,13 @@ function Ui(props) {
   return (
     <ProductTileContainer>
       <a onClick={() => handleViewProduct()}>
-        <ProductImage src={getGdayPunchStaticUrl(image)} />
+        <ProductImage alt={title} src={getGdayPunchStaticUrl(image)} />
       </a>
       <ProductDetails>
         <a onClick={() => handleViewProduct()}>
-          <ProductTitle>{title}</ProductTitle>
+          <ProductTitle>
+            {!visible ? "[Hidden]" : ""} {title}
+          </ProductTitle>
         </a>
         <ProductAuthor>{author || creator}</ProductAuthor>
         <PriceLikeCommentConainer>

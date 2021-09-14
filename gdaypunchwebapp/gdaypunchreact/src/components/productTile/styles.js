@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import Image from "components/image";
 
 export const ProductTileContainer = styled.div`
   margin: 20pt;
@@ -20,8 +21,12 @@ export const ProductTileContainer = styled.div`
   }
 `;
 
-export const ProductImage = styled.img`
+export const ProductImage = styled(Image)`
   max-height: 15em;
+
+  img {
+    height: 15em;
+  }
 `;
 
 export const ProductTitle = styled.h2`

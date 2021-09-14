@@ -1,20 +1,31 @@
 from rest_framework.permissions import (BasePermission)
 
-from .models import Customer, User, Order
+from .models import (
+    Customer, User, Order, Comment, Like, Product
+)
 
 
 def staff(request):
     return request.user.is_authenticated and request.user.is_staff
 
 
-# Only allow logged in users to create and edit their own comments (create, partial, destroy)
+# Only allow logged in users to create and edit their own comments (create, retrieve, partial, destroy)
 class CommentPermissions(BasePermission):
 
     def has_permission(self, request, view):
         if staff(request):
             return True
-        elif view.action in ['create', 'partial_update', 'destroy']:
+        elif view.action in ['create']:
             return request.user.is_authenticated
+        elif view.action in ['retrieve', 'partial_update', 'destroy']:
+            comment_id = view.kwargs.get('pk')
+
+            if request.user.is_authenticated:
+                try:
+                    comment = Comment.objects.get(id=comment_id)
+                    return comment.user.email.strip() == str(request.user).strip()
+                except Comment.DoesNotExist:
+                    return False
         else:
             return False
 
@@ -58,14 +69,23 @@ class LikePermissions(BasePermission):
     def has_permission(self, request, view):
         if staff(request):
             return True
-        elif view.action in ['create', 'destroy']:
+        elif view.action in ['create']:
             return request.user.is_authenticated
+        elif view.action in ['destroy']:
+            like_id = view.kwargs.get('pk')
+
+            if request.user.is_authenticated:
+                try:
+                    like = Like.objects.get(id=like_id)
+                    return like.user.email.strip() == str(request.user).strip()
+                except Like.DoesNotExist:
+                    return False
         else:
             return False
 
 
 # /Current/ Allows all users to retrieve manga details
-# TODO Need to make mangas endpoints only available through authenticated users
+# TODO Need to make mangas endpoints only available through authenticated users / once gdaypunch.com replaces beta-gdaypunch
 # Only allow logged in users to fetch single manga details (retrieve)
 class MangaDetailPermissions(BasePermission):
 
@@ -97,6 +117,46 @@ class OrdersByUserPermissions(BasePermission):
                     return False
                 except Order.DoesNotExist:
                     return False
+        else:
+            return False
+
+
+# Only allow authenticated users to get and edit their products (retrieve, update, partial_update)
+# Allow all users to get list of visible products (list)
+class ProductPermissions(BasePermission):
+
+    def has_permission(self, request, view):
+        product_id = view.kwargs.get('pk')
+
+        if staff(request):
+            return True
+        elif view.action in ['list']:
+            return True
+        elif view.action in ['retrieve']:
+            try:
+                product = Product.objects.get(id=product_id)
+                return product.visible
+            except Product.DoesNotExist:
+                return False
+        elif view.action in ['update', 'partial_update']:
+            if request.user.is_authenticated:
+                try:
+                    product = Product.objects.get(id=product_id)
+                    return product.user.email.strip() == str(request.user).strip()
+                except Product.DoesNotExist:
+                    return False
+        else:
+            return False
+
+
+# Clean non-useable retrieve endpoints
+class PromptsPermissions(BasePermission):
+
+    def has_permission(self, request, view):
+        if staff(request):
+            return True
+        elif view.action in ['list']:
+            return True
         else:
             return False
 

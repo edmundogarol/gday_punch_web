@@ -354,32 +354,6 @@ function Ui(props) {
     }
   }, [clientSecret]);
 
-  const handlePurchaseClick = async () => {
-    const response = await gdayfetch("payments/create-checkout-session/", {
-      method: "POST",
-      body: {},
-    });
-
-    if (response && response.ok) {
-      const result = await stripe.redirectToCheckout({
-        sessionId: response.data.id,
-      });
-
-      if (result.error) {
-        alert(result.error.message);
-      }
-    } else {
-      console.log("Checkout Purchase error", JSON.stringify(response));
-      message.error({
-        content: "Checkout Purchase error",
-        className: "antd-message-capitalize",
-        style: {
-          textTransform: "capitalize",
-        },
-      });
-    }
-  };
-
   const validateForm = (form) => {
     const doNotValidate = [
       "type",

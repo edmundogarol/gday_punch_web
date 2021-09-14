@@ -12,6 +12,16 @@ class PostOnly(BasePermission):
         return request.method in WRITE_METHODS or staff(request)
 
 
+class AdminOrReadOnly(BasePermission):
+    def has_permission(self, request, view):
+        READ_METHODS = ["GET", ]
+
+        if request.method in READ_METHODS or staff(request):
+            return True
+        else:
+            return False
+
+
 class AuthenticatedOrPostOnly(BasePermission):
     def has_permission(self, request, view):
         WRITE_METHODS = ["POST", ]

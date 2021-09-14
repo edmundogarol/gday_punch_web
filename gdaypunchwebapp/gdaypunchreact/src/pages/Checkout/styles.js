@@ -162,15 +162,22 @@ export const CheckoutInnerSectionContainer = styled.div`
 
   [data-line-count="1"] {
     flex-basis: 100%;
-    display: flex;
+
+    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element) {
+      display: flex;
+    }
   }
   [data-line-count="2"] {
     flex-basis: 49%;
-    display: flex;
+    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element) {
+      display: flex;
+    }
   }
   [data-line-count="3"] {
     flex-basis: 32%;
-    display: flex;
+    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element) {
+      display: flex;
+    }
   }
 `;
 

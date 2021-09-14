@@ -22,6 +22,7 @@ from .orders import (
 )
 
 from ..utils import (
+    AdminOnly,
     PostOnly
 )
 
@@ -363,7 +364,7 @@ class PaymentSubmitView(viewsets.ModelViewSet):
 
 
 class PriceView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AdminOnly]
 
     def post(self, request, format=None):
 
@@ -434,7 +435,7 @@ def PaymentsWebhookHandler(request):
 
 
 class StripeProductsViewSet(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AdminOnly]
 
     def get(self, request, format=None):
 
@@ -468,4 +469,4 @@ class StripePriceViewSet(viewsets.ModelViewSet):
     pagination_class = None
     queryset = StripePrice.objects.all()
     serializer_class = StripePriceSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [AdminOnly]

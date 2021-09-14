@@ -31,6 +31,7 @@ from django.http import HttpResponse
 from .utils import (
     AdminOnly,
     PostOnly,
+    AdminOrReadOnly,
     AuthenticatedCreateOnly,
     AuthenticatedCreateAndEditOnly
 )
@@ -41,7 +42,8 @@ from .api_permissions import (
     CommentPermissions,
     MangaCommentsPermissions,
     LikePermissions,
-    MangaDetailPermissions
+    MangaDetailPermissions,
+    PromptsPermissions
 )
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt
@@ -248,6 +250,9 @@ class LikeViewSet(ModelViewSet):
         serializer = MangaSerializer(manga)
         return Response(serializer.data)
 
+    # TODO Implement Unlike
+    # def destroy(self, request, *args, **kwargs):
+
 
 class CommentLikeViewSet(ModelViewSet):
     queryset = CommentLike.objects.none()
@@ -260,7 +265,7 @@ class CommentLikeViewSet(ModelViewSet):
 class PromptViewSet(ModelViewSet):
     queryset = Prompt.objects.all()
     serializer_class = PromptSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AdminOnly]
 
     def list(self, request, *args, **kwargs):
         queryset = Prompt.objects.all().order_by('-id')
@@ -284,7 +289,7 @@ class PromptViewSet(ModelViewSet):
 class PromptRandomStylePanelViewSet(ModelViewSet):
     queryset = Prompt.objects.none()
     serializer_class = PromptSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [PromptsPermissions]
 
     def list(self, request, *args, **kwargs):
         style = Prompt.objects.filter(promptType=2).order_by('?')[:1].get()
@@ -304,7 +309,7 @@ class PromptRandomStylePanelViewSet(ModelViewSet):
 class PromptSelectedViewSet(ModelViewSet):
     queryset = Prompt.objects.none()
     serializer_class = PromptSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [PromptsPermissions]
 
     def list(self, request, *args, **kwargs):
         today = datetime.datetime.now()
@@ -345,7 +350,7 @@ class PromptSelectedViewSet(ModelViewSet):
 
 class CommentViewSet(ModelViewSet):
     throttle_classes = [PostUserRateThrottle]
-    queryset = Comment.objects.none()
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [CommentPermissions]
 
@@ -361,6 +366,9 @@ class MangaCommentsViewSet(ModelViewSet):
     permission_classes = [MangaCommentsPermissions]
 
     def retrieve(self, request, pk=None):
+        """
+        Retrieve all comments for Manga [id]
+        """
         queryset = Comment.objects.all()
         mangaComments = get_list_or_404(queryset, manga=pk)
         serializer = CommentSerializer(mangaComments, many=True)

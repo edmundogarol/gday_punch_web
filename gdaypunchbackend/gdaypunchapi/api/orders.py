@@ -59,9 +59,9 @@ def send_email_receipt(customer, order, items, coupon_details):
         "items": items,
         "order_total": "{:.2f}".format(total),
         "aus_shipping": order.country == "AU",
-        "coupon_percentage": coupon_details['percentage'],
-        "coupon_amount": "{:.2f}".format(coupon_details['amount']),
-        "coupon_amount_desc": coupon_details['amount_desc'],
+        "coupon_percentage": coupon_details['percentage'] if coupon_details else None,
+        "coupon_amount": "{:.2f}".format(coupon_details['amount']) if coupon_details else None,
+        "coupon_amount_desc": coupon_details['amount_desc'] if coupon_details else None,
         "subtotal": "{:.2f}".format(subtotal),
         "tax": "{:.2f}".format(total / 11),
         "website": domain

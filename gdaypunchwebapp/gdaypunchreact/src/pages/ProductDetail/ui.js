@@ -8,11 +8,12 @@ import {
   faTwitter,
   faPinterest,
 } from "@fortawesome/free-brands-svg-icons";
-import { Typography, Image, Select, Spin, message } from "antd";
+import { Typography, Select, Spin, message } from "antd";
 import moment from "moment";
 const { Title } = Typography;
 const { Option } = Select;
 
+import Image from "components/image";
 import {
   PageContainer,
   ProductContainer,
@@ -82,7 +83,16 @@ function Ui(props) {
         if (!productList[productId]) fetchViewingProduct(productId);
       }
     }
-  }, [fetchingViewingProduct, finishedFetchingViewingProduct]);
+
+    console.log({
+      product,
+      fetchingViewingProduct,
+      finishedFetchingViewingProduct,
+    });
+    if (finishedFetchingViewingProduct && !product) {
+      props.history.push("/");
+    }
+  }, [fetchingViewingProduct, finishedFetchingViewingProduct, product]);
 
   useEffect(() => {
     if (product && productId !== product.id) setViewingProduct(productId);
@@ -182,7 +192,10 @@ function Ui(props) {
                 <span>{">"}</span>
                 <p>{product.title}</p>
               </CategoryLinks>
-              <Image src={getGdayPunchStaticUrl(product.image)} />
+              <Image
+                alt={product.title}
+                src={getGdayPunchStaticUrl(product.image)}
+              />
             </ProductDetailLeftContainer>
             <ProductDetailRightContainer>
               <TitleInteractionButtonsContainer>
