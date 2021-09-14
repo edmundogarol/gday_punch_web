@@ -8,7 +8,7 @@ from rest_framework.mixins import UpdateModelMixin
 from ..constants import *
 from ..api_permissions import ProductPermissions
 from ..models import (
-    User, Product, StripePrice
+    Settings, User, Product, StripePrice
 )
 from ..serializers import (
     ProductSerializer, StripePriceSerializer
@@ -94,6 +94,30 @@ class ProductViewSet(viewsets.ModelViewSet):
             user = User.objects.get(email=self.request.user)
         except User.DoesNotExist:
             print("Anonymous User")
+
+        settings = Settings.objects.first()
+
+        if not settings.shop_visible:
+            all_free_products = []
+
+            for product in queryset:
+                if product.sale_price > 0:
+                    pass
+
+                stripe_prices = product.stripe_prices.all()
+
+                price = 0
+                for stripe_price in stripe_prices:
+                    price += StripePrice.objects.get(
+                        id=stripe_price.id).price_amount
+
+                if price > 0:
+                    pass
+                else:
+                    all_free_products.append(product)
+
+            serializer = ProductSerializer(all_free_products, many=True)
+            return Response(serializer.data)
 
         if ((not user.is_staff) or user is None):
             queryset = queryset.filter(visible=True)

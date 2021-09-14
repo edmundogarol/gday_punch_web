@@ -61,7 +61,7 @@ from .serializers import (
 
 
 class SwaggerSchemaView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [AdminOnly]
     renderer_classes = [
         renderers.OpenAPIRenderer,
         renderers.SwaggerUIRenderer

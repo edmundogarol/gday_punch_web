@@ -19,6 +19,10 @@ from django_currentuser.db.models import CurrentUserField
 from .constants import *
 
 
+class Settings(models.Model):
+    shop_visible = models.BooleanField(default=True)
+
+
 class UserManager(BaseUserManager):
     use_in_migrations = True
 
