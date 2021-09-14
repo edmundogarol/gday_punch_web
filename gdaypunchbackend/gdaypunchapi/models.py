@@ -438,7 +438,6 @@ class Order(models.Model):
 
         for item in items:
             product = Product.objects.get(id=item['id'])
-            print('product', product)
             item_details.append({'product': product.title, 'qty': item['qty']})
 
         return item_details
