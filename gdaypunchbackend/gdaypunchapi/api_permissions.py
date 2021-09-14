@@ -1,7 +1,7 @@
 from rest_framework.permissions import (BasePermission)
 
 from .models import (
-    Customer, User, Order, Comment, Like, Product
+    User, Order, Comment, Like, Product, StripeCustomer, Customer,
 )
 
 
@@ -103,17 +103,17 @@ class MangaDetailPermissions(BasePermission):
 class OrdersByUserPermissions(BasePermission):
 
     def has_permission(self, request, view):
-        order_id = view.kwargs.get('pk')
+        customer_id = view.kwargs.get('pk')
 
         if staff(request):
             return True
         elif view.action in ['retrieve']:
             if request.user.is_authenticated:
                 try:
-                    order = Order.objects.get(id=order_id)
-                    customer = Customer.objects.get(id=order.customer.id)
-                    return customer.user.email.strip() == str(request.user).strip()
-                except Customer.DoesNotExist:
+                    stripe_customer = StripeCustomer.objects.get(
+                        id=customer_id)
+                    return stripe_customer.user.email.strip() == str(request.user).strip()
+                except StripeCustomer.DoesNotExist:
                     return False
                 except Order.DoesNotExist:
                     return False

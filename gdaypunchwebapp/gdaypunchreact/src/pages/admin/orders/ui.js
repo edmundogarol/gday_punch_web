@@ -15,15 +15,15 @@ const { Title } = Typography;
 
 function Ui(props) {
   const {
-    ordersState: { orderList, fetchingOrders, finishedFetchingOrders },
+    ordersState: { orderList, fetching, finishedFetching },
     fetchOrders,
   } = props;
 
   useEffect(() => {
-    if (!fetchingOrders && !finishedFetchingOrders) {
+    if (!fetching && !finishedFetching) {
       fetchOrders();
     }
-  }, [fetchingOrders, finishedFetchingOrders]);
+  }, [fetching, finishedFetching]);
 
   const columns = [
     {
@@ -35,7 +35,7 @@ function Ui(props) {
       title: "Date Ordered",
       dataIndex: "date_created",
       key: "date_created",
-      render: (date_created) => moment(date_created).format("LLLL"),
+      render: (date_created) => moment(date_created).format("llll"),
     },
     {
       title: "Customer",
@@ -53,12 +53,20 @@ function Ui(props) {
 
         if (products.length > 1) {
           itemsString = itemsString.concat(
-            `\n ${products.length - 1} more items`
+            `\n ${products.length - 1} more item${
+              products.length - 1 > 1 ? "s" : ""
+            }`
           );
         }
 
         return itemsString;
       },
+    },
+    {
+      title: "Total",
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount) => `A$${amount.toFixed(2)}`,
     },
     {
       title: "Type",
@@ -82,7 +90,7 @@ function Ui(props) {
         const StatusIcon = renderIcons[status];
 
         return (
-          <span>
+          <span className={status}>
             <StatusIcon /> {status}
           </span>
         );

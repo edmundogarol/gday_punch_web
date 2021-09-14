@@ -541,7 +541,7 @@ export function* fetchOrdersCall() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateOrders(data.results));
+    yield put(updateOrders(data));
     yield put(finishedFetchingOrders());
   } else {
     yield put(finishedFetchingOrders());

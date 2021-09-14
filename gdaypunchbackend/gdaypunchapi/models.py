@@ -401,7 +401,8 @@ class Order(models.Model):
     amount = models.FloatField(blank=False, default=0)
     products_qty = models.TextField(max_length=500, blank=False, default='{}')
     number = models.TextField(max_length=20, blank=True)
-    date_created = models.DateField(null=True, blank=True)
+    date_created = models.TextField(
+        max_length=40, blank=False, null=True)
     status = models.TextField(
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
     coupon = models.TextField(max_length=20, blank=True, null=True)

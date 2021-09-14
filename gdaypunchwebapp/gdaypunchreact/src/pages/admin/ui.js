@@ -10,6 +10,7 @@ import {
 import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
+import Orders from "./orders";
 import Contacts from "./contacts";
 import Coupons from "./coupons";
 import StripeProducts from "./products/stripeProducts";
@@ -101,6 +102,7 @@ function Ui(props) {
         {prompts && <Prompts />}
         {coupons && <Coupons />}
         {products && <Products />}
+        {orders && <Orders />}
         {contacts && <Contacts />}
         {stripeProducts && <StripeProducts />}
         {productDetail && <ProductDetail />}

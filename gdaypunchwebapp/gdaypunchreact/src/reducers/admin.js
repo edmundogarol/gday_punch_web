@@ -30,6 +30,9 @@ import {
   FETCHING_COUPONS,
   FINISHED_FETCHING_COUPONS,
   UPDATE_COUPONS,
+  UPDATE_ORDERS,
+  FETCHING_ORDERS,
+  FINISHED_FETCHING_ORDERS,
 } from "actions/admin";
 
 const INITIAL_STATE = {
@@ -76,6 +79,12 @@ const INITIAL_STATE = {
 
   coupons: {
     couponList: [],
+    fetching: false,
+    finishedFetching: false,
+  },
+
+  orders: {
+    orderList: [],
     fetching: false,
     finishedFetching: false,
   },
@@ -315,6 +324,32 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
         ...state,
         coupons: {
           ...state.coupons,
+          fetching: false,
+          finishedFetching: true,
+        },
+      };
+    case UPDATE_ORDERS:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          orderList: action.payload.orders,
+        },
+      };
+    case FETCHING_ORDERS:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          fetching: true,
+          finishedFetching: false,
+        },
+      };
+    case FINISHED_FETCHING_ORDERS:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
           fetching: false,
           finishedFetching: true,
         },

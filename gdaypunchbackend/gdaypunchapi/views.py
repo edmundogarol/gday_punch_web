@@ -62,6 +62,7 @@ from .serializers import (
 
 class SwaggerSchemaView(APIView):
     permission_classes = [AdminOnly]
+    # permission_classes = [AllowAny] # User for testing to see what endpoints are available to regular users
     renderer_classes = [
         renderers.OpenAPIRenderer,
         renderers.SwaggerUIRenderer

@@ -38,7 +38,15 @@ class OrderViewSet(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = (OrdersByUserPermissions, )
 
+    def list(self, request, *args, **kwargs):
+        queryset = Order.objects.all().order_by('-id')
+        serializer = OrderSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     def retrieve(self, request, pk=None):
+        """
+        Retrieve all orders for Customer [id]
+        """
         queryset = Order.objects.all().order_by('-id')
         orders = get_list_or_404(queryset, customer=pk)
         serializer = OrderSerializer(orders, many=True)
@@ -94,6 +102,7 @@ def generate_order_number():
 
 def handle_create_order(stripe_customer, customer, items, amount, coupon, subscriptions,
                         shipping, billing, billing_same_as_shipping, card):
+    fmt = '%Y-%m-%d %H:%M:%S'
 
     order = None
     item_details = []
@@ -108,12 +117,14 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
         except Order.DoesNotExist:
             use_order_number = new_order_number
 
+    created_date = datetime.now()
+
     if billing_same_as_shipping:
         order = Order.objects.create(
             customer=stripe_customer,
             amount=amount,
             coupon=coupon,
-            date_created=datetime.now(),
+            date_created=created_date.strftime(fmt),
             products_qty=items,
             number=use_order_number,
             email=stripe_customer.stripe_email,
@@ -136,7 +147,7 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
             customer=stripe_customer,
             amount=amount,
             coupon=coupon,
-            date_created=datetime.now(),
+            date_created=created_date.strftime(fmt),
             products_qty=items,
             number=use_order_number,
             email=stripe_customer.stripe_email,

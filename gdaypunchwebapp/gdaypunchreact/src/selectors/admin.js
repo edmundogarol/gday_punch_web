@@ -76,3 +76,8 @@ export const selectCouponState = createSelector(
   selectDomain,
   ({ coupons }) => coupons
 );
+
+export const selectOrderState = createSelector(
+  selectDomain,
+  ({ orders }) => orders
+);
