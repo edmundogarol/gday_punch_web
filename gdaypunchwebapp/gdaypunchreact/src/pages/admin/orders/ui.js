@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Table } from "antd";
+import { Typography, Table, Modal } from "antd";
 import {
   ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
@@ -9,7 +9,8 @@ import {
 } from "@ant-design/icons";
 import moment from "moment";
 
-import { OrdersContainer } from "./styles";
+import { getGdayPunchStaticUrl } from "utils/utils";
+import { OrdersContainer, OrderModal } from "./styles";
 
 const { Title } = Typography;
 
@@ -18,6 +19,7 @@ function Ui(props) {
     ordersState: { orderList, fetching, finishedFetching },
     fetchOrders,
   } = props;
+  const [orderOpen, updateOrderOpen] = useState(undefined);
 
   useEffect(() => {
     if (!fetching && !finishedFetching) {
@@ -67,7 +69,10 @@ function Ui(props) {
       className: "center",
       render: (products) => {
         const firstProduct = products[0];
-        const items = <p>{`${firstProduct.qty} x ${firstProduct.product}`}</p>;
+        const items = (
+          <p>{`${firstProduct.qty} x ${firstProduct.product.title}`}</p>
+        );
+
         let more = null;
 
         if (products.length > 1) {
@@ -149,7 +154,9 @@ function Ui(props) {
       className: "center",
       render: (products) => {
         const firstProduct = products[0];
-        const items = <p>{`${firstProduct.qty} x ${firstProduct.product}`}</p>;
+        const items = (
+          <p>{`${firstProduct.qty} x ${firstProduct.product.title}`}</p>
+        );
         let more = null;
 
         if (products.length > 1) {
@@ -185,6 +192,72 @@ function Ui(props) {
     },
   ];
 
+  const productColumns = [
+    {
+      title: "Item",
+      dataIndex: "product",
+      key: "order-item",
+      render: (product) => {
+        return (
+          <div className="item-image-title">
+            <img src={getGdayPunchStaticUrl(product.image)} />
+            <p>{product.title}</p>
+          </div>
+        );
+      },
+    },
+    {
+      title: "SKU",
+      dataIndex: "product",
+      key: "order-sku",
+      render: (product) => product.sku,
+    },
+    {
+      title: "Price",
+      dataIndex: "product",
+      key: "order-price",
+      render: (product) => `A$${product.price}`,
+    },
+    {
+      title: "Price",
+      dataIndex: "qty",
+      key: "order-qty",
+    },
+    {
+      title: "Total",
+      dataIndex: "product",
+      key: "order-total",
+      render: (product, instance) => `A$${product.price * instance.qty}`,
+    },
+  ];
+
+  const handleOrderOpen = (order, rowIndex) => {
+    return {
+      onClick: (event) => {
+        updateOrderOpen(order);
+      },
+    };
+  };
+
+  const orderDetailsModal = (order) => {
+    return (
+      <OrderModal
+        title={`Order #${order.number}`}
+        visible={orderOpen}
+        onCancel={() => updateOrderOpen(undefined)}
+        cancelText="Close"
+        okButtonProps={{ style: { display: "none" } }}
+      >
+        <Table
+          rowKey="id"
+          columns={productColumns}
+          dataSource={order.product_qty_details}
+          pagination={false}
+        />
+      </OrderModal>
+    );
+  };
+
   const dataSource = orderList.map((order, idx) => ({
     key: idx + order.number,
     ...order,
@@ -193,9 +266,16 @@ function Ui(props) {
   return (
     <OrdersContainer>
       <Title level={4}>Orders</Title>
-      <Table className="desktop" dataSource={dataSource} columns={columns} />
+      {orderOpen && orderDetailsModal(orderOpen)}
+      <Table
+        onRow={handleOrderOpen}
+        className="desktop"
+        dataSource={dataSource}
+        columns={columns}
+      />
       <Table
         className="mobile"
+        onRow={handleOrderOpen}
         dataSource={dataSource}
         showHeader={false}
         columns={mobileColumns}

@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { device } from "utils/styles";
+import { Modal } from "antd";
 
 export const OrdersContainer = styled.div`
   table {
@@ -98,6 +99,25 @@ export const OrdersContainer = styled.div`
     svg {
       color: #dab502;
       margin-right: 0.3em;
+    }
+  }
+`;
+
+export const OrderModal = styled(Modal)`
+  table {
+    color: #525252;
+
+    td {
+      text-transform: capitalize;
+    }
+  }
+
+  .item-image-title {
+    display: flex;
+
+    img {
+      margin-right: 1em;
+      height: 3em;
     }
   }
 `;
