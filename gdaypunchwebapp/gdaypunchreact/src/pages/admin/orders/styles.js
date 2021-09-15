@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { device } from "utils/styles";
 
 export const OrdersContainer = styled.div`
   table {
@@ -6,6 +7,44 @@ export const OrdersContainer = styled.div`
 
     td {
       text-transform: capitalize;
+    }
+  }
+
+  .mobile {
+    display: initial;
+
+    .ant-table-row {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .detail-3-column-compressed {
+      width: max-content;
+    }
+
+    .left {
+      display: flex;
+      justify-content: start;
+      width: 100%;
+    }
+
+    .right {
+      display: flex;
+      justify-content: end;
+      width: 100%;
+    }
+  }
+  .desktop {
+    display: none;
+  }
+
+  @media ${device.tablet} {
+    .mobile {
+      display: none;
+    }
+    .desktop {
+      display: initial;
     }
   }
 
