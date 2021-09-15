@@ -46,7 +46,9 @@ from .api_permissions import (
     MangaCommentsPermissions,
     LikePermissions,
     MangaDetailPermissions,
-    PromptsPermissions
+    PromptsPermissions,
+    UserPermissions,
+    CommentLikePermissions
 )
 from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt
@@ -88,7 +90,7 @@ class PostUserRateThrottle(UserRateThrottle):
 
 
 class UserViewSet(UpdateModelMixin, ViewSet):
-    permission_classes = (PostOnly, )
+    permission_classes = (UserPermissions, )
 
     def create(self, validated_data):
         user = None
@@ -263,7 +265,7 @@ class CommentLikeViewSet(ModelViewSet):
     serializer_class = CommentLikeSerializer
 
     # Only allow logged in users to like comments (create)
-    permission_classes = [AuthenticatedCreateOnly]
+    permission_classes = [CommentLikePermissions]
 
 
 class PromptViewSet(ModelViewSet):

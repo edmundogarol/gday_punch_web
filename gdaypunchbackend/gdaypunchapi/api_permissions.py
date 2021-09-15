@@ -10,14 +10,35 @@ def staff(request):
 
 
 # Only allow logged in users to create and edit their own comments (create, retrieve, partial, destroy)
-class CommentPermissions(BasePermission):
+class UserPermissions(BasePermission):
 
     def has_permission(self, request, view):
         if staff(request):
             return True
         elif view.action in ['create']:
+            return True
+        elif view.action in ['retrieve', 'partial_update']:
+            user_id = view.kwargs.get('pk')
+
+            if request.user.is_authenticated:
+                try:
+                    user = User.objects.get(id=user_id)
+                    return user.email.strip() == str(request.user).strip()
+                except User.DoesNotExist:
+                    return False
+        else:
+            return False
+
+
+# Only allow logged in users to create and edit their own comments (create, retrieve, partial, destroy)
+class CommentPermissions(BasePermission):
+
+    def has_permission(self, request, view):
+        if staff(request):
+            return True
+        elif view.action in ['create', 'retrieve']:
             return request.user.is_authenticated
-        elif view.action in ['retrieve', 'partial_update', 'destroy']:
+        elif view.action in ['partial_update', 'destroy']:
             comment_id = view.kwargs.get('pk')
 
             if request.user.is_authenticated:
@@ -161,15 +182,14 @@ class PromptsPermissions(BasePermission):
             return False
 
 
-# class CommentLikePermissions(BasePermission):
-#     def has_permission(self, request, view):
-#         WRITE_METHODS = ["POST", ]
+class CommentLikePermissions(BasePermission):
+    def has_permission(self, request, view):
 
-#         if staff(request):
-#             return True
-#         elif request.method in WRITE_METHODS:
-#             return request.user.is_authenticated
-#         elif view.action in ['create', 'update', 'partial_update', 'destroy', 'list', 'retrieve']:
-#             return request.user.is_authenticated
-#         else:
-#             return False
+        if staff(request):
+            return True
+        elif view.action in ['create', 'destroy']:
+            return request.user.is_authenticated
+        elif view.action in ['update', 'partial_update', 'list', 'retrieve']:
+            return False
+        else:
+            return False

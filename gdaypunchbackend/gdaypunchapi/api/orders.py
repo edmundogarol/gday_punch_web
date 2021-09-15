@@ -240,7 +240,7 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
                 'amount': current_coupon.amount
             }
 
-        order.date_created = order.date_created.strftime("%m/%d/%Y")
+    order.date_created = order.date_created.strftime("%m/%d/%Y")
 
     Thread(target=send_email_receipt, args=(
         customer, order, item_details, coupon_details,)).start()

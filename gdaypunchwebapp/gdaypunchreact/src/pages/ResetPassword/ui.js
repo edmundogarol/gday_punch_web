@@ -37,16 +37,16 @@ function Ui(props) {
     if (submitted) {
       updateResetEmail(undefined);
     }
+  }, [submitted]);
 
+  useEffect(() => {
     return () => {
       if (submitted) {
         updateResetEmail(undefined);
-        resetPasswordSubmitted(false);
-      } else {
-        resetPasswordSubmitted(false);
       }
+      resetPasswordSubmitted(false);
     };
-  }, [submitted]);
+  }, []);
 
   const handleSubmitForm = () => {
     resetPassword(resetEmail);

@@ -174,6 +174,8 @@ def get_customer_details(user_email, customer_payload):
                 gday_stripe_customer.stripe_email = payment_email
                 gday_stripe_customer.save()
 
+                stripe.Customer.modify(email=payment_email)
+
         except StripeCustomer.DoesNotExist:
             print("User not associated with GP_StripeCustomer")
 

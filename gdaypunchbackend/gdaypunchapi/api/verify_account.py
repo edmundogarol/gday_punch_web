@@ -2,6 +2,7 @@ import os
 from smtplib import SMTPAuthenticationError
 from secrets import token_urlsafe
 from threading import Thread
+import stripe
 
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
@@ -18,8 +19,10 @@ from ..utils import PostOnly
 
 if 'DEVENV' in os.environ:
     website = "http://localhost:8000"
+    stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
 else:
     website = "https://www.beta-gdaypunch.com"
+    stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
 
 
 def send_account_verification_email(user, token):
@@ -54,11 +57,13 @@ def update_stripe_and_gp_customer(user):
     #
     #   - Update GP_StripeCustomer with new email or new verified user
     try:
-        gday_stripe_customer = StripeCustomer.objects.get(
-            user_id=user.id)
+        gday_stripe_customer = StripeCustomer.objects.get(user=user)
 
-        gday_stripe_customer.email = user.email
+        gday_stripe_customer.stripe_email = user.email
         gday_stripe_customer.save()
+
+        stripe.Customer.modify(
+            gday_stripe_customer.customer_id, email=user.email)
 
     except StripeCustomer.DoesNotExist:
         print("User does not have GP_StripeCustomer, try Email")
@@ -76,13 +81,23 @@ def update_stripe_and_gp_customer(user):
     if gday_stripe_customer is not None:
         try:
             gp_customer = Customer.objects.get(
-                email=user.email)
+                user=user)
 
-            gp_customer.user = user
+            gp_customer.email = user.email
             gp_customer.save()
 
         except Customer.DoesNotExist:
-            print("User does not have GP_Customer")
+            print("No GP_Customer with user, try email")
+
+            try:
+                gp_customer = Customer.objects.get(
+                    email=user.email)
+
+                gp_customer.user = user
+                gp_customer.save()
+
+            except Customer.DoesNotExist:
+                print("No GP_Customer with user email")
 
 
 class VerifyAccountViewSet(viewsets.ModelViewSet):

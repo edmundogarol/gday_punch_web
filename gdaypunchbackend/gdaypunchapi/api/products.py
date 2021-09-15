@@ -119,7 +119,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             serializer = ProductSerializer(all_free_products, many=True)
             return Response(serializer.data)
 
-        if ((not user.is_staff) or user is None):
+        if (user is None) or (not user.is_staff):
             queryset = queryset.filter(visible=True)
 
         if price_filter:

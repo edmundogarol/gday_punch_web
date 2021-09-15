@@ -58,7 +58,6 @@ def send_password_reset_email(user, token):
 
 
 def reset_password(email):
-    fmt = '%Y-%m-%d %H:%M:%S'
     user = None
 
     try:
@@ -75,7 +74,7 @@ def reset_password(email):
                 reset_session.verified_token = None
 
             reset_session.token = token_urlsafe(20)
-            reset_session.created_date = datetime.now().strftime(fmt)
+            reset_session.created_date = datetime.now()
             reset_session.save()
 
             Thread(target=send_password_reset_email,
@@ -83,12 +82,11 @@ def reset_password(email):
 
         except ResetPasswordSession.DoesNotExist:
             token = token_urlsafe(20)
-            created_date = datetime.now()
 
             reset_session = ResetPasswordSession.objects.create(
                 user=user,
                 token=token,
-                created_date=created_date.strftime(fmt),
+                created_date=datetime.now(),
             )
             reset_session.save()
 
@@ -139,11 +137,8 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
         try:
             resetSession = ResetPasswordSession.objects.get(token=token)
 
-            fmt = '%Y-%m-%d %H:%M:%S'
-            now = datetime.strptime(datetime.now().strftime(fmt), fmt)
-            token_date = datetime.strptime(resetSession.created_date, fmt)
-
-            minutes_diff = (now - token_date).total_seconds() / 60.0
+            minutes_diff = (datetime.now() -
+                            resetSession.created_date).total_seconds() / 60.0
             reset_expiry_minutes = 20  # 20
 
             if minutes_diff > reset_expiry_minutes:
@@ -199,11 +194,8 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
             resetSession = ResetPasswordSession.objects.get(
                 verified_token=token)
 
-            fmt = '%Y-%m-%d %H:%M:%S'
-            now = datetime.strptime(datetime.now().strftime(fmt), fmt)
-            token_date = datetime.strptime(resetSession.created_date, fmt)
-
-            minutes_diff = (now - token_date).total_seconds() / 60.0
+            minutes_diff = (datetime.now() -
+                            resetSession.created_date).total_seconds() / 60.0
             reset_expiry_minutes = 5  # 5
 
             if minutes_diff > reset_expiry_minutes:
