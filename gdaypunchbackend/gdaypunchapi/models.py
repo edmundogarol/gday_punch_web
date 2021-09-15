@@ -543,7 +543,8 @@ class Contact(models.Model):
     reason = models.TextField(
         max_length=30, choices=CONTACT_REASONS, default=GENERAL)
     content = models.TextField(max_length=1000, blank=True)
-    date_created = models.DateTimeField(null=True, blank=True)
+    date_created = models.DateTimeField(
+        null=True, blank=True, default=datetime.now())
 
 
 class ResetPasswordSession(models.Model):

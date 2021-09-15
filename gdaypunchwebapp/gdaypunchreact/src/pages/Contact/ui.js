@@ -46,10 +46,7 @@ function Ui(props) {
   }, [submitted]);
 
   const handleSubmitForm = () => {
-    submitContactForm({
-      ...contactForm,
-      date_created: moment().format("YYYY-MM-DD"),
-    });
+    submitContactForm(contactForm);
   };
 
   const contactReasons = {
