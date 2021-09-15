@@ -2,6 +2,7 @@ import os
 import random
 import stripe
 import json
+import pytz
 
 from threading import Thread
 from datetime import datetime
@@ -117,14 +118,12 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
         except Order.DoesNotExist:
             use_order_number = new_order_number
 
-    created_date = datetime.now()
-
     if billing_same_as_shipping:
         order = Order.objects.create(
             customer=stripe_customer,
             amount=amount,
             coupon=coupon,
-            date_created=created_date.strftime(fmt),
+            date_created=datetime.now(),
             products_qty=items,
             number=use_order_number,
             email=stripe_customer.stripe_email,
@@ -147,7 +146,7 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
             customer=stripe_customer,
             amount=amount,
             coupon=coupon,
-            date_created=created_date.strftime(fmt),
+            date_created=datetime.now(),
             products_qty=items,
             number=use_order_number,
             email=stripe_customer.stripe_email,
@@ -241,8 +240,7 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
                 'amount': current_coupon.amount
             }
 
-    order.date_created = datetime.strptime(
-        order.date_created, fmt).strftime("%d-%m-%Y")
+        order.date_created = order.date_created.strftime("%m/%d/%Y")
 
     Thread(target=send_email_receipt, args=(
         customer, order, item_details, coupon_details,)).start()

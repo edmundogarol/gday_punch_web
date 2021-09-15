@@ -1,5 +1,6 @@
 import json
 import random
+import pytz
 from datetime import datetime
 
 from rest_framework import exceptions
@@ -109,7 +110,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     username = models.TextField(max_length=50, blank=True)
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
-    birth_date = models.DateField(null=True, blank=True)
+    birth_date = models.DateTimeField(null=True, blank=True)
     roles = models.ManyToManyField(Role, blank=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -162,7 +163,7 @@ class Manga(models.Model):
     author = models.ForeignKey(User,  on_delete=models.PROTECT)
     pdf = models.TextField(max_length=100, blank=True)
     cover = models.TextField(max_length=100, blank=True)
-    release_date = models.DateField(null=True, blank=True)
+    release_date = models.DateTimeField(null=True, blank=True)
 
     ALL_AGES = 'all_ages'
     TEENS = 'teens'
@@ -289,7 +290,7 @@ class Prompt(models.Model):
     is_selected = models.BooleanField(default=False)
     promptType = models.ForeignKey(
         PromptType,  on_delete=models.PROTECT)
-    last_selected = models.DateField(null=True, blank=True)
+    last_selected = models.DateTimeField(null=True, blank=True)
 
 
 class StripePrice(models.Model):
@@ -310,6 +311,8 @@ class Product(models.Model):
     product_type = models.TextField(
         max_length=30, choices=PRODUCT_TYPES, default=PHYSICAL)
     stripe_prices = models.ManyToManyField(StripePrice, blank=True)
+    created_date = models.DateTimeField(
+        null=True, blank=True, default=timezone.now)
     sku = models.TextField(max_length=30, blank=True)
     manga = models.ManyToManyField(Manga, blank=True)
     user = models.ForeignKey(
@@ -374,6 +377,8 @@ class Customer(models.Model):
         User,  on_delete=models.PROTECT, blank=True, null=True)
     subscribed = models.TextField(
         max_length=30, choices=SUBSCRIPTION_TYPE, default=SUBSCRIBED_ONLY)
+    date_created = models.DateTimeField(
+        null=True, blank=True, default=timezone.now)
     email = models.TextField(max_length=100, unique=True, blank=False)
     first_name = models.TextField(max_length=50, blank=False)
     last_name = models.TextField(max_length=50, blank=False)
@@ -401,8 +406,7 @@ class Order(models.Model):
     amount = models.FloatField(blank=False, default=0)
     products_qty = models.TextField(max_length=500, blank=False, default='{}')
     number = models.TextField(max_length=20, blank=True)
-    date_created = models.TextField(
-        max_length=40, blank=False, null=True)
+    date_created = models.DateTimeField(null=False, blank=False)
     status = models.TextField(
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
     coupon = models.TextField(max_length=20, blank=True, null=True)
@@ -469,11 +473,24 @@ class Order(models.Model):
 
         return fulfillment
 
+    @property
+    def readable_date(self):
+        order = Order.objects.get(id=self.id)
+
+        local_tz = pytz.timezone('Australia/Sydney')
+        local_dt = order.date_created.replace(
+            tzinfo=pytz.utc).astimezone(local_tz)
+
+        return {
+            'date': local_dt.strftime("%a %d %b %Y"),
+            'time': local_dt.strftime("%I:%M %p")
+        }
+
 
 class OrderStatusUpdate(models.Model):
     status = models.TextField(
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
-    update_date = models.DateField(null=True, blank=True)
+    update_date = models.DateTimeField(null=True, blank=True)
     order = models.ForeignKey(
         Order,  on_delete=models.PROTECT, blank=False, null=False)
 
@@ -483,8 +500,8 @@ class Coupon(models.Model):
     coupon_type = models.TextField(
         max_length=30, choices=COUPON_TYPES, default=PERCENT)
     amount = models.FloatField(blank=False, default=0)
-    date_created = models.DateField(null=False, blank=False)
-    expiry_date = models.DateField(null=True, blank=True)
+    date_created = models.DateTimeField(null=False, blank=False)
+    expiry_date = models.DateTimeField(null=True, blank=True)
 
 
 class ProductSEO(models.Model):
@@ -501,7 +518,7 @@ class ProductReview(models.Model):
     product = models.ForeignKey(
         Product,  on_delete=models.PROTECT, blank=False, null=True)
     rating = models.IntegerField(blank=False)
-    purchase_date = models.DateField(null=True, blank=True)
+    purchase_date = models.DateTimeField(null=True, blank=True)
     comment = models.TextField(max_length=500, blank=True)
 
 
@@ -526,7 +543,7 @@ class Contact(models.Model):
     reason = models.TextField(
         max_length=30, choices=CONTACT_REASONS, default=GENERAL)
     content = models.TextField(max_length=1000, blank=True)
-    date_created = models.DateField(null=True, blank=True)
+    date_created = models.DateTimeField(null=True, blank=True)
 
 
 class ResetPasswordSession(models.Model):
@@ -536,5 +553,4 @@ class ResetPasswordSession(models.Model):
         User,  on_delete=models.PROTECT, blank=False, null=True)
     token = models.TextField(max_length=70, blank=False)
     verified_token = models.TextField(max_length=70, blank=False, null=True)
-    created_date = models.TextField(
-        max_length=40, blank=False, null=False)
+    created_date = models.DateTimeField(null=False, blank=False)

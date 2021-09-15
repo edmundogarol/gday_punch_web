@@ -1,7 +1,10 @@
 import datetime
+from datetime import timezone
 from next_prev import next_in_order
 from secrets import token_urlsafe
 from threading import Thread
+from dateutil.parser import parse
+import pytz
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -315,6 +318,13 @@ class PromptSelectedViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
         today = datetime.datetime.now()
         prompt = Prompt.objects.get(is_selected=True)
+
+        # local_tz = pytz.timezone('Australia/Sydney')
+        # local_dt = prompt.last_selected.replace(
+        #     tzinfo=pytz.utc).astimezone(local_tz)
+
+        # print(local_dt.strftime("%c"))
+        # print(local_dt.strftime("%m/%d/%Y, %I:%M %p"))
 
         try:
             prompt.last_selected.day

@@ -23,6 +23,16 @@ export const OrdersContainer = styled.div`
       width: max-content;
     }
 
+    .center {
+      display: flex;
+      width: 100%;
+      flex-direction: column;
+
+      p {
+        margin-bottom: unset;
+      }
+    }
+
     .left {
       display: flex;
       justify-content: start;
@@ -45,6 +55,12 @@ export const OrdersContainer = styled.div`
     }
     .desktop {
       display: initial;
+
+      .center {
+        p {
+          margin-bottom: unset;
+        }
+      }
     }
   }
 

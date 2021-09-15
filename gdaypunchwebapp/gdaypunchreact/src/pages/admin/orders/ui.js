@@ -42,10 +42,17 @@ function Ui(props) {
     },
     {
       title: "Date Ordered",
-      dataIndex: "date_created",
-      key: "date_created",
-      responsive: ["md"],
-      render: (date_created) => moment(date_created).format("llll"),
+      dataIndex: "readable_date",
+      key: "readable_date",
+      className: "center",
+      render: (readable_date) => {
+        return (
+          <>
+            <p>{readable_date.date}</p>
+            <p>{readable_date.time}</p>
+          </>
+        );
+      },
     },
     {
       title: "Customer",
@@ -57,27 +64,32 @@ function Ui(props) {
       title: "Items",
       dataIndex: "product_qty_details",
       key: "product_qty_details",
-      responsive: ["md"],
+      className: "center",
       render: (products) => {
         const firstProduct = products[0];
-        let itemsString = `${firstProduct.qty} x ${firstProduct.product}`;
+        const items = <p>{`${firstProduct.qty} x ${firstProduct.product}`}</p>;
+        let more = null;
 
         if (products.length > 1) {
-          itemsString = itemsString.concat(
-            `\n ${products.length - 1} more item${
+          more = (
+            <p>{`${products.length - 1} more item${
               products.length - 1 > 1 ? "s" : ""
-            }`
+            }`}</p>
           );
         }
 
-        return itemsString;
+        return (
+          <>
+            {items}
+            {more}
+          </>
+        );
       },
     },
     {
       title: "Total",
       dataIndex: "amount",
       key: "amount",
-      responsive: ["md"],
       render: (amount) => `A$${amount.toFixed(2)}`,
     },
     {
@@ -89,7 +101,6 @@ function Ui(props) {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      responsive: ["md"],
       render: (status, instance) => {
         const renderIcons = {
           pending: PendingIcon,
@@ -132,6 +143,32 @@ function Ui(props) {
       },
     },
     {
+      title: "Items",
+      dataIndex: "product_qty_details",
+      key: "product_qty_details",
+      className: "center",
+      render: (products) => {
+        const firstProduct = products[0];
+        const items = <p>{`${firstProduct.qty} x ${firstProduct.product}`}</p>;
+        let more = null;
+
+        if (products.length > 1) {
+          more = (
+            <p>{`${products.length - 1} more item${
+              products.length - 1 > 1 ? "s" : ""
+            }`}</p>
+          );
+        }
+
+        return (
+          <>
+            {items}
+            {more}
+          </>
+        );
+      },
+    },
+    {
       title: "Number/Date/Type",
       dataIndex: "number",
       key: "customer-amount-status",
@@ -140,7 +177,7 @@ function Ui(props) {
         return (
           <div className="detail-3-column-compressed">
             <p>{`#${instance.number}`}</p>
-            <p>{moment(instance.date_created).format("DD/MM/yy")}</p>
+            <p>{instance.readable_date.date}</p>
             <p>{instance.fulfillment_type}</p>
           </div>
         );

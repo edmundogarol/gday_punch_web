@@ -36,7 +36,7 @@ class CouponApplyViewSet(viewsets.ViewSet):
         try:
             existing_coupon = Coupon.objects.get(name=coupon)
 
-            if existing_coupon.expiry_date < datetime.now().date():
+            if existing_coupon.expiry_date < datetime.now():
                 return Response({'error': 'Expired or invalid Coupon.'},  status=status.HTTP_404_NOT_FOUND)
 
             serializer = CouponSerializer(existing_coupon)
