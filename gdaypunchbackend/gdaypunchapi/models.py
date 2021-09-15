@@ -548,8 +548,6 @@ class Contact(models.Model):
 
 
 class ResetPasswordSession(models.Model):
-    fmt = '%Y-%m-%d %H:%M:%S'
-
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=False, null=True)
     token = models.TextField(max_length=70, blank=False)
