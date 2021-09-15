@@ -107,16 +107,7 @@ function Ui(props) {
       dataIndex: "status",
       key: "status",
       render: (status, instance) => {
-        const renderIcons = {
-          pending: PendingIcon,
-          purchased: PurchasedIcon,
-          shipped: ShippedIcon,
-          declined: DeclinedIcon,
-          refunded: RefundedIcon,
-          partially_refunded: RefundedIcon,
-        };
-
-        const StatusIcon = renderIcons[status];
+        const StatusIcon = renderStatusIcons[status];
 
         return (
           <span className={status}>
@@ -240,9 +231,18 @@ function Ui(props) {
   };
 
   const orderDetailsModal = (order) => {
+    const StatusIcon = renderStatusIcons[order.status];
+
     return (
       <OrderModal
-        title={`Order #${order.number}`}
+        title={
+          <>
+            {`Order #${order.number}`}
+            <span className={order.status + " status"}>
+              <StatusIcon /> {order.status}
+            </span>
+          </>
+        }
         visible={orderOpen}
         onCancel={() => updateOrderOpen(undefined)}
         cancelText="Close"

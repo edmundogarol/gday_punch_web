@@ -112,12 +112,56 @@ export const OrderModal = styled(Modal)`
     }
   }
 
+  .status {
+    margin-left: 1em;
+    font-size: 0.8em;
+    color: dimgray;
+    text-transform: capitalize;
+  }
+
   .item-image-title {
     display: flex;
 
     img {
       margin-right: 1em;
       height: 3em;
+    }
+  }
+
+  .pending {
+    svg {
+      color: orange;
+      margin-right: 0.3em;
+    }
+  }
+  .purchased {
+    svg {
+      color: #32ca32;
+      margin-right: 0.3em;
+    }
+  }
+  .shipped {
+    svg {
+      color: #32ca32;
+      margin-right: 0.3em;
+    }
+  }
+  .declined {
+    svg {
+      color: #e62020;
+      margin-right: 0.3em;
+    }
+  }
+  .refunded {
+    svg {
+      color: #dab502;
+      margin-right: 0.3em;
+    }
+  }
+  .partially_refunded {
+    svg {
+      color: #dab502;
+      margin-right: 0.3em;
     }
   }
 `;
