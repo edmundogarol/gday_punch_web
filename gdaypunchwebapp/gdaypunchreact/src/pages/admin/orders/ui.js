@@ -254,6 +254,29 @@ function Ui(props) {
           dataSource={order.product_qty_details}
           pagination={false}
         />
+        <div>
+          <div>
+            Subtotal <span>{`A$${order.products_total_price.toFixed(2)}`}</span>
+          </div>
+          <div>
+            Shipping
+            <span>{`A$${order.country === "AU" ? "0.00" : "13.00"}`}</span>
+          </div>
+          {order.coupon && (
+            <div>
+              {`Discount [Coupon: ${order.coupon_details.description}]`}
+              <span>{`- A$${order.coupon_details.discount_amount}`}</span>
+            </div>
+          )}
+          <div>
+            Tax (included in item prices): [GST]
+            <span>{`A$${order.tax.toFixed(2)}`}</span>
+          </div>
+          <div>
+            Total:
+            <span>{`A$${order.amount.toFixed(2)}`}</span>
+          </div>
+        </div>
       </OrderModal>
     );
   };

@@ -54,25 +54,19 @@ class OrderViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
 
-def send_email_receipt(customer, order, items, coupon_details):
+def send_email_receipt(customer, order, items):
     email_template_name = "emails/receipt.html"
-
-    total = order.amount
-    subtotal = order.amount if order.country == "AU" else order.amount - 13
-    subtotal = subtotal + \
-        coupon_details['amount'] if coupon_details else subtotal
 
     email_config = {
         "customer": customer,
         "order": order,
         "items": items,
-        "order_total": "{:.2f}".format(total),
+        "order_total": "{:.2f}".format(order.amount),
         "aus_shipping": order.country == "AU",
-        "coupon_percentage": coupon_details['percentage'] if coupon_details else None,
-        "coupon_amount": "{:.2f}".format(coupon_details['amount']) if coupon_details else None,
-        "coupon_amount_desc": coupon_details['amount_desc'] if coupon_details else None,
-        "subtotal": "{:.2f}".format(subtotal),
-        "tax": "{:.2f}".format(total / 11),
+        "coupon_desc": order.coupon_details['description'],
+        "coupon_amount": "{:.2f}".format(order.coupon_details['discount_amount']) if order.coupon else None,
+        "subtotal": "{:.2f}".format(order.products_total_price),
+        "tax": "{:.2f}".format(order.tax),
         "website": domain
     }
 
@@ -223,24 +217,7 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
         order.billing_country = order.country
         order.billing_number = order.phone_number
 
-    coupon_details = None
-    if coupon:
-        current_coupon = Coupon.objects.get(name=coupon)
-
-        if current_coupon.coupon_type == "percentage":
-            coupon_details = {
-                'amount_desc': current_coupon.amount,
-                'percentage': current_coupon.coupon_type == "percentage",
-                'amount': (current_coupon.amount / 100) * total_items_price
-            }
-        else:
-            coupon_details = {
-                'amount_desc': current_coupon.amount,
-                'percentage': current_coupon.coupon_type == "percentage",
-                'amount': current_coupon.amount
-            }
-
     order.date_created = order.date_created.strftime("%m/%d/%Y")
 
     Thread(target=send_email_receipt, args=(
-        customer, order, item_details, coupon_details,)).start()
+        customer, order, item_details,)).start()

@@ -406,7 +406,8 @@ class Order(models.Model):
     amount = models.FloatField(blank=False, default=0)
     products_qty = models.TextField(max_length=500, blank=False, default='{}')
     number = models.TextField(max_length=20, blank=True)
-    date_created = models.DateTimeField(null=False, blank=False)
+    date_created = models.DateTimeField(
+        null=False, blank=False, default=timezone.now)
     status = models.TextField(
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
     coupon = models.TextField(max_length=20, blank=True, null=True)
@@ -459,6 +460,44 @@ class Order(models.Model):
         return item_details
 
     @property
+    def coupon_details(self):
+        order = Order.objects.get(id=self.id)
+
+        if order.coupon:
+            coupon = Coupon.objects.get(name=order.coupon)
+
+            description = None
+            discount_amount = 0
+
+            if coupon.coupon_type == "percentage":
+                description = coupon.name + " " + str(coupon.amount) + "% off"
+                discount_amount = (coupon.amount / 100) * \
+                    order.products_total_price
+            else:
+                description = coupon.name + " " + "A$" + \
+                    "{:.2f}".format(coupon.amount) + " off"
+                discount_amount = coupon.amount
+
+            return {
+                'description': description,
+                'discount_amount': discount_amount
+            }
+
+        return {
+            'description': None,
+            'discount_amount': 0
+        }
+
+    @property
+    def tax(self):
+        order = Order.objects.get(id=self.id)
+
+        if order.coupon:
+            return (order.products_total_price - order.coupon_details['discount_amount']) / 11
+
+        return order.products_total_price / 11
+
+    @property
     def products_total_price(self):
         order = Order.objects.get(id=self.id)
         items = json.loads(order.products_qty.replace("\'", "\""))
@@ -501,7 +540,8 @@ class Order(models.Model):
 class OrderStatusUpdate(models.Model):
     status = models.TextField(
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
-    update_date = models.DateTimeField(null=True, blank=True)
+    update_date = models.DateTimeField(
+        null=True, blank=True, default=timezone.now)
     order = models.ForeignKey(
         Order,  on_delete=models.PROTECT, blank=False, null=False)
 
@@ -511,7 +551,8 @@ class Coupon(models.Model):
     coupon_type = models.TextField(
         max_length=30, choices=COUPON_TYPES, default=PERCENT)
     amount = models.FloatField(blank=False, default=0)
-    date_created = models.DateTimeField(null=False, blank=False)
+    date_created = models.DateTimeField(
+        null=False, blank=False, default=timezone.now)
     expiry_date = models.DateTimeField(null=True, blank=True)
 
 
@@ -555,7 +596,7 @@ class Contact(models.Model):
         max_length=30, choices=CONTACT_REASONS, default=GENERAL)
     content = models.TextField(max_length=1000, blank=True)
     date_created = models.DateTimeField(
-        null=True, blank=True, default=datetime.now())
+        null=True, blank=True, default=timezone.now)
 
 
 class ResetPasswordSession(models.Model):
@@ -563,4 +604,5 @@ class ResetPasswordSession(models.Model):
         User,  on_delete=models.PROTECT, blank=False, null=True)
     token = models.TextField(max_length=70, blank=False)
     verified_token = models.TextField(max_length=70, blank=False, null=True)
-    created_date = models.DateTimeField(null=False, blank=False)
+    created_date = models.DateTimeField(
+        null=False, blank=False, default=timezone.now)
