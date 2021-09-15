@@ -97,7 +97,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         settings = Settings.objects.first()
 
-        if not settings.shop_visible:
+        if not settings.shop_visible and not user.is_staff:
             all_free_products = []
 
             for product in queryset:
