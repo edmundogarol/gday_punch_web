@@ -104,11 +104,28 @@ export const OrdersContainer = styled.div`
 `;
 
 export const OrderModal = styled(Modal)`
-  table {
+  table,
+  div {
     color: #525252;
 
     td {
       text-transform: capitalize;
+    }
+  }
+
+  .mobile {
+    display: initial;
+  }
+  .desktop {
+    display: none;
+  }
+
+  @media ${device.tablet} {
+    .mobile {
+      display: none;
+    }
+    .desktop {
+      display: initial;
     }
   }
 
@@ -126,6 +143,11 @@ export const OrderModal = styled(Modal)`
       margin-right: 1em;
       height: 3em;
     }
+  }
+
+  .title-status-qty {
+    display: flex;
+    flex-direction: column;
   }
 
   .pending {
@@ -163,5 +185,66 @@ export const OrderModal = styled(Modal)`
       color: #dab502;
       margin-right: 0.3em;
     }
+  }
+
+  .total {
+    text-align: end;
+  }
+`;
+
+export const ProductTotalsContainer = styled.div`
+  padding-top: 1em;
+  text-align: end;
+
+  div {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+
+    @media ${device.tablet} {
+      grid-template-columns: 4fr 1fr;
+    }
+
+    padding-right: 1em;
+  }
+`;
+
+export const AddressContactField = styled.div`
+  margin-top: 1em;
+  p {
+    margin: unset;
+  }
+`;
+
+export const AddressBillingContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  border-top: 1px solid #d2d2d2;
+  margin-top: 1em;
+`;
+
+export const LeftContainer = styled.div`
+  width: 100%;
+  border: 1px solid #bfbfbf;
+  border-radius: 0.4em;
+  margin-top: 1em;
+  padding: 1em;
+  min-width: 18em;
+
+  @media ${device.tablet} {
+    width: 48%;
+  }
+`;
+
+export const RightContainer = styled.div`
+  width: 100%;
+  border: 1px solid #bfbfbf;
+  border-radius: 0.4em;
+  margin-top: 1em;
+  padding: 1em;
+  min-width: 18em;
+
+  @media ${device.tablet} {
+    width: 48%;
   }
 `;

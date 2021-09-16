@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Tooltip, Typography, Table, Button, Popconfirm, Modal } from "antd";
-import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 import moment from "moment";
 
 import { ContactsContainer, ActionsContainer } from "./styles";
@@ -59,11 +59,6 @@ function Ui(props) {
       title: "Edit",
       render: (value, instance) => (
         <ActionsContainer>
-          <Tooltip title="View Entry">
-            <Button onClick={() => updateShowingEntry(instance)}>
-              <EyeOutlined className="site-form-item-icon" />
-            </Button>
-          </Tooltip>
           <Popconfirm
             title="Are you sure to delete this entry?"
             onConfirm={() => deleteContactEntry(instance.id)}
@@ -71,11 +66,9 @@ function Ui(props) {
             okText="Yes"
             cancelText="No"
           >
-            <Tooltip title="Delete Contact Entry">
-              <Button>
-                <DeleteOutlined className="site-form-item-icon" />
-              </Button>
-            </Tooltip>
+            <Button onClick={(e) => e.stopPropagation()}>
+              <DeleteOutlined className="site-form-item-icon" />
+            </Button>
           </Popconfirm>
         </ActionsContainer>
       ),
@@ -89,6 +82,7 @@ function Ui(props) {
         visible={showingEntry}
         onCancel={() => updateShowingEntry(undefined)}
         cancelText="Close"
+        okButtonProps={{ style: { display: "none" } }}
       >
         <h4>{entry.name}</h4>
         <p>{entry.email}</p>
@@ -99,6 +93,14 @@ function Ui(props) {
     );
   };
 
+  const handleContactEntryOpen = (entry, rowIndex) => {
+    return {
+      onClick: (event) => {
+        updateShowingEntry(entry);
+      },
+    };
+  };
+
   const dataSource = contactEntries.map((entry, idx) => ({
     key: idx + entry.email,
     ...entry,
@@ -107,7 +109,11 @@ function Ui(props) {
   return (
     <ContactsContainer>
       <Title level={4}>Contact Entries</Title>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table
+        onRow={handleContactEntryOpen}
+        dataSource={dataSource}
+        columns={columns}
+      />
       {showingEntry && contactEnquiryModal(showingEntry)}
     </ContactsContainer>
   );

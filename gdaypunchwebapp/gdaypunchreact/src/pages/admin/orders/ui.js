@@ -10,7 +10,15 @@ import {
 import moment from "moment";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
-import { OrdersContainer, OrderModal } from "./styles";
+import {
+  OrdersContainer,
+  OrderModal,
+  ProductTotalsContainer,
+  AddressContactField,
+  AddressBillingContainer,
+  LeftContainer,
+  RightContainer,
+} from "./styles";
 
 const { Title } = Typography;
 
@@ -207,10 +215,10 @@ function Ui(props) {
       title: "Price",
       dataIndex: "product",
       key: "order-price",
-      render: (product) => `A$${product.price}`,
+      render: (product) => `A$${product.price.toFixed(2)}`,
     },
     {
-      title: "Price",
+      title: "Qty",
       dataIndex: "qty",
       key: "order-qty",
     },
@@ -218,7 +226,40 @@ function Ui(props) {
       title: "Total",
       dataIndex: "product",
       key: "order-total",
-      render: (product, instance) => `A$${product.price * instance.qty}`,
+      className: "total",
+      render: (product, instance) =>
+        `A$${(product.price * instance.qty).toFixed(2)}`,
+    },
+  ];
+
+  const mobileProductColumns = [
+    {
+      title: "Item",
+      dataIndex: "product",
+      key: "order-item",
+      render: (product, instance) => {
+        const StatusIcon = renderStatusIcons[instance.status];
+
+        return (
+          <div className="item-image-title">
+            <img src={getGdayPunchStaticUrl(product.image)} />
+            <div className="title-status-qty">
+              <p>{product.title}</p>
+              <span className={instance.status + " status"}>
+                <StatusIcon /> {instance.status} {`(${instance.qty})`}
+              </span>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      title: "Total",
+      dataIndex: "product",
+      key: "order-total",
+      className: "total",
+      render: (product, instance) =>
+        `A$${(product.price * instance.qty).toFixed(2)}`,
     },
   ];
 
@@ -235,6 +276,7 @@ function Ui(props) {
 
     return (
       <OrderModal
+        width="80%"
         title={
           <>
             {`Order #${order.number}`}
@@ -250,11 +292,22 @@ function Ui(props) {
       >
         <Table
           rowKey="id"
+          className="desktop"
           columns={productColumns}
           dataSource={order.product_qty_details}
           pagination={false}
         />
-        <div>
+        <Table
+          rowKey="id"
+          className="mobile"
+          columns={mobileProductColumns}
+          dataSource={order.product_qty_details.map((product) => ({
+            ...product,
+            status: order.status,
+          }))}
+          pagination={false}
+        />
+        <ProductTotalsContainer>
           <div>
             Subtotal <span>{`A$${order.products_total_price.toFixed(2)}`}</span>
           </div>
@@ -276,7 +329,67 @@ function Ui(props) {
             Total:
             <span>{`A$${order.amount.toFixed(2)}`}</span>
           </div>
-        </div>
+        </ProductTotalsContainer>
+        <AddressBillingContainer>
+          <LeftContainer>
+            <AddressContactField>
+              <h4>Fulfillment details</h4>
+              <div>
+                <p>{`${order.first_name} ${order.last_name}`}</p>
+                <p>{`${order.address_line_1} ${order.address_line_2}`}</p>
+                <p>{`${order.city} ${order.state}, ${order.postcode}`}</p>
+                <p>{`${order.country}`}</p>
+              </div>
+            </AddressContactField>
+            <AddressContactField>
+              <h4>Contact Information</h4>
+              <div>
+                <p>{`Phone: ${order.phone_number}`}</p>
+                <p>{`Email: ${order.email}`}</p>
+              </div>
+            </AddressContactField>
+          </LeftContainer>
+          <RightContainer>
+            <AddressContactField>
+              <h4>Billing details</h4>
+              <div>
+                <p>{`CC ending in ${order.last_four} [exp. ${order.exp_month}/${order.exp_year}]`}</p>
+              </div>
+            </AddressContactField>
+            <AddressContactField>
+              <h4>Billing Address</h4>
+              {order.billing_same_address ? (
+                <div>
+                  <p>{`${order.first_name} ${order.last_name}`}</p>
+                  <p>{`${order.address_line_1} ${order.address_line_2}`}</p>
+                  <p>{`${order.city} ${order.state}, ${order.postcode}`}</p>
+                  <p>{`${order.country}`}</p>
+                </div>
+              ) : (
+                <div>
+                  <p>{`${order.billing_first_name} ${order.billing_last_name}`}</p>
+                  <p>{`${order.billing_address_line_1} ${order.billing_address_line_2}`}</p>
+                  <p>{`${order.billing_city} ${order.billing_state}, ${order.billing_postcode}`}</p>
+                  <p>{`${order.billing_country}`}</p>
+                </div>
+              )}
+            </AddressContactField>
+            <AddressContactField>
+              <h4>Contact Information</h4>
+              {order.billing_same_address ? (
+                <div>
+                  <p>{`Phone: ${order.phone_number}`}</p>
+                  <p>{`Email: ${order.email}`}</p>
+                </div>
+              ) : (
+                <div>
+                  <p>{`Phone: ${order.billing_number}`}</p>
+                  <p>{`Email: ${order.billing_email}`}</p>
+                </div>
+              )}
+            </AddressContactField>
+          </RightContainer>
+        </AddressBillingContainer>
       </OrderModal>
     );
   };
