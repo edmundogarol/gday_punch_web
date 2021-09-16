@@ -337,7 +337,7 @@ function Ui(props) {
               <div>
                 <p>{`${order.first_name} ${order.last_name}`}</p>
                 <p>{`${order.address_line_1} ${order.address_line_2}`}</p>
-                <p>{`${order.city} ${order.state}, ${order.postcode}`}</p>
+                <p>{`${order.city}, ${order.state} ${order.postcode}`}</p>
                 <p>{`${order.country}`}</p>
               </div>
             </AddressContactField>
@@ -362,7 +362,7 @@ function Ui(props) {
                 <div>
                   <p>{`${order.first_name} ${order.last_name}`}</p>
                   <p>{`${order.address_line_1} ${order.address_line_2}`}</p>
-                  <p>{`${order.city} ${order.state}, ${order.postcode}`}</p>
+                  <p>{`${order.city}, ${order.state} ${order.postcode}`}</p>
                   <p>{`${order.country}`}</p>
                 </div>
               ) : (
