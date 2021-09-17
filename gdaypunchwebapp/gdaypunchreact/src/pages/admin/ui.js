@@ -8,6 +8,7 @@ import {
 
 import Dashboard from "./dashboard";
 import Store from "./store";
+import Socials from "./socials";
 import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
@@ -57,7 +58,7 @@ function Ui(props) {
             Store
           </NavLink>
         )}
-        {hasPrivilege("admin") && (
+        {(hasPrivilege("twitter") || hasPrivilege("instagram")) && (
           <NavLink className="mobile-only" to="/admin/socials">
             <ShareAltOutlined className="site-form-item-icon" />
             Socials
@@ -102,6 +103,7 @@ function Ui(props) {
       <AdminContentContainer>
         {dashboard && <Dashboard />}
         {store && <Store />}
+        {socials && <Socials />}
         {twitter && <Twitter />}
         {prompts && <Prompts />}
         {coupons && <Coupons />}

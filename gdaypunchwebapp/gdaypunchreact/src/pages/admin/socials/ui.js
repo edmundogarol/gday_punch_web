@@ -7,39 +7,29 @@ import { AdminMobileNavLinks } from "./styles";
 const { Title } = Typography;
 
 function Ui(props) {
-  const { user } = props;
-
-  function hasPrivilege(privilege) {
-    if (!user) return true;
-
-    const superUser = user.privileges.includes("super");
-    if (superUser) return true;
-
-    return user.privileges.includes(privilege);
-  }
+  const {} = props;
 
   const columns = [
     {
       title: "Admin Route",
       dataIndex: "route",
       key: "route",
-      render: (route) =>
-        hasPrivilege("admin") ? (
-          <NavLink className="nav-link" to={`/admin/${route}`}>
-            {route}
-          </NavLink>
-        ) : null,
+      render: (route) => (
+        <NavLink className="nav-link" to={`/admin/${route}`}>
+          {route}
+        </NavLink>
+      ),
     },
   ];
 
   const websiteRoutes = [
-    { key: 1, route: "contacts" },
-    { key: 2, route: "prompts" },
+    { key: 1, route: "twitter" },
+    { key: 2, route: "instagram" },
   ];
 
   return (
     <AdminMobileNavLinks>
-      <Title level={4}>Website</Title>
+      <Title level={4}>Socials</Title>
       <Table
         showHeader={false}
         pagination={false}
