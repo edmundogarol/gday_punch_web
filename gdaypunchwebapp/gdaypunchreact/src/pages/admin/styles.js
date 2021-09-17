@@ -81,5 +81,9 @@ export const AdminNav = styled.div`
 export const AdminContentContainer = styled.div`
   width: 100%;
   padding: 2em;
-  padding-top: 12vh;
+  padding-top: unset;
+
+  @media ${device.laptop} {
+    padding-top: 12vh;
+  }
 `;

@@ -4,9 +4,9 @@ import {
   HomeOutlined,
   ShopOutlined,
   ShareAltOutlined,
-  SettingOutlined,
 } from "@ant-design/icons";
 
+import Dashboard from "./dashboard";
 import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
@@ -21,7 +21,8 @@ import { AdminContainer, AdminNav, AdminContentContainer } from "./styles";
 function Ui(props) {
   const { user } = props;
   const { app } = useParams();
-  const dashboard = app === "";
+
+  const dashboard = app === undefined;
   const store = app === "store";
   const socials = app === "socials";
   const twitter = app === "twitter";
@@ -98,6 +99,7 @@ function Ui(props) {
         )}
       </AdminNav>
       <AdminContentContainer>
+        {dashboard && <Dashboard />}
         {twitter && <Twitter />}
         {prompts && <Prompts />}
         {coupons && <Coupons />}

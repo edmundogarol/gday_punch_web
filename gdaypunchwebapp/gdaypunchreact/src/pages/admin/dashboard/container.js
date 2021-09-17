@@ -2,25 +2,10 @@ import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { withRouter } from "react-router-dom";
 
-import { selectPrompts, selectPromptStatuses } from "selectors/admin";
-
-import {
-  fetchPrompts as fetchPromptsAction,
-  createPrompt as createPromptAction,
-  selectPrompt as selectPromptAction,
-} from "actions/admin";
-
 import Ui from "./ui";
 
-const mapState = createStructuredSelector({
-  prompts: selectPrompts,
-  promptStatuses: selectPromptStatuses,
-});
+const mapState = createStructuredSelector({});
 
-const mapDispatch = {
-  createPrompt: createPromptAction,
-  fetchPrompts: fetchPromptsAction,
-  selectPrompt: selectPromptAction,
-};
+const mapDispatch = {};
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));
