@@ -18,6 +18,7 @@ import {
   AddressBillingContainer,
   LeftContainer,
   RightContainer,
+  OrderStatuses,
 } from "./styles";
 
 const { Title } = Typography;
@@ -29,10 +30,12 @@ function Ui(props) {
       count: availableCount,
       fetching,
       finishedFetching,
+      selected,
     },
     fetchOrders,
+    fetchOrderStatuses,
+    setSelectedOrder,
   } = props;
-  const [orderOpen, updateOrderOpen] = useState(undefined);
 
   useEffect(() => {
     if (!fetching && !finishedFetching) {
@@ -268,10 +271,33 @@ function Ui(props) {
     },
   ];
 
+  const statusColumns = [
+    {
+      title: "Date",
+      dataIndex: "readable_date",
+      key: "readable_date",
+      render: ({ date, time }) => (
+        <div>
+          {date}
+          <span>{time}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      render: (description) => description,
+    },
+  ];
+
   const handleOrderOpen = (order, rowIndex) => {
     return {
       onClick: (event) => {
-        updateOrderOpen(order);
+        setSelectedOrder(order.id);
+        if (!order.statuses) {
+          fetchOrderStatuses(order.id);
+        }
       },
     };
   };
@@ -290,8 +316,8 @@ function Ui(props) {
             </span>
           </>
         }
-        visible={orderOpen}
-        onCancel={() => updateOrderOpen(undefined)}
+        visible={selected}
+        onCancel={() => setSelectedOrder(undefined)}
         cancelText="Close"
         okButtonProps={{ style: { display: "none" } }}
       >
@@ -395,6 +421,20 @@ function Ui(props) {
             </AddressContactField>
           </RightContainer>
         </AddressBillingContainer>
+        <OrderStatuses>
+          <Table
+            columns={statusColumns}
+            dataSource={
+              order.statuses
+                ? order.statuses.map((status) => ({
+                    key: status.id,
+                    ...status,
+                  }))
+                : []
+            }
+            pagination={false}
+          />
+        </OrderStatuses>
       </OrderModal>
     );
   };
@@ -411,7 +451,7 @@ function Ui(props) {
   return (
     <OrdersContainer>
       <Title level={4}>Orders</Title>
-      {orderOpen && orderDetailsModal(orderOpen)}
+      {selected && orderDetailsModal(orderList[selected])}
       <Table
         onRow={handleOrderOpen}
         className="desktop"

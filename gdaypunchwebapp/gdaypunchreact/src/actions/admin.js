@@ -64,6 +64,9 @@ export const FETCH_ORDERS = "admin/FETCH_ORDERS";
 export const UPDATE_ORDERS = "admin/UPDATE_ORDERS";
 export const FETCHING_ORDERS = "admin/FETCHING_ORDERS";
 export const FINISHED_FETCHING_ORDERS = "admin/FINISHED_FETCHING_ORDERS";
+export const FETCH_ORDERS_STATUS_UPDATES = "admin/FETCH_ORDERS_STATUS_UPDATES";
+export const UPDATE_ORDER_STATUS_UPDATES = "admin/UPDATE_ORDER_STATUS_UPDATES";
+export const SET_SELECTED_ORDER = "admin/SET_SELECTED_ORDER";
 
 export const doTweet = () => ({
   type: DO_TWEET,
@@ -351,4 +354,26 @@ export const fetchingOrders = () => ({
 
 export const finishedFetchingOrders = () => ({
   type: FINISHED_FETCHING_ORDERS,
+});
+
+export const fetchOrderStatusUpdates = (orderId) => ({
+  type: FETCH_ORDERS_STATUS_UPDATES,
+  payload: {
+    orderId,
+  },
+});
+
+export const updateOrderStatusUpdates = (orderId, statusUpdates) => ({
+  type: UPDATE_ORDER_STATUS_UPDATES,
+  payload: {
+    orderId,
+    statusUpdates,
+  },
+});
+
+export const setSelectedOrder = (orderId) => ({
+  type: SET_SELECTED_ORDER,
+  payload: {
+    orderId,
+  },
 });

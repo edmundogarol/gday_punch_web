@@ -55,7 +55,7 @@ from .gdaypunchapi.api.coupons import (
     CouponViewSet, CouponApplyViewSet
 )
 from .gdaypunchapi.api.orders import (
-    OrderViewSet
+    OrderViewSet, OrderStatusUpdateViewset
 )
 
 router = routers.DefaultRouter()
@@ -75,6 +75,8 @@ router.register(r'contact', ContactViewSet, basename="contact")
 router.register(r'customer', CustomerViewSet, basename="customer")
 router.register(r'coupons', CouponViewSet, basename="customer")
 router.register(r'orders', OrderViewSet, basename="orders")
+router.register(r'orders-status', OrderStatusUpdateViewset,
+                basename="orders-status")
 router.register(r'reset-password', ResetPasswordViewSet,
                 basename="reset-password")
 

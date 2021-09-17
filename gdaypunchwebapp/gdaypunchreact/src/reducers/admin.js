@@ -33,6 +33,8 @@ import {
   UPDATE_ORDERS,
   FETCHING_ORDERS,
   FINISHED_FETCHING_ORDERS,
+  UPDATE_ORDER_STATUS_UPDATES,
+  SET_SELECTED_ORDER,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -90,6 +92,7 @@ const INITIAL_STATE = {
     next: undefined,
     fetching: false,
     finishedFetching: false,
+    selected: undefined,
   },
 };
 
@@ -343,6 +346,28 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
             ...state.orders.orderList,
             ...arrayIdsMapToObject(results),
           },
+        },
+      };
+    case UPDATE_ORDER_STATUS_UPDATES:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          orderList: {
+            ...state.orders.orderList,
+            [action.payload.orderId]: {
+              ...state.orders.orderList[action.payload.orderId],
+              statuses: action.payload.statusUpdates,
+            },
+          },
+        },
+      };
+    case SET_SELECTED_ORDER:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          selected: action.payload.orderId,
         },
       };
     case FETCHING_ORDERS:

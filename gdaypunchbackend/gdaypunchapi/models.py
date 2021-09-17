@@ -542,8 +542,21 @@ class OrderStatusUpdate(models.Model):
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
     update_date = models.DateTimeField(
         null=True, blank=True, default=timezone.now)
+    description = models.TextField(max_length=100, blank=True)
     order = models.ForeignKey(
         Order,  on_delete=models.PROTECT, blank=False, null=False)
+
+    @property
+    def readable_date(self):
+
+        local_tz = pytz.timezone('Australia/Sydney')
+        local_dt = self.update_date.replace(
+            tzinfo=pytz.utc).astimezone(local_tz)
+
+        return {
+            'date': local_dt.strftime("%x"),
+            'time': local_dt.strftime("%I:%M %p")
+        }
 
 
 class Coupon(models.Model):

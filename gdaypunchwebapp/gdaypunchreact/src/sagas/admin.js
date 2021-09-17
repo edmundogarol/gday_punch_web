@@ -49,6 +49,8 @@ import {
   fetchingOrders,
   updateOrders,
   finishedFetchingOrders,
+  updateOrderStatusUpdates,
+  FETCH_ORDERS_STATUS_UPDATES,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -556,6 +558,21 @@ export function* fetchOrdersCall(action) {
   }
 }
 
+export function* fetchOrderStatusUpdatesCall(action) {
+  const { orderId } = action.payload;
+
+  const response = yield call(api, `orders-status/${orderId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateOrderStatusUpdates(orderId, data));
+  } else {
+    console.log("Order Status Updates Fetch error", JSON.stringify(response));
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -577,5 +594,6 @@ export default function* adminSaga() {
     takeLatest(FETCH_COUPONS, fetchCouponsCall),
     takeLatest(CREATE_COUPON, createCouponCall),
     takeLatest(FETCH_ORDERS, fetchOrdersCall),
+    takeLatest(FETCH_ORDERS_STATUS_UPDATES, fetchOrderStatusUpdatesCall),
   ]);
 }

@@ -17,12 +17,14 @@ from rest_framework.permissions import (IsAuthenticated)
 from rest_framework.response import Response
 
 from ..constants import *
-from ..api_permissions import OrdersByUserPermissions
 from ..models import (
-    Order, Product, Coupon
+    Order, OrderStatusUpdate, Product, Coupon
 )
 from ..serializers import (
-    OrderSerializer
+    OrderSerializer, OrderStatusUpdateSerializer
+)
+from ..api_permissions import (
+    OrdersByUserPermissions, OrderStatusUpdatesPermissions
 )
 
 if 'DEVENV' in os.environ:
@@ -175,7 +177,6 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
     items = json.loads(items.replace("\'", "\""))
 
     if subscriptions is not None:
-
         subscriptions = json.loads(subscriptions.replace("\'", "\""))
 
         if subscriptions:
@@ -189,15 +190,12 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
                 order.save()
 
     # Update order status for digital purchases only // Calculate item prices
-    total_items_price = 0
     digital_purchase = 0
     for item in items:
         product = Product.objects.get(id=item['id'])
 
         item_details.append({'desc': product.title, 'price': product.active_price,
                             'qty': item['qty'], 'total': int(item['qty']) * product.active_price})
-        total_items_price = total_items_price + \
-            (int(item['qty']) * product.active_price)
 
         if product.product_type == DIGITAL:
             digital_purchase = digital_purchase + 1
@@ -206,6 +204,23 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
         order.status = PURCHASED
         order.save()
 
+        # Create order purchase status update for all digital purchases
+        OrderStatusUpdate.objects.create(
+            order=order,
+            status=PURCHASED,
+            description="Customer charged A${:.2f} on CC ending in {}".format(
+                order.amount, order.last_four)
+        )
+    else:
+        # Create order pending status update for items needing shipping
+        OrderStatusUpdate.objects.create(
+            order=order,
+            status=PENDING,
+            description="Customer charged A${} on CC ending in {}".format(
+                order.amount, order.last_four)
+        )
+
+    # Temporarily copy shipping details to billing for receipt email
     if order.billing_same_address:
         order.billing_email = order.email
         order.billing_first_name = order.first_name
@@ -222,3 +237,19 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
 
     Thread(target=send_email_receipt, args=(
         customer, order, item_details,)).start()
+
+
+class OrderStatusUpdateViewset(viewsets.ModelViewSet):
+    pagination_class = None
+    queryset = OrderStatusUpdate.objects.all()
+    serializer_class = OrderStatusUpdateSerializer
+    permission_classes = (OrderStatusUpdatesPermissions, )
+
+    def retrieve(self, request, pk=None):
+        """
+        Retrieve all status updates for Order [id]
+        """
+        queryset = OrderStatusUpdate.objects.all()
+        status_updates = get_list_or_404(queryset, order=pk)
+        serializer = OrderStatusUpdateSerializer(status_updates, many=True)
+        return Response(serializer.data)

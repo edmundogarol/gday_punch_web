@@ -6,7 +6,7 @@ from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
     StripeCustomer, Product, Privileges, StripePrice,
     Contact, Customer, ResetPasswordSession, Order,
-    Coupon
+    Coupon, OrderStatusUpdate
 )
 
 
@@ -100,6 +100,13 @@ class OrderSerializer(serializers.ModelSerializer):
                   "billing_city", "billing_state", "billing_postcode", "billing_country", "billing_number",
                   "last_four", "exp_month", "exp_year", "product_qty_details", "fulfillment_type", "coupon",
                   "readable_date", "coupon_details", "tax")
+
+
+class OrderStatusUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderStatusUpdate
+        fields = ("id", "order", "status", "description",
+                  "update_date", "readable_date")
 
 
 class CouponSerializer(serializers.ModelSerializer):
