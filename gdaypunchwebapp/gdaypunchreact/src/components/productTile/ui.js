@@ -76,7 +76,7 @@ function Ui(props) {
 
   const handleViewProduct = () => {
     viewProduct(id);
-    props.history.push(`/product/${id}/${perma_link}`);
+    props.history.push(`/product/${id}/gday-punch-${perma_link}`);
   };
 
   const renderActionButton = () => {

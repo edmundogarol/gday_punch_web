@@ -81,6 +81,12 @@ function Ui(props) {
     ),
   };
 
+  useEffect(() => {
+    if (manga) {
+      document.title = `Reading ${manga.title} | Gday Punch`;
+    }
+  }, [manga]);
+
   function handleCommentSubmit() {
     if (!user.username.length) {
       modal.confirm(updateUsernameConfig);

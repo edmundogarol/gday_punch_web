@@ -70,7 +70,7 @@ function Ui(props) {
     viewProduct(product.id);
     toggleSideCart(false);
     const perma_link = product.title.toLowerCase().split(" ").join("-");
-    props.history.push(`/product/${product.id}/${perma_link}`);
+    props.history.push(`/product/${product.id}/gday-punch-${perma_link}`);
   };
 
   const handlePurchaseClick = async () => {

@@ -77,6 +77,12 @@ function Ui(props) {
   const qtyRange = digitalProduct && quantity ? 1 : 10;
 
   useEffect(() => {
+    if (product) {
+      document.title = `${product.title} | Gday Punch`;
+    }
+  }, [product]);
+
+  useEffect(() => {
     if (!fetchingViewingProduct && !finishedFetchingViewingProduct) {
       if (productId && !product) {
         setViewingProduct(productId);

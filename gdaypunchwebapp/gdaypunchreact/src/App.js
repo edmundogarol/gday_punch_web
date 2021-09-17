@@ -43,6 +43,7 @@ import ProductDetail from "pages/ProductDetail";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
 
+import RoutePage from "components/routePage";
 import SideCart from "components/sideCart";
 import Footer from "components/footer";
 import Navigation from "components/navigation";
@@ -96,7 +97,7 @@ function Root(props) {
     render() {
       const { ...props } = this.props;
 
-      if (props.condition) return <Route {...props} />;
+      if (props.condition) return <RoutePage {...props} />;
       return <Redirect to="/" />;
     }
   }
@@ -133,37 +134,47 @@ function Root(props) {
           <Navigation />
           <SideCart />
           <Switch>
-            <Route exact path="/" component={Home} />
-            <Route exact path="/shop" component={Shop} />
-            <Route exact path="/contact" component={Contact} />
-            <Route exact path="/about" component={About} />
-            <Route exact path="/cart" component={Cart} />
-            <Route exact path="/checkout" component={Checkout} />
-            <Route exact path="/forgot-password" component={ResetPassword} />
-            <Route
+            <RoutePage exact path="/" component={Home} />
+            <RoutePage exact path="/shop" component={Shop} title="Shop" />
+            <RoutePage
+              exact
+              path="/contact"
+              component={Contact}
+              title="Contact"
+            />
+            <RoutePage exact path="/about" component={About} />
+            <RoutePage exact path="/cart" component={Cart} />
+            <RoutePage exact path="/checkout" component={Checkout} />
+            <RoutePage
+              exact
+              path="/forgot-password"
+              component={ResetPassword}
+            />
+            <RoutePage
               exact
               path="/password-reset-consume/:consumer"
               component={ResetPassword}
             />
-            <Route
+            <RoutePage
               exact
               path="/password-reset-confirm"
               component={ResetPasswordNewPassword}
             />
-            <Route
+            <RoutePage
               exact
               path="/verify-account/:token"
               component={VerifyEmail}
             />
-            <Route
+            <RoutePage
               exact
               path="/refunds-and-returns"
               component={RefundsAndReturns}
             />
-            <Route
+            <RoutePage
               exact
               path="/product/:productId/:productUri"
               component={ProductDetail}
+              titleSetInside
             />
             <ProtectedRoute
               condition={loginCheckFinished && user.logged_in}
@@ -177,6 +188,7 @@ function Root(props) {
                 user.logged_in &&
                 user.verified === "verified"
               }
+              titleSetInside
               exact
               path="/manga/:id"
               component={Reader}
@@ -199,7 +211,7 @@ function Root(props) {
               path="/admin/:app/:productId"
               component={Admin}
             />
-            <Route component={PageNotFound} />
+            <RoutePage component={PageNotFound} />
           </Switch>
           <Footer />
         </Route>
