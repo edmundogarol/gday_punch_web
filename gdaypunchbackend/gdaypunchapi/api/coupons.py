@@ -20,6 +20,7 @@ from ..utils import (
 
 
 class CouponViewSet(viewsets.ModelViewSet):
+    pagination_class = None
     queryset = Coupon.objects.all()
     serializer_class = CouponSerializer
     permission_classes = (AdminOnly, )

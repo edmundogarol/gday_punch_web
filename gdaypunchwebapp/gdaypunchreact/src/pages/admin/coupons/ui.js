@@ -123,7 +123,13 @@ function Ui(props) {
         />
         <SubmitButton onClick={() => handleCouponSubmit()}>Create</SubmitButton>
       </CouponCreateContainer>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table
+        rowClassName={(record) =>
+          moment(record.expiry_date) < moment.now() ? "expired" : ""
+        }
+        dataSource={dataSource}
+        columns={columns}
+      />
     </CouponsContainer>
   );
 }

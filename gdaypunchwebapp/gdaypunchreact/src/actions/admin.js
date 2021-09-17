@@ -331,8 +331,11 @@ export const createCoupon = (coupon) => ({
   },
 });
 
-export const fetchOrders = () => ({
+export const fetchOrders = (fetchNext) => ({
   type: FETCH_ORDERS,
+  payload: {
+    fetchNext,
+  },
 });
 
 export const updateOrders = (orders) => ({

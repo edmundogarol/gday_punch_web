@@ -53,6 +53,7 @@ import {
 import {
   selectPendingTweet,
   selectPendingDeletingTweet,
+  selectOrdersNextPage,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
 
@@ -506,7 +507,7 @@ export function* fetchCouponsCall() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateCoupons(data.results));
+    yield put(updateCoupons(data));
     yield put(finishedFetchingCoupons());
   } else {
     yield put(finishedFetchingCoupons());
@@ -533,11 +534,17 @@ export function* createCouponCall(action) {
   }
 }
 
-export function* fetchOrdersCall() {
+export function* fetchOrdersCall(action) {
+  const next = yield select(selectOrdersNextPage);
+
   yield put(fetchingOrders());
-  const response = yield call(api, "orders/", {
-    method: "GET",
-  });
+  const response = yield call(
+    api,
+    action.payload.fetchNext ? next : `orders/`,
+    {
+      method: "GET",
+    }
+  );
 
   if (response && response.ok) {
     const data = response.data;

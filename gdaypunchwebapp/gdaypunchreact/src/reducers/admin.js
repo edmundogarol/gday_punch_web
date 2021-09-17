@@ -34,6 +34,7 @@ import {
   FETCHING_ORDERS,
   FINISHED_FETCHING_ORDERS,
 } from "actions/admin";
+import { arrayIdsMapToObject } from "utils/utils";
 
 const INITIAL_STATE = {
   tweetLoading: false,
@@ -85,6 +86,8 @@ const INITIAL_STATE = {
 
   orders: {
     orderList: [],
+    count: 0,
+    next: undefined,
     fetching: false,
     finishedFetching: false,
   },
@@ -329,11 +332,17 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
         },
       };
     case UPDATE_ORDERS:
+      const { results, count, next } = action.payload.orders;
       return {
         ...state,
         orders: {
           ...state.orders,
-          orderList: action.payload.orders,
+          next,
+          count,
+          orderList: {
+            ...state.orders.orderList,
+            ...arrayIdsMapToObject(results),
+          },
         },
       };
     case FETCHING_ORDERS:

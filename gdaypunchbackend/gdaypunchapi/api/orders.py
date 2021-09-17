@@ -41,8 +41,9 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = Order.objects.all().order_by('-id')
-        serializer = OrderSerializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = OrderSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def retrieve(self, request, pk=None):
         """

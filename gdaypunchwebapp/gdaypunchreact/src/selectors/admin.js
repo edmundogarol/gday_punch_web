@@ -81,3 +81,8 @@ export const selectOrderState = createSelector(
   selectDomain,
   ({ orders }) => orders
 );
+
+export const selectOrdersNextPage = createSelector(
+  selectDomain,
+  ({ orders: { next } }) => next
+);

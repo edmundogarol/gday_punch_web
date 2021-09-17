@@ -1,7 +1,13 @@
 import styled from "styled-components";
 import { Button } from "antd";
 
-export const CouponsContainer = styled.div``;
+export const CouponsContainer = styled.div`
+  table {
+    .expired {
+      color: #fb4444;
+    }
+  }
+`;
 
 export const CouponCreateContainer = styled.div`
   width: 50%;

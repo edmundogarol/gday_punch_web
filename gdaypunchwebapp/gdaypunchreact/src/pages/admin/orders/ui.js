@@ -24,7 +24,12 @@ const { Title } = Typography;
 
 function Ui(props) {
   const {
-    ordersState: { orderList, fetching, finishedFetching },
+    ordersState: {
+      orderList,
+      count: availableCount,
+      fetching,
+      finishedFetching,
+    },
     fetchOrders,
   } = props;
   const [orderOpen, updateOrderOpen] = useState(undefined);
@@ -394,10 +399,14 @@ function Ui(props) {
     );
   };
 
-  const dataSource = orderList.map((order, idx) => ({
-    key: idx + order.number,
-    ...order,
-  }));
+  const dataSource = Object.values(orderList)
+    .map((order) => ({
+      key: order.id,
+      ...order,
+    }))
+    .sort((a, b) => -(a.id - b.id));
+
+  const currentOrderCount = Object.values(orderList).length;
 
   return (
     <OrdersContainer>
@@ -408,6 +417,14 @@ function Ui(props) {
         className="desktop"
         dataSource={dataSource}
         columns={columns}
+        onChange={({ current, pageSize }) => {
+          console.log({ currentOrderCount, availableCount, current, pageSize });
+          if (currentOrderCount < availableCount) {
+            if (current * pageSize === currentOrderCount) {
+              fetchOrders(true); // true = fetch next
+            }
+          }
+        }}
       />
       <Table
         className="mobile"
@@ -419,7 +436,5 @@ function Ui(props) {
     </OrdersContainer>
   );
 }
-
-Ui.propTypes = {};
 
 export default Ui;

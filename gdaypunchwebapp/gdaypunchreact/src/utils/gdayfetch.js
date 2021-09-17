@@ -21,7 +21,7 @@ const APPLICATION_JSON = "application/json";
  */
 export async function gdayfetch(url, params = {}) {
   const composedURL = new URL(
-    url.includes("api-auth") ? url : `api/${url}`,
+    url.includes("api") ? url : `api/${url}`,
     window.location.origin
   );
 
