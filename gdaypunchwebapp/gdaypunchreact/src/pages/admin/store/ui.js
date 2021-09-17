@@ -23,13 +23,14 @@ function Ui(props) {
   ];
 
   const websiteRoutes = [
-    { key: 1, route: "contacts" },
-    { key: 2, route: "prompts" },
+    { key: 1, route: "orders" },
+    { key: 2, route: "products" },
+    { key: 3, route: "coupons" },
   ];
 
   return (
     <AdminMobileNavLinks>
-      <Title level={4}>Website</Title>
+      <Title level={4}>Store</Title>
       <Table
         showHeader={false}
         pagination={false}

@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 
 import Dashboard from "./dashboard";
+import Store from "./store";
 import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
@@ -100,6 +101,7 @@ function Ui(props) {
       </AdminNav>
       <AdminContentContainer>
         {dashboard && <Dashboard />}
+        {store && <Store />}
         {twitter && <Twitter />}
         {prompts && <Prompts />}
         {coupons && <Coupons />}

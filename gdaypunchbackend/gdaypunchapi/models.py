@@ -513,7 +513,7 @@ class Order(models.Model):
             tzinfo=pytz.utc).astimezone(local_tz)
 
         return {
-            'date': local_dt.strftime("%a %d %b %Y"),
+            'date': local_dt.strftime("%d %b %Y"),
             'time': local_dt.strftime("%I:%M %p")
         }
 

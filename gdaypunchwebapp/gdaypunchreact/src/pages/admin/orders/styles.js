@@ -104,6 +104,8 @@ export const OrdersContainer = styled.div`
 `;
 
 export const OrderModal = styled(Modal)`
+  width: 100% !important;
+
   table,
   div {
     color: #525252;
@@ -121,6 +123,8 @@ export const OrderModal = styled(Modal)`
   }
 
   @media ${device.tablet} {
+    width: 80% !important;
+
     .mobile {
       display: none;
     }
