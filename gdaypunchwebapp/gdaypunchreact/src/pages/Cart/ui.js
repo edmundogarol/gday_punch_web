@@ -168,11 +168,7 @@ function Ui(props) {
                   </ItemSubtotal>
                   {coupon.coupon_type ? (
                     <ItemSubtotal>
-                      <TotalLabel>{`Discount [${coupon.name} ${
-                        coupon.coupon_type === "percentage"
-                          ? coupon.amount + "%"
-                          : "A$" + coupon.amount
-                      } off ]:`}</TotalLabel>
+                      <TotalLabel>{`Discount [${coupon.description}]:`}</TotalLabel>
                       <h3>- A${discountAmount.toFixed(2)}</h3>
                     </ItemSubtotal>
                   ) : null}

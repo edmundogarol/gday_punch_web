@@ -197,7 +197,7 @@ function Ui(props) {
       {!readerOnly && manga && (
         <div className="pdf-details">
           <h2 style={styles.mangaTitle}>{manga.title}</h2>
-          <h4 style={styles.mangaArtist}>{manga.author_name}</h4>
+          <h4 style={styles.mangaArtist}>{manga.author}</h4>
           <LikeButton
             onClick={() => (!manga.user_likes ? likeManga(manga.id) : null)}
           >

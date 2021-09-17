@@ -346,7 +346,7 @@ function Ui(props) {
             Shipping
             <span>{`A$${order.country === "AU" ? "0.00" : "13.00"}`}</span>
           </div>
-          {order.coupon && (
+          {order.coupon.length > 1 && (
             <div>
               {`Discount [Coupon: ${order.coupon_details.description}]`}
               <span>{`- A$${order.coupon_details.discount_amount}`}</span>
@@ -421,20 +421,18 @@ function Ui(props) {
             </AddressContactField>
           </RightContainer>
         </AddressBillingContainer>
-        <OrderStatuses>
-          <Table
-            columns={statusColumns}
-            dataSource={
-              order.statuses
-                ? order.statuses.map((status) => ({
-                    key: status.id,
-                    ...status,
-                  }))
-                : []
-            }
-            pagination={false}
-          />
-        </OrderStatuses>
+        {order.statuses ? (
+          <OrderStatuses>
+            <Table
+              columns={statusColumns}
+              dataSource={order.statuses.map((status) => ({
+                key: status.id,
+                ...status,
+              }))}
+              pagination={false}
+            />
+          </OrderStatuses>
+        ) : null}
       </OrderModal>
     );
   };

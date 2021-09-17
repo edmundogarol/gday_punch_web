@@ -375,6 +375,7 @@ class CommentViewSet(ModelViewSet):
 
 
 class MangaCommentsViewSet(ModelViewSet):
+    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [MangaCommentsPermissions]
 

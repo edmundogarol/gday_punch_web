@@ -204,7 +204,7 @@ class Manga(models.Model):
 
     @property
     def author_name(self):
-        return User.objects.get(email=self.author).author_name
+        return self.author.author_name
 
 
 class Like(models.Model):
@@ -219,8 +219,7 @@ class Comment(models.Model):
 
     @property
     def user_username(self):
-        user = User.objects.get(email=self.user)
-        return user.username
+        return self.user.username if self.user.username else self.user.email
 
     @property
     def likes(self):
@@ -228,8 +227,9 @@ class Comment(models.Model):
 
     @property
     def user_likes(self):
-        user = User.objects.get(email=get_current_user())
-        liked = CommentLike.objects.all().filter(user=user, comment=self.id).count()
+        liked = CommentLike.objects.all().filter(
+            user=get_current_user().id, comment=self.id).count()
+
         return liked > 0
 
 
@@ -323,42 +323,35 @@ class Product(models.Model):
         if self.sale_price > 0:
             return self.sale_price
 
-        product = Product.objects.get(id=self.id)
-        stripe_prices = product.stripe_prices.all()
-
         price = 0
-        for stripe_price in stripe_prices:
-            price += StripePrice.objects.get(id=stripe_price.id).price_amount
+        for stripe_price in self.stripe_prices.all():
+            price += stripe_price.price_amount
 
         return price
 
     @property
     def manga_details(self):
-        product = Product.objects.get(id=self.id)
-        mangas = product.manga.all()
+        mangas = self.manga.all()
 
         details = {}
         for manga in mangas:
-            current_manga = Manga.objects.get(id=manga.id)
-
             details = {
-                "id": current_manga.id,
-                "title": current_manga.title,
-                "author": User.objects.get(id=current_manga.author_id).author_name,
-                "release_date": current_manga.release_date,
-                "age_rating": current_manga.age_rating,
-                "likes": current_manga.likes,
-                "comments": current_manga.comments,
-                "user_likes": current_manga.user_likes,
-                "pdf": current_manga.pdf
+                "id": manga.id,
+                "title": manga.title,
+                "author": manga.author.author_name,
+                "release_date": manga.release_date,
+                "age_rating": manga.age_rating,
+                "likes": manga.likes,
+                "comments": manga.comments,
+                "user_likes": manga.user_likes,
+                "pdf": manga.pdf
             }
 
         return details
 
     @ property
     def user_string(self):
-        user = User.objects.get(email=self.user)
-        return user.author_name
+        return self.user.author_name
 
 
 class Customer(models.Model):
@@ -438,8 +431,7 @@ class Order(models.Model):
 
     @property
     def product_qty_details(self):
-        order = Order.objects.get(id=self.id)
-        items = json.loads(order.products_qty.replace("\'", "\""))
+        items = json.loads(self.products_qty.replace("\'", "\""))
         item_details = []
 
         for item in items:
@@ -461,25 +453,20 @@ class Order(models.Model):
 
     @property
     def coupon_details(self):
-        order = Order.objects.get(id=self.id)
-
-        if order.coupon:
-            coupon = Coupon.objects.get(name=order.coupon)
+        if self.coupon:
+            coupon = Coupon.objects.get(name=self.coupon)
 
             description = None
             discount_amount = 0
 
             if coupon.coupon_type == "percentage":
-                description = coupon.name + " " + str(coupon.amount) + "% off"
                 discount_amount = (coupon.amount / 100) * \
-                    order.products_total_price
+                    self.products_total_price
             else:
-                description = coupon.name + " " + "A$" + \
-                    "{:.2f}".format(coupon.amount) + " off"
                 discount_amount = coupon.amount
 
             return {
-                'description': description,
+                'description': coupon.description,
                 'discount_amount': discount_amount
             }
 
@@ -490,17 +477,14 @@ class Order(models.Model):
 
     @property
     def tax(self):
-        order = Order.objects.get(id=self.id)
+        if self.coupon:
+            return (self.products_total_price - self.coupon_details['discount_amount']) / 11
 
-        if order.coupon:
-            return (order.products_total_price - order.coupon_details['discount_amount']) / 11
-
-        return order.products_total_price / 11
+        return self.products_total_price / 11
 
     @property
     def products_total_price(self):
-        order = Order.objects.get(id=self.id)
-        items = json.loads(order.products_qty.replace("\'", "\""))
+        items = json.loads(self.products_qty.replace("\'", "\""))
         total = 0
 
         for item in items:
@@ -511,24 +495,21 @@ class Order(models.Model):
 
     @property
     def fulfillment_type(self):
-        fulfillment = SHIPPING
-        order = Order.objects.get(id=self.id)
-        items = json.loads(order.products_qty.replace("\'", "\""))
+        fulfillment = ACCESS
+        items = json.loads(self.products_qty.replace("\'", "\""))
 
         for item in items:
             product = Product.objects.get(id=item['id'])
 
-            if product.product_type != PHYSICAL:
-                fulfillment = ACCESS
+            if product.product_type == PHYSICAL:
+                fulfillment = SHIPPING
 
         return fulfillment
 
     @property
     def readable_date(self):
-        order = Order.objects.get(id=self.id)
-
         local_tz = pytz.timezone('Australia/Sydney')
-        local_dt = order.date_created.replace(
+        local_dt = self.date_created.replace(
             tzinfo=pytz.utc).astimezone(local_tz)
 
         return {
@@ -548,13 +529,12 @@ class OrderStatusUpdate(models.Model):
 
     @property
     def readable_date(self):
-
         local_tz = pytz.timezone('Australia/Sydney')
         local_dt = self.update_date.replace(
             tzinfo=pytz.utc).astimezone(local_tz)
 
         return {
-            'date': local_dt.strftime("%x"),
+            'date': local_dt.strftime("%d/%m/%y"),
             'time': local_dt.strftime("%I:%M %p")
         }
 
@@ -567,6 +547,13 @@ class Coupon(models.Model):
     date_created = models.DateTimeField(
         null=False, blank=False, default=timezone.now)
     expiry_date = models.DateTimeField(null=True, blank=True)
+
+    @property
+    def description(self):
+        if self.coupon_type == "percentage":
+            return "{} {}% off".format(self.name, str(self.amount))
+        else:
+            return "{} A${:.2f} off".format(self.name, self.amount)
 
 
 class ProductSEO(models.Model):

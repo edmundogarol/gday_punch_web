@@ -41,7 +41,7 @@ class MangaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manga
         fields = ("id", "title", "author", "pdf", "cover", "likes", "user_likes",
-                  "comments")
+                  "comments", "author_name")
 
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -112,7 +112,7 @@ class OrderStatusUpdateSerializer(serializers.ModelSerializer):
 class CouponSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coupon
-        fields = ("id", "name", "date_created",
+        fields = ("id", "name", "date_created", "description",
                   "expiry_date", "coupon_type", "amount")
 
 
