@@ -48,6 +48,7 @@ import {
   UPDATE_COMMENTS,
   UPDATE_COMMENT,
 } from "actions/manga";
+import { message } from "antd";
 
 import { adminReducer } from "./admin";
 import { customerReducer } from "./customer";
@@ -336,6 +337,17 @@ const appReducer = (state = INITIAL_STATE, action) => {
       };
     case UPDATE_CART_ITEM_QUANTITY:
       const modifyingItem = state.products.productList[payload.productId];
+      const newQuantity = payload.addOnTop
+        ? (modifyingItem.quantity || 0) + payload.quantity
+        : payload.quantity;
+
+      if (modifyingItem.stock < newQuantity) {
+        message.error("Failed to add/update item quantity: Not enough stock.");
+        return {
+          ...state,
+        };
+      }
+
       return {
         ...state,
         products: {
@@ -344,9 +356,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
             ...state.products.productList,
             [modifyingItem.id]: {
               ...modifyingItem,
-              quantity: payload.addOnTop
-                ? (modifyingItem.quantity || 0) + payload.quantity
-                : payload.quantity,
+              quantity: newQuantity,
             },
           },
         },

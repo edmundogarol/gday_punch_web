@@ -4,10 +4,26 @@ import Image from "components/image";
 export const ProductTileContainer = styled.div`
   margin: 20pt;
   min-width: 13em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: start;
 
   a {
+    width: 100%;
+
     &:hover {
       cursor: pointer;
+    }
+  }
+
+  .img-link {
+    width: 100%;
+    max-height: 19em;
+
+    img {
+      width: 100%;
+      max-height: 19em;
     }
   }
 
@@ -19,20 +35,19 @@ export const ProductTileContainer = styled.div`
       transform: scale(1.05);
     }
   }
-`;
 
-export const ProductImage = styled(Image)`
-  max-height: 15em;
-
-  img {
-    height: 15em;
+  .ant-ribbon {
+    transform: translate(0, 16em);
   }
 `;
+
+export const ProductImage = styled(Image)``;
 
 export const ProductTitle = styled.h2`
   font-size: 1em;
   margin: unset;
   max-width: 12em;
+  width: 100%;
 `;
 
 export const ProductAuthor = styled.h4`
@@ -46,11 +61,9 @@ export const ProductDetails = styled.div`
   display: flex;
   flex-direction: column;
   text-align: start;
-  margin-left: auto;
-  margin-right: auto;
-  width: 90%;
+  width: 100%;
   margin-top: 10pt;
-  margin-bottom: 10pt;
+  margin-bottom: 0.2em;
 
   a {
     text-decoration: none;
@@ -79,6 +92,7 @@ export const ProductDetails = styled.div`
 export const PriceLikeCommentConainer = styled.div`
   display: flex;
   justify-content: space-between;
+  white-space: nowrap;
 `;
 
 export const LikeCommentConainer = styled.div`
@@ -89,6 +103,8 @@ export const NumberLabel = styled.span`
   margin-left: 0.3em;
   color: dimgrey;
 `;
+
+export const LowStock = styled.div``;
 
 export const InteractionContainer = styled.a`
   svg {

@@ -1,5 +1,5 @@
-import React from "react";
-import { Table, Modal, Button } from "antd";
+import React, { useState } from "react";
+import { Table, Modal, Button, Input } from "antd";
 import {
   ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
@@ -21,9 +21,11 @@ import {
   ModalTitle,
   TitleStatus,
   ModalItemSummary,
+  StatusButtons,
 } from "./styles";
 
 const { confirm } = Modal;
+const { TextArea } = Input;
 
 function Ui(props) {
   const {
@@ -31,7 +33,7 @@ function Ui(props) {
     setSelectedOrder,
     updateOrderStatus,
   } = props;
-
+  const [statusUpdateReason, updateStatusUpdateReason] = useState(undefined);
   const order = orderList[selected];
 
   const markShipped = (orderId, products) => {
@@ -50,6 +52,37 @@ function Ui(props) {
       ),
       onOk() {
         updateOrderStatus(orderId, "shipped");
+      },
+    });
+  };
+
+  const decline = (orderId) => {
+    confirm({
+      title: "Decline this order?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Decline",
+      okType: "danger",
+      content: (
+        <ModalItemSummary>
+          {"Provide description for order decline reasons."}
+          <div>
+            <TextArea
+              rows={10}
+              showCount
+              maxLength={500}
+              value={statusUpdateReason}
+              onChange={(e) => updateStatusUpdateReason(e.target.value)}
+              placeholder="Enter decline reason."
+            />
+          </div>
+        </ModalItemSummary>
+      ),
+      onOk() {
+        updateOrderStatus(orderId, "declined", statusUpdateReason);
+        updateStatusUpdateReason(undefined);
+      },
+      onCancel() {
+        updateStatusUpdateReason(undefined);
       },
     });
   };
@@ -275,6 +308,11 @@ function Ui(props) {
           <span>{`A$${order.amount.toFixed(2)}`}</span>
         </div>
       </ProductTotalsContainer>
+      <StatusButtons>
+        <Button onClick={() => decline(order.id)}>Decline</Button>
+        <Button onClick={() => alert("Refund")}>Refund</Button>
+        <Button onClick={() => alert("Partial refund")}>Partial Refund</Button>
+      </StatusButtons>
       <AddressBillingContainer>
         <LeftContainer>
           <AddressContactField>

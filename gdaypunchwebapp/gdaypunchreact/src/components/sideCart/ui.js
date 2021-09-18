@@ -113,9 +113,10 @@ function Ui(props) {
   };
 
   const cartItem = (item) => {
-    const { id, image, title, product_type, active_price, quantity } = item;
+    const { id, image, title, product_type, active_price, quantity, stock } =
+      item;
     const digitalProduct = product_type !== "physical";
-    const qtyRange = digitalProduct && quantity ? 1 : 10;
+    const qtyRange = digitalProduct && quantity ? 1 : stock > 10 ? 10 : stock;
 
     return (
       <ItemContainer key={id}>

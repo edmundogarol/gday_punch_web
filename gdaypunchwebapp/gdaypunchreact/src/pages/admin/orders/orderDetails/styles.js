@@ -107,6 +107,10 @@ export const OrderModal = styled(Modal)`
   }
 `;
 
+export const StatusButtons = styled.div`
+  margin-top: 1em;
+`;
+
 export const ModalTitle = styled.div`
   display: flex;
   justify-content: space-between;

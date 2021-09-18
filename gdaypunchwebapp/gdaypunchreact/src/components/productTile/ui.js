@@ -2,6 +2,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { CommentOutlined } from "@ant-design/icons";
+import { Badge } from "antd";
 
 import { getGdayPunchStaticUrl, scrollToTop } from "utils/utils";
 
@@ -16,6 +17,7 @@ import {
   InteractionContainer,
   PriceLikeCommentConainer,
   LikeCommentConainer,
+  LowStock,
 } from "./styles";
 
 function Ui(props) {
@@ -36,6 +38,7 @@ function Ui(props) {
     active_price,
     product_type,
     quantity,
+    stock,
     visible,
     user_string: creator,
   } = product;
@@ -108,17 +111,23 @@ function Ui(props) {
     }
   };
 
+  const BadgeWrapper =
+    product.stock < 10 && product.product_type === "physical"
+      ? Badge.Ribbon
+      : LowStock;
+
   return (
     <ProductTileContainer>
-      <a onClick={() => handleViewProduct()}>
-        <ProductImage alt={title} src={getGdayPunchStaticUrl(image)} />
-      </a>
-      <ProductDetails>
-        <a onClick={() => handleViewProduct()}>
-          <ProductTitle>
-            {!visible ? "[Hidden]" : ""} {title}
-          </ProductTitle>
+      <BadgeWrapper
+        text={product.stock < 10 ? `Only ${product.stock} left` : undefined}
+        color="red"
+      >
+        <a className="img-link" onClick={() => handleViewProduct()}>
+          <ProductImage alt={title} src={getGdayPunchStaticUrl(image)} />
         </a>
+      </BadgeWrapper>
+      <ProductDetails>
+        {renderActionButton()}
         <ProductAuthor>{author || creator}</ProductAuthor>
         <PriceLikeCommentConainer>
           {buyableProduct ? <p>{`A$${active_price}`}</p> : <p>{`FREE`}</p>}
@@ -139,7 +148,11 @@ function Ui(props) {
           )}
         </PriceLikeCommentConainer>
       </ProductDetails>
-      {renderActionButton()}
+      <a onClick={() => handleViewProduct()}>
+        <ProductTitle>
+          {!visible ? "[Hidden]" : ""} {title}
+        </ProductTitle>
+      </a>
     </ProductTileContainer>
   );
 }
