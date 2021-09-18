@@ -24,7 +24,7 @@ from ..serializers import (
     OrderSerializer, OrderStatusUpdateSerializer
 )
 from ..api_permissions import (
-    OrdersByUserPermissions, OrderStatusUpdatesPermissions
+    OrdersByUserPermissions, OrderStatusUpdatesPermissions, OrderDetailsPermissions
 )
 
 if 'DEVENV' in os.environ:
@@ -54,6 +54,17 @@ class OrderViewSet(viewsets.ModelViewSet):
         queryset = Order.objects.all().order_by('-id')
         orders = get_list_or_404(queryset, customer=pk)
         serializer = OrderSerializer(orders, many=True)
+        return Response(serializer.data)
+
+
+class OrderDetailViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.none()
+    serializer_class = OrderSerializer
+    permission_classes = (OrderDetailsPermissions, )
+
+    def retrieve(self, request, pk=None):
+        order = Order.objects.get(id=pk)
+        serializer = OrderSerializer(order)
         return Response(serializer.data)
 
 
@@ -249,7 +260,33 @@ class OrderStatusUpdateViewset(viewsets.ModelViewSet):
         """
         Retrieve all status updates for Order [id]
         """
-        queryset = OrderStatusUpdate.objects.all()
+        queryset = OrderStatusUpdate.objects.all().order_by('-id')
         status_updates = get_list_or_404(queryset, order=pk)
         serializer = OrderStatusUpdateSerializer(status_updates, many=True)
         return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        order = Order.objects.get(id=request.data['order'])
+        order_status = request.data['status']
+        reasons = request.data.get("reasons", None)
+        description = 'Order x{} shippable items have been shipped.'.format(
+            order.total_shippable_items)
+
+        if order_status == "declined":
+            description = 'Order has been declined due to reasons: {}'.format(
+                reasons)
+        elif order_status == "refunded":
+            description = 'Order has been refunded due to reasons: {}'.format(
+                reasons)
+
+        like = OrderStatusUpdate.objects.create(
+            order=order,
+            status=order_status,
+            description=description
+        )
+        like.save()
+
+        order.status = order_status
+        order.save()
+
+        return Response({'details': 'Order status updated.'}, status=status.HTTP_201_CREATED)

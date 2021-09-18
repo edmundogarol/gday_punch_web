@@ -40,6 +40,7 @@ function Ui(props) {
     fetchOrders,
     fetchOrderStatuses,
     setSelectedOrder,
+    updateOrderStatus,
   } = props;
 
   useEffect(() => {
@@ -48,7 +49,7 @@ function Ui(props) {
     }
   }, [fetching, finishedFetching]);
 
-  const markShipped = (products) => {
+  const markShipped = (orderId, products) => {
     confirm({
       title: "Mark this order as shipped?",
       icon: <ExclamationCircleOutlined />,
@@ -57,18 +58,13 @@ function Ui(props) {
           {"Confirm shipment of all shippable items included in order."}
           <div>
             {products.map((product) => (
-              <p>
-                - {product.title} x{product.qty}
-              </p>
+              <p key={product.id}>{`- ${product.title} x${product.qty}`}</p>
             ))}
           </div>
         </ModalItemSummary>
       ),
       onOk() {
-        console.log("OK");
-      },
-      onCancel() {
-        console.log("Cancel");
+        updateOrderStatus(orderId, "shipped");
       },
     });
   };
@@ -236,7 +232,6 @@ function Ui(props) {
       key: "order-item",
       render: (product, instance) => {
         let currentStatus = "purchased";
-        const StatusIcon = renderStatusIcons[currentStatus];
 
         if (instance.status === "pending") {
           if (product.type === "digital") {
@@ -244,7 +239,15 @@ function Ui(props) {
           } else {
             currentStatus = "pending";
           }
+        } else if (instance.status === "shipped") {
+          if (product.type === "digital") {
+            currentStatus = "purchased";
+          } else {
+            currentStatus = "shipped";
+          }
         }
+
+        const StatusIcon = renderStatusIcons[currentStatus];
 
         return (
           <div>
@@ -293,7 +296,6 @@ function Ui(props) {
       key: "order-item",
       render: (product, instance) => {
         let currentStatus = "purchased";
-        const StatusIcon = renderStatusIcons[currentStatus];
 
         if (instance.status === "pending") {
           if (product.type === "digital") {
@@ -301,7 +303,15 @@ function Ui(props) {
           } else {
             currentStatus = "pending";
           }
+        } else if (instance.status === "shipped") {
+          if (product.type === "digital") {
+            currentStatus = "purchased";
+          } else {
+            currentStatus = "shipped";
+          }
         }
+
+        const StatusIcon = renderStatusIcons[currentStatus];
 
         return (
           <div className="item-image-title">
@@ -371,17 +381,24 @@ function Ui(props) {
                 <StatusIcon /> {order.status}
               </span>
             </TitleStatus>
-            <Button
-              onClick={() =>
-                markShipped(
-                  order.product_qty_details
-                    .map((elem) => ({ qty: elem.qty, ...elem.product }))
-                    .filter((prod) => prod.type === "physical")
-                )
-              }
-            >
-              Mark as Shipped
-            </Button>
+            {order.status === "pending" ? (
+              <Button
+                onClick={() =>
+                  markShipped(
+                    order.id,
+                    order.product_qty_details
+                      .map((elem) => ({
+                        id: elem.id,
+                        qty: elem.qty,
+                        ...elem.product,
+                      }))
+                      .filter((prod) => prod.type !== "digital")
+                  )
+                }
+              >
+                Mark as Shipped
+              </Button>
+            ) : null}
           </ModalTitle>
         }
         visible={selected}

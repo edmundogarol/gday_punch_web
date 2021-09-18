@@ -67,6 +67,8 @@ export const FINISHED_FETCHING_ORDERS = "admin/FINISHED_FETCHING_ORDERS";
 export const FETCH_ORDERS_STATUS_UPDATES = "admin/FETCH_ORDERS_STATUS_UPDATES";
 export const UPDATE_ORDER_STATUS_UPDATES = "admin/UPDATE_ORDER_STATUS_UPDATES";
 export const SET_SELECTED_ORDER = "admin/SET_SELECTED_ORDER";
+export const UPDATE_ORDER = "admin/UPDATE_ORDER";
+export const UPDATE_ORDER_STATUS = "admin/UPDATE_ORDER_STATUS";
 
 export const doTweet = () => ({
   type: DO_TWEET,
@@ -368,6 +370,22 @@ export const updateOrderStatusUpdates = (orderId, statusUpdates) => ({
   payload: {
     orderId,
     statusUpdates,
+  },
+});
+
+export const updateOrderStatus = (orderId, status, reasons) => ({
+  type: UPDATE_ORDER_STATUS,
+  payload: {
+    orderId,
+    status,
+    reasons,
+  },
+});
+
+export const updateOrder = (order) => ({
+  type: UPDATE_ORDER,
+  payload: {
+    order,
   },
 });
 

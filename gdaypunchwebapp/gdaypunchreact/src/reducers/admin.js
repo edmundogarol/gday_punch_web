@@ -35,6 +35,7 @@ import {
   FINISHED_FETCHING_ORDERS,
   UPDATE_ORDER_STATUS_UPDATES,
   SET_SELECTED_ORDER,
+  UPDATE_ORDER,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -358,6 +359,20 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
             [action.payload.orderId]: {
               ...state.orders.orderList[action.payload.orderId],
               statuses: action.payload.statusUpdates,
+            },
+          },
+        },
+      };
+    case UPDATE_ORDER:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          orderList: {
+            ...state.orders.orderList,
+            [action.payload.order.id]: {
+              ...state.orders.orderList[action.payload.order.id],
+              ...action.payload.order,
             },
           },
         },

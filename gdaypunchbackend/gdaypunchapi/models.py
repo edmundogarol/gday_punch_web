@@ -453,6 +453,19 @@ class Order(models.Model):
         return item_details
 
     @property
+    def total_shippable_items(self):
+        items = json.loads(self.products_qty.replace("\'", "\""))
+        total = 0
+
+        for item in items:
+            product = Product.objects.get(id=item['id'])
+
+            if product.product_type != "digital":
+                total = total + item['qty']
+
+        return total
+
+    @property
     def coupon_details(self):
         if self.coupon:
             coupon = Coupon.objects.get(name=self.coupon)

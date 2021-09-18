@@ -140,7 +140,32 @@ class OrdersByUserPermissions(BasePermission):
                     return False
         else:
             return False
-            
+
+
+# Only allow authenticated users to get their order (retrieve)
+class OrderDetailsPermissions(BasePermission):
+
+    def has_permission(self, request, view):
+        order_id = view.kwargs.get('pk')
+
+        if staff(request):
+            return True
+        elif view.action in ['retrieve']:
+            if request.user.is_authenticated:
+                try:
+                    order = Order.objects.get(
+                        id=order_id)
+                    stripe_customer = StripeCustomer.objects.get(
+                        id=order.customer)
+
+                    return stripe_customer.user.email.strip() == str(request.user).strip()
+                except StripeCustomer.DoesNotExist:
+                    return False
+                except Order.DoesNotExist:
+                    return False
+        else:
+            return False
+
 
 # Only allow authenticated users to get their order's status updates (retrieve)
 class OrderStatusUpdatesPermissions(BasePermission):
@@ -155,8 +180,9 @@ class OrderStatusUpdatesPermissions(BasePermission):
                 try:
                     order = Order.objects.get(
                         id=order_id)
-                    stripe_customer = StripeCustomer.objects.get(id=order.customer)
-                    
+                    stripe_customer = StripeCustomer.objects.get(
+                        id=order.customer)
+
                     return stripe_customer.user.email.strip() == str(request.user).strip()
                 except StripeCustomer.DoesNotExist:
                     return False
