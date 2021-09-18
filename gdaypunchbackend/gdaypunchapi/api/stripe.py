@@ -38,9 +38,16 @@ else:
 def calculate_order_amount(customer, items_list, coupon, au_shipping):
     order_amount = 0
     subscription_items = []
+    error = None
 
     for product in items_list:
         current_product = Product.objects.get(id=product['id'])
+
+        if current_product.stock < product['qty']:
+            error = "Not enough stock for order."
+            return {
+                'error': error
+            }
 
         qty = 0
         while qty < product['qty']:
@@ -310,6 +317,10 @@ class PaymentSubmitView(viewsets.ModelViewSet):
 
             order_amount_details = calculate_order_amount(
                 customer, items_list, coupon, customer_payload['country'] == "AU")
+
+            if 'error' in order_amount_details:
+                return Response({'details': 'Order quantity exceeded available stock.'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
             order_amount = order_amount_details['amount']
             order_subscriptions = order_amount_details['subscriptions']
 
@@ -331,9 +342,7 @@ class PaymentSubmitView(viewsets.ModelViewSet):
             }
 
         except Exception as e:
-            content = {
-                'error': str(e)
-            }
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response(content)
 

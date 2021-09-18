@@ -119,7 +119,13 @@ function Ui(props) {
   return (
     <ProductTileContainer>
       <BadgeWrapper
-        text={product.stock < 10 ? `Only ${product.stock} left` : undefined}
+        text={
+          product.stock < 10
+            ? product.stock == 0
+              ? "Sold out"
+              : `Only ${product.stock} left`
+            : undefined
+        }
         color="red"
       >
         <a className="img-link" onClick={() => handleViewProduct()}>

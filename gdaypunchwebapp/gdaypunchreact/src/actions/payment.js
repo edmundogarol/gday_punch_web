@@ -40,8 +40,11 @@ export const paymentSucceeded = () => ({
   type: PAYMENT_SUCCEEDED,
 });
 
-export const paymentError = () => ({
+export const paymentError = (errors) => ({
   type: PAYMENT_ERROR,
+  payload: {
+    errors,
+  },
 });
 
 export const paymentIntentFetch = (items) => ({

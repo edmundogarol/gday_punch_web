@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
-import { message } from "antd";
+import { message, Spin, Result, Button } from "antd";
 import axios from "axios";
 import "unfetch/polyfill";
 import "es6-promise/auto";
@@ -52,13 +52,21 @@ function Ui(props) {
       fetching: fetchingCustomer,
       fetchingFinished: fetchingCustomerFinished,
     },
-    paymentState: { coupon, clientSecret },
+    paymentState: {
+      coupon,
+      clientSecret,
+      processing: paymentProcessing,
+      finished: paymentFinished,
+      errors: paymentErrors,
+    },
     customerFetch,
     customerSubscribe,
     toggleSideCart,
     cartTotal,
     viewProduct,
     productList: cartItemsObject,
+    paymentError,
+    history,
   } = props;
   const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
   const [customerDetailsReplaced, updateCustomerDetailsReplaced] =
@@ -349,6 +357,14 @@ function Ui(props) {
   };
 
   useEffect(() => {
+    return () => {
+      if (paymentFinished && paymentErrors) {
+        paymentError(undefined);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (clientSecret) {
       processPayment();
     }
@@ -443,140 +459,172 @@ function Ui(props) {
   return (
     <App id="top" className="App">
       <FeaturedSection top width={"90%"} height={"70vh"}>
-        <CheckoutHeader>
-          <h3>Secure Checkout</h3>
-        </CheckoutHeader>
-        {items.length < 1 ? (
-          <EmptyCartMessage>
-            <h4>Empty Cart</h4>
-            <div>
-              <h2 onClick={() => props.history.push("/shop")}>Shop now!</h2>
-              <ShopOutlined className="site-form-item-icon" />
-            </div>
-          </EmptyCartMessage>
+        {paymentErrors ? (
+          <Result
+            status="warning"
+            title="There are some problems with your order."
+            subTitle={
+              <div>
+                {paymentErrors.details}
+                <br />
+                {"You have not been charged."}
+              </div>
+            }
+            extra={
+              <Button
+                type="primary"
+                key="console"
+                onClick={() => {
+                  paymentError(undefined);
+                  history.push("/cart");
+                }}
+              >
+                Go to Cart
+              </Button>
+            }
+          />
         ) : (
-          <CheckoutContainer>
-            <LeftCheckoutContainer id="left-checkout-container">
-              <CheckoutInnerSectionContainer
-                selectImage={getImageModule("down-arrow.png")}
-              >
-                <CheckoutInnerSectionTitle>
-                  Customer Details
-                  {!checkoutForm.formOpen && (
-                    <span onClick={() => handleOpenSection("customer")}>
-                      Edit
-                    </span>
-                  )}
-                </CheckoutInnerSectionTitle>
-                <br />
-                {fetchingCustomer ? (
-                  <LoadingSpinner />
-                ) : (
-                  <CustomerDetailsSection
-                    checkoutForm={checkoutForm}
-                    updateCheckoutForm={updateCheckoutForm}
-                    subscribeAgreed={subscribeAgreed}
-                    handleSubscribeCheck={handleSubscribeCheck}
-                    handleOpenSection={handleOpenSection}
-                    loggedIn={user.logged_in}
-                  />
-                )}
-              </CheckoutInnerSectionContainer>
-              <CheckoutInnerSectionContainer>
-                <CheckoutInnerSectionTitle>
-                  Shipping Method
-                  {!shippingMethodOpen && (
-                    <span onClick={() => handleOpenSection("shipping")}>
-                      Edit
-                    </span>
-                  )}
-                </CheckoutInnerSectionTitle>
-                <br />
-                <ShippingSection
-                  shippingMethodOpen={shippingMethodOpen}
-                  freeShipping={freeShipping}
-                  handleOpenSection={handleOpenSection}
-                />
-              </CheckoutInnerSectionContainer>
-              <CheckoutInnerSectionContainer
-                selectImage={getImageModule("down-arrow.png")}
-              >
-                <CheckoutInnerSectionTitle>
-                  Billing Address
-                  {!billingForm.formOpen && (
-                    <span onClick={() => handleOpenSection("billing")}>
-                      Edit
-                    </span>
-                  )}
-                </CheckoutInnerSectionTitle>
-                <br />
-                <BillingSection
-                  billingForm={billingForm}
-                  useShippingDetails={useShippingDetails}
-                  toggleUseShippingDetails={toggleUseShippingDetails}
-                  updateCountriesDownloaded={updateCountriesDownloaded}
-                  updateBillingForm={updateBillingForm}
-                  handleOpenSection={handleOpenSection}
-                />
-              </CheckoutInnerSectionContainer>
-              <CheckoutInnerSectionContainer>
-                <CheckoutInnerSectionTitle>
-                  Payment
-                  <span className="no-hover">
-                    <PaymentMethodLogo
-                      src={getResourceImageModule("visa-logo.png")}
-                    />
-                    <PaymentMethodLogo
-                      src={getResourceImageModule("master-card-logo.png")}
-                    />
-                  </span>
-                </CheckoutInnerSectionTitle>
-                <br />
-                <PaymentSection
-                  paymentOpen={paymentOpen}
-                  billingForm={billingForm}
-                  updateBillingForm={updateBillingForm}
-                />
-              </CheckoutInnerSectionContainer>
-            </LeftCheckoutContainer>
-            <OrderSummaryContainer>
-              <OrderSummaryFixed id="order-summary">
-                <label>Order Summary</label>
-                <SideCartItemsList>
-                  {items.map((item) => (
-                    <CartItem
-                      key={item.id}
-                      item={item}
-                      handleViewProduct={handleViewProduct}
-                    />
-                  ))}
-                </SideCartItemsList>
-                <ItemTotalContainer>
-                  <NavLink target="_blank" to="/refunds-and-returns">
-                    <p className="website">Refunds & Returns Policy</p>
-                  </NavLink>
-                  <div>
-                    <ItemTotal>
-                      <TotalLabel>Total:</TotalLabel>
-                      <h3>A${cartTotal.toFixed(2)}</h3>
-                    </ItemTotal>
-                    <GSTLabel>[Price Includes GST]</GSTLabel>
-                  </div>
-                </ItemTotalContainer>
-                <CartFooter>
-                  <button
-                    onClick={(ev) => {
-                      toggleSubmitting(true);
-                      console.log({ checkoutForm, billingForm });
-                      handleSubmitPayment(ev);
-                    }}
+          <>
+            <CheckoutHeader>
+              <h3>Secure Checkout</h3>
+            </CheckoutHeader>
+            {items.length < 1 ? (
+              <EmptyCartMessage>
+                <h4>Empty Cart</h4>
+                <div>
+                  <h2 onClick={() => props.history.push("/shop")}>Shop now!</h2>
+                  <ShopOutlined className="site-form-item-icon" />
+                </div>
+              </EmptyCartMessage>
+            ) : (
+              <CheckoutContainer>
+                <LeftCheckoutContainer id="left-checkout-container">
+                  <CheckoutInnerSectionContainer
+                    selectImage={getImageModule("down-arrow.png")}
                   >
-                    Pay Now
-                  </button>
-                </CartFooter>
-              </OrderSummaryFixed>
-            </OrderSummaryContainer>
-          </CheckoutContainer>
+                    <CheckoutInnerSectionTitle>
+                      Customer Details
+                      {!checkoutForm.formOpen && (
+                        <span onClick={() => handleOpenSection("customer")}>
+                          Edit
+                        </span>
+                      )}
+                    </CheckoutInnerSectionTitle>
+                    <br />
+                    {fetchingCustomer ? (
+                      <LoadingSpinner />
+                    ) : (
+                      <CustomerDetailsSection
+                        checkoutForm={checkoutForm}
+                        updateCheckoutForm={updateCheckoutForm}
+                        subscribeAgreed={subscribeAgreed}
+                        handleSubscribeCheck={handleSubscribeCheck}
+                        handleOpenSection={handleOpenSection}
+                        loggedIn={user.logged_in}
+                      />
+                    )}
+                  </CheckoutInnerSectionContainer>
+                  <CheckoutInnerSectionContainer>
+                    <CheckoutInnerSectionTitle>
+                      Shipping Method
+                      {!shippingMethodOpen && (
+                        <span onClick={() => handleOpenSection("shipping")}>
+                          Edit
+                        </span>
+                      )}
+                    </CheckoutInnerSectionTitle>
+                    <br />
+                    <ShippingSection
+                      shippingMethodOpen={shippingMethodOpen}
+                      freeShipping={freeShipping}
+                      handleOpenSection={handleOpenSection}
+                    />
+                  </CheckoutInnerSectionContainer>
+                  <CheckoutInnerSectionContainer
+                    selectImage={getImageModule("down-arrow.png")}
+                  >
+                    <CheckoutInnerSectionTitle>
+                      Billing Address
+                      {!billingForm.formOpen && (
+                        <span onClick={() => handleOpenSection("billing")}>
+                          Edit
+                        </span>
+                      )}
+                    </CheckoutInnerSectionTitle>
+                    <br />
+                    <BillingSection
+                      billingForm={billingForm}
+                      useShippingDetails={useShippingDetails}
+                      toggleUseShippingDetails={toggleUseShippingDetails}
+                      updateCountriesDownloaded={updateCountriesDownloaded}
+                      updateBillingForm={updateBillingForm}
+                      handleOpenSection={handleOpenSection}
+                    />
+                  </CheckoutInnerSectionContainer>
+                  <CheckoutInnerSectionContainer>
+                    <CheckoutInnerSectionTitle>
+                      Payment
+                      <span className="no-hover">
+                        <PaymentMethodLogo
+                          src={getResourceImageModule("visa-logo.png")}
+                        />
+                        <PaymentMethodLogo
+                          src={getResourceImageModule("master-card-logo.png")}
+                        />
+                      </span>
+                    </CheckoutInnerSectionTitle>
+                    <br />
+                    <Spin
+                      tip="Processing payment..."
+                      spinning={paymentProcessing}
+                    >
+                      <PaymentSection
+                        paymentOpen={paymentOpen}
+                        billingForm={billingForm}
+                        updateBillingForm={updateBillingForm}
+                      />
+                    </Spin>
+                  </CheckoutInnerSectionContainer>
+                </LeftCheckoutContainer>
+                <OrderSummaryContainer>
+                  <OrderSummaryFixed id="order-summary">
+                    <label>Order Summary</label>
+                    <SideCartItemsList>
+                      {items.map((item) => (
+                        <CartItem
+                          key={item.id}
+                          item={item}
+                          handleViewProduct={handleViewProduct}
+                        />
+                      ))}
+                    </SideCartItemsList>
+                    <ItemTotalContainer>
+                      <NavLink target="_blank" to="/refunds-and-returns">
+                        <p className="website">Refunds & Returns Policy</p>
+                      </NavLink>
+                      <div>
+                        <ItemTotal>
+                          <TotalLabel>Total:</TotalLabel>
+                          <h3>A${cartTotal.toFixed(2)}</h3>
+                        </ItemTotal>
+                        <GSTLabel>[Price Includes GST]</GSTLabel>
+                      </div>
+                    </ItemTotalContainer>
+                    <CartFooter>
+                      <button
+                        onClick={(ev) => {
+                          toggleSubmitting(true);
+                          handleSubmitPayment(ev);
+                        }}
+                      >
+                        Pay Now
+                      </button>
+                    </CartFooter>
+                  </OrderSummaryFixed>
+                </OrderSummaryContainer>
+              </CheckoutContainer>
+            )}
+          </>
         )}
       </FeaturedSection>
     </App>
