@@ -178,6 +178,10 @@ export const QuantityAddCartContainer = styled.div`
       align-items: center;
     }
   }
+
+  .ant-ribbon {
+    transform: translate(0, -1em);
+  }
 `;
 
 export const TitleInteractionButtonsContainer = styled.div`

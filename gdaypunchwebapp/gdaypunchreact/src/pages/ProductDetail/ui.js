@@ -8,12 +8,13 @@ import {
   faTwitter,
   faPinterest,
 } from "@fortawesome/free-brands-svg-icons";
-import { Typography, Select, Spin, message } from "antd";
+import { Typography, Select, Spin, message, Badge } from "antd";
 import moment from "moment";
 const { Title } = Typography;
 const { Option } = Select;
 
 import Image from "components/image";
+import { LowStock } from "components/productTile/styles";
 import {
   PageContainer,
   ProductContainer,
@@ -90,11 +91,6 @@ function Ui(props) {
       }
     }
 
-    console.log({
-      product,
-      fetchingViewingProduct,
-      finishedFetchingViewingProduct,
-    });
     if (finishedFetchingViewingProduct && !product) {
       props.history.push("/");
     }
@@ -184,6 +180,11 @@ function Ui(props) {
       );
     }
   };
+
+  const BadgeWrapper =
+    product && product.stock < 10 && product.product_type === "physical"
+      ? Badge.Ribbon
+      : LowStock;
 
   return (
     <PageContainer>
@@ -309,7 +310,17 @@ function Ui(props) {
                     </Select>
                   </>
                 )}
-                {renderActionButton()}
+                <BadgeWrapper
+                  offset={[0, -10]}
+                  text={
+                    product.stock < 10
+                      ? `Only ${product.stock} left`
+                      : undefined
+                  }
+                  color="red"
+                >
+                  {renderActionButton()}
+                </BadgeWrapper>
               </QuantityAddCartContainer>
             </ProductDetailRightContainer>
           </ProductDetailContainer>
