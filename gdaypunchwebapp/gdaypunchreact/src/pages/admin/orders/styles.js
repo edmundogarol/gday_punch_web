@@ -138,6 +138,7 @@ export const OrderModal = styled(Modal)`
     font-size: 0.8em;
     color: dimgray;
     text-transform: capitalize;
+    white-space: nowrap;
   }
 
   .item-image-title {
@@ -152,6 +153,17 @@ export const OrderModal = styled(Modal)`
   .title-status-qty {
     display: flex;
     flex-direction: column;
+
+    p {
+      margin-bottom: unset;
+    }
+    span {
+      margin-left: unset;
+    }
+
+    @media ${device.tablet} {
+      margin-left: 1em;
+    }
   }
 
   .pending {
@@ -193,6 +205,43 @@ export const OrderModal = styled(Modal)`
 
   .total {
     text-align: end;
+  }
+`;
+
+export const ModalTitle = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding-right: 1.3em;
+
+  @media ${device.tablet} {
+    padding-right: 2em;
+  }
+`;
+
+export const TitleStatus = styled.div`
+  display: flex;
+  flex-direction: column;
+
+  .status {
+    margin-left: unset;
+  }
+
+  @media ${device.tablet} {
+    display: initial;
+
+    span:not(.anticon) {
+      margin-left: 1em;
+    }
+
+    .status {
+      margin-left: 1em;
+    }
+  }
+`;
+
+export const ModalItemSummary = styled.div`
+  div {
+    margin-top: 1.5em;
   }
 `;
 

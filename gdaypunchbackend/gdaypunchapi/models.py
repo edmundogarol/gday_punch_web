@@ -445,6 +445,7 @@ class Order(models.Model):
                         'price': product.active_price,
                         'image': product.image,
                         'sku': product.sku,
+                        'type': product.product_type
                     },
                     'qty': item['qty']
                 })

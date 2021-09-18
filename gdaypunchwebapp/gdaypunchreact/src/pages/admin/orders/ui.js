@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Typography, Table, Modal } from "antd";
+import { Typography, Table, Modal, Button } from "antd";
 import {
   ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
   PlayCircleOutlined as ShippedIcon,
   InfoCircleOutlined as RefundedIcon,
   CloseCircleOutlined as DeclinedIcon,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import moment from "moment";
 
@@ -19,8 +20,12 @@ import {
   LeftContainer,
   RightContainer,
   OrderStatuses,
+  ModalTitle,
+  TitleStatus,
+  ModalItemSummary,
 } from "./styles";
 
+const { confirm } = Modal;
 const { Title } = Typography;
 
 function Ui(props) {
@@ -42,6 +47,31 @@ function Ui(props) {
       fetchOrders();
     }
   }, [fetching, finishedFetching]);
+
+  const markShipped = (products) => {
+    confirm({
+      title: "Mark this order as shipped?",
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <ModalItemSummary>
+          {"Confirm shipment of all shippable items included in order."}
+          <div>
+            {products.map((product) => (
+              <p>
+                - {product.title} x{product.qty}
+              </p>
+            ))}
+          </div>
+        </ModalItemSummary>
+      ),
+      onOk() {
+        console.log("OK");
+      },
+      onCancel() {
+        console.log("Cancel");
+      },
+    });
+  };
 
   const renderStatusIcons = {
     pending: PendingIcon,
@@ -204,11 +234,27 @@ function Ui(props) {
       title: "Item",
       dataIndex: "product",
       key: "order-item",
-      render: (product) => {
+      render: (product, instance) => {
+        let currentStatus = "purchased";
+        const StatusIcon = renderStatusIcons[currentStatus];
+
+        if (instance.status === "pending") {
+          if (product.type !== "physical") {
+            currentStatus = "purchased";
+          } else {
+            currentStatus = "pending";
+          }
+        }
+
         return (
-          <div className="item-image-title">
-            <img src={getGdayPunchStaticUrl(product.image)} />
-            <p>{product.title}</p>
+          <div>
+            <div className="item-image-title">
+              <img src={getGdayPunchStaticUrl(product.image)} />
+              <p>{product.title}</p>
+              <span className={`status ${currentStatus}`}>
+                <StatusIcon /> {currentStatus}
+              </span>
+            </div>
           </div>
         );
       },
@@ -246,15 +292,24 @@ function Ui(props) {
       dataIndex: "product",
       key: "order-item",
       render: (product, instance) => {
-        const StatusIcon = renderStatusIcons[instance.status];
+        let currentStatus = "purchased";
+        const StatusIcon = renderStatusIcons[currentStatus];
+
+        if (instance.status === "pending") {
+          if (product.type !== "physical") {
+            currentStatus = "purchased";
+          } else {
+            currentStatus = "pending";
+          }
+        }
 
         return (
           <div className="item-image-title">
             <img src={getGdayPunchStaticUrl(product.image)} />
             <div className="title-status-qty">
               <p>{product.title}</p>
-              <span className={instance.status + " status"}>
-                <StatusIcon /> {instance.status} {`(${instance.qty})`}
+              <span className={currentStatus + " status"}>
+                <StatusIcon /> {currentStatus} {`(${instance.qty})`}
               </span>
             </div>
           </div>
@@ -309,12 +364,25 @@ function Ui(props) {
       <OrderModal
         width="80%"
         title={
-          <>
-            {`Order #${order.number}`}
-            <span className={order.status + " status"}>
-              <StatusIcon /> {order.status}
-            </span>
-          </>
+          <ModalTitle>
+            <TitleStatus>
+              {`Order #${order.number}`}
+              <span className={order.status + " status"}>
+                <StatusIcon /> {order.status}
+              </span>
+            </TitleStatus>
+            <Button
+              onClick={() =>
+                markShipped(
+                  order.product_qty_details
+                    .map((elem) => ({ qty: elem.qty, ...elem.product }))
+                    .filter((prod) => prod.type === "physical")
+                )
+              }
+            >
+              Mark as Shipped
+            </Button>
+          </ModalTitle>
         }
         visible={selected}
         onCancel={() => setSelectedOrder(undefined)}
@@ -325,7 +393,10 @@ function Ui(props) {
           rowKey="id"
           className="desktop"
           columns={productColumns}
-          dataSource={order.product_qty_details}
+          dataSource={order.product_qty_details.map((product) => ({
+            ...product,
+            status: order.status,
+          }))}
           pagination={false}
         />
         <Table
@@ -346,7 +417,7 @@ function Ui(props) {
             Shipping
             <span>{`A$${order.country === "AU" ? "0.00" : "13.00"}`}</span>
           </div>
-          {order.coupon.length > 1 && (
+          {order.coupon !== null && order.coupon.length > 1 && (
             <div>
               {`Discount [Coupon: ${order.coupon_details.description}]`}
               <span>{`- A$${order.coupon_details.discount_amount}`}</span>
