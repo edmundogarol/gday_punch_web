@@ -8,10 +8,6 @@ export const OrderModal = styled(Modal)`
   table,
   div {
     color: #525252;
-
-    td {
-      text-transform: capitalize;
-    }
   }
 
   .mobile {

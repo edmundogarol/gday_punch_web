@@ -54,11 +54,13 @@ import {
   UPDATE_ORDER_STATUS,
   fetchOrderStatusUpdates,
   updateOrder,
+  updateStatusReason,
 } from "actions/admin";
 import {
   selectPendingTweet,
   selectPendingDeletingTweet,
   selectOrdersNextPage,
+  selectOrderStatusUpdateReason,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
 
@@ -590,14 +592,15 @@ export function* fetchOrderDetails(orderId) {
 }
 
 export function* updateOrderStatusCall(action) {
-  const { orderId, status, reasons } = action.payload;
+  const { orderId, status } = action.payload;
+  const reason = yield select(selectOrderStatusUpdateReason);
 
   const response = yield call(api, `orders-status/`, {
     method: "POST",
     body: {
       order: orderId,
       status,
-      reasons,
+      reasons: reason,
     },
   });
 
@@ -605,6 +608,7 @@ export function* updateOrderStatusCall(action) {
     const data = response.data;
     yield put(fetchOrderStatusUpdates(orderId));
     yield call(fetchOrderDetails, orderId);
+    yield put(updateStatusReason(undefined));
   } else {
     console.log("Order Status Update error", JSON.stringify(response));
   }

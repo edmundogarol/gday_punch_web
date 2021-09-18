@@ -537,7 +537,7 @@ class OrderStatusUpdate(models.Model):
         max_length=30, choices=ORDER_STATUSES, default=PENDING)
     update_date = models.DateTimeField(
         null=True, blank=True, default=timezone.now)
-    description = models.TextField(max_length=100, blank=True)
+    description = models.TextField(max_length=300, blank=True)
     order = models.ForeignKey(
         Order,  on_delete=models.PROTECT, blank=False, null=False)
 

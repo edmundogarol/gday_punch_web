@@ -272,11 +272,14 @@ class OrderStatusUpdateViewset(viewsets.ModelViewSet):
         description = 'Order x{} shippable items have been shipped.'.format(
             order.total_shippable_items)
 
-        if order_status == "declined":
+        if order_status == DECLINED:
             description = 'Order has been declined due to reasons: {}'.format(
                 reasons)
-        elif order_status == "refunded":
+        elif order_status == REFUNDED:
             description = 'Order has been refunded due to reasons: {}'.format(
+                reasons)
+        elif order_status == PARTIALLY_REFUNDED:
+            description = 'Order has been partially refunded due to reasons: {}'.format(
                 reasons)
 
         like = OrderStatusUpdate.objects.create(

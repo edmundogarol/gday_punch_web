@@ -29,11 +29,12 @@ const { TextArea } = Input;
 
 function Ui(props) {
   const {
-    ordersState: { orderList, selected },
+    ordersState: { orderList, selected, reason },
     setSelectedOrder,
     updateOrderStatus,
+    updateStatusReason,
   } = props;
-  const [statusUpdateReason, updateStatusUpdateReason] = useState(undefined);
+
   const order = orderList[selected];
 
   const markShipped = (orderId, products) => {
@@ -56,7 +57,7 @@ function Ui(props) {
     });
   };
 
-  const decline = (orderId) => {
+  const decline = () => {
     confirm({
       title: "Decline this order?",
       icon: <ExclamationCircleOutlined />,
@@ -70,19 +71,78 @@ function Ui(props) {
               rows={10}
               showCount
               maxLength={500}
-              value={statusUpdateReason}
-              onChange={(e) => updateStatusUpdateReason(e.target.value)}
+              value={reason}
+              onChange={(e) => updateStatusReason(e.target.value)}
               placeholder="Enter decline reason."
             />
           </div>
         </ModalItemSummary>
       ),
       onOk() {
-        updateOrderStatus(orderId, "declined", statusUpdateReason);
-        updateStatusUpdateReason(undefined);
+        updateOrderStatus(order.id, "declined");
       },
       onCancel() {
-        updateStatusUpdateReason(undefined);
+        updateStatusReason(undefined);
+      },
+    });
+  };
+
+  const refund = () => {
+    confirm({
+      title: "Refund this full order?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Refund",
+      okType: "danger",
+      content: (
+        <ModalItemSummary>
+          {"Provide description for order refund reasons."}
+          <div>
+            <TextArea
+              rows={10}
+              showCount
+              maxLength={500}
+              value={reason}
+              onChange={(e) => updateStatusReason(e.target.value)}
+              placeholder="Enter refund reason."
+            />
+          </div>
+        </ModalItemSummary>
+      ),
+      onOk() {
+        updateOrderStatus(order.id, "refunded");
+      },
+      onCancel() {
+        updateStatusReason(undefined);
+      },
+    });
+  };
+
+  const partialRefund = () => {
+    confirm({
+      title: "Partially refund this order?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Refund",
+      okType: "danger",
+      content: (
+        <ModalItemSummary>
+          {"Provide description for order partial refund reasons."}
+          <div>
+            <TextArea
+              rows={10}
+              showCount
+              maxLength={500}
+              value={reason}
+              onChange={(e) => updateStatusReason(e.target.value)}
+              placeholder="Enter partial refund reason."
+            />
+          </div>
+        </ModalItemSummary>
+      ),
+      onOk() {
+        updateOrderStatus(order.id, "partially_refunded");
+      },
+      onCancel() {
+        updateStatusReason(undefined);
       },
     });
   };
@@ -116,6 +176,8 @@ function Ui(props) {
           } else {
             currentStatus = "shipped";
           }
+        } else {
+          currentStatus = instance.status;
         }
 
         const StatusIcon = renderStatusIcons[currentStatus];
@@ -309,9 +371,9 @@ function Ui(props) {
         </div>
       </ProductTotalsContainer>
       <StatusButtons>
-        <Button onClick={() => decline(order.id)}>Decline</Button>
-        <Button onClick={() => alert("Refund")}>Refund</Button>
-        <Button onClick={() => alert("Partial refund")}>Partial Refund</Button>
+        <Button onClick={() => decline()}>Decline</Button>
+        <Button onClick={() => refund()}>Refund</Button>
+        <Button onClick={() => partialRefund()}>Partial Refund</Button>
       </StatusButtons>
       <AddressBillingContainer>
         <LeftContainer>

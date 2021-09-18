@@ -7,6 +7,7 @@ import { selectOrderState } from "selectors/admin";
 import {
   setSelectedOrder as setSelectedOrderAction,
   updateOrderStatus as updateOrderStatusAction,
+  updateStatusReason as updateStatusReasonAction,
 } from "actions/admin";
 
 import Ui from "./ui";
@@ -16,6 +17,7 @@ const mapState = createStructuredSelector({
 });
 
 const mapDispatch = {
+  updateStatusReason: updateStatusReasonAction,
   setSelectedOrder: setSelectedOrderAction,
   updateOrderStatus: updateOrderStatusAction,
 };

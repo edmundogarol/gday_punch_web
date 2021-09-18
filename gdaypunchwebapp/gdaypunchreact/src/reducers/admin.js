@@ -36,6 +36,7 @@ import {
   UPDATE_ORDER_STATUS_UPDATES,
   SET_SELECTED_ORDER,
   UPDATE_ORDER,
+  UPDATE_STATUS_REASON,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -94,6 +95,7 @@ const INITIAL_STATE = {
     fetching: false,
     finishedFetching: false,
     selected: undefined,
+    reason: undefined,
   },
 };
 
@@ -375,6 +377,14 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
               ...action.payload.order,
             },
           },
+        },
+      };
+    case UPDATE_STATUS_REASON:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          reason: action.payload.reason,
         },
       };
     case SET_SELECTED_ORDER:

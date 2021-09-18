@@ -69,6 +69,7 @@ export const UPDATE_ORDER_STATUS_UPDATES = "admin/UPDATE_ORDER_STATUS_UPDATES";
 export const SET_SELECTED_ORDER = "admin/SET_SELECTED_ORDER";
 export const UPDATE_ORDER = "admin/UPDATE_ORDER";
 export const UPDATE_ORDER_STATUS = "admin/UPDATE_ORDER_STATUS";
+export const UPDATE_STATUS_REASON = "admin/UPDATE_STATUS_REASON";
 
 export const doTweet = () => ({
   type: DO_TWEET,
@@ -373,12 +374,18 @@ export const updateOrderStatusUpdates = (orderId, statusUpdates) => ({
   },
 });
 
-export const updateOrderStatus = (orderId, status, reasons) => ({
+export const updateOrderStatus = (orderId, status) => ({
   type: UPDATE_ORDER_STATUS,
   payload: {
     orderId,
     status,
-    reasons,
+  },
+});
+
+export const updateStatusReason = (reason) => ({
+  type: UPDATE_STATUS_REASON,
+  payload: {
+    reason,
   },
 });
 
