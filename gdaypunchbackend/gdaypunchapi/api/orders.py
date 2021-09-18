@@ -186,7 +186,7 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
             )
 
             if len(subscriptions) == len(items):
-                order.status = PURCHASED
+                order.status = PENDING  # Subscription will always include a pre-order of the next issue
                 order.save()
 
     # Update order status for digital purchases only // Calculate item prices

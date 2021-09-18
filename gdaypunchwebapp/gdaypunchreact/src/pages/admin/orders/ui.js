@@ -239,7 +239,7 @@ function Ui(props) {
         const StatusIcon = renderStatusIcons[currentStatus];
 
         if (instance.status === "pending") {
-          if (product.type !== "physical") {
+          if (product.type === "digital") {
             currentStatus = "purchased";
           } else {
             currentStatus = "pending";
@@ -296,7 +296,7 @@ function Ui(props) {
         const StatusIcon = renderStatusIcons[currentStatus];
 
         if (instance.status === "pending") {
-          if (product.type !== "physical") {
+          if (product.type === "digital") {
             currentStatus = "purchased";
           } else {
             currentStatus = "pending";
