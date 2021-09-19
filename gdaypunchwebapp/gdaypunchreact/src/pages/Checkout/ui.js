@@ -11,6 +11,7 @@ import { AddressForm } from "@shopify/theme-addresses";
 
 import LoadingSpinner from "components/loadingSpinner";
 import FeaturedSection from "components/featuredSection";
+import Image from "components/image";
 import BillingSection from "./billingSection";
 import PaymentSection from "./paymentSection";
 import ShippingSection from "./shippingSection";
@@ -23,11 +24,9 @@ import {
   SideCartItemsList,
   OrderSummaryContainer,
   OrderSummaryFixed,
-  OrderSummaryLine,
   LeftCheckoutContainer,
   CheckoutInnerSectionContainer,
   CheckoutInnerSectionTitle,
-  SubscribeCondition,
   PaymentMethodLogo,
   CartFooter,
   ItemTotal,
@@ -36,11 +35,11 @@ import {
   ItemTotalContainer,
   EmptyCartMessage,
 } from "./styles";
-import { gdayfetch } from "utils/gdayfetch";
 import {
   getResourceImageModule,
   getImageModule,
   phoneValidator,
+  getGdayPunchStaticUrl,
 } from "utils/utils";
 
 function Ui(props) {
@@ -56,8 +55,8 @@ function Ui(props) {
       coupon,
       clientSecret,
       processing: paymentProcessing,
-      finished: paymentFinished,
       errors: paymentErrors,
+      success: paymentSuccess,
     },
     customerFetch,
     customerSubscribe,
@@ -66,6 +65,9 @@ function Ui(props) {
     viewProduct,
     productList: cartItemsObject,
     paymentError,
+    fetchProducts,
+    resetPayment,
+    paymentSucceeded,
     history,
   } = props;
   const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
@@ -109,8 +111,8 @@ function Ui(props) {
   const [useShippingDetails, toggleUseShippingDetails] = useState(true);
   const [shippingMethodOpen, toggleShippingMethod] = useState(false);
   const [paymentOpen, togglePayment] = useState(false);
-
-  const [submitting, toggleSubmitting] = useState(false);
+  const [cardPaymentError, updateCardPaymentError] = useState(undefined);
+  const paymentSuccessRef = React.useRef(paymentSuccess);
 
   const freeShipping = checkoutForm.country.value === "AU";
 
@@ -169,6 +171,19 @@ function Ui(props) {
       getCountry();
     }
   };
+
+  useEffect(() => {
+    paymentSuccessRef.current = paymentSuccess;
+  }, [paymentSuccess]);
+
+  useEffect(() => {
+    return () => {
+      if (paymentSuccessRef.current) {
+        fetchProducts();
+      }
+      resetPayment();
+    };
+  }, []);
 
   useEffect(() => {
     if (
@@ -250,37 +265,37 @@ function Ui(props) {
       document.getElementById("navbar").style.fontSize = "15px";
     }
 
-    // Handle order summary style
-    const orderSummaryCont = document.getElementById("order-summary");
-    const checkoutCont = document.getElementById("left-checkout-container");
+    // // Handle order summary style
+    // const orderSummaryCont = document.getElementById("order-summary");
+    // const checkoutCont = document.getElementById("left-checkout-container");
 
-    if (!orderSummaryCont || !checkoutCont) return;
+    // if (!orderSummaryCont || !checkoutCont) return;
 
-    const checkoutContSmaller =
-      checkoutCont.offsetHeight < orderSummaryCont.offsetHeight;
+    // const checkoutContSmaller =
+    //   checkoutCont.offsetHeight < orderSummaryCont.offsetHeight;
 
-    if (minimiseHeader) {
-      if (orderSummaryCont.style.position !== "fixed" && !checkoutContSmaller) {
-        orderSummaryCont.style.position = "fixed";
-        orderSummaryCont.style.bottom = "unset";
-        orderSummaryCont.style.top = "8em";
-      }
-    } else {
-      orderSummaryCont.style.position = "initial";
-    }
+    // if (minimiseHeader) {
+    //   if (orderSummaryCont.style.position !== "fixed" && !checkoutContSmaller) {
+    //     orderSummaryCont.style.position = "fixed";
+    //     orderSummaryCont.style.bottom = "unset";
+    //     orderSummaryCont.style.top = "8em";
+    //   }
+    // } else {
+    //   orderSummaryCont.style.position = "initial";
+    // }
 
-    const checkoutContBottom = checkoutCont.getBoundingClientRect().bottom;
+    // const checkoutContBottom = checkoutCont.getBoundingClientRect().bottom;
 
-    if (
-      checkoutContBottom <= document.documentElement.clientHeight &&
-      !checkoutContSmaller
-    ) {
-      orderSummaryCont.style.position = "absolute";
-      orderSummaryCont.style.bottom = "0";
-      orderSummaryCont.style.top = "unset";
-    } else if (checkoutContSmaller) {
-      orderSummaryCont.style.background = "initial";
-    }
+    // if (
+    //   checkoutContBottom <= document.documentElement.clientHeight &&
+    //   !checkoutContSmaller
+    // ) {
+    //   orderSummaryCont.style.position = "absolute";
+    //   orderSummaryCont.style.bottom = "0";
+    //   orderSummaryCont.style.top = "unset";
+    // } else if (checkoutContSmaller) {
+    //   orderSummaryCont.style.background = "initial";
+    // }
   };
 
   const handleSubscribeCheck = (e) => {
@@ -305,6 +320,8 @@ function Ui(props) {
     if (products.length) {
       paymentSubmit(customerDetailsPayload, products);
     }
+
+    updateCardPaymentError(undefined);
   };
 
   const processPayment = async () => {
@@ -348,21 +365,16 @@ function Ui(props) {
         content: `Payment Failed: ${response.error.message}`,
         className: "antd-message-capitalize",
       });
+      updateCardPaymentError(response.error.message);
     } else {
       message.success({
         content: "Payment Successful.",
         className: "antd-message-capitalize",
       });
+      paymentSucceeded();
+      fetchProducts();
     }
   };
-
-  useEffect(() => {
-    return () => {
-      if (paymentFinished && paymentErrors) {
-        paymentError(undefined);
-      }
-    };
-  }, []);
 
   useEffect(() => {
     if (clientSecret) {
@@ -459,8 +471,21 @@ function Ui(props) {
   return (
     <App id="top" className="App">
       <FeaturedSection top width={"90%"} height={"70vh"}>
+        {paymentSuccess ? (
+          <Result
+            className="server-success"
+            icon={<Image src={getGdayPunchStaticUrl("shopping-success.png")} />}
+            title="Awesome, your order was successful!"
+            extra={
+              <Button type="primary" onClick={() => history.push("/")}>
+                Home
+              </Button>
+            }
+          />
+        ) : null}
         {paymentErrors ? (
           <Result
+            className="server-error"
             status="warning"
             title="There are some problems with your order."
             subTitle={
@@ -483,7 +508,8 @@ function Ui(props) {
               </Button>
             }
           />
-        ) : (
+        ) : null}
+        {!paymentSuccess && !paymentErrors ? (
           <>
             <CheckoutHeader>
               <h3>Secure Checkout</h3>
@@ -576,12 +602,19 @@ function Ui(props) {
                     <br />
                     <Spin
                       tip="Processing payment..."
-                      spinning={paymentProcessing}
+                      spinning={paymentProcessing && !cardPaymentError}
                     >
                       <PaymentSection
                         paymentOpen={paymentOpen}
+                        paymentError={cardPaymentError}
                         billingForm={billingForm}
                         updateBillingForm={updateBillingForm}
+                        updateCardPaymentError={() =>
+                          updateCardPaymentError(undefined)
+                        }
+                        paymentSubmit={(ev) => {
+                          handleSubmitPayment(ev);
+                        }}
                       />
                     </Spin>
                   </CheckoutInnerSectionContainer>
@@ -610,22 +643,13 @@ function Ui(props) {
                         <GSTLabel>[Price Includes GST]</GSTLabel>
                       </div>
                     </ItemTotalContainer>
-                    <CartFooter>
-                      <button
-                        onClick={(ev) => {
-                          toggleSubmitting(true);
-                          handleSubmitPayment(ev);
-                        }}
-                      >
-                        Pay Now
-                      </button>
-                    </CartFooter>
+                    <CartFooter></CartFooter>
                   </OrderSummaryFixed>
                 </OrderSummaryContainer>
               </CheckoutContainer>
             )}
           </>
-        )}
+        ) : null}
       </FeaturedSection>
     </App>
   );

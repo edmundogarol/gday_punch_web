@@ -1,5 +1,5 @@
 import React from "react";
-import { Radio, Space } from "antd";
+import { Radio, Space, Button } from "antd";
 
 import { OrderSummaryLine } from "../styles";
 
@@ -23,7 +23,12 @@ function Ui(props) {
             </Space>
           </Radio.Group>
         </OrderSummaryLine>
-        <button onClick={() => handleOpenSection("billing")}>Next</button>
+        <Button
+          className="next-button"
+          onClick={() => handleOpenSection("billing")}
+        >
+          Next
+        </Button>
       </>
     );
   }

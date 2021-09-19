@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Button } from "antd";
 import { SubscribeCondition } from "../styles";
 import GPAddressForm from "../addressForm";
 import AddressSummary from "../addressSummary";
@@ -31,7 +31,12 @@ function Ui(props) {
           />
           <p>{"Keep me up to date with news and offers"}</p>
         </SubscribeCondition>
-        <button onClick={() => handleOpenSection("shipping")}>Next</button>
+        <Button
+          className="next-button"
+          onClick={() => handleOpenSection("shipping")}
+        >
+          Next
+        </Button>
       </>
     );
   }

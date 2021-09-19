@@ -208,11 +208,11 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
         item_details.append({'desc': product.title, 'price': product.active_price,
                             'qty': item['qty'], 'total': int(item['qty']) * product.active_price})
 
-        product.stock = product.stock - int(item['qty'])
-        product.save()
-
         if product.product_type == DIGITAL:
             digital_purchase = digital_purchase + 1
+        else:
+            product.stock = product.stock - int(item['qty'])
+            product.save()
 
     if digital_purchase == len(items):
         order.status = PURCHASED

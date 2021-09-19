@@ -1,5 +1,5 @@
 import React from "react";
-import { Radio, Space } from "antd";
+import { Radio, Space, Button } from "antd";
 
 import { OrderSummaryLine } from "../styles";
 import GPAddressForm from "../addressForm";
@@ -35,7 +35,12 @@ function Ui(props) {
         </Radio.Group>
       </OrderSummaryLine>
       {useShippingDetails && (
-        <button onClick={() => handleOpenSection("payment")}>Next</button>
+        <Button
+          className="next-button"
+          onClick={() => handleOpenSection("payment")}
+        >
+          Next
+        </Button>
       )}
     </>
   );
@@ -52,7 +57,12 @@ function Ui(props) {
           addressForm={billingForm}
           updateAddressForm={updateBillingForm}
         />
-        <button onClick={() => handleOpenSection("payment")}>Next</button>
+        <Button
+          className="next-button"
+          onClick={() => handleOpenSection("payment")}
+        >
+          Next
+        </Button>
       </>
     );
   } else {

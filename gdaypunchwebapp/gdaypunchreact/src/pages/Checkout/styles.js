@@ -8,6 +8,19 @@ export const App = styled.div`
     margin-left: auto;
     margin-right: auto;
     margin-top: 1em;
+    margin-bottom: 1em;
+  }
+
+  .server-error {
+    .ant-result-title {
+      color: #fb7f00d9;
+    }
+  }
+
+  .server-success {
+    .ant-result-title {
+      color: #64c50cd9;
+    }
   }
 `;
 
@@ -73,6 +86,10 @@ export const CheckoutInnerSectionContainer = styled.div`
     padding-left: 1.3em;
   }
 
+  .ant-alert {
+    width: 100%;
+  }
+
   .form-field {
     display: flex;
     flex-direction: column;
@@ -83,7 +100,6 @@ export const CheckoutInnerSectionContainer = styled.div`
     .ant-alert {
       text-align: start;
       margin-bottom: 1em;
-      width: 100%;
     }
 
     label {
@@ -182,6 +198,16 @@ export const CheckoutInnerSectionContainer = styled.div`
       display: flex;
     }
   }
+
+  .payment-button {
+    width: 100%;
+    height: 3em;
+  }
+
+  .next-button {
+    margin-left: auto;
+    width: 10em;
+  }
 `;
 
 export const CheckoutInnerSectionTitle = styled.label`
@@ -279,9 +305,13 @@ export const OrderSummaryLine = styled.div`
       `
       : `
       display: grid;
-      grid-template-columns: 5.1em auto 1fr;
       text-align: start;
       column-gap: 16px;
+
+      @media ${device.laptop} {
+        grid-template-columns: 5.1em auto 1fr;
+      }
+
     `}
 
   p {

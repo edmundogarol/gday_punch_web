@@ -1,8 +1,10 @@
 export const PAYMENT_SUBMIT = "payment/PAYMENT_SUBMIT";
 export const PAYMENT_PROCESSING = "payment/PAYMENT_PROCESSING";
+export const PAYMENT_FINISHED = "payment/PAYMENT_FINISHED";
 export const PAYMENT_SUCCEEDED = "payment/PAYMENT_SUCCEEDED";
 export const PAYMENT_ERROR = "payment/PAYMENT_ERROR";
 export const PAYMENT_SUCCESS_CONFIRM = "payment/PAYMENT_SUCCESS_CONFIRM";
+export const RESET_PAYMENT = "payment/RESET_PAYMENT";
 
 export const PAYMENT_INTENT_FETCH = "payment/PAYMENT_INTENT_FETCH";
 export const PAYMENT_INTENT_UPDATE = "payment/PAYMENT_INTENT_UPDATE";
@@ -34,6 +36,10 @@ export const paymentProcessing = (processing) => ({
   payload: {
     processing,
   },
+});
+
+export const paymentFinished = () => ({
+  type: PAYMENT_FINISHED,
 });
 
 export const paymentSucceeded = () => ({
@@ -85,4 +91,8 @@ export const couponApplying = () => ({
 
 export const couponApplyingFinished = () => ({
   type: PAYMENT_COUPON_APPLYING_FINISHED,
+});
+
+export const resetPayment = () => ({
+  type: RESET_PAYMENT,
 });

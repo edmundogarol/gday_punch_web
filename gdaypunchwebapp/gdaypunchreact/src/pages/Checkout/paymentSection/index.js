@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { useElements } from "@stripe/react-stripe-js";
-import { Alert } from "antd";
+import { Alert, Button } from "antd";
 
 const CARD_ELEMENT_OPTIONS = {
   style: {
@@ -20,7 +20,14 @@ const CARD_ELEMENT_OPTIONS = {
 };
 
 function Ui(props) {
-  const { paymentOpen, billingForm, updateBillingForm } = props;
+  const {
+    paymentOpen,
+    billingForm,
+    updateBillingForm,
+    paymentError,
+    paymentSubmit,
+    updateCardPaymentError,
+  } = props;
 
   if (!paymentOpen) return null;
 
@@ -29,6 +36,10 @@ function Ui(props) {
     cardExpiry: undefined,
     cardCvc: undefined,
   });
+  const [numberReady, updateNumberReady] = useState(false);
+  const [nameReady, updateNameReady] = useState(false);
+  const [expiryReady, updateExpiryReady] = useState(false);
+  const [cvcReady, updateCvcReady] = useState(false);
 
   const elements = useElements();
 
@@ -37,18 +48,40 @@ function Ui(props) {
       placeholder,
       ...CARD_ELEMENT_OPTIONS,
     });
+    updateCardPaymentError();
 
     newCardElement.on("change", function (event) {
+      updateCardErrors({
+        ...cardErrors,
+        [type]: undefined,
+      });
+
       if (event.complete) {
         updateCardErrors({
           ...cardErrors,
           [type]: undefined,
         });
+
+        if (type === "cardNumber") {
+          updateNumberReady(true);
+        } else if (type === "cardExpiry") {
+          updateExpiryReady(true);
+        } else if (type === "cardCvc") {
+          updateCvcReady(true);
+        }
       } else if (event.error) {
         updateCardErrors({
           ...cardErrors,
           [type]: event.error.message,
         });
+
+        if (type === "cardNumber") {
+          updateNumberReady(false);
+        } else if (type === "cardExpiry") {
+          updateExpiryReady(false);
+        } else if (type === "cardCvc") {
+          updateCvcReady(false);
+        }
       }
     });
 
@@ -109,15 +142,20 @@ function Ui(props) {
           placeholder="Name on card"
           type="text"
           value={billingForm.cardName.value}
-          onChange={(e) =>
+          onChange={(e) => {
             updateBillingForm({
               ...billingForm,
               cardName: {
                 ...billingForm.cardName,
                 value: e.target.value,
               },
-            })
-          }
+            });
+            if (e.target.value.length) {
+              updateNameReady(true);
+            } else {
+              updateNameReady(false);
+            }
+          }}
         />
       </div>
       <div
@@ -146,6 +184,14 @@ function Ui(props) {
           type="error"
         />
       </div>
+      {paymentError ? <Alert type="error" message={paymentError} /> : null}
+      <Button
+        disabled={!(numberReady && nameReady && expiryReady && cvcReady)}
+        className="payment-button"
+        onClick={paymentSubmit}
+      >
+        Pay now
+      </Button>
     </form>
   );
 }

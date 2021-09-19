@@ -3,9 +3,11 @@ import {
   PAYMENT_COUPON_APPLYING_FINISHED,
   PAYMENT_COUPON_UPDATE,
   PAYMENT_ERROR,
+  PAYMENT_FINISHED,
   PAYMENT_INTENT_UPDATE,
   PAYMENT_PROCESSING,
   PAYMENT_SUCCEEDED,
+  RESET_PAYMENT,
 } from "src/actions/payment";
 
 const INITIAL_STATE = {
@@ -18,6 +20,7 @@ const INITIAL_STATE = {
   applyingCoupon: false,
   applyingCouponFinished: false,
 
+  success: false,
   processing: false,
   finished: false,
   errors: undefined,
@@ -58,11 +61,16 @@ export const paymentReducer = (state = INITIAL_STATE, action) => {
         processing: true,
         finished: false,
       };
-    case PAYMENT_SUCCEEDED:
+    case PAYMENT_FINISHED:
       return {
         ...state,
         processing: false,
         finished: true,
+      };
+    case PAYMENT_SUCCEEDED:
+      return {
+        ...INITIAL_STATE,
+        success: true,
       };
     case PAYMENT_ERROR:
       return {
@@ -70,6 +78,10 @@ export const paymentReducer = (state = INITIAL_STATE, action) => {
         processing: false,
         finished: true,
         errors: action.payload.errors,
+      };
+    case RESET_PAYMENT:
+      return {
+        ...INITIAL_STATE,
       };
     default:
       return state;

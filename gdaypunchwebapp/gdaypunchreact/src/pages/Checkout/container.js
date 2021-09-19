@@ -13,10 +13,9 @@ import { toggleSideCart as toggleSideCartAction } from "actions/cart";
 import { setViewingProduct as setViewingProductAction } from "actions/products";
 import {
   paymentSubmit as paymentSubmitAction,
-  paymentIntentFetch as paymentIntentFetchAction,
-  paymentIntentCancel as paymentIntentCancelAction,
-  paymentSuccessConfirm as paymentSuccessConfirmAction,
   paymentError as paymentErrorAction,
+  paymentSucceeded as paymentSucceededAction,
+  resetPayment as resetPaymentAction,
 } from "actions/payment";
 import {
   customerFetchFinished as customerFetchFinishedAction,
@@ -26,6 +25,7 @@ import {
 } from "actions/customer";
 import { selectCustomerState } from "src/selectors/customer";
 import { selectPaymentState } from "src/selectors/payment";
+import { fetchProducts as fetchProductsAction } from "src/actions/app";
 
 const mapState = createStructuredSelector({
   user: selectUser,
@@ -39,12 +39,15 @@ const mapState = createStructuredSelector({
 const mapDispatch = {
   toggleSideCart: toggleSideCartAction,
   viewProduct: setViewingProductAction,
+  fetchProducts: fetchProductsAction,
   paymentSubmit: paymentSubmitAction,
   customerSubscribe: customerSubscribeAction,
   customerFetch: customerFetchAction,
   customerUpdate: customerUpdateAction,
   customerFetchFinished: customerFetchFinishedAction,
-  paymentError: paymentErrorAction
+  paymentError: paymentErrorAction,
+  paymentSucceeded: paymentSucceededAction,
+  resetPayment: resetPaymentAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));
