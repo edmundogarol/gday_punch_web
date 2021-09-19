@@ -1,5 +1,4 @@
 import os
-import random
 import stripe
 import json
 import pytz
@@ -100,31 +99,14 @@ def send_email_receipt(customer, order, items):
         print("Username and Password not accepted for smtp email config.")
 
 
-def generate_order_number():
-    order_number = ''
-    random_array = random.sample(range(10, 1000), 3)
-    for elem in random_array:
-        order_number = order_number + str(elem)
-
-    return order_number
-
-
-def handle_create_order(stripe_customer, customer, items, amount, coupon, subscriptions,
+def handle_create_order(order_number, stripe_customer, customer, items, amount, coupon, subscriptions,
                         shipping, billing, billing_same_as_shipping, card):
     fmt = '%Y-%m-%d %H:%M:%S'
 
     order = None
     item_details = []
-    use_order_number = None
     shipping_address = shipping.address
     billing_address = billing.address
-
-    while use_order_number is None:
-        try:
-            new_order_number = generate_order_number()
-            existing_order = Order.objects.get(number=new_order_number)
-        except Order.DoesNotExist:
-            use_order_number = new_order_number
 
     if billing_same_as_shipping:
         order = Order.objects.create(
@@ -133,7 +115,7 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
             coupon=coupon,
             date_created=datetime.now(),
             products_qty=items,
-            number=use_order_number,
+            number=order_number,
             email=stripe_customer.stripe_email,
             first_name=customer.first_name,
             last_name=customer.last_name,
@@ -156,7 +138,7 @@ def handle_create_order(stripe_customer, customer, items, amount, coupon, subscr
             coupon=coupon,
             date_created=datetime.now(),
             products_qty=items,
-            number=use_order_number,
+            number=order_number,
             email=stripe_customer.stripe_email,
             first_name=customer.first_name,
             last_name=customer.last_name,

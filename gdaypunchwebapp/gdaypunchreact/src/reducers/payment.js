@@ -12,6 +12,7 @@ import {
 
 const INITIAL_STATE = {
   clientSecret: undefined,
+  orderNumber: undefined,
   coupon: {
     name: "",
     coupon_type: undefined, // percent, amount
@@ -34,6 +35,7 @@ export const paymentReducer = (state = INITIAL_STATE, action) => {
       return {
         ...state,
         clientSecret: payload.clientSecret,
+        orderNumber: payload.order_number,
       };
     case PAYMENT_COUPON_UPDATE:
       return {
@@ -70,6 +72,7 @@ export const paymentReducer = (state = INITIAL_STATE, action) => {
     case PAYMENT_SUCCEEDED:
       return {
         ...INITIAL_STATE,
+        orderNumber: state.orderNumber,
         success: true,
       };
     case PAYMENT_ERROR:

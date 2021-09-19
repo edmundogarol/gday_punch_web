@@ -1,5 +1,6 @@
 import os
 import stripe
+import random
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.response import Response
@@ -35,7 +36,7 @@ else:
     domain = "https://www.beta-gdaypunch.com"
 
 
-def calculate_order_amount(customer, items_list, coupon, au_shipping):
+def calculate_order_amount(items_list, coupon, au_shipping):
     order_amount = 0
     subscription_items = []
     error = None
@@ -299,6 +300,28 @@ def get_customer_details(user_email, customer_payload):
     return stripe_customer_id
 
 
+def generate_order_number():
+    order_number = ''
+    random_array = random.sample(range(10, 1000), 3)
+    for elem in random_array:
+        order_number = order_number + str(elem)
+
+    return order_number
+
+
+def get_order_number():
+    order_number = None
+
+    while order_number is None:
+        try:
+            new_order_number = generate_order_number()
+            existing_order = Order.objects.get(number=new_order_number)
+        except Order.DoesNotExist:
+            order_number = new_order_number
+    
+    return order_number
+
+
 class PaymentSubmitView(viewsets.ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = (PostOnly,)
@@ -312,11 +335,8 @@ class PaymentSubmitView(viewsets.ModelViewSet):
             items_list = data['items']
             coupon = data.get('coupon')
 
-            customer = get_customer_details(
-                self.request.user, customer_payload)
-
             order_amount_details = calculate_order_amount(
-                customer, items_list, coupon, customer_payload['country'] == "AU")
+                items_list, coupon, customer_payload['country'] == "AU")
 
             if 'error' in order_amount_details:
                 return Response({'details': 'Order quantity exceeded available stock.'}, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -324,12 +344,18 @@ class PaymentSubmitView(viewsets.ModelViewSet):
             order_amount = order_amount_details['amount']
             order_subscriptions = order_amount_details['subscriptions']
 
+            order_number = get_order_number()
+
+            customer = get_customer_details(
+                self.request.user, customer_payload)
+
             intent = stripe.PaymentIntent.create(
                 amount=order_amount,
                 customer=customer,
                 currency='aud',
                 setup_future_usage='off_session',
                 metadata={
+                    'order_number': order_number,
                     'billing_same_as_shipping': data['customer_details']['billing_same_as_shipping'],
                     'items': str(items_list),
                     'subscriptions': str(order_subscriptions) if order_subscriptions else None,
@@ -338,6 +364,7 @@ class PaymentSubmitView(viewsets.ModelViewSet):
             )
 
             content = {
+                'order_number': order_number,
                 'clientSecret': intent['client_secret']
             }
 
@@ -432,6 +459,7 @@ def PaymentsWebhookHandler(request):
         charge = payment_intent.charges.data[0]
         items = payment_intent.metadata['items']
         coupon = payment_intent.metadata['coupon']
+        order_number = payment_intent.metadata['order_number']
         subscriptions = payment_intent.metadata['subscriptions'] if 'subscriptions' in payment_intent.metadata else None
         shipping = payment_intent.shipping
         billing = charge.billing_details
@@ -439,7 +467,7 @@ def PaymentsWebhookHandler(request):
         card = charge.payment_method_details.card
         billing_same_as_shipping = payment_intent.metadata['billing_same_as_shipping'] == "True"
 
-        handle_create_order(stripe_customer, gp_customer, items, amount, coupon,
+        handle_create_order(order_number, stripe_customer, gp_customer, items, amount, coupon,
                             subscriptions, shipping, billing, billing_same_as_shipping, card)
 
     return HttpResponse(status=200)

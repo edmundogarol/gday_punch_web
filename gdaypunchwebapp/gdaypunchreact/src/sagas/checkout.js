@@ -34,7 +34,7 @@ export function* paymentSubmitCall(action) {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(paymentIntentUpdate(data.clientSecret));
+    yield put(paymentIntentUpdate(data));
   } else {
     console.log("Payment Submit error", JSON.stringify(response));
     yield put(paymentError(response.data));

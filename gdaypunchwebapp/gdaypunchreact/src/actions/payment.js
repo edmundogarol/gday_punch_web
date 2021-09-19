@@ -60,10 +60,11 @@ export const paymentIntentFetch = (items) => ({
   },
 });
 
-export const paymentIntentUpdate = (clientSecret) => ({
+export const paymentIntentUpdate = ({ clientSecret, order_number }) => ({
   type: PAYMENT_INTENT_UPDATE,
   payload: {
     clientSecret,
+    order_number,
   },
 });
 

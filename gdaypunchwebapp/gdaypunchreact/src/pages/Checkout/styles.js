@@ -202,6 +202,18 @@ export const CheckoutInnerSectionContainer = styled.div`
   .payment-button {
     width: 100%;
     height: 3em;
+
+    &:not([disabled]) {
+      background: #ffb123;
+      border: none;
+      color: white;
+    }
+
+    &:not([disabled]):hover {
+      color: #ffb123;
+      border: 1px solid #ffb123;
+      background: white;
+    }
   }
 
   .next-button {
