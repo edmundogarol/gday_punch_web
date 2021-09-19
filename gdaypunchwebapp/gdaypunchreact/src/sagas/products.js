@@ -70,7 +70,7 @@ export function* fetchAllProductsCall(addItems = false) {
   if (response && response.ok) {
     const data = response.data;
 
-    yield put(updateProducts(arrayIdsMapToObject(data, addItems)));
+    yield put(updateProducts(arrayIdsMapToObject(data)));
     yield put(finishedFetchingProducts());
   } else {
     console.log("All Products fetch error", JSON.stringify(response));

@@ -3,8 +3,11 @@ import { device } from "utils/styles";
 import { Button } from "antd";
 
 export const App = styled.div`
-  .App-header-container {
-    min-height: 56vh;
+  .ant-alert {
+    width: max-content;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
   }
 `;
 

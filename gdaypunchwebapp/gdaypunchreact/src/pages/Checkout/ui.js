@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
-import { message, Spin, Result, Button } from "antd";
+import { message, Spin, Result, Button, Alert } from "antd";
 import axios from "axios";
 import "unfetch/polyfill";
 import "es6-promise/auto";
@@ -465,9 +465,9 @@ function Ui(props) {
             title="There are some problems with your order."
             subTitle={
               <div>
-                {paymentErrors.details}
+                <Alert type="warning" message={paymentErrors.details} />
                 <br />
-                {"You have not been charged."}
+                {"Your card has not been charged."}
               </div>
             }
             extra={
