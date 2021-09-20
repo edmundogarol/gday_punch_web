@@ -399,6 +399,7 @@ class Order(models.Model):
     amount = models.FloatField(blank=False, default=0)
     products_qty = models.TextField(max_length=500, blank=False, default='{}')
     number = models.TextField(max_length=20, blank=True)
+    secret = models.TextField(max_length=30, blank=False, null=True)
     date_created = models.DateTimeField(
         null=False, blank=False, default=timezone.now)
     status = models.TextField(

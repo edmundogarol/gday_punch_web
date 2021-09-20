@@ -2,6 +2,7 @@ import os
 import stripe
 import json
 import pytz
+import random
 
 from threading import Thread
 from datetime import datetime
@@ -99,7 +100,29 @@ def send_email_receipt(customer, order, items):
         print("Username and Password not accepted for smtp email config.")
 
 
-def handle_create_order(order_number, stripe_customer, customer, items, amount, coupon, subscriptions,
+def generate_order_number():
+    order_number = ''
+    random_array = random.sample(range(10, 1000), 3)
+    for elem in random_array:
+        order_number = order_number + str(elem)
+
+    return order_number
+
+
+def get_order_number():
+    order_number = None
+
+    while order_number is None:
+        try:
+            new_order_number = generate_order_number()
+            existing_order = Order.objects.get(number=new_order_number)
+        except Order.DoesNotExist:
+            order_number = new_order_number
+
+    return order_number
+
+
+def handle_create_order(order_secret, stripe_customer, customer, items, amount, coupon, subscriptions,
                         shipping, billing, billing_same_as_shipping, card):
     fmt = '%Y-%m-%d %H:%M:%S'
 
@@ -107,6 +130,7 @@ def handle_create_order(order_number, stripe_customer, customer, items, amount, 
     item_details = []
     shipping_address = shipping.address
     billing_address = billing.address
+    order_number = get_order_number()
 
     if billing_same_as_shipping:
         order = Order.objects.create(
@@ -116,6 +140,7 @@ def handle_create_order(order_number, stripe_customer, customer, items, amount, 
             date_created=datetime.now(),
             products_qty=items,
             number=order_number,
+            secret=order_secret,
             email=stripe_customer.stripe_email,
             first_name=customer.first_name,
             last_name=customer.last_name,
@@ -139,6 +164,7 @@ def handle_create_order(order_number, stripe_customer, customer, items, amount, 
             date_created=datetime.now(),
             products_qty=items,
             number=order_number,
+            secret=order_secret,
             email=stripe_customer.stripe_email,
             first_name=customer.first_name,
             last_name=customer.last_name,

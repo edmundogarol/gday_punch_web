@@ -53,6 +53,7 @@ import { message } from "antd";
 import { adminReducer } from "./admin";
 import { customerReducer } from "./customer";
 import { paymentReducer } from "./payment";
+import { ordersReducer } from "./orders";
 
 const INITIAL_STATE = {
   user: {
@@ -509,4 +510,5 @@ export default combineReducers({
   admin: adminReducer,
   customer: customerReducer,
   payment: paymentReducer,
+  orders: ordersReducer,
 });

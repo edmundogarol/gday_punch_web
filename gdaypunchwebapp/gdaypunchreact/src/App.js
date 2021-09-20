@@ -39,6 +39,7 @@ import VerifyEmail from "pages/VerifyEmail";
 import Cart from "pages/Cart";
 import Checkout from "pages/Checkout";
 import RefundsAndReturns from "pages/RefundsAndReturns";
+import OrderConfirmation from "pages/OrderConfirmation";
 import ProductDetail from "pages/ProductDetail";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
@@ -174,6 +175,12 @@ function Root(props) {
               exact
               path="/product/:productId/:productUri"
               component={ProductDetail}
+              titleSetInside
+            />
+            <RoutePage
+              exact
+              path="/order-confirmation/:orderSecret"
+              component={OrderConfirmation}
               titleSetInside
             />
             <ProtectedRoute

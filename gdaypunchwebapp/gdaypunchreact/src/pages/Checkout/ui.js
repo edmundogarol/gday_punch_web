@@ -54,6 +54,7 @@ function Ui(props) {
     paymentState: {
       coupon,
       clientSecret,
+      orderSecret,
       processing: paymentProcessing,
       errors: paymentErrors,
       success: paymentSuccess,
@@ -373,6 +374,7 @@ function Ui(props) {
       });
       paymentSucceeded();
       fetchProducts();
+      history.push(`/order-confirmation/${orderSecret}`);
     }
   };
 
@@ -428,9 +430,9 @@ function Ui(props) {
     updater(updatingForm);
 
     const errors = Object.entries(updatingForm)
-      .map((key, value) =>
-        doNotValidate.includes(key) ? undefined : value.error
-      )
+      .map(([key, value]) => {
+        return doNotValidate.includes(key) ? undefined : value.error;
+      })
       .filter((error) => error !== undefined);
 
     return !errors.length;
