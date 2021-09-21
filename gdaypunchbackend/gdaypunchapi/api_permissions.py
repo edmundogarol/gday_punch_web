@@ -208,7 +208,7 @@ class ProductPermissions(BasePermission):
                 product = Product.objects.get(id=product_id)
                 return product.visible
             except Product.DoesNotExist:
-                return False
+                return True
         elif view.action in ['update', 'partial_update']:
             if request.user.is_authenticated:
                 try:

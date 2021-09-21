@@ -39,7 +39,6 @@ import {
   getResourceImageModule,
   getImageModule,
   phoneValidator,
-  getGdayPunchStaticUrl,
 } from "utils/utils";
 
 function Ui(props) {
@@ -473,18 +472,6 @@ function Ui(props) {
   return (
     <App id="top" className="App">
       <FeaturedSection top width={"90%"} height={"70vh"}>
-        {paymentSuccess ? (
-          <Result
-            className="server-success"
-            icon={<Image src={getGdayPunchStaticUrl("shopping-success.png")} />}
-            title="Awesome, your order was successful!"
-            extra={
-              <Button type="primary" onClick={() => history.push("/")}>
-                Home
-              </Button>
-            }
-          />
-        ) : null}
         {paymentErrors ? (
           <Result
             className="server-error"

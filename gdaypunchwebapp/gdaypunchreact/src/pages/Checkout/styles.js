@@ -16,12 +16,6 @@ export const App = styled.div`
       color: #fb7f00d9;
     }
   }
-
-  .server-success {
-    .ant-result-title {
-      color: #64c50cd9;
-    }
-  }
 `;
 
 export const CheckoutHeader = styled.div`

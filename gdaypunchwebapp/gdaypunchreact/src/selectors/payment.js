@@ -16,3 +16,8 @@ export const selectCoupon = createSelector(
   selectDomain,
   ({ coupon: { name } }) => name
 );
+
+export const selectPaymentSuccess = createSelector(
+  selectDomain,
+  ({ success }) => success
+);

@@ -26,6 +26,9 @@ from ..serializers import (
 from ..api_permissions import (
     OrdersByUserPermissions, OrderStatusUpdatesPermissions, OrderDetailsPermissions
 )
+from ..utils import (
+    AdminOrReadOnly
+)
 
 if 'DEVENV' in os.environ:
     stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
@@ -66,6 +69,20 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
         order = Order.objects.get(id=pk)
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+
+
+class OrderConfirmationViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.none()
+    serializer_class = OrderSerializer
+    permission_classes = (AdminOrReadOnly, )
+
+    def retrieve(self, request, pk=None):
+        try:
+            order = Order.objects.get(secret=pk)
+            serializer = OrderSerializer(order)
+            return Response(serializer.data)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order details cannot be found.'}, status=status.HTTP_404_NOT_FOUND)
 
 
 def send_email_receipt(customer, order, items):

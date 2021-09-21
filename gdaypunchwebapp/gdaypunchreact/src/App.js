@@ -19,6 +19,7 @@ import adminSaga from "sagas/admin";
 import productSaga from "./sagas/products";
 import customerSaga from "./sagas/customer";
 import checkoutSaga from "./sagas/checkout";
+import orderSaga from "./sagas/orders";
 
 import appReducer from "reducers/app";
 
@@ -51,6 +52,7 @@ import Navigation from "components/navigation";
 
 import "antd/dist/antd.css";
 import "./App.scss";
+
 /**
  * Set up and run app sagas listening for events
  */
@@ -62,6 +64,7 @@ function* rootSaga() {
     productSaga(),
     customerSaga(),
     checkoutSaga(),
+    orderSaga(),
   ]);
 }
 
