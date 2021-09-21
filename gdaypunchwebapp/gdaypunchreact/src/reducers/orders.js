@@ -1,6 +1,7 @@
 import {
   FETCHING_VIEWING_ORDER,
   FINISHED_FETCHING_VIEWING_ORDER,
+  RESET_VIEWING_ORDER,
   UPDATE_VIEWING_ORDER,
   UPDATE_VIEWING_ORDER_ERRORS,
 } from "src/actions/order";
@@ -51,6 +52,10 @@ export const ordersReducer = (state = INITIAL_STATE, action) => {
           ...state.viewingOrder,
           errors: payload.errors,
         },
+      };
+    case RESET_VIEWING_ORDER:
+      return {
+        ...INITIAL_STATE,
       };
     default:
       return state;

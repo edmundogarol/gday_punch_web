@@ -1,4 +1,4 @@
-import { call, all, takeLatest, put } from "redux-saga/effects";
+import { call, all, takeLatest, put, delay } from "redux-saga/effects";
 import { message } from "antd";
 
 import { api } from "utils/api";
@@ -11,15 +11,31 @@ import {
   viewingOrderError,
 } from "src/actions/order";
 
+// check = false
 export function* fetchinViewingOrderCall(action) {
   yield put(fetchingViewingOrder());
-  const response = yield call(
+
+  let checkerCounter = 0;
+  let response = yield call(
     api,
     `order-confirmation/${action.payload.orderSecret}/`,
     {
       method: "GET",
     }
   );
+
+  while (response.data.error && checkerCounter < 5) {
+    response = yield call(
+      api,
+      `order-confirmation/${action.payload.orderSecret}/`,
+      {
+        method: "GET",
+      }
+    );
+    yield delay(2000);
+
+    checkerCounter = checkerCounter + 1;
+  }
 
   if (response && response.ok) {
     const data = response.data;

@@ -8,8 +8,26 @@
   <title>Gday Punch Purchase Receipt</title>
   <meta name="description" content="Gday Punch Purchase Receipt">
   <meta name="author" content="Gday Punch">
+  <style type="text/css">
+    .link:hover {
+      cursor: pointer;
+    }
+
+    @media screen and (max-width: 600px), screen and (max-device-width: 600px) {
+        .outer {
+          padding-left: unset !important;
+          padding-right: unset !important;
+        }
+        .footer-img {
+          width: unset !important;
+        }
+        .address-field {
+          padding-left: unset !important;
+        }
+    }
+  </style>
 </head>
-<body style="background: #eaeaea; margin-left: auto; margin-right: auto; margin-top: 1em; transform: scale(1.2);">
+<body class="outer" style="background: #eaeaea; margin-left: auto; margin-right: auto; margin-top: 1em; transform: scale(1.2); padding: 2em;">
   <div style="max-width: 36em; margin-left: auto; margin-right: auto; font-family: sans-serif; font-weight: 300; background: white; padding: 1em; color: dimgray;">
     <table style="width: 100%; border-bottom: 1px solid #bfbfbf;">
       <tr>
@@ -35,7 +53,7 @@
     <div style="font-size: 1.5em; font-weight: 400; color: #8e8e8e; text-align: center; padding: 2em; border-bottom: 1px solid #bfbfbf;">
       <div>Thank you for your purchase, {{ customer.first_name }}!</div>
       <div style="margin-top: 1em;">
-        <a href="{{ website }}/order-confirmation/{{ order.secret }}" target="_blank" style="text-decoration: none; height: 3em; border: none; background: dimgray; color: white; padding: 1em; letter-spacing: 0.05em; font-family: sans-serif; font-size: 0.8em;">
+        <a href="{{ website }}/order-confirmation/{{ order.secret }}" target="_blank" style="text-decoration: none; height: 3em; border: none; background: dimgray; color: white; padding: 1em; letter-spacing: 0.05em; font-family: sans-serif; font-size: 0.7em; white-space: nowrap;">
           View Order Details
         </a>
       </div>
@@ -52,7 +70,7 @@
     <div>
       <table style="width: 100%;">
         <tr>
-          <td style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
+          <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
             <h4>Shipping Information</h4>
             <span></span>
             <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
@@ -72,7 +90,7 @@
             </p>
           </td>
           <td></td>
-          <td style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
+          <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
             <h4>Billing Information</h4>
             <span></span>
             <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
@@ -185,7 +203,7 @@
     </div>
     <table style="width: 100%; margin-top: 1em;">
       <tr>
-        <td style="width: 50%; float: right;">
+        <td class="footer-img" style="width: 50%; float: right;">
           <img style="height: 4em;" src="https://gdaypunch-static.s3.us-west-2.amazonaws.com/gday_header.png">
         </td>
         <td style="width: 50%; font-family: sans-serif; font-size: 0.7em; color: dimgrey;">
@@ -213,9 +231,4 @@
     </table>
   </div>
 </body>
-  <style>
-    .link:hover {
-      cursor: pointer;
-    }
-  </style>
 </html>

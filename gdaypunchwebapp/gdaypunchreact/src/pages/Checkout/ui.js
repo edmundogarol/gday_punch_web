@@ -66,7 +66,6 @@ function Ui(props) {
     productList: cartItemsObject,
     paymentError,
     fetchProducts,
-    resetPayment,
     paymentSucceeded,
     history,
   } = props;
@@ -181,7 +180,6 @@ function Ui(props) {
       if (paymentSuccessRef.current) {
         fetchProducts();
       }
-      resetPayment();
     };
   }, []);
 
@@ -372,7 +370,6 @@ function Ui(props) {
         className: "antd-message-capitalize",
       });
       paymentSucceeded();
-      fetchProducts();
       history.push(`/order-confirmation/${orderSecret}`);
     }
   };

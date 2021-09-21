@@ -4,6 +4,7 @@ export const FETCHING_VIEWING_ORDER = "orders/FETCHING_VIEWING_ORDER";
 export const FINISHED_FETCHING_VIEWING_ORDER =
   "orders/FINISHED_FETCHING_VIEWING_ORDER";
 export const UPDATE_VIEWING_ORDER_ERRORS = "orders/UPDATE_VIEWING_ORDER_ERRORS";
+export const RESET_VIEWING_ORDER = "orders/RESET_VIEWING_ORDER";
 
 export const fetchViewingOrder = (orderSecret) => ({
   type: FETCH_VIEWING_ORDER,
@@ -32,4 +33,8 @@ export const viewingOrderError = (errors) => ({
   payload: {
     errors,
   },
+});
+
+export const resetViewingOrder = () => ({
+  type: RESET_VIEWING_ORDER,
 });

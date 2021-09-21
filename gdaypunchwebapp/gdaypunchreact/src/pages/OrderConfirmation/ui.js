@@ -18,15 +18,20 @@ function Ui(props) {
     },
     paymentSuccess,
     fetchViewingOrder,
-    updateViewingOrder,
+    fetchProducts,
+    resetPayment,
+    resetViewingOrder,
+    history,
   } = props;
   const { orderSecret } = useParams();
 
   useEffect(() => {
-    if (order) {
+    if (order.id) {
       document.title = `Order #${order.number} Confirmation | Gday Punch`;
+    } else if (viewingOrderErrors) {
+      document.title = `Error | Gday Punch`;
     }
-  }, [order]);
+  }, [order, viewingOrderErrors]);
 
   useEffect(() => {
     if (!fetchingViewingOrder && !finishedFetchingViewingOrder) {
@@ -37,7 +42,11 @@ function Ui(props) {
   }, [fetchingViewingOrder, finishedFetchingViewingOrder, order]);
 
   useEffect(() => {
-    updateViewingOrder({});
+    return () => {
+      resetViewingOrder();
+      fetchProducts();
+      resetPayment();
+    };
   }, []);
 
   const renderSuccessImage = () => {
@@ -73,13 +82,12 @@ function Ui(props) {
           {renderSuccessImage()}
           <ThankYouContainer>
             Thank you! We've received your order
-            <span>{`- ${order.readable_date.date} ${order.readable_date.time}`}</span>
+            <div>{`- ${order.readable_date.date} ${order.readable_date.time}`}</div>
           </ThankYouContainer>
           <OrderDetails order={order} />
         </div>
-      ) : (
-        fetchingViewingOrder && <Spin />
-      )}
+      ) : null}
+      {fetchingViewingOrder ? <Spin tip="Loading order details..." /> : null}
     </PageContainer>
   );
 }
