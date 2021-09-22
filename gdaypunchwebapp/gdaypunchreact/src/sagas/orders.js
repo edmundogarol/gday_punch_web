@@ -11,7 +11,6 @@ import {
   viewingOrderError,
 } from "src/actions/order";
 
-// check = false
 export function* fetchinViewingOrderCall(action) {
   yield put(fetchingViewingOrder());
 

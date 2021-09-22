@@ -43,7 +43,7 @@ export const PageContainer = styled.div`
   }
 `;
 
-export const ThankYouContainer = styled.div`
+export const StatusContainer = styled.div`
   margin-bottom: 1em;
   width: 80%;
   margin-left: auto;

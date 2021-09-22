@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { Spin, Result, Button } from "antd";
 
 import Image from "components/image";
-import { PageContainer, ThankYouContainer } from "./styles";
+import { PageContainer, StatusContainer } from "./styles";
 import OrderDetails from "./orderDetails";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
@@ -66,6 +66,24 @@ function Ui(props) {
     );
   };
 
+  const renderLatestStatus = (status) => {
+    const statusString = {
+      pending: "Thank you! We've received your order.",
+      purcahsed: "Thank you! We've received your order.",
+      shipped: "Your order has been shipped!",
+      declined: "Your order has been declined.",
+      refunded: "Your order has been refunded.",
+      partially_refunded: "Your order has been partially refunded.",
+    };
+
+    return (
+      <>
+        {statusString[status.status]}
+        <div>{`- ${status.readable_date.date} ${status.readable_date.time}`}</div>
+      </>
+    );
+  };
+
   return (
     <PageContainer>
       {viewingOrderErrors ? (
@@ -80,10 +98,9 @@ function Ui(props) {
       {order && order.id ? (
         <div>
           {renderSuccessImage()}
-          <ThankYouContainer>
-            Thank you! We've received your order
-            <div>{`- ${order.readable_date.date} ${order.readable_date.time}`}</div>
-          </ThankYouContainer>
+          <StatusContainer>
+            {renderLatestStatus(order.statuses[0])}
+          </StatusContainer>
           <OrderDetails order={order} />
         </div>
       ) : null}

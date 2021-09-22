@@ -3,11 +3,11 @@ import Image from "components/image";
 
 export const ProductTileContainer = styled.div`
   margin: 20pt;
-  min-width: 13em;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: start;
+  min-width: 19em;
 
   a {
     width: 100%;
@@ -46,7 +46,7 @@ export const ProductImage = styled(Image)``;
 export const ProductTitle = styled.h2`
   font-size: 1em;
   margin: unset;
-  max-width: 12em;
+  max-width: 19em;
   width: 100%;
 `;
 

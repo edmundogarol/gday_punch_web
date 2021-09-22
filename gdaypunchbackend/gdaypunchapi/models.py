@@ -532,6 +532,23 @@ class Order(models.Model):
             'time': local_dt.strftime("%I:%M %p")
         }
 
+    @property
+    def statuses(self):
+        statuses = []
+        queryset = OrderStatusUpdate.objects.filter(
+            order=self.id).order_by('-id')
+
+        for update in queryset:
+            statuses.append({
+                'id': update.id,
+                'status': update.status,
+                'description': update.description,
+                'update_date': update.update_date,
+                'readable_date': update.readable_date
+            })
+
+        return statuses
+
 
 class OrderStatusUpdate(models.Model):
     status = models.TextField(

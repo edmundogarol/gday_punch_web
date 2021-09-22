@@ -227,7 +227,7 @@ function Ui(props) {
             </div>
           </AddressContactField>
           <AddressContactField>
-            <h4>Contact Information</h4>
+            <h4>Billing Contact Information</h4>
             {order.billing_same_address ? (
               <div>
                 <p>{`Phone: ${order.phone_number}`}</p>

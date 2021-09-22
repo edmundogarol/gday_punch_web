@@ -314,7 +314,9 @@ function Ui(props) {
                   offset={[0, -10]}
                   text={
                     product.stock < 10
-                      ? `Only ${product.stock} left`
+                      ? product.stock === 0
+                        ? "Sold out"
+                        : `Only ${product.stock} left`
                       : undefined
                   }
                   color="red"
