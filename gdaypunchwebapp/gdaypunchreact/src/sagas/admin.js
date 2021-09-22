@@ -61,6 +61,7 @@ import {
   selectPendingDeletingTweet,
   selectOrdersNextPage,
   selectOrderStatusUpdateReason,
+  selectPartialRefundAmount,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
 
@@ -594,6 +595,7 @@ export function* fetchOrderDetails(orderId) {
 export function* updateOrderStatusCall(action) {
   const { orderId, status } = action.payload;
   const reason = yield select(selectOrderStatusUpdateReason);
+  const amount = yield select(selectPartialRefundAmount);
 
   const response = yield call(api, `orders-status/`, {
     method: "POST",
@@ -601,6 +603,7 @@ export function* updateOrderStatusCall(action) {
       order: orderId,
       status,
       reasons: reason,
+      partial_refund: status === "partially_refunded" ? amount : undefined,
     },
   });
 
@@ -611,6 +614,7 @@ export function* updateOrderStatusCall(action) {
     yield put(updateStatusReason(undefined));
   } else {
     console.log("Order Status Update error", JSON.stringify(response));
+    message.error(`Order status update error: ${response.data}`);
   }
 }
 

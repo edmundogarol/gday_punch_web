@@ -37,6 +37,7 @@ import {
   SET_SELECTED_ORDER,
   UPDATE_ORDER,
   UPDATE_STATUS_REASON,
+  UPDATE_PARTIAL_REFUND_AMOUNT,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -96,6 +97,7 @@ const INITIAL_STATE = {
     finishedFetching: false,
     selected: undefined,
     reason: undefined,
+    partial_refund: undefined,
   },
 };
 
@@ -385,6 +387,14 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
         orders: {
           ...state.orders,
           reason: action.payload.reason,
+        },
+      };
+    case UPDATE_PARTIAL_REFUND_AMOUNT:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          partial_refund: action.payload.amount,
         },
       };
     case SET_SELECTED_ORDER:

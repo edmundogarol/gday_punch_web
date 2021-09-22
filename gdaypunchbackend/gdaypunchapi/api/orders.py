@@ -18,7 +18,7 @@ from rest_framework.response import Response
 
 from ..constants import *
 from ..models import (
-    Order, OrderStatusUpdate, Product, Coupon
+    Order, OrderStatusUpdate, Product, Coupon, StripeCustomer, Customer
 )
 from ..serializers import (
     OrderSerializer, OrderStatusUpdateSerializer
@@ -108,7 +108,57 @@ def send_email_receipt(customer, order, items):
             subject='Thank you for your order!',
             message='Thank you for your order!',
             html_message=email,
-            from_email='noreply@gdaypunch.com',
+            from_email='Gday Punch Manga Magazine<edmundo.garol@gdaypunch.com>',
+            recipient_list=[order.email],
+            fail_silently=False,
+        )
+
+    except SMTPAuthenticationError:
+        print("Username and Password not accepted for smtp email config.")
+
+
+def send_email_update(customer, order, order_status, items, notes, update_date, partial_refund=None):
+    email_template_name = "emails/update.html"
+    subject = None
+    subtitle = None
+    refunding = False
+    refund_amount = order.amount if not partial_refund else partial_refund
+
+    if order_status is SHIPPED:
+        subject = "Your items have been shipped!"
+        subtitle = "Your items have been shipped."
+    elif order_status is DECLINED:
+        subject = "Your order has been declined."
+        subtitle = "Your order has been declined."
+    elif order_status is REFUNDED:
+        refunding = True
+        subject = "Your refund is on the way."
+        subtitle = "Your order has been refunded."
+    elif order_status is PARTIALLY_REFUNDED:
+        refunding = True
+        subject = "Your refund is on the way."
+        subtitle = "Your order has been partially refunded."
+
+    email_config = {
+        "customer": customer,
+        "order": order,
+        "items": items,
+        "notes": notes,
+        "update_date": update_date,
+        "refunding": refunding,
+        "order_total": "{:.2f}".format(int(refund_amount)),
+        "subtitle": subtitle,
+        "website": domain
+    }
+
+    try:
+        email = render_to_string(email_template_name, email_config)
+
+        send_mail(
+            subject=subject,
+            message=subject,
+            html_message=email,
+            from_email='Gday Punch Manga Magazine<edmundo.garol@gdaypunch.com>',
             recipient_list=[order.email],
             fail_silently=False,
         )
@@ -141,8 +191,6 @@ def get_order_number():
 
 def handle_create_order(order_secret, stripe_customer, customer, items, amount, coupon, subscriptions,
                         shipping, billing, billing_same_as_shipping, card):
-    fmt = '%Y-%m-%d %H:%M:%S'
-
     order = None
     item_details = []
     shipping_address = shipping.address
@@ -227,11 +275,8 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
 
     # Update order status for digital purchases only // Calculate item prices and update product stock
     digital_purchase = 0
-    for item in items:
+    for item in order.product_qty_details:
         product = Product.objects.get(id=item['id'])
-
-        item_details.append({'desc': product.title, 'price': product.active_price,
-                            'qty': item['qty'], 'total': int(item['qty']) * product.active_price})
 
         if product.product_type == DIGITAL:
             digital_purchase = digital_purchase + 1
@@ -272,10 +317,10 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
         order.billing_country = order.country
         order.billing_number = order.phone_number
 
-    order.date_created = order.date_created.strftime("%m/%d/%Y")
+    order.date_created = order.date_created.strftime("%d %b %Y")
 
     Thread(target=send_email_receipt, args=(
-        customer, order, item_details,)).start()
+        customer, order, order.product_qty_details,)).start()
 
 
 class OrderStatusUpdateViewset(viewsets.ModelViewSet):
@@ -297,18 +342,35 @@ class OrderStatusUpdateViewset(viewsets.ModelViewSet):
         order = Order.objects.get(id=request.data['order'])
         order_status = request.data['status']
         reasons = request.data.get("reasons", None)
-        description = 'Order x{} shippable items have been shipped.'.format(
-            order.total_shippable_items)
+        partial_refund = request.data.get("partial_refund", 0)
+        description = None
 
-        if order_status == DECLINED:
+        stripe_customer = StripeCustomer.objects.get(id=order.customer.id)
+        gp_customer = Customer.objects.get(id=stripe_customer.gp_customer.id)
+
+        if order_status == SHIPPED:
+            description = 'Order x{} shippable items have been shipped. Notes: {}'.format(
+                order.total_shippable_items, reasons)
+            Thread(target=send_email_update, args=(gp_customer, order, SHIPPED,
+                   order.product_qty_details, reasons, datetime.now().strftime("%d %b %Y"), )).start()
+
+        elif order_status == DECLINED:
             description = 'Order has been declined due to reasons: {}'.format(
                 reasons)
+            Thread(target=send_email_update, args=(gp_customer, order, DECLINED,
+                   order.product_qty_details, reasons, datetime.now().strftime("%d %b %Y"), )).start()
+
         elif order_status == REFUNDED:
             description = 'Order has been refunded due to reasons: {}'.format(
                 reasons)
+            Thread(target=send_email_update, args=(gp_customer, order, REFUNDED,
+                   order.product_qty_details, reasons, datetime.now().strftime("%d %b %Y"), )).start()
+
         elif order_status == PARTIALLY_REFUNDED:
-            description = 'Order has been partially refunded due to reasons: {}'.format(
-                reasons)
+            description = 'Order has been partially refunded [Amount: $A{:.2f}] due to reasons: {}'.format(float(partial_refund),
+                                                                                                           reasons)
+            Thread(target=send_email_update, args=(gp_customer, order, PARTIALLY_REFUNDED,
+                   order.product_qty_details, reasons, datetime.now().strftime("%d %b %Y"), partial_refund)).start()
 
         like = OrderStatusUpdate.objects.create(
             order=order,

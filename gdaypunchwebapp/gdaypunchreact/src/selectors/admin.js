@@ -91,3 +91,8 @@ export const selectOrderStatusUpdateReason = createSelector(
   selectDomain,
   ({ orders: { reason } }) => reason
 );
+
+export const selectPartialRefundAmount = createSelector(
+  selectDomain,
+  ({ orders: { partial_refund } }) => partial_refund
+);

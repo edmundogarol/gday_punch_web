@@ -79,7 +79,7 @@ function Ui(props) {
     return (
       <>
         {statusString[status.status]}
-        <div>{`- ${status.readable_date.date} ${status.readable_date.time}`}</div>
+        <div>{`- ${status.readable_date.date}`}</div>
       </>
     );
   };

@@ -93,8 +93,7 @@ function Ui(props) {
       dataIndex: "product",
       key: "order-total",
       className: "total",
-      render: (product, instance) =>
-        `A$${(product.price * instance.qty).toFixed(2)}`,
+      render: (product) => `A$${product.total.toFixed(2)}`,
     },
   ];
 
@@ -140,8 +139,7 @@ function Ui(props) {
       dataIndex: "product",
       key: "order-total",
       className: "total",
-      render: (product, instance) =>
-        `A$${(product.price * instance.qty).toFixed(2)}`,
+      render: (product) => `A$${product.total.toFixed(2)}`,
     },
   ];
 

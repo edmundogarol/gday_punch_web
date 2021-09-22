@@ -70,6 +70,8 @@ export const SET_SELECTED_ORDER = "admin/SET_SELECTED_ORDER";
 export const UPDATE_ORDER = "admin/UPDATE_ORDER";
 export const UPDATE_ORDER_STATUS = "admin/UPDATE_ORDER_STATUS";
 export const UPDATE_STATUS_REASON = "admin/UPDATE_STATUS_REASON";
+export const UPDATE_PARTIAL_REFUND_AMOUNT =
+  "admin/UPDATE_PARTIAL_REFUND_AMOUNT";
 
 export const doTweet = () => ({
   type: DO_TWEET,
@@ -386,6 +388,13 @@ export const updateStatusReason = (reason) => ({
   type: UPDATE_STATUS_REASON,
   payload: {
     reason,
+  },
+});
+
+export const updatePartialRefund = (amount) => ({
+  type: UPDATE_PARTIAL_REFUND_AMOUNT,
+  payload: {
+    amount,
   },
 });
 

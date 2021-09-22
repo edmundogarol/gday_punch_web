@@ -29,12 +29,12 @@ const { TextArea } = Input;
 
 function Ui(props) {
   const {
-    ordersState: { orderList, selected, reason },
+    ordersState: { orderList, selected, reason, partial_refund },
     setSelectedOrder,
     updateOrderStatus,
     updateStatusReason,
+    updatePartialRefund,
   } = props;
-
   const order = orderList[selected];
 
   const markShipped = (orderId, products) => {
@@ -49,10 +49,26 @@ function Ui(props) {
               <p key={product.id}>{`- ${product.title} x${product.qty}`}</p>
             ))}
           </div>
+          <div>
+            {"Provide any notes for shipment."}
+            <div>
+              <TextArea
+                rows={10}
+                showCount
+                maxLength={500}
+                value={reason}
+                onChange={(e) => updateStatusReason(e.target.value)}
+                placeholder="Enter shipment notes."
+              />
+            </div>
+          </div>
         </ModalItemSummary>
       ),
       onOk() {
         updateOrderStatus(orderId, "shipped");
+      },
+      onCancel() {
+        updateStatusReason(undefined);
       },
     });
   };
@@ -126,6 +142,13 @@ function Ui(props) {
       content: (
         <ModalItemSummary>
           {"Provide description for order partial refund reasons."}
+          <div>
+            <Input
+              value={partial_refund}
+              onChange={(e) => updatePartialRefund(e.target.value)}
+              placeholder="Enter partial refund amount."
+            />
+          </div>
           <div>
             <TextArea
               rows={10}
@@ -217,8 +240,7 @@ function Ui(props) {
       dataIndex: "product",
       key: "order-total",
       className: "total",
-      render: (product, instance) =>
-        `A$${(product.price * instance.qty).toFixed(2)}`,
+      render: (product) => `A$${product.total.toFixed(2)}`,
     },
   ];
 
@@ -264,8 +286,7 @@ function Ui(props) {
       dataIndex: "product",
       key: "order-total",
       className: "total",
-      render: (product, instance) =>
-        `A$${(product.price * instance.qty).toFixed(2)}`,
+      render: (product) => `A$${product.total.toFixed(2)}`,
     },
   ];
 

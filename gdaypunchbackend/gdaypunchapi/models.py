@@ -349,7 +349,7 @@ class Product(models.Model):
 
         return details
 
-    @ property
+    @property
     def user_string(self):
         return self.user.author_name
 
@@ -446,7 +446,8 @@ class Order(models.Model):
                         'price': product.active_price,
                         'image': product.image,
                         'sku': product.sku,
-                        'type': product.product_type
+                        'type': product.product_type,
+                        'total': int(item['qty']) * product.active_price
                     },
                     'qty': item['qty']
                 })
@@ -635,6 +636,7 @@ class ResetPasswordSession(models.Model):
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=False, null=True)
     token = models.TextField(max_length=70, blank=False)
-    verified_token = models.TextField(max_length=70, blank=False, null=True)
+    verified_token = models.TextField(
+        max_length=70, blank=False, null=True)
     created_date = models.DateTimeField(
         null=False, blank=False, default=timezone.now)
