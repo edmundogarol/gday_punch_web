@@ -37,7 +37,9 @@ export function* paymentSubmitCall(action) {
     yield put(paymentIntentUpdate(data));
   } else {
     console.log("Payment Submit error", JSON.stringify(response));
-    yield put(paymentError(response.data));
+    yield put(
+      paymentError(response.data.error ? response.data : response.data)
+    );
     yield call(fetchAllProductsCall);
   }
 }

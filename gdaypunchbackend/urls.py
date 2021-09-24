@@ -23,7 +23,7 @@ from rest_framework_swagger.views import get_swagger_view
 
 from .gdaypunchapi.views import (
     UserViewSet, LoginView, LogoutView, MangaDetailView,
-    MangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
+    AllMangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
     CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
     PromptSelectedViewSet, SwaggerSchemaView
 )
@@ -65,6 +65,7 @@ from .gdaypunchapi.api.orders import (
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet, basename='user')
 router.register(r'manga', MangaDetailView, basename='manga')
+router.register(r'mangas', AllMangaViewSet, basename='mangas')
 router.register(r'like', LikeViewSet, basename="like")
 router.register(r'comment', CommentViewSet, basename="comment")
 router.register(r'comments', MangaCommentsViewSet, basename="comments")
@@ -88,7 +89,6 @@ router.register(r'reset-password', ResetPasswordViewSet,
                 basename="reset-password")
 
 # Inactive endpoints
-# router.register(r'mangas', MangaViewSet, basename='mangas')
 
 urlpatterns = [
     # Docs

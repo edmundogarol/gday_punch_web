@@ -1,7 +1,13 @@
 import styled from "styled-components";
 import { Button, Input } from "antd";
 
-export const ProductsContainer = styled.div``;
+export const ProductsContainer = styled.div`
+  .interval {
+    color: dimgray;
+    font-size: 0.8em;
+    margin-left: 0.4em;
+  }
+`;
 
 export const FieldLabel = styled.label`
   margin-top: 1em;

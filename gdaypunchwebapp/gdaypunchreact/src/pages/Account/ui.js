@@ -1,8 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Input, Button, Card, Badge, Tabs, Tooltip, Result } from "antd";
-import { CheckCircleOutlined } from "@ant-design/icons";
+import { NavLink, useParams } from "react-router-dom";
+import { Input, Button, Card, Badge, Tabs, Tooltip, Result, Table } from "antd";
 import classNames from "classnames";
 const { TabPane } = Tabs;
+import {
+  CheckCircleOutlined,
+  ClockCircleOutlined as PendingIcon,
+  CheckCircleOutlined as PurchasedIcon,
+  PlayCircleOutlined as ShippedIcon,
+  InfoCircleOutlined as RefundedIcon,
+  CloseCircleOutlined as DeclinedIcon,
+} from "@ant-design/icons";
 
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
@@ -19,6 +27,13 @@ function Ui(props) {
     updateUserDetails,
     userUpdateError,
     updateUserDetailsError,
+    fetchAccountOrders,
+    ordersState: {
+      orderList,
+      fetching: fetchingOrders,
+      finished: fetchingOrdersFinished,
+    },
+    history,
   } = props;
   const {
     requesting,
@@ -27,6 +42,7 @@ function Ui(props) {
   } = emailVerificationState;
   const [editingEmail, toggleEditingEmail] = useState(false);
   const [email, updateEmail] = useState(user.email);
+  const { tab } = useParams();
 
   const attentionNeeded = (section) => {
     if (!user.email) return false;
@@ -75,14 +91,106 @@ function Ui(props) {
     );
   };
 
+  const handleTabChange = (key) => {
+    history.replace(`/account/${key}`);
+
+    switch (key) {
+      case "orders":
+        if (fetchingOrdersFinished) return;
+        fetchAccountOrders(user.stripe_customer_id);
+      default:
+        return;
+    }
+  };
+
+  const renderStatusIcons = {
+    pending: PendingIcon,
+    purchased: PurchasedIcon,
+    shipped: ShippedIcon,
+    declined: DeclinedIcon,
+    refunded: RefundedIcon,
+    partially_refunded: RefundedIcon,
+  };
+
+  const ordersColumns = [
+    {
+      title: "Date",
+      dataIndex: "readable_date",
+      key: "readable_date",
+      width: "100px",
+      render: (readable_date) => readable_date.date,
+    },
+    {
+      title: "Order No.",
+      dataIndex: "number",
+      key: "number",
+      render: (number, order) => {
+        const StatusIcon = renderStatusIcons[order.status];
+
+        return (
+          <span className={`status ${order.status}`}>
+            {`#${number}`}
+            <StatusIcon />
+          </span>
+        );
+      },
+    },
+    {
+      title: "Items",
+      className: "desktop-only",
+      dataIndex: "product_qty_details",
+      key: "product_qty_details",
+      render: (products) => {
+        if (!products) return <>Problem retrieving items.</>;
+
+        const firstProduct = products[0];
+        const items = (
+          <p>{`${firstProduct.qty} x ${firstProduct.product.title}`}</p>
+        );
+
+        let more = null;
+
+        if (products.length > 1) {
+          more = (
+            <p>{`${products.length - 1} more item${
+              products.length - 1 > 1 ? "s" : ""
+            }`}</p>
+          );
+        }
+
+        return (
+          <>
+            {items}
+            {more}
+          </>
+        );
+      },
+    },
+    {
+      title: "Paid",
+      dataIndex: "amount",
+      key: "amount",
+      width: "15%",
+      render: (amount) => `A$${amount.toFixed(2)}`,
+    },
+  ];
+
+  const handleOrderOpen = (order) => {
+    return {
+      onClick: (event) => {
+        history.push(`/order-confirmation/${order.secret}`);
+      },
+    };
+  };
+
   return (
     <App id="top" className="App">
       <FeaturedSection top>
         <SectionTitle>Account</SectionTitle>
-        <Tabs defaultActiveKey="1">
+        <Tabs defaultActiveKey={tab} onTabClick={handleTabChange}>
           <TabPane
             tab={<Badge dot={attentionNeeded("profile")}>Details</Badge>}
-            key="1"
+            key="profile"
           >
             <Card title="Profile" loading={!user.email}>
               <Card
@@ -187,15 +295,27 @@ function Ui(props) {
               </Card>
             </Card>
           </TabPane>
-          <TabPane tab="Orders" key="2">
-            Orders
+          <TabPane tab="Orders" key="orders">
+            <h4>My Orders</h4>
+            {fetchingOrders ? (
+              <LoadingSpinner />
+            ) : (
+              <Table
+                dataSource={orderList.map((order) => ({
+                  ...order,
+                  key: order.id,
+                }))}
+                columns={ordersColumns}
+                onRow={handleOrderOpen}
+              />
+            )}
           </TabPane>
-          <TabPane tab="Subscriptions" key="3">
+          <TabPane tab="Subscriptions" key="subscriptions">
             Subscriptions
           </TabPane>
-          <TabPane tab="Payment" disabled key="4">
+          {/* <TabPane tab="Payment" disabled key="payment">
             Payment
-          </TabPane>
+          </TabPane> */}
         </Tabs>
       </FeaturedSection>
     </App>

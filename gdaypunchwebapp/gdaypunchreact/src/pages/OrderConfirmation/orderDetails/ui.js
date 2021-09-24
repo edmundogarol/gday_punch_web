@@ -159,25 +159,38 @@ function Ui(props) {
         rowKey="id"
         className="desktop"
         columns={productColumns}
-        dataSource={order.product_qty_details.map((product) => ({
-          ...product,
-          status: order.status,
-        }))}
+        dataSource={
+          order.product_qty_details
+            ? order.product_qty_details.map((product) => ({
+                ...product,
+                status: order.status,
+              }))
+            : []
+        }
         pagination={false}
       />
       <Table
         rowKey="id"
         className="mobile"
         columns={mobileProductColumns}
-        dataSource={order.product_qty_details.map((product) => ({
-          ...product,
-          status: order.status,
-        }))}
+        dataSource={
+          order.product_qty_details
+            ? order.product_qty_details.map((product) => ({
+                ...product,
+                status: order.status,
+              }))
+            : []
+        }
         pagination={false}
       />
       <ProductTotalsContainer>
         <div>
-          Subtotal <span>{`A$${order.products_total_price.toFixed(2)}`}</span>
+          Subtotal{" "}
+          <span>{`A$${
+            order.products_total_price
+              ? order.products_total_price.toFixed(2)
+              : "Error"
+          }`}</span>
         </div>
         <div>
           Shipping
@@ -191,7 +204,7 @@ function Ui(props) {
         )}
         <div>
           Tax (included in item prices): [GST]
-          <span>{`A$${order.tax.toFixed(2)}`}</span>
+          <span>{`A$${order.tax ? order.tax.toFixed(2) : "Error"}`}</span>
         </div>
         <div>
           Total:

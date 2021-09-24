@@ -74,6 +74,8 @@ function Ui(props) {
       key: "product_qty_details",
       className: "center",
       render: (products) => {
+        if (!products) return <>Problem retrieving items.</>;
+
         const firstProduct = products[0];
         const items = (
           <p>{`${firstProduct.qty} x ${firstProduct.product.title}`}</p>
@@ -150,6 +152,7 @@ function Ui(props) {
       key: "product_qty_details",
       className: "center",
       render: (products) => {
+        if (!products) return <>Problem retrieving items.</>;
         const firstProduct = products[0];
         const items = (
           <p>{`${firstProduct.qty} x ${firstProduct.product.title}`}</p>

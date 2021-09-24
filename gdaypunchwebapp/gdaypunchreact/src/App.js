@@ -20,6 +20,7 @@ import productSaga from "./sagas/products";
 import customerSaga from "./sagas/customer";
 import checkoutSaga from "./sagas/checkout";
 import orderSaga from "./sagas/orders";
+import accountSaga from "./sagas/account";
 
 import appReducer from "reducers/app";
 
@@ -65,6 +66,7 @@ function* rootSaga() {
     customerSaga(),
     checkoutSaga(),
     orderSaga(),
+    accountSaga(),
   ]);
 }
 
@@ -190,6 +192,12 @@ function Root(props) {
               condition={loginCheckFinished && user.logged_in}
               exact
               path="/account"
+              component={Account}
+            />
+            <ProtectedRoute
+              condition={loginCheckFinished && user.logged_in}
+              exact
+              path="/account/:tab"
               component={Account}
             />
             <ProtectedRoute

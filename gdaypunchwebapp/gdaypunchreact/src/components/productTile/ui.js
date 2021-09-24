@@ -136,7 +136,19 @@ function Ui(props) {
         {renderActionButton()}
         <ProductAuthor>{author || creator}</ProductAuthor>
         <PriceLikeCommentConainer>
-          {buyableProduct ? <p>{`A$${active_price}`}</p> : <p>{`FREE`}</p>}
+          {buyableProduct ? (
+            <p>{`A$${active_price} ${
+              product.product_type.includes("subscription")
+                ? `/ ${
+                    product.subscription_interval < 2
+                      ? "per month"
+                      : `every ${product.subscription_interval} months`
+                  }`
+                : null
+            }`}</p>
+          ) : (
+            <p>{`FREE`}</p>
+          )}
           {digitalProduct && (
             <LikeCommentConainer>
               <a onClick={() => handleLikeClick()}>

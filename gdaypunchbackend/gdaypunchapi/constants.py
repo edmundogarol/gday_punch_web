@@ -3,11 +3,33 @@
 PHYSICAL = 'physical'
 DIGITAL = 'digital'
 SUBSCRIPTION = 'subscription'
+PHYSICAL_COLLECTION = 'physical_collection'
+DIGITAL_COLLECTION = 'digital_collection'
+MIXED_COLLECTION = 'mixed_collection'
+# Admin required to created this product type
+MAG_SUBSCRIPTION = 'mag_subscription'
+# Admin required to created this product type
+DIG_SUBSCRIPTION = 'dig_subscription'
 
+# Manga => can belong to => multiple Products (eg. Digital, Dig_Subscription)
 PRODUCT_TYPES = (
     (PHYSICAL, 'Physical'),
     (DIGITAL, 'Digital'),
     (SUBSCRIPTION, 'Subscription'),
+    (PHYSICAL_COLLECTION, 'Physical Collection'),
+    (DIGITAL_COLLECTION, 'Digital Collection'),
+    (MIXED_COLLECTION, 'Mixed Collection'),
+    (MAG_SUBSCRIPTION, 'Magazines Subscription'),
+    (DIG_SUBSCRIPTION, 'Digitals Subscription'),
+)
+
+# Price Types
+RECURRING = 'recurring'
+ONE_TIME = 'one_time'
+
+PRICE_TYPES = (
+    (RECURRING, 'Recurring'),
+    (ONE_TIME, 'One Time'),
 )
 
 # Order Statuses

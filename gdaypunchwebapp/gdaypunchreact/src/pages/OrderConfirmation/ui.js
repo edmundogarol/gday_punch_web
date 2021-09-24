@@ -99,7 +99,9 @@ function Ui(props) {
         <div>
           {renderSuccessImage()}
           <StatusContainer>
-            {renderLatestStatus(order.statuses[0])}
+            {order.statuses.length
+              ? renderLatestStatus(order.statuses[0])
+              : null}
           </StatusContainer>
           <OrderDetails order={order} />
         </div>

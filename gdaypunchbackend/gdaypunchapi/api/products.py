@@ -1,7 +1,7 @@
 import os
 import stripe
 
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 
@@ -31,21 +31,39 @@ class ProductViewSet(viewsets.ModelViewSet):
     permission_classes = [ProductPermissions]
 
     def create(self, request, *args, **kwargs):
+        user = None
+        product_type = request.data['product_type']
+
+        if str(self.request.user) != "AnonymousUser":
+            user = User.objects.get(email=self.request.user)
+
+        if not user.is_staff and (product_type == MAG_SUBSCRIPTION or product_type == DIG_SUBSCRIPTION):
+            return Response(
+                {'error': 'Unauthorised to create this product'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
         free = request.data['active_price'] == 0 or request.data['active_price'] == "" or None
         use_existing_price = len(request.data['stripe_prices']) > 0
         create_stripe_price = not free and not use_existing_price
 
         if create_stripe_price:
-            recurring = request.data['product_type'] == 'subscription'
+            recurring = False
+            month_interval = request.data.get('month_interval')
+
+            # if product_type == MAG_SUBSCRIPTION: Subscription done manually through Admin portal (Per release)
+            if product_type == SUBSCRIPTION:
+                recurring = True
+            if product_type == DIG_SUBSCRIPTION:
+                recurring = True
+                month_interval = 1
 
             stripe_price = stripe.Price.create(
                 unit_amount=int(float(request.data['active_price'])*100),
                 currency="aud",
                 recurring={
                     "interval": "month",
-                    "interval_count": 2,
-                    "usage_type": "metered"
+                    "interval_count": month_interval if month_interval else 1,
                 } if recurring else None,
                 product_data={
                     "name": request.data['title'],
@@ -59,7 +77,8 @@ class ProductViewSet(viewsets.ModelViewSet):
                 price_amount=(stripe_price.unit_amount / 100),
                 price_id=stripe_price.id,
                 price_title=request.data['title'],
-                price_type="recurring" if recurring else "one_time"
+                price_type=RECURRING if recurring else ONE_TIME,
+                month_interval=month_interval
             )
             new_stripe_price.save()
 
@@ -71,7 +90,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             visible=request.data['visible'],
             stock=request.data['stock'],
             sku=request.data['sku'],
-            product_type=request.data['product_type'],
+            product_type=product_type,
             user=User.objects.get(email=self.request.user)
         )
 
@@ -133,6 +152,19 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
     permission_classes = [ProductPermissions]
 
     def partial_update(self, request, *args, **kwargs):
+        user = None
+        product_type = request.data['product_type']
+        month_interval = request.data.get('month_interval')
+
+        if str(self.request.user) != "AnonymousUser":
+            user = User.objects.get(email=self.request.user)
+
+        if not user.is_staff and (product_type == MAG_SUBSCRIPTION or product_type == DIG_SUBSCRIPTION):
+            return Response(
+                {'error': 'Unauthorised to create this product'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+
         queryset = Product.objects.all()
         product = queryset.get(pk=kwargs.get("pk"))
 
@@ -141,15 +173,21 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
         create_stripe_price = not free and not use_existing_price
 
         if create_stripe_price:
-            recurring = request.data['product_type'] == 'subscription'
+            recurring = False
+
+            # if product_type == MAG_SUBSCRIPTION: Subscription done manually through Admin portal (Per release)
+            if product_type == SUBSCRIPTION:
+                recurring = True
+            if product_type == DIG_SUBSCRIPTION:
+                recurring = True
+                month_interval = 1
 
             stripe_price = stripe.Price.create(
                 unit_amount=int(float(request.data['active_price'])*100),
                 currency="aud",
                 recurring={
                     "interval": "month",
-                    "interval_count": 2,
-                    "usage_type": "metered"
+                    "interval_count": month_interval if month_interval else 1,
                 } if recurring else None,
                 product_data={
                     "name": request.data['title'],
@@ -163,11 +201,18 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
                 price_amount=(stripe_price.unit_amount / 100),
                 price_id=stripe_price.id,
                 price_title=request.data['title'],
-                price_type="recurring" if recurring else "one_time"
+                price_type=RECURRING if recurring else ONE_TIME,
+                month_interval=month_interval
             )
             new_stripe_price.save()
 
             request.data['stripe_prices'] = [new_stripe_price.id]
+
+        for price in product.stripe_prices.all():
+            if price.month_interval != month_interval:
+                current_price = StripePrice.objects.get(id=price.id)
+                current_price.month_interval = month_interval
+                current_price.save()
 
         serializer = ProductSerializer(
             product, data=request.data, partial=True)

@@ -42,6 +42,8 @@ const productType = {
   physical: "Physical",
   digital: "Digital",
   subscription: "Subscription",
+  mag_subscription: "Magazine Subscription",
+  dig_subscription: "Digital Subscription",
 };
 
 function Ui(props) {
@@ -79,6 +81,8 @@ function Ui(props) {
     product_type: "physical",
     price: 0,
     stripe_prices: productPrices,
+    charge_type: "per_release",
+    month_interval: undefined,
   });
 
   useEffect(() => {
@@ -156,7 +160,20 @@ function Ui(props) {
       title: "Price",
       dataIndex: "active_price",
       key: "active_price",
-      render: (value) => `$${value}`,
+      render: (value, product) => (
+        <>
+          {`$${value}`}
+          <span className="interval">
+            {product.product_type.includes("subscription")
+              ? `/${
+                  product.subscription_interval < 2
+                    ? "m"
+                    : `${product.subscription_interval}m`
+                }`
+              : null}
+          </span>
+        </>
+      ),
     },
     {
       title: "Visible",
@@ -181,22 +198,13 @@ function Ui(props) {
       render: (value) => productType[value],
     },
     {
-      title: "Edit",
+      title: "Actions",
       render: (value, instance) => (
         <>
-          <Tooltip title="Edit Product">
-            <Button
-              onClick={() => {
-                setEditProduct(instance.id);
-                props.history.push(`/admin/product-detail/${instance.id}/`);
-              }}
-            >
-              Edit
-            </Button>
-          </Tooltip>
           <Tooltip title="Copy Product">
             <Button
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setEditProduct(instance.id);
                 props.history.push(
                   `/admin/product-detail/${instance.id}-copy/`
@@ -214,7 +222,11 @@ function Ui(props) {
             cancelText="No"
           >
             <Tooltip title="Delete Product">
-              <Button>
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
+              >
                 <DeleteOutlined className="site-form-item-icon" />
               </Button>
             </Tooltip>
@@ -233,6 +245,15 @@ function Ui(props) {
     key: price.id,
     title: `$${price.price_amount} ${price.price_title}`,
   }));
+
+  const handleProductOpen = (product) => {
+    return {
+      onClick: (event) => {
+        setEditProduct(product.id);
+        props.history.push(`/admin/product-detail/${product.id}/`);
+      },
+    };
+  };
 
   return (
     <ProductsContainer>
@@ -311,6 +332,41 @@ function Ui(props) {
             <Radio value={"digital"}>Digital</Radio>
             <Radio value={"subscription"}>Subscription</Radio>
           </Radio.Group>
+          <FieldLabel>Admin Product Type</FieldLabel>
+          <Radio.Group
+            onChange={(e) =>
+              updateNewProduct({ ...newProduct, product_type: e.target.value })
+            }
+            value={newProduct.product_type}
+          >
+            <Radio value={"mag_subscription"}>
+              Magazine Issues Subscription
+            </Radio>
+            <Radio value={"dig_subscription"}>
+              Digital Issues Subscription
+            </Radio>
+          </Radio.Group>
+          {newProduct.product_type === "subscription" ? (
+            <>
+              <FieldLabel>Interval</FieldLabel>
+              <Input
+                value={newProduct.month_interval}
+                onChange={(e) =>
+                  updateNewProduct({
+                    ...newProduct,
+                    month_interval: e.target.value,
+                  })
+                }
+                placeholder="Enter subscription interval in months"
+                prefix={<StockOutlined className="site-form-item-icon" />}
+                suffix={
+                  <Tooltip title="Monthly interval">
+                    <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+                  </Tooltip>
+                }
+              />
+            </>
+          ) : null}
         </ProductLeftContainer>
         <ProductRightContainer>
           <FieldLabel>Image Filename</FieldLabel>
@@ -378,7 +434,11 @@ function Ui(props) {
         {`Products | `}
         <NavLink to="/admin/stripe-products">Stripe Products</NavLink>
       </Title>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table
+        onRow={handleProductOpen}
+        dataSource={dataSource}
+        columns={columns}
+      />
     </ProductsContainer>
   );
 }

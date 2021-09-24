@@ -27,7 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ("first_name", "last_name", "username", "email", "bio", "privileges", "verified",
                   "location", "birth_date", "roles", "password", "id", "is_staff", "subscribed",
-                  "customer_id")
+                  "customer_id", "stripe_customer_id")
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -40,7 +40,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class MangaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manga
-        fields = ("id", "title", "author", "pdf", "cover", "likes", "user_likes",
+        fields = ("id", "title", "author", "pdf_live", "cover", "likes", "user_likes",
                   "comments", "author_name")
 
 
@@ -87,7 +87,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ("id", "title", "description", "image", "product_type", "active_price",
                   "sale_price", "visible", "stock", "stripe_prices", "manga_details", "sku",
-                  "manga", "user", "user_string")
+                  "manga", "user", "user_string", "purchased", "subscription_interval")
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -99,7 +99,7 @@ class OrderSerializer(serializers.ModelSerializer):
                   "billing_first_name", "billing_last_name", "billing_address_line_1", "billing_address_line_2",
                   "billing_city", "billing_state", "billing_postcode", "billing_country", "billing_number",
                   "last_four", "exp_month", "exp_year", "product_qty_details", "fulfillment_type", "coupon",
-                  "readable_date", "coupon_details", "tax", "statuses")
+                  "readable_date", "coupon_details", "tax", "statuses", "secret")
 
 
 class OrderStatusUpdateSerializer(serializers.ModelSerializer):

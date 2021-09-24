@@ -42,8 +42,8 @@ export const ProductImage = styled(Image)`
   margin-bottom: 1em;
 
   .ant-image-img {
-    width: auto;
-    height: auto;
+    max-height: 21em;
+    width: unset;
   }
 `;
 

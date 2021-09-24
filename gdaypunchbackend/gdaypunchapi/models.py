@@ -157,6 +157,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         except Customer.DoesNotExist:
             return None
 
+    @property
+    def stripe_customer_id(self):
+        try:
+            stripe_customer = StripeCustomer.objects.get(user=self.id)
+
+            return stripe_customer.id
+        except StripeCustomer.DoesNotExist:
+            return None
+
 
 class Manga(models.Model):
     title = models.TextField(max_length=50, blank=False)
@@ -206,6 +215,17 @@ class Manga(models.Model):
     def author_name(self):
         return self.author.author_name
 
+    @property
+    def pdf_live(self):
+        if str(get_current_user()) == "AnonymousUser":
+            return False
+
+        user = User.objects.get(email=get_current_user())
+        if user.is_staff:
+            return self.pdf
+        else:
+            return None
+
 
 class Like(models.Model):
     manga = models.ForeignKey(Manga,  on_delete=models.PROTECT)
@@ -236,32 +256,6 @@ class Comment(models.Model):
 class CommentLike(models.Model):
     comment = models.ForeignKey(Comment,  on_delete=models.PROTECT)
     user = models.ForeignKey(User,  on_delete=models.PROTECT)
-
-
-class CollectionType(models.Model):
-    ISSUE = 1
-    MANGA = 2
-    ILLUSTRATION = 3
-    COLLECTION_TYPES = (
-        (ISSUE, 'issue'),
-        (MANGA, 'manga'),
-        (ILLUSTRATION, 'illustration'),
-    )
-
-    id = models.PositiveSmallIntegerField(
-        choices=COLLECTION_TYPES, primary_key=True)
-    name = models.TextField(max_length=20, blank=True)
-
-    def __str__(self):
-        return self.get_id_display()
-
-
-class Collection(models.Model):
-    owner = models.ForeignKey(User,  on_delete=models.PROTECT)
-    name = models.TextField(max_length=50, blank=False)
-    mangas = models.ManyToManyField(Manga, blank=False)
-    collectionType = models.ForeignKey(
-        CollectionType,  on_delete=models.PROTECT)
 
 
 class PromptType(models.Model):
@@ -298,7 +292,8 @@ class StripePrice(models.Model):
     price_id = models.TextField(max_length=50, blank=False)
     price_title = models.TextField(max_length=50, blank=False)
     price_type = models.TextField(
-        max_length=20, blank=False, default="one_time")
+        max_length=20, blank=False, default=ONE_TIME)
+    month_interval = models.IntegerField(blank=True, default=1)
 
 
 class Product(models.Model):
@@ -353,6 +348,30 @@ class Product(models.Model):
     def user_string(self):
         return self.user.author_name
 
+    @property
+    def purchased(self):
+        if str(get_current_user()) == "AnonymousUser":
+            return False
+
+        try:
+            user = User.objects.get(email=get_current_user())
+            customer = Customer.objects.get(user=self.id)
+            purchase = Purchase.objects.get(customer=customer)
+
+            return True
+        except Customer.DoesNotExist:
+            return False
+        except Purchase.DoesNotExist:
+            return False
+
+    @property
+    def subscription_interval(self):
+        interval = None
+        for stripe_price in self.stripe_prices.all():
+            interval = stripe_price.month_interval
+
+        return interval
+
 
 class Customer(models.Model):
     SUBSCRIBED_ONLY = 'subscribed_only'
@@ -370,6 +389,8 @@ class Customer(models.Model):
         User,  on_delete=models.PROTECT, blank=True, null=True)
     subscribed = models.TextField(
         max_length=30, choices=SUBSCRIPTION_TYPE, default=SUBSCRIBED_ONLY)
+    mag_subscribed = models.BooleanField(default=False)
+    dig_subscribed = models.BooleanField(default=False)
     date_created = models.DateTimeField(
         null=True, blank=True, default=timezone.now)
     email = models.TextField(max_length=100, unique=True, blank=False)
@@ -382,6 +403,13 @@ class Customer(models.Model):
     postcode = models.TextField(max_length=50, blank=False)
     country = models.TextField(max_length=50, blank=False)
     phone_number = models.TextField(max_length=50, blank=False)
+
+
+class Purchase(models.Model):
+    product = models.ForeignKey(
+        Product,  on_delete=models.PROTECT, blank=False, null=False)
+    customer = models.ForeignKey(
+        Customer,  on_delete=models.PROTECT, blank=False, null=False)
 
 
 class StripeCustomer(models.Model):

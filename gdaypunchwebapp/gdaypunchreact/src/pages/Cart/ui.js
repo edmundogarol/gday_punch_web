@@ -65,7 +65,15 @@ function Ui(props) {
   };
 
   const cartItem = (item) => {
-    const { id, image, title, product_type, active_price, quantity } = item;
+    const {
+      id,
+      image,
+      title,
+      product_type,
+      active_price,
+      quantity,
+      subscription_interval,
+    } = item;
     const digitalProduct = product_type !== "physical";
     const qtyRange = digitalProduct && quantity ? 1 : 10;
 
@@ -77,7 +85,15 @@ function Ui(props) {
             <h3>{title}</h3>
           </a>
           <ItemMeta>
-            <p>{`A$${active_price}`}</p>
+            <p>{`A$${active_price} ${
+              product_type.includes("subscription")
+                ? `/ ${
+                    subscription_interval < 2
+                      ? "per month"
+                      : `every ${subscription_interval} months`
+                  }`
+                : null
+            }`}</p>
             <p className="spacer">QTY:</p>
             <Select
               value={quantity}

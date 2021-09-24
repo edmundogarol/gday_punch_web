@@ -18,13 +18,22 @@ from rest_framework.response import Response
 
 from ..constants import *
 from ..models import (
-    Order, OrderStatusUpdate, Product, Coupon, StripeCustomer, Customer
+    Order,
+    OrderStatusUpdate,
+    Product,
+    Coupon,
+    StripeCustomer,
+    Customer,
+    Purchase
 )
 from ..serializers import (
-    OrderSerializer, OrderStatusUpdateSerializer
+    OrderSerializer,
+    OrderStatusUpdateSerializer
 )
 from ..api_permissions import (
-    OrdersByUserPermissions, OrderStatusUpdatesPermissions, OrderDetailsPermissions
+    OrdersByUserPermissions,
+    OrderStatusUpdatesPermissions,
+    OrderDetailsPermissions
 )
 from ..utils import (
     AdminOrReadOnly
@@ -54,6 +63,9 @@ class OrderViewSet(viewsets.ModelViewSet):
         """
         Retrieve all orders for Customer [id]
         """
+        if pk == 'null':
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         queryset = Order.objects.all().order_by('-id')
         orders = get_list_or_404(queryset, customer=pk)
         serializer = OrderSerializer(orders, many=True)
@@ -269,16 +281,27 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
                 items=subscriptions,
             )
 
-            if len(subscriptions) == len(items):
-                order.status = PENDING  # Subscription will always include a pre-order of the next issue
-                order.save()
-
     # Update order status for digital purchases only // Calculate item prices and update product stock
     digital_purchase = 0
     for item in order.product_qty_details:
         product = Product.objects.get(id=item['id'])
 
+        # Record customer purchase
+        Purchase.objects.create(
+            customer=customer,
+            product=product
+        )
+
         if product.product_type == DIGITAL:
+            digital_purchase = digital_purchase + 1
+        elif product.product_type == MAG_SUBSCRIPTION:
+            customer.mag_subscribed = True
+            customer.save()
+        elif product.product_type == DIG_SUBSCRIPTION:
+            customer.dig_subscribed = True
+            customer.save()
+            digital_purchase = digital_purchase + 1
+        elif product.product_type == SUBSCRIPTION:
             digital_purchase = digital_purchase + 1
         else:
             product.stock = product.stock - int(item['qty'])

@@ -389,17 +389,16 @@ class MangaCommentsViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
-class MangaViewSet(ModelViewSet):
+class AllMangaViewSet(ModelViewSet):
     queryset = Manga.objects.none()
     serializer_class = MangaSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AdminOnly]
 
     def get_user(self):
         return self.request.user
 
     def list(self, request, *args, **kwargs):
-        author = User.objects.get(email=self.get_user())
-        queryset = Manga.objects.all().filter(author=author)
+        queryset = Manga.objects.all().order_by('-id')
         serializer = MangaSerializer(queryset, many=True)
         return Response(serializer.data)
 

@@ -28,6 +28,8 @@ from ..utils import (
     PostOnly
 )
 
+from ..constants import *
+
 if 'DEVENV' in os.environ:
     stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
     endpoint_secret = 'whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal'
@@ -55,10 +57,10 @@ def calculate_order_amount(items_list, coupon, au_shipping):
         while qty < product['qty']:
             for stripe_price in current_product.stripe_prices.all():
 
-                if stripe_price.price_type == "recurring":
+                if stripe_price.price_type == RECURRING:
                     subscription_items.append({'price': stripe_price.price_id})
-                else:
-                    order_amount = order_amount + stripe_price.price_amount
+
+                order_amount = order_amount + stripe_price.price_amount
 
             qty = qty + 1
 
@@ -394,9 +396,8 @@ class PriceView(APIView):
             currency="aud",
             recurring={
                 "interval": "month",
-                "interval_count": 2,
-                "usage_type": "metered"
-            } if price_type == "recurring" else None,
+                "interval_count": 1,
+            } if price_type == RECURRING else None,
             product_data={
                 "name": name,
             })
@@ -434,6 +435,21 @@ def PaymentsWebhookHandler(request):
         stripe_customer = StripeCustomer.objects.get(
             customer_id=payment_intent.customer)
         gp_customer = Customer.objects.get(id=stripe_customer.gp_customer.id)
+
+        retrieved_stripe_customer = stripe.Customer.retrieve(
+            stripe_customer.customer_id)
+        if retrieved_stripe_customer.invoice_settings.default_payment_method is None:
+            stripe.Customer.modify(retrieved_stripe_customer.id, invoice_settings={
+                                   'default_payment_method': payment_intent.payment_method})
+        else:
+            existing_payment_method = stripe.PaymentMethod.retrieve(
+                retrieved_stripe_customer.invoice_settings.default_payment_method)
+            incoming_payment_method = stripe.PaymentMethod.retrieve(
+                payment_intent.payment_method)
+
+            if existing_payment_method.card.last4 != incoming_payment_method.card.last4:
+                stripe.Customer.modify(retrieved_stripe_customer.id, invoice_settings={
+                    'default_payment_method': payment_intent.payment_method})
 
         charge = payment_intent.charges.data[0]
         items = payment_intent.metadata['items']

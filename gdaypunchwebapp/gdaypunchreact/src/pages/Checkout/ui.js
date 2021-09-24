@@ -180,6 +180,7 @@ function Ui(props) {
       if (paymentSuccessRef.current) {
         fetchProducts();
       }
+      paymentError(undefined);
     };
   }, []);
 
@@ -220,6 +221,17 @@ function Ui(props) {
         province: { ...checkoutForm.province, value: customer.state },
         country: { ...checkoutForm.country, value: customer.country },
         phone: { ...checkoutForm.phone, value: customer.phone_number },
+      });
+      updateCustomerDetailsReplaced(true);
+    } else if (
+      fetchingCustomerFinished &&
+      !customer.email &&
+      !customerDetailsReplaced &&
+      countriesDownloaded
+    ) {
+      updateCheckoutForm({
+        ...checkoutForm,
+        email: { ...checkoutForm.email, value: user.email },
       });
       updateCustomerDetailsReplaced(true);
     }

@@ -52,6 +52,58 @@ export const App = styled.div`
       margin-left: 50%;
     }
   }
+
+  .desktop-only {
+    display: none;
+  }
+  @media ${device.laptop} {
+    .desktop-only {
+      display: table-cell;
+    }
+  }
+
+  .status {
+    svg {
+      margin-left: 1em;
+    }
+  }
+
+  .pending {
+    svg {
+      color: orange;
+      margin-right: 0.3em;
+    }
+  }
+  .purchased {
+    svg {
+      color: #32ca32;
+      margin-right: 0.3em;
+    }
+  }
+  .shipped {
+    svg {
+      color: #32ca32;
+      margin-right: 0.3em;
+    }
+  }
+  .declined {
+    svg {
+      color: #e62020;
+      margin-right: 0.3em;
+    }
+  }
+  .refunded {
+    svg {
+      color: #dab502;
+      margin-right: 0.3em;
+    }
+  }
+  .partially_refunded {
+    svg {
+      color: #dab502;
+      margin-right: 0.3em;
+    }
+  }
 `;
 
 export const DetailField = styled.div`

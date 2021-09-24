@@ -53,6 +53,7 @@ function Ui(props) {
 
   const [product, updateProduct] = useState({
     ...currentProduct,
+    month_interval: currentProduct.subscription_interval,
     title: `${currentProduct.title}${creatingProduct ? " COPY" : ""}`,
   });
 
@@ -136,7 +137,6 @@ function Ui(props) {
     title: `$${price.price_amount} ${price.price_title}`,
   }));
 
-  console.log({ productPrices });
   return (
     <ProductsContainer>
       <Title level={4}>
@@ -215,6 +215,41 @@ function Ui(props) {
             <Radio value={"digital"}>Digital</Radio>
             <Radio value={"subscription"}>Subscription</Radio>
           </Radio.Group>
+          <FieldLabel>Admin Product Type</FieldLabel>
+          <Radio.Group
+            onChange={(e) =>
+              updateProduct({ ...product, product_type: e.target.value })
+            }
+            value={product.product_type}
+          >
+            <Radio value={"mag_subscription"}>
+              Magazine Issues Subscription
+            </Radio>
+            <Radio value={"dig_subscription"}>
+              Digital Issues Subscription
+            </Radio>
+          </Radio.Group>
+          {product.product_type === "subscription" ? (
+            <>
+              <FieldLabel>Interval</FieldLabel>
+              <Input
+                value={product.month_interval}
+                onChange={(e) =>
+                  updateProduct({
+                    ...product,
+                    month_interval: e.target.value,
+                  })
+                }
+                placeholder="Enter subscription interval in months"
+                prefix={<StockOutlined className="site-form-item-icon" />}
+                suffix={
+                  <Tooltip title="Monthly interval">
+                    <InfoCircleOutlined style={{ color: "rgba(0,0,0,.45)" }} />
+                  </Tooltip>
+                }
+              />
+            </>
+          ) : null}
         </ProductDetailLeftContainer>
         <ProductDetailRightContainer>
           <ProductImage src={getGdayPunchStaticUrl(product.image)} />
