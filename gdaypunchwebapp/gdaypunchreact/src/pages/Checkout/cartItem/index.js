@@ -28,7 +28,7 @@ function Ui(props) {
           {quantity}
         </ItemMeta>
       </ItemTitleMetaContainer>
-      <ItemSubtotalBinContainer>
+      <ItemSubtotalBinContainer className="desktop">
         <ItemSubtotal>
           <h4>{`A$${(quantity ? quantity * active_price : active_price).toFixed(
             2

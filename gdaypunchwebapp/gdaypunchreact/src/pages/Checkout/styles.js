@@ -54,7 +54,11 @@ export const SideCartItemsList = styled.div`
   overflow: scroll;
   margin-top: 1em;
   border-top: 1px solid #c5c5c5;
-  min-width: 23em;
+  min-width: unset;
+
+  @media ${device.laptop} {
+    min-width: 23em;
+  }
 `;
 
 export const CheckoutContainer = styled.div`
@@ -73,7 +77,7 @@ export const CheckoutContainer = styled.div`
       display: none;
     }
     .desktop {
-      display: initial;
+      display: flex;
     }
   }
 `;
@@ -298,6 +302,7 @@ export const LeftCheckoutContainer = styled.div`
 export const OrderSummaryContainer = styled.div`
   width: 100%;
   padding-right: unset;
+  height: max-content;
 
   @media ${device.laptop} {
     padding-right: 2em;
@@ -365,10 +370,20 @@ export const OrderSummaryLine = styled.div`
 
     span:not(.ant-radio, .ant-radio-inner) {
       display: flex;
-      flex-direction: row;
       justify-content: space-between;
       width: 100%;
-      align-items: center;
+
+      flex-direction: column;
+      align-items: end;
+
+      @media ${device.laptop} {
+        align-items: center;
+        flex-direction: row;
+      }
+    }
+
+    .ant-radio {
+      margin-right: 1em;
     }
   }
 
@@ -421,8 +436,12 @@ export const ItemDetails = styled.div`
 `;
 
 export const ItemTitleMetaContainer = styled.div`
-  width: 50%;
   padding: 1em;
+  min-width: 82%;
+
+  @media ${device.laptop} {
+    min-width: 55%;
+  }
 
   h3 {
     text-align: left;
