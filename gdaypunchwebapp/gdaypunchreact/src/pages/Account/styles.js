@@ -9,6 +9,7 @@ export const App = styled.div`
 
   .ant-tabs {
     width: 100%;
+    margin-bottom: 2em;
 
     @media ${device.laptop} {
       width: 50em;
@@ -174,4 +175,50 @@ export const SuccessLabel = styled.label`
   background: #deffde;
   padding: 0.7em;
   border-radius: 4pt;
+`;
+
+export const SubscriptionItem = styled.label`
+  height: 35em;
+  width: 24em;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #d8d8d8;
+  padding: 1em;
+  border-radius: 0.5em;
+
+  h3 {
+    text-align: center;
+  }
+
+  .ant-image {
+    height: 61%;
+    display: flex;
+    justify-content: center;
+    padding: 1em;
+
+    img {
+      height: 100%;
+      width: unset;
+    }
+  }
+
+  .title-price {
+    text-align: center;
+
+    h2 {
+      font-size: 1.6em;
+      margin-bottom: unset;
+    }
+    p {
+      margin-bottom: unset;
+    }
+  }
+
+  .details-container {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1em;
+    font-size: 0.8em;
+  }
 `;

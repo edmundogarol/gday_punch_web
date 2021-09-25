@@ -16,8 +16,10 @@ import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
 import LoadingSpinner from "components/loadingSpinner";
 import { ErrorField } from "components/errorField";
+import Image from "components/image";
 
-import { App, DetailField, EditButton } from "./styles";
+import { getGdayPunchStaticUrl } from "utils/utils";
+import { App, DetailField, EditButton, SubscriptionItem } from "./styles";
 
 function Ui(props) {
   const {
@@ -314,11 +316,31 @@ function Ui(props) {
             )}
           </TabPane>
           <TabPane tab="Subscriptions" key="subscriptions">
-            Subscriptions
+            {gdaySubscriptionProducts.map(
+              ({ key, title, image, active_price, subscription_interval }) => (
+                <SubscriptionItem key={key}>
+                  <h3>{title}</h3>
+                  <Image src={getGdayPunchStaticUrl(image)} />
+                  <div className="title-price">
+                    <h2>{`A$${active_price.toFixed(2)}`}</h2>
+                    <p>{`every ${subscription_interval} month${
+                      subscription_interval > 1 ? "s" : ""
+                    }`}</p>
+                  </div>
+                  <div className="details-container">
+                    <p>
+                      + Unlimited access to all Gday Punch Manga Magazine
+                      digital issues
+                    </p>
+                    <p>+ Newsletters and exclusive releases</p>
+                  </div>
+                </SubscriptionItem>
+              )
+            )}
           </TabPane>
-          {/* <TabPane tab="Payment" disabled key="payment">
-            Payment
-          </TabPane> */}
+          <TabPane tab="Payment" disabled key="payment">
+            Payment Method
+          </TabPane>
         </Tabs>
       </FeaturedSection>
     </App>
