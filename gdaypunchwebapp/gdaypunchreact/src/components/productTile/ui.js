@@ -137,15 +137,18 @@ function Ui(props) {
         <ProductAuthor>{author || creator}</ProductAuthor>
         <PriceLikeCommentConainer>
           {buyableProduct ? (
-            <p>{`A$${active_price} ${
-              product.product_type.includes("subscription")
-                ? `/ ${
-                    product.subscription_interval < 2
-                      ? "per month"
-                      : `every ${product.subscription_interval} months`
-                  }`
-                : null
-            }`}</p>
+            <p>
+              {`A$${active_price}`}
+              <span className="interval">
+                {product.product_type.includes("subscription")
+                  ? `/ ${
+                      product.subscription_interval < 2
+                        ? "per month"
+                        : `every ${product.subscription_interval} months`
+                    }`
+                  : null}
+              </span>
+            </p>
           ) : (
             <p>{`FREE`}</p>
           )}

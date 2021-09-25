@@ -56,6 +56,16 @@ export const selectProductsState = createSelector(
   ({ products }) => products
 );
 
+export const selectGdaySubscriptionsProducts = createSelector(
+  selectDomain,
+  ({ products: { productList } }) =>
+    Object.values(productList).filter(
+      (product) =>
+        product.product_type === "mag_subscription" ||
+        product.product_type === "dig_subscription"
+    )
+);
+
 export const selectProductList = createSelector(
   selectDomain,
   ({ products: { productList } }) => productList

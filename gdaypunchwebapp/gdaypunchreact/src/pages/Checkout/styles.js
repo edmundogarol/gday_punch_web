@@ -404,6 +404,10 @@ export const ItemTitleMetaContainer = styled.div`
   width: 50%;
   padding: 1em;
 
+  h3 {
+    text-align: left;
+  }
+
   .spacer {
     margin-right: 1em;
     margin-left: 1em;

@@ -33,6 +33,7 @@ function Ui(props) {
       fetching: fetchingOrders,
       finished: fetchingOrdersFinished,
     },
+    gdaySubscriptionProducts,
     history,
   } = props;
   const {
@@ -182,6 +183,8 @@ function Ui(props) {
       },
     };
   };
+
+  console.log({ gdaySubscriptionProducts });
 
   return (
     <App id="top" className="App">

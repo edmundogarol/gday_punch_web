@@ -6,6 +6,7 @@ import Ui from "./ui";
 
 import {
   selectEmailVerificationState,
+  selectGdaySubscriptionsProducts,
   selectRegistrationError,
   selectUser,
 } from "selectors/app";
@@ -22,6 +23,7 @@ const mapState = createStructuredSelector({
   emailVerificationState: selectEmailVerificationState,
   userUpdateError: selectRegistrationError,
   ordersState: selectAccountOrdersState,
+  gdaySubscriptionProducts: selectGdaySubscriptionsProducts,
 });
 
 const mapDispatch = {

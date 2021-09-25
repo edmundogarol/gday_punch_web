@@ -162,13 +162,13 @@ function Ui(props) {
       key: "active_price",
       render: (value, product) => (
         <>
-          {`$${value}`}
+          {`$${value.toFixed(2)}`}
           <span className="interval">
             {product.product_type.includes("subscription")
               ? `/${
                   product.subscription_interval < 2
-                    ? "m"
-                    : `${product.subscription_interval}m`
+                    ? "mo"
+                    : `${product.subscription_interval}mo`
                 }`
               : null}
           </span>

@@ -94,6 +94,10 @@ export const ItemTitleMetaContainer = styled.div`
   a {
     display: flex;
   }
+
+  h3 {
+    text-align: left;
+  }
 `;
 
 export const ItemMeta = styled.div`
@@ -104,6 +108,18 @@ export const ItemMeta = styled.div`
 
   p {
     margin: unset;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .price {
+    margin-right: 0.5em;
+  }
+
+  .interval {
+    font-size: 0.8em;
+    color: dimgrey;
+    white-space: nowrap;
   }
 `;
 

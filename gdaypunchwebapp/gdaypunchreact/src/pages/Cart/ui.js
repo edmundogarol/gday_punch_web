@@ -85,15 +85,18 @@ function Ui(props) {
             <h3>{title}</h3>
           </a>
           <ItemMeta>
-            <p>{`A$${active_price} ${
-              product_type.includes("subscription")
-                ? `/ ${
-                    subscription_interval < 2
-                      ? "per month"
-                      : `every ${subscription_interval} months`
-                  }`
-                : null
-            }`}</p>
+            <p>
+              <span className="price">{`A$${active_price}`}</span>
+              <span className="interval">
+                {product_type.includes("subscription")
+                  ? `/ ${
+                      subscription_interval < 2
+                        ? "per month"
+                        : `every ${subscription_interval} months`
+                    }`
+                  : null}
+              </span>
+            </p>
             <p className="spacer">QTY:</p>
             <Select
               value={quantity}

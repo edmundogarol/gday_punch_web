@@ -23,7 +23,7 @@ function Ui(props) {
           <h3>{title}</h3>
         </a>
         <ItemMeta>
-          <p>{`A$${active_price}`}</p>
+          <p>{`A$${active_price.toFixed(2)}`}</p>
           <p className="spacer">QTY:</p>
           {quantity}
         </ItemMeta>

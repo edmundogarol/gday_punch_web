@@ -144,6 +144,14 @@ export const ItemMeta = styled.div`
 
   p {
     margin: unset;
+    flex-wrap: wrap;
+    display: flex;
+  }
+
+  .interval {
+    font-size: 0.8em;
+    color: dimgrey;
+    white-space: nowrap;
   }
 `;
 

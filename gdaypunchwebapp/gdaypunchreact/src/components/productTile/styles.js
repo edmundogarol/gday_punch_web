@@ -93,6 +93,13 @@ export const PriceLikeCommentConainer = styled.div`
   display: flex;
   justify-content: space-between;
   white-space: nowrap;
+
+  .interval {
+    margin-left: 0.5em;
+    font-size: 0.8em;
+    color: dimgrey;
+    white-space: nowrap;
+  }
 `;
 
 export const LikeCommentConainer = styled.div`

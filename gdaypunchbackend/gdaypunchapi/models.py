@@ -355,8 +355,11 @@ class Product(models.Model):
 
         try:
             user = User.objects.get(email=get_current_user())
-            customer = Customer.objects.get(user=self.id)
-            purchase = Purchase.objects.get(customer=customer)
+
+            customer = Customer.objects.get(user=user.id)
+
+            purchase = Purchase.objects.filter(
+                customer=customer.id).filter(product=self.id)
 
             return True
         except Customer.DoesNotExist:
