@@ -88,6 +88,10 @@ export const ProductDetailRightContainer = styled.div`
     white-space: pre-wrap;
     font-family: sans-serif;
     color: #464646;
+
+    p {
+      margin: unset;
+    }
   }
 `;
 
@@ -101,6 +105,14 @@ export const PriceSkuContainer = styled.div`
 
   h4 {
     font-size: 1.7em;
+  }
+
+  .interval {
+    margin-left: 0.5em;
+    font-size: 0.6em;
+    color: #848484;
+    white-space: nowrap;
+    font-weight: 100;
   }
 `;
 

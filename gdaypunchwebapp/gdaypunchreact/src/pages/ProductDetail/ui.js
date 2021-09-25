@@ -186,6 +186,12 @@ function Ui(props) {
       ? Badge.Ribbon
       : LowStock;
 
+  const updateDescription = (description) => {
+    return {
+      __html: description,
+    };
+  };
+
   return (
     <PageContainer>
       <ProductContainer>
@@ -207,31 +213,32 @@ function Ui(props) {
             <ProductDetailRightContainer>
               <TitleInteractionButtonsContainer>
                 <Title level={4}>{product.title}</Title>
-                {digitalProduct && (
-                  <LikeCommentConainer>
-                    <InteractionButton>
-                      <FontAwesomeIcon
-                        icon={faHeart}
-                        style={
-                          product.manga_details.user_likes
-                            ? { color: "red" }
-                            : null
-                        }
-                      />
-                      <NumberLabel>{`${
-                        product.manga_details.likes || 0
-                      }`}</NumberLabel>
-                    </InteractionButton>
-                    <InteractionContainer>
+                {digitalProduct &&
+                  !product.product_type.includes("_subscription") && (
+                    <LikeCommentConainer>
                       <InteractionButton>
-                        <CommentOutlined className="site-form-item-icon" />
+                        <FontAwesomeIcon
+                          icon={faHeart}
+                          style={
+                            product.manga_details.user_likes
+                              ? { color: "red" }
+                              : null
+                          }
+                        />
+                        <NumberLabel>{`${
+                          product.manga_details.likes || 0
+                        }`}</NumberLabel>
                       </InteractionButton>
-                      <NumberLabel>{`${
-                        product.manga_details.comments || 0
-                      }`}</NumberLabel>
-                    </InteractionContainer>
-                  </LikeCommentConainer>
-                )}
+                      <InteractionContainer>
+                        <InteractionButton>
+                          <CommentOutlined className="site-form-item-icon" />
+                        </InteractionButton>
+                        <NumberLabel>{`${
+                          product.manga_details.comments || 0
+                        }`}</NumberLabel>
+                      </InteractionContainer>
+                    </LikeCommentConainer>
+                  )}
               </TitleInteractionButtonsContainer>
               <PriceSkuContainer>
                 {freeProduct ? null : (
@@ -239,6 +246,17 @@ function Ui(props) {
                     {freeProduct
                       ? "Free"
                       : `A$${product.active_price.toFixed(2)}`}
+                    <span className="interval">
+                      {product.product_type.includes("subscription")
+                        ? product.product_type === "mag_subscription"
+                          ? "/ per release"
+                          : `/ ${
+                              product.subscription_interval < 2
+                                ? "per month"
+                                : `every ${product.subscription_interval} months`
+                            }`
+                        : null}
+                    </span>
                   </h4>
                 )}
                 {product.sku && (
@@ -248,7 +266,9 @@ function Ui(props) {
                   </SkuContainer>
                 )}
               </PriceSkuContainer>
-              <p>{product.description}</p>
+              <p
+                dangerouslySetInnerHTML={updateDescription(product.description)}
+              ></p>
               <SocialContainer>
                 <a className="fb-hover" onClick={() => fbShare()}>
                   <FontAwesomeIcon icon={faFacebook} />
