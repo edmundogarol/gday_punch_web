@@ -60,6 +60,22 @@ export const SideCartItemsList = styled.div`
 export const CheckoutContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+
+  .desktop {
+    display: none;
+  }
+
+  @media ${device.laptop} {
+    flex-wrap: unset;
+
+    .mobile {
+      display: none;
+    }
+    .desktop {
+      display: initial;
+    }
+  }
 `;
 
 export const CheckoutInnerSectionContainer = styled.div`
@@ -280,8 +296,12 @@ export const LeftCheckoutContainer = styled.div`
 `;
 
 export const OrderSummaryContainer = styled.div`
-  width: 44em;
-  padding-right: 2em;
+  width: 100%;
+  padding-right: unset;
+
+  @media ${device.laptop} {
+    padding-right: 2em;
+  }
 `;
 
 export const OrderSummaryFixed = styled.div`
@@ -444,8 +464,9 @@ export const ItemSubtotalBinContainer = styled.div`
   display: flex;
   width: 30%;
   height: 80pt;
-  justify-content: space-evenly;
   align-items: center;
+  justify-content: end;
+  padding-right: 2em;
 
   @media ${device.laptop} {
     width: 40%;
@@ -463,6 +484,9 @@ export const CartFooter = styled.div`
 export const ItemTotalContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  flex-direction: column-reverse;
+  width: 100%;
+  padding-right: 1em;
 
   p {
     display: flex;
@@ -483,6 +507,7 @@ export const TotalLabel = styled.p`
   font-size: 1.3em;
   margin-right: 2.2em;
   font-weight: 600;
+  flex-direction: column;
 `;
 
 export const GSTLabel = styled.p`
@@ -508,6 +533,19 @@ export const ItemTotal = styled.div`
   h3 {
     margin: unset;
     margin-left: 1em;
+  }
+`;
+
+export const ItemSummarySubtotal = styled(ItemTotal)`
+  color: dimgrey;
+
+  h3 {
+    color: dimgrey;
+    white-space: nowrap;
+  }
+
+  p {
+    font-size: 1em;
   }
 `;
 

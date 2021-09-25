@@ -66,8 +66,8 @@ const INITIAL_STATE = {
     bio: undefined,
     location: undefined,
     birth_date: undefined,
-    logged_in: false,
-    is_staff: false,
+    logged_in: true, // quicker for debugging/refreshing
+    is_staff: true, // quicker for debugging/refreshing
     roles: [],
     verified: false,
     errors: undefined,

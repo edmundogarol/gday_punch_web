@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
 import { ShopOutlined } from "@ant-design/icons";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { message, Spin, Result, Button, Alert } from "antd";
@@ -11,28 +10,19 @@ import { AddressForm } from "@shopify/theme-addresses";
 
 import LoadingSpinner from "components/loadingSpinner";
 import FeaturedSection from "components/featuredSection";
-import Image from "components/image";
 import BillingSection from "./billingSection";
 import PaymentSection from "./paymentSection";
 import ShippingSection from "./shippingSection";
 import CustomerDetailsSection from "./customerDetailsSection";
-import CartItem from "./cartItem";
+import OrderSummary from "./orderSummary";
 import {
   App,
   CheckoutContainer,
   CheckoutHeader,
-  SideCartItemsList,
-  OrderSummaryContainer,
-  OrderSummaryFixed,
   LeftCheckoutContainer,
   CheckoutInnerSectionContainer,
   CheckoutInnerSectionTitle,
   PaymentMethodLogo,
-  CartFooter,
-  ItemTotal,
-  TotalLabel,
-  GSTLabel,
-  ItemTotalContainer,
   EmptyCartMessage,
 } from "./styles";
 import {
@@ -67,6 +57,8 @@ function Ui(props) {
     paymentError,
     fetchProducts,
     paymentSucceeded,
+    cartSubtotal,
+    discountAmount,
     history,
   } = props;
   const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
@@ -585,6 +577,15 @@ function Ui(props) {
                       handleOpenSection={handleOpenSection}
                     />
                   </CheckoutInnerSectionContainer>
+                  <OrderSummary
+                    className="mobile"
+                    items={items}
+                    handleViewProduct={handleViewProduct}
+                    cartSubtotal={cartSubtotal}
+                    coupon={coupon}
+                    discountAmount={discountAmount}
+                    cartTotal={cartTotal}
+                  />
                   <CheckoutInnerSectionContainer>
                     <CheckoutInnerSectionTitle>
                       Payment
@@ -617,33 +618,15 @@ function Ui(props) {
                     </Spin>
                   </CheckoutInnerSectionContainer>
                 </LeftCheckoutContainer>
-                <OrderSummaryContainer>
-                  <OrderSummaryFixed id="order-summary">
-                    <label>Order Summary</label>
-                    <SideCartItemsList>
-                      {items.map((item) => (
-                        <CartItem
-                          key={item.id}
-                          item={item}
-                          handleViewProduct={handleViewProduct}
-                        />
-                      ))}
-                    </SideCartItemsList>
-                    <ItemTotalContainer>
-                      <NavLink target="_blank" to="/refunds-and-returns">
-                        <p className="website">Refunds & Returns Policy</p>
-                      </NavLink>
-                      <div>
-                        <ItemTotal>
-                          <TotalLabel>Total:</TotalLabel>
-                          <h3>A${cartTotal.toFixed(2)}</h3>
-                        </ItemTotal>
-                        <GSTLabel>[Price Includes GST]</GSTLabel>
-                      </div>
-                    </ItemTotalContainer>
-                    <CartFooter></CartFooter>
-                  </OrderSummaryFixed>
-                </OrderSummaryContainer>
+                <OrderSummary
+                  className="desktop"
+                  items={items}
+                  handleViewProduct={handleViewProduct}
+                  cartSubtotal={cartSubtotal}
+                  coupon={coupon}
+                  discountAmount={discountAmount}
+                  cartTotal={cartTotal}
+                />
               </CheckoutContainer>
             )}
           </>

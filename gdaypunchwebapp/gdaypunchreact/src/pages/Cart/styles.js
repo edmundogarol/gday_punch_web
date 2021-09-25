@@ -73,7 +73,8 @@ export const ItemContainer = styled.div`
 `;
 
 export const ItemImage = styled.img`
-  height: 9em;
+  height: auto;
+  max-width: 6em;
 `;
 
 export const ItemDetails = styled.div`
@@ -187,6 +188,12 @@ export const ItemTotalContainer = styled.div`
   justify-content: space-between;
   margin-right: 2em;
   margin-left: 2em;
+  flex-direction: column-reverse;
+
+  @media ${device.laptop} {
+    flex-direction: row;
+    margin-left: unset;
+  }
 
   p {
     display: flex;
@@ -240,6 +247,7 @@ export const ItemSubtotal = styled(ItemTotal)`
 
   h3 {
     color: dimgrey;
+    white-space: nowrap;
   }
 `;
 

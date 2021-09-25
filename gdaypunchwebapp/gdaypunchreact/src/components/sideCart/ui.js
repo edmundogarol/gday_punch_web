@@ -38,6 +38,8 @@ const { Option } = Select;
 function Ui(props) {
   const {
     cartState: { sideCartOpen },
+    paymentState: { coupon },
+    discountAmount,
     cartCount,
     toggleSideCart,
     updateCartItemQuantity,
@@ -138,11 +140,13 @@ function Ui(props) {
               {`A$${active_price.toFixed(2)}`}
               <span className="interval">
                 {product_type.includes("subscription")
-                  ? `per/${
-                      subscription_interval < 2
-                        ? "mo"
-                        : `${subscription_interval}mo`
-                    }`
+                  ? product_type === "mag_subscription"
+                    ? "per release"
+                    : `per ${
+                        subscription_interval < 2
+                          ? "mon"
+                          : `${subscription_interval}mon`
+                      }`
                   : null}
               </span>
             </p>
@@ -204,10 +208,10 @@ function Ui(props) {
           {items.map((item) => cartItem(item))}
         </SideCartItemsList>
         <SideCartFooterContainer>
-          <ItemCoupon>
+          {/* <ItemCoupon>
             <Input placeholder="Enter Coupon Code" />
             <Button>Apply Discount</Button>
-          </ItemCoupon>
+          </ItemCoupon> */}
           <ItemTotalContainer>
             <NavLink target="_blank" to="/refunds-and-returns">
               <p className="website">Refunds & Returns Policy</p>
@@ -217,7 +221,16 @@ function Ui(props) {
                 <TotalLabel>Total:</TotalLabel>
                 <h3>A${cartTotal.toFixed(2)}</h3>
               </ItemTotal>
-              <GSTLabel>[Price Includes GST]</GSTLabel>
+              <GSTLabel>
+                <span>
+                  {coupon.name
+                    ? `Coupon: ${coupon.name} -A$${
+                        discountAmount ? discountAmount.toFixed(2) : 0
+                      } `
+                    : ""}
+                </span>
+                [Price Includes GST]
+              </GSTLabel>
             </div>
           </ItemTotalContainer>
           <SideCartCheckoutButton

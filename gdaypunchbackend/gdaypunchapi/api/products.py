@@ -51,12 +51,14 @@ class ProductViewSet(viewsets.ModelViewSet):
             recurring = False
             month_interval = request.data.get('month_interval')
 
-            # if product_type == MAG_SUBSCRIPTION: Subscription done manually through Admin portal (Per release)
+            # Subscription done manually through Admin portal (Per release)
             if product_type == SUBSCRIPTION:
                 recurring = True
-            if product_type == DIG_SUBSCRIPTION:
+            elif product_type == DIG_SUBSCRIPTION:
                 recurring = True
                 month_interval = 1
+            else:
+                month_interval = 0
 
             stripe_price = stripe.Price.create(
                 unit_amount=int(float(request.data['active_price'])*100),

@@ -117,7 +117,8 @@ export const ItemContainer = styled.div`
 `;
 
 export const ItemImage = styled.img`
-  height: 9em;
+  height: auto;
+  max-width: 6em;
 `;
 
 export const ItemDetails = styled.div`
@@ -185,7 +186,7 @@ export const ItemSubtotalBinContainer = styled.div`
 export const ItemCoupon = styled.div`
   display: flex;
   justify-content: space-between;
-  border-top: 1px solid #b5b5b5;
+  /* border-top: 1px solid #b5b5b5; */
   padding-top: 1em;
   width: 95%;
   margin-left: auto;
@@ -207,6 +208,7 @@ export const ItemCoupon = styled.div`
 `;
 
 export const ItemTotalContainer = styled.div`
+  border-top: 1px solid #b5b5b5;
   display: flex;
   justify-content: space-between;
 
@@ -235,6 +237,7 @@ export const GSTLabel = styled.p`
   margin-right: 2.4em;
   margin-top: unset;
   font-size: 0.84em;
+  flex-direction: column;
 `;
 
 export const ItemTotal = styled.div`

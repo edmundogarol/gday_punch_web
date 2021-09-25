@@ -7,6 +7,10 @@ export const ProductsContainer = styled.div`
     font-size: 0.8em;
     margin-left: 0.4em;
   }
+
+  .ql-container {
+    height: 86%;
+  }
 `;
 
 export const FieldLabel = styled.label`

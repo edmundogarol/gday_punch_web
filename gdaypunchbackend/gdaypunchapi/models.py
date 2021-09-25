@@ -358,10 +358,19 @@ class Product(models.Model):
 
             customer = Customer.objects.get(user=user.id)
 
+            if self.product_type == MAG_SUBSCRIPTION:
+                return customer.mag_subscribed
+            
+            if self.product_type == DIG_SUBSCRIPTION:
+                return customer.dig_subscribed
+
             purchase = Purchase.objects.filter(
                 customer=customer.id).filter(product=self.id)
 
-            return True
+            if purchase.first() is not None:
+                return True
+            else:
+                return False
         except Customer.DoesNotExist:
             return False
         except Purchase.DoesNotExist:

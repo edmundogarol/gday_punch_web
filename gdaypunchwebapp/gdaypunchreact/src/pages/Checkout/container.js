@@ -5,7 +5,9 @@ import Ui from "./ui";
 
 import {
   selectCartCount,
+  selectCartSubtotal,
   selectCartTotal,
+  selectDiscountAmount,
   selectProductList,
   selectUser,
 } from "selectors/app";
@@ -33,6 +35,8 @@ const mapState = createStructuredSelector({
   cartTotal: selectCartTotal,
   paymentState: selectPaymentState,
   customerState: selectCustomerState,
+  cartSubtotal: selectCartSubtotal,
+  discountAmount: selectDiscountAmount,
 });
 
 const mapDispatch = {

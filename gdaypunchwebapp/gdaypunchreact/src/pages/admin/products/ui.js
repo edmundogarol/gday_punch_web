@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import PropTypes from "prop-types";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   Input,
   Tooltip,
@@ -165,11 +166,13 @@ function Ui(props) {
           {`$${value.toFixed(2)}`}
           <span className="interval">
             {product.product_type.includes("subscription")
-              ? `/${
-                  product.subscription_interval < 2
-                    ? "mo"
-                    : `${product.subscription_interval}mo`
-                }`
+              ? product.product_type === "mag_subscription"
+                ? "/rel"
+                : `/${
+                    product.subscription_interval < 2
+                      ? "mo"
+                      : `${product.subscription_interval}mo`
+                  }`
               : null}
           </span>
         </>
@@ -275,15 +278,13 @@ function Ui(props) {
             }
           />
           <FieldLabel>Description</FieldLabel>
-          <TextArea
-            rows={5}
-            value={newProduct.description}
-            onChange={(e) =>
-              updateNewProduct({ ...newProduct, description: e.target.value })
+          <ReactQuill
+            theme="snow"
+            value={newProduct.description || ""}
+            onChange={(val) =>
+              updateNewProduct({ ...newProduct, description: val })
             }
-            placeholder="Enter Product Description"
-            maxLength={1000}
-            showCount
+            style={{ minHeight: "300px" }}
           />
           <FieldLabel>Visibility</FieldLabel>
           <Checkbox

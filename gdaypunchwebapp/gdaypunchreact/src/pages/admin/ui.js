@@ -37,7 +37,7 @@ function Ui(props) {
   const productDetail = app === "product-detail";
 
   function hasPrivilege(privilege) {
-    if (!user) return true;
+    if (!user.id) return true;
 
     const superUser = user.privileges.includes("super");
     if (superUser) return true;

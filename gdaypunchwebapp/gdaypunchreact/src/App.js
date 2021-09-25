@@ -189,23 +189,19 @@ function Root(props) {
               titleSetInside
             />
             <ProtectedRoute
-              condition={loginCheckFinished && user.logged_in}
+              condition={user.logged_in}
               exact
               path="/account"
               component={Account}
             />
             <ProtectedRoute
-              condition={loginCheckFinished && user.logged_in}
+              condition={user.logged_in}
               exact
               path="/account/:tab"
               component={Account}
             />
             <ProtectedRoute
-              condition={
-                loginCheckFinished &&
-                user.logged_in &&
-                user.verified === "verified"
-              }
+              condition={user.logged_in && user.verified === "verified"}
               titleSetInside
               exact
               path="/manga/:id"

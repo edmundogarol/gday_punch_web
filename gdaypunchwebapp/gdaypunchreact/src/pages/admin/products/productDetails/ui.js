@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { useParams } from "react-router-dom";
 import { Input, Tooltip, Typography, Radio, Checkbox, Transfer } from "antd";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import {
   InfoCircleOutlined,
   DollarOutlined,
@@ -159,15 +161,11 @@ function Ui(props) {
             }
           />
           <FieldLabel>Description</FieldLabel>
-          <TextArea
-            rows={10}
-            showCount
-            maxLength={1000}
+          <ReactQuill
+            theme="snow"
             value={product.description}
-            onChange={(e) =>
-              updateProduct({ ...product, description: e.target.value })
-            }
-            placeholder="Enter Product Description"
+            onChange={(val) => updateProduct({ ...product, description: val })}
+            style={{ minHeight: "300px" }}
           />
           <FieldLabel>Visibility</FieldLabel>
           <Checkbox

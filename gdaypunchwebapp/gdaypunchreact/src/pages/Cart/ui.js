@@ -89,11 +89,13 @@ function Ui(props) {
               <span className="price">{`A$${active_price}`}</span>
               <span className="interval">
                 {product_type.includes("subscription")
-                  ? `/ ${
-                      subscription_interval < 2
-                        ? "per month"
-                        : `every ${subscription_interval} months`
-                    }`
+                  ? product_type === "mag_subscription"
+                    ? "/ per release"
+                    : `/ ${
+                        subscription_interval < 2
+                          ? "per month"
+                          : `every ${subscription_interval} months`
+                      }`
                   : null}
               </span>
             </p>
@@ -188,7 +190,7 @@ function Ui(props) {
                   {coupon.coupon_type ? (
                     <ItemSubtotal>
                       <TotalLabel>{`Discount [${coupon.description}]:`}</TotalLabel>
-                      <h3>- A${discountAmount.toFixed(2)}</h3>
+                      <h3>{`-A$${discountAmount.toFixed(2)}`}</h3>
                     </ItemSubtotal>
                   ) : null}
                   <ItemTotal>

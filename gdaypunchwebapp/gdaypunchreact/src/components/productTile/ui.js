@@ -141,18 +141,20 @@ function Ui(props) {
               {`A$${active_price}`}
               <span className="interval">
                 {product.product_type.includes("subscription")
-                  ? `/ ${
-                      product.subscription_interval < 2
-                        ? "per month"
-                        : `every ${product.subscription_interval} months`
-                    }`
+                  ? product_type === "mag_subscription"
+                    ? "/ per release"
+                    : `/ ${
+                        product.subscription_interval < 2
+                          ? "per month"
+                          : `every ${product.subscription_interval} months`
+                      }`
                   : null}
               </span>
             </p>
           ) : (
             <p>{`FREE`}</p>
           )}
-          {digitalProduct && (
+          {digitalProduct && !product_type.includes("_subscription") && (
             <LikeCommentConainer>
               <a onClick={() => handleLikeClick()}>
                 <FontAwesomeIcon

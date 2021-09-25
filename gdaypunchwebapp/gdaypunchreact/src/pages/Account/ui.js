@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { Input, Button, Card, Badge, Tabs, Tooltip, Result, Table } from "antd";
 import classNames from "classnames";
+import { isEmpty } from "lodash";
 const { TabPane } = Tabs;
 import {
   CheckCircleOutlined,
@@ -30,12 +31,15 @@ function Ui(props) {
     userUpdateError,
     updateUserDetailsError,
     fetchAccountOrders,
+    fetchProducts,
     ordersState: {
       orderList,
       fetching: fetchingOrders,
       finished: fetchingOrdersFinished,
     },
+    productsState: { fetchingProducts, finishedFetchingProducts },
     gdaySubscriptionProducts,
+    updateCartItemQuantity,
     history,
   } = props;
   const {
@@ -46,6 +50,27 @@ function Ui(props) {
   const [editingEmail, toggleEditingEmail] = useState(false);
   const [email, updateEmail] = useState(user.email);
   const { tab } = useParams();
+
+  useEffect(() => {
+    if (
+      isEmpty(gdaySubscriptionProducts) &&
+      !fetchingProducts &&
+      !finishedFetchingProducts
+    ) {
+      fetchProducts();
+    }
+  }, [gdaySubscriptionProducts, fetchingProducts, finishedFetchingProducts]);
+
+  useEffect(() => {
+    if (
+      user.stripe_customer_id &&
+      isEmpty(orderList) &&
+      !fetchingOrders &&
+      !fetchingOrdersFinished
+    ) {
+      fetchAccountOrders(user.stripe_customer_id);
+    }
+  }, [orderList, fetchingOrders, fetchingOrdersFinished]);
 
   const attentionNeeded = (section) => {
     if (!user.email) return false;
@@ -186,7 +211,11 @@ function Ui(props) {
     };
   };
 
-  console.log({ gdaySubscriptionProducts });
+  const updateSubscriptionDescription = (description) => {
+    return {
+      __html: description,
+    };
+  };
 
   return (
     <App id="top" className="App">
@@ -316,27 +345,66 @@ function Ui(props) {
             )}
           </TabPane>
           <TabPane tab="Subscriptions" key="subscriptions">
-            {gdaySubscriptionProducts.map(
-              ({ key, title, image, active_price, subscription_interval }) => (
-                <SubscriptionItem key={key}>
-                  <h3>{title}</h3>
-                  <Image src={getGdayPunchStaticUrl(image)} />
-                  <div className="title-price">
-                    <h2>{`A$${active_price.toFixed(2)}`}</h2>
-                    <p>{`every ${subscription_interval} month${
-                      subscription_interval > 1 ? "s" : ""
-                    }`}</p>
-                  </div>
-                  <div className="details-container">
-                    <p>
-                      + Unlimited access to all Gday Punch Manga Magazine
-                      digital issues
-                    </p>
-                    <p>+ Newsletters and exclusive releases</p>
-                  </div>
-                </SubscriptionItem>
-              )
-            )}
+            <div className="gdaypunch-subscriptions">
+              {gdaySubscriptionProducts.map(
+                ({
+                  key,
+                  id,
+                  title,
+                  image,
+                  active_price,
+                  subscription_interval,
+                  product_type,
+                  quantity,
+                  description,
+                  purchased,
+                }) => (
+                  <SubscriptionItem key={key} purchased={purchased}>
+                    <h3>{title}</h3>
+                    <Image src={getGdayPunchStaticUrl(image)} />
+                    <div className="title-price">
+                      <h2>{`A$${active_price.toFixed(2)}`}</h2>
+                      {product_type === "mag_subscription" ? (
+                        "per issue release"
+                      ) : (
+                        <p>{`every ${
+                          subscription_interval > 1 ? subscription_interval : ""
+                        } month${subscription_interval > 1 ? "s" : ""}`}</p>
+                      )}
+                    </div>
+                    <div
+                      className="details-container"
+                      dangerouslySetInnerHTML={updateSubscriptionDescription(
+                        description
+                      )}
+                    />
+                    {purchased ? <Button disabled>Subscribed</Button> : null}
+                    {!purchased ? (
+                      <Button
+                        disabled={quantity}
+                        className="not-purchased"
+                        onClick={() =>
+                          !quantity || quantity < 1
+                            ? updateCartItemQuantity(id, 1, true)
+                            : null
+                        }
+                      >
+                        {quantity ? (
+                          <span>Already in Cart</span>
+                        ) : (
+                          <>
+                            <span className="not-subscribed">
+                              Not Subscribed
+                            </span>
+                            <span className="subscribe-now">Subscribe Now</span>
+                          </>
+                        )}
+                      </Button>
+                    ) : null}
+                  </SubscriptionItem>
+                )
+              )}
+            </div>
           </TabPane>
           <TabPane tab="Payment" disabled key="payment">
             Payment Method

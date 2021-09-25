@@ -1,7 +1,11 @@
 import styled from "styled-components";
 import { Button, Image, Transfer, Input } from "antd";
 
-export const ProductsContainer = styled.div``;
+export const ProductsContainer = styled.div`
+  .ql-container {
+    height: 86%;
+  }
+`;
 
 export const FieldLabel = styled.label`
   margin-top: 1em;

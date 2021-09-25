@@ -8,6 +8,7 @@ import {
   selectCartCount,
   selectCartTotal,
   selectProductList,
+  selectDiscountAmount,
 } from "selectors/app";
 import {
   toggleSideCart as toggleSideCartAction,
@@ -15,12 +16,15 @@ import {
   removeCartItem as removeCartItemAction,
 } from "actions/cart";
 import { setViewingProduct as setViewingProductAction } from "actions/products";
+import { selectPaymentState } from "src/selectors/payment";
 
 const mapState = createStructuredSelector({
+  paymentState: selectPaymentState,
   cartState: selectCartState,
   productList: selectProductList,
   cartCount: selectCartCount,
   cartTotal: selectCartTotal,
+  discountAmount: selectDiscountAmount,
 });
 
 const mapDispatch = {

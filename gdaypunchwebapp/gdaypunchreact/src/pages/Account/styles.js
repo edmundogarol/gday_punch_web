@@ -7,8 +7,19 @@ import { ErrorField } from "components/errorField";
 export const App = styled.div`
   min-height: 84vh;
 
-  .ant-tabs {
+  @media (min-width: 1024px) {
+    .ant-tabs {
+      width: 59em !important;
+    }
+  }
+
+  .gdaypunch-subscriptions {
+    display: flex;
+    flex-wrap: wrap;
     width: 100%;
+  }
+
+  .ant-tabs {
     margin-bottom: 2em;
 
     @media ${device.laptop} {
@@ -177,21 +188,26 @@ export const SuccessLabel = styled.label`
   border-radius: 4pt;
 `;
 
-export const SubscriptionItem = styled.label`
-  height: 35em;
-  width: 24em;
+export const SubscriptionItem = styled.div`
+  margin-top: 1em;
+  height: 40em;
+  width: 28em;
   display: flex;
   flex-direction: column;
   border: 1px solid #d8d8d8;
   padding: 1em;
   border-radius: 0.5em;
+  margin-right: 1em;
+  position: relative;
+
+  ${(props) => (props.purchased ? "border: 4px solid #ffeac4;" : "")}
 
   h3 {
     text-align: center;
   }
 
   .ant-image {
-    height: 61%;
+    height: 47%;
     display: flex;
     justify-content: center;
     padding: 1em;
@@ -220,5 +236,35 @@ export const SubscriptionItem = styled.label`
     margin-right: auto;
     margin-top: 1em;
     font-size: 0.8em;
+
+    p {
+      margin: unset;
+    }
+  }
+
+  .ant-btn {
+    position: absolute;
+    bottom: 1em;
+    width: 79%;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    height: 3em;
+  }
+
+  .not-purchased {
+    .subscribe-now {
+      display: none;
+    }
+
+    &:hover {
+      .not-subscribed {
+        display: none;
+      }
+      .subscribe-now {
+        display: initial;
+      }
+    }
   }
 `;
