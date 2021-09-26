@@ -42,10 +42,14 @@ else:
 def calculate_order_amount(items_list, coupon, au_shipping):
     order_amount = 0
     subscription_items = []
+    non_shippable_items = []
     error = None
 
     for product in items_list:
         current_product = Product.objects.get(id=product['id'])
+
+        if current_product.product_type != PHYSICAL and current_product.product_type != MAG_SUBSCRIPTION:
+            non_shippable_items.append(current_product.id)
 
         if current_product.stock < product['qty']:
             error = "Not enough stock for order."
@@ -75,7 +79,9 @@ def calculate_order_amount(items_list, coupon, au_shipping):
         else:
             dollar_amount = dollar_amount - coupon.amount
 
-    if not au_shipping:
+    all_digital_products = len(non_shippable_items) == len(items_list)
+
+    if not all_digital_products and not au_shipping:
         dollar_amount = dollar_amount + 13
 
     return {

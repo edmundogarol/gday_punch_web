@@ -196,19 +196,19 @@ export const CheckoutInnerSectionContainer = styled.div`
   [data-line-count="1"] {
     flex-basis: 100%;
 
-    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element) {
+    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element, [data-aria-hidden="true"], .hidden) {
       display: flex;
     }
   }
   [data-line-count="2"] {
     flex-basis: 49%;
-    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element) {
+    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element, [data-aria-hidden="true"], , .hidden) {
       display: flex;
     }
   }
   [data-line-count="3"] {
     flex-basis: 32%;
-    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element) {
+    &:not(#card-number-element, #card-name, #card-expiry-element, #card-cvv-element, [data-aria-hidden="true"], , .hidden) {
       display: flex;
     }
   }
@@ -233,6 +233,10 @@ export const CheckoutInnerSectionContainer = styled.div`
   .next-button {
     margin-left: auto;
     width: 10em;
+  }
+
+  .hidden {
+    display: none;
   }
 `;
 

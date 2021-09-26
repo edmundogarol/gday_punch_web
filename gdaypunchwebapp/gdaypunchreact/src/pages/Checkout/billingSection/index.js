@@ -13,7 +13,10 @@ function Ui(props) {
     updateCountriesDownloaded,
     updateBillingForm,
     handleOpenSection,
+    allDigitalCart,
   } = props;
+
+  const conditionalValidationFields = [];
 
   const useShippingDetailsSelector = () => (
     <>
@@ -51,11 +54,12 @@ function Ui(props) {
     }
     return (
       <>
-        {useShippingDetailsSelector()}
+        {allDigitalCart ? null : useShippingDetailsSelector()}
         <GPAddressForm
           type="billing"
           addressForm={billingForm}
           updateAddressForm={updateBillingForm}
+          conditionalValidationFields={conditionalValidationFields}
         />
         <Button
           className="next-button"
@@ -74,6 +78,8 @@ function Ui(props) {
           </div>
         </OrderSummaryLine>
       );
+    } else if (allDigitalCart && !billingForm.email.value) {
+      return null;
     } else {
       return <AddressSummary form={billingForm} />;
     }

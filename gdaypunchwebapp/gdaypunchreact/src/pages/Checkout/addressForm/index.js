@@ -5,7 +5,14 @@ import { Alert } from "antd";
 import { phoneValidator } from "utils/utils";
 
 function Ui(props) {
-  const { addressForm, updateAddressForm, type, loggedIn } = props;
+  const {
+    addressForm,
+    updateAddressForm,
+    type,
+    loggedIn,
+    allDigitalCart,
+    conditionalValidationFields,
+  } = props;
 
   const formTypes = {
     shipping: "shipping",
@@ -28,6 +35,10 @@ function Ui(props) {
 
     let currentError = empty ? "empty" : undefined;
     currentError = invalid ? "invalid-format" : currentError;
+
+    if (allDigitalCart && conditionalValidationFields.includes(field)) {
+      currentError = undefined;
+    }
 
     if (field === "province") {
       const select = e.target;
@@ -131,6 +142,11 @@ function Ui(props) {
       </div>
 
       <div
+        data-aria-hidden={
+          allDigitalCart && conditionalValidationFields.includes("address1")
+            ? "true"
+            : "false"
+        }
         className={classNames("form-field", addressForm.address1.error)}
         data-line-count="1"
       >
@@ -149,7 +165,15 @@ function Ui(props) {
         />
       </div>
 
-      <div className="form-field" data-line-count="1">
+      <div
+        data-aria-hidden={
+          allDigitalCart && conditionalValidationFields.includes("address2")
+            ? "true"
+            : "false"
+        }
+        className="form-field"
+        data-line-count="1"
+      >
         <label htmlFor="AddressAddress2">Address Line 2</label>
         <input
           type="text"
@@ -161,6 +185,11 @@ function Ui(props) {
       </div>
 
       <div
+        data-aria-hidden={
+          allDigitalCart && conditionalValidationFields.includes("city")
+            ? "true"
+            : "false"
+        }
         className={classNames("form-field", addressForm.city.error)}
         data-line-count="1"
       >
@@ -180,6 +209,11 @@ function Ui(props) {
       </div>
 
       <div
+        data-aria-hidden={
+          allDigitalCart && conditionalValidationFields.includes("country")
+            ? "true"
+            : "false"
+        }
         className={classNames("form-field", addressForm.country.error)}
         data-line-count="3"
       >
@@ -205,7 +239,14 @@ function Ui(props) {
       </div>
 
       <div
-        className={classNames("form-field", addressForm.province.error)}
+        data-aria-hidden={
+          allDigitalCart && conditionalValidationFields.includes("province")
+            ? "true"
+            : "false"
+        }
+        className={classNames("form-field", addressForm.province.error, {
+          hidden: conditionalValidationFields.includes("province"),
+        })}
         data-line-count="3"
       >
         <label htmlFor="AddressProvince">Province</label>
@@ -227,6 +268,11 @@ function Ui(props) {
       </div>
 
       <div
+        data-aria-hidden={
+          allDigitalCart && conditionalValidationFields.includes("postcode")
+            ? "true"
+            : "false"
+        }
         className={classNames("form-field", addressForm.postcode.error)}
         data-line-count="3"
       >
@@ -246,6 +292,11 @@ function Ui(props) {
       </div>
 
       <div
+        data-aria-hidden={
+          allDigitalCart && conditionalValidationFields.includes("phone")
+            ? "true"
+            : "false"
+        }
         className={classNames("form-field", addressForm.phone.error)}
         data-line-count="1"
       >

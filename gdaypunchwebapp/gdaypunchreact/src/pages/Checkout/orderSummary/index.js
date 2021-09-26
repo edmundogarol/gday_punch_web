@@ -23,7 +23,28 @@ function Ui(props) {
     cartTotal,
     className,
     freeShipping,
+    allDigitalCart,
   } = props;
+
+  const renderShipping = () => {
+    if (allDigitalCart) return null;
+
+    if (freeShipping) {
+      return (
+        <ItemSummarySubtotal>
+          <TotalLabel>Free Australian Standard Shipping:</TotalLabel>
+          <h3>A$0.00</h3>
+        </ItemSummarySubtotal>
+      );
+    } else {
+      return (
+        <ItemSummarySubtotal>
+          <TotalLabel>International Standard Shipping:</TotalLabel>
+          <h3>A$13.00</h3>
+        </ItemSummarySubtotal>
+      );
+    }
+  };
   return (
     <OrderSummaryContainer className={className}>
       <OrderSummaryFixed id="order-summary">
@@ -46,17 +67,7 @@ function Ui(props) {
               <TotalLabel>Subtotal:</TotalLabel>
               <h3>A${cartSubtotal.toFixed(2)}</h3>
             </ItemSummarySubtotal>
-            {freeShipping ? (
-              <ItemSummarySubtotal>
-                <TotalLabel>Free Australian Standard Shipping:</TotalLabel>
-                <h3>A$0.00</h3>
-              </ItemSummarySubtotal>
-            ) : (
-              <ItemSummarySubtotal>
-                <TotalLabel>International Standard Shipping:</TotalLabel>
-                <h3>A$13.00</h3>
-              </ItemSummarySubtotal>
-            )}
+            {renderShipping()}
             {coupon.coupon_type ? (
               <ItemSummarySubtotal>
                 <TotalLabel>

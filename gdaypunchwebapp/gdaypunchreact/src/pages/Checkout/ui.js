@@ -61,6 +61,17 @@ function Ui(props) {
     discountAmount,
     history,
   } = props;
+
+  const items = Object.values(cartItemsObject).filter((item) => item.quantity);
+
+  const nonShippableItems = items.filter(
+    (item) =>
+      item.product_type !== "physical" &&
+      item.product_type !== "mag_subscription"
+  );
+
+  const allDigitalCart = nonShippableItems.length === items.length;
+
   const [countriesDownloaded, updateCountriesDownloaded] = useState(false);
   const [customerDetailsReplaced, updateCustomerDetailsReplaced] =
     useState(false);
@@ -99,7 +110,9 @@ function Ui(props) {
     phone: { value: "", error: undefined },
   });
   const [subscribeAgreed, toggleSubscribeAgreed] = useState(false);
-  const [useShippingDetails, toggleUseShippingDetails] = useState(true);
+  const [useShippingDetails, toggleUseShippingDetails] = useState(
+    !allDigitalCart
+  );
   const [shippingMethodOpen, toggleShippingMethod] = useState(false);
   const [paymentOpen, togglePayment] = useState(false);
   const [cardPaymentError, updateCardPaymentError] = useState(undefined);
@@ -123,10 +136,6 @@ function Ui(props) {
     phone_number: checkoutForm.phone.value,
     billing_same_as_shipping: useShippingDetails,
   };
-
-  const items = Object.values(cartItemsObject)
-    .map((item) => item)
-    .filter((item) => item.quantity);
 
   const populateAddressForm = (form) => {
     const addressRoot = document.getElementById(`${form.type}-address-root`);
@@ -200,19 +209,33 @@ function Ui(props) {
         email: { ...checkoutForm.email, value: customer.email },
         firstName: { ...checkoutForm.firstName, value: customer.first_name },
         lastName: { ...checkoutForm.lastName, value: customer.last_name },
-        address1: {
-          ...checkoutForm.address1,
-          value: customer.address_line_1,
-        },
-        address2: {
-          ...checkoutForm.address2,
-          value: customer.address_line_2,
-        },
-        city: { ...checkoutForm.city, value: customer.city },
-        postcode: { ...checkoutForm.postcode, value: customer.postcode },
-        province: { ...checkoutForm.province, value: customer.state },
-        country: { ...checkoutForm.country, value: customer.country },
-        phone: { ...checkoutForm.phone, value: customer.phone_number },
+        address1: allDigitalCart
+          ? checkoutForm.address1
+          : {
+              ...checkoutForm.address1,
+              value: customer.address_line_1,
+            },
+        address2: allDigitalCart
+          ? checkoutForm.address2
+          : {
+              ...checkoutForm.address2,
+              value: customer.address_line_2,
+            },
+        city: allDigitalCart
+          ? checkoutForm.city
+          : { ...checkoutForm.city, value: customer.city },
+        postcode: allDigitalCart
+          ? checkoutForm.postcode
+          : { ...checkoutForm.postcode, value: customer.postcode },
+        province: allDigitalCart
+          ? checkoutForm.province
+          : { ...checkoutForm.province, value: customer.state },
+        country: allDigitalCart
+          ? checkoutForm.country
+          : { ...checkoutForm.country, value: customer.country },
+        phone: allDigitalCart
+          ? checkoutForm.phone
+          : { ...checkoutForm.phone, value: customer.phone_number },
       });
       updateCustomerDetailsReplaced(true);
     } else if (
@@ -384,8 +407,19 @@ function Ui(props) {
     }
   }, [clientSecret]);
 
+  const conditionalValidationFields = [
+    "phone",
+    "city",
+    "country",
+    "address1",
+    "postcode",
+    "province",
+    "company",
+    "address2",
+  ];
+
   const validateForm = (form) => {
-    const doNotValidate = [
+    let doNotValidate = [
       "type",
       "formOpen",
       "locale",
@@ -394,6 +428,10 @@ function Ui(props) {
       "company",
       "address2",
     ];
+
+    if (allDigitalCart) {
+      doNotValidate.push(...conditionalValidationFields);
+    }
 
     if (!form.formOpen) return true;
     if (form.type === "billing" && form.formOpen && useShippingDetails)
@@ -536,26 +574,32 @@ function Ui(props) {
                         subscribeAgreed={subscribeAgreed}
                         handleSubscribeCheck={handleSubscribeCheck}
                         handleOpenSection={handleOpenSection}
+                        allDigitalCart={allDigitalCart}
+                        conditionalValidationFields={
+                          conditionalValidationFields
+                        }
                         loggedIn={user.logged_in}
                       />
                     )}
                   </CheckoutInnerSectionContainer>
-                  <CheckoutInnerSectionContainer>
-                    <CheckoutInnerSectionTitle>
-                      Shipping Method
-                      {!shippingMethodOpen && (
-                        <span onClick={() => handleOpenSection("shipping")}>
-                          Edit
-                        </span>
-                      )}
-                    </CheckoutInnerSectionTitle>
-                    <br />
-                    <ShippingSection
-                      shippingMethodOpen={shippingMethodOpen}
-                      freeShipping={freeShipping}
-                      handleOpenSection={handleOpenSection}
-                    />
-                  </CheckoutInnerSectionContainer>
+                  {allDigitalCart ? null : (
+                    <CheckoutInnerSectionContainer>
+                      <CheckoutInnerSectionTitle>
+                        Shipping Method
+                        {!shippingMethodOpen && (
+                          <span onClick={() => handleOpenSection("shipping")}>
+                            Edit
+                          </span>
+                        )}
+                      </CheckoutInnerSectionTitle>
+                      <br />
+                      <ShippingSection
+                        shippingMethodOpen={shippingMethodOpen}
+                        freeShipping={freeShipping}
+                        handleOpenSection={handleOpenSection}
+                      />
+                    </CheckoutInnerSectionContainer>
+                  )}
                   <CheckoutInnerSectionContainer
                     selectImage={getImageModule("down-arrow.png")}
                   >
@@ -575,6 +619,7 @@ function Ui(props) {
                       updateCountriesDownloaded={updateCountriesDownloaded}
                       updateBillingForm={updateBillingForm}
                       handleOpenSection={handleOpenSection}
+                      allDigitalCart={allDigitalCart}
                     />
                   </CheckoutInnerSectionContainer>
                   <OrderSummary
@@ -584,6 +629,7 @@ function Ui(props) {
                     cartSubtotal={cartSubtotal}
                     coupon={coupon}
                     discountAmount={discountAmount}
+                    allDigitalCart={allDigitalCart}
                     cartTotal={cartTotal}
                   />
                   <CheckoutInnerSectionContainer>
@@ -625,6 +671,7 @@ function Ui(props) {
                   handleViewProduct={handleViewProduct}
                   cartSubtotal={cartSubtotal}
                   coupon={coupon}
+                  allDigitalCart={allDigitalCart}
                   discountAmount={discountAmount}
                   cartTotal={cartTotal}
                 />

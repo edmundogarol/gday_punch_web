@@ -360,7 +360,7 @@ class Product(models.Model):
 
             if self.product_type == MAG_SUBSCRIPTION:
                 return customer.mag_subscribed
-            
+
             if self.product_type == DIG_SUBSCRIPTION:
                 return customer.dig_subscribed
 
@@ -400,7 +400,7 @@ class Customer(models.Model):
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=True, null=True)
     subscribed = models.TextField(
-        max_length=30, choices=SUBSCRIPTION_TYPE, default=SUBSCRIBED_ONLY)
+        max_length=30, choices=SUBSCRIPTION_TYPE, default=PURCHASED_SUBSCRIBED)
     mag_subscribed = models.BooleanField(default=False)
     dig_subscribed = models.BooleanField(default=False)
     date_created = models.DateTimeField(
@@ -408,13 +408,13 @@ class Customer(models.Model):
     email = models.TextField(max_length=100, unique=True, blank=False)
     first_name = models.TextField(max_length=50, blank=False)
     last_name = models.TextField(max_length=50, blank=False)
-    address_line_1 = models.TextField(max_length=50, blank=False)
+    address_line_1 = models.TextField(max_length=50, blank=True)
     address_line_2 = models.TextField(max_length=50, blank=True)
-    city = models.TextField(max_length=50, blank=False)
-    state = models.TextField(max_length=50, blank=False)
-    postcode = models.TextField(max_length=50, blank=False)
-    country = models.TextField(max_length=50, blank=False)
-    phone_number = models.TextField(max_length=50, blank=False)
+    city = models.TextField(max_length=50, blank=True)
+    state = models.TextField(max_length=50, blank=True)
+    postcode = models.TextField(max_length=50, blank=True)
+    country = models.TextField(max_length=50, blank=True)
+    phone_number = models.TextField(max_length=50, blank=True)
 
 
 class Purchase(models.Model):
@@ -448,13 +448,13 @@ class Order(models.Model):
     email = models.TextField(max_length=100, blank=False)
     first_name = models.TextField(max_length=50, blank=False)
     last_name = models.TextField(max_length=50, blank=False)
-    address_line_1 = models.TextField(max_length=50, blank=False)
+    address_line_1 = models.TextField(max_length=50, blank=True)
     address_line_2 = models.TextField(max_length=50, blank=True)
-    city = models.TextField(max_length=50, blank=False)
-    state = models.TextField(max_length=50, blank=False)
-    postcode = models.TextField(max_length=50, blank=False)
-    country = models.TextField(max_length=50, blank=False)
-    phone_number = models.TextField(max_length=20, blank=False)
+    city = models.TextField(max_length=50, blank=True)
+    state = models.TextField(max_length=50, blank=True)
+    postcode = models.TextField(max_length=50, blank=True)
+    country = models.TextField(max_length=50, blank=True)
+    phone_number = models.TextField(max_length=20, blank=True)
     billing_same_address = models.BooleanField(default=True)
     billing_email = models.TextField(max_length=100, blank=True, null=True)
     billing_first_name = models.TextField(max_length=50, blank=True)

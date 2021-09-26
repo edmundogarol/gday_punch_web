@@ -11,7 +11,9 @@ function Ui(props) {
     updateCheckoutForm,
     subscribeAgreed,
     handleSubscribeCheck,
+    conditionalValidationFields,
     handleOpenSection,
+    allDigitalCart,
   } = props;
 
   if (checkoutForm.formOpen) {
@@ -20,7 +22,9 @@ function Ui(props) {
         <GPAddressForm
           type="shipping"
           addressForm={checkoutForm}
+          allDigitalCart={allDigitalCart}
           updateAddressForm={updateCheckoutForm}
+          conditionalValidationFields={conditionalValidationFields}
           loggedIn={loggedIn}
         />
         <SubscribeCondition>
@@ -33,14 +37,16 @@ function Ui(props) {
         </SubscribeCondition>
         <Button
           className="next-button"
-          onClick={() => handleOpenSection("shipping")}
+          onClick={() =>
+            handleOpenSection(allDigitalCart ? "billing" : "shipping")
+          }
         >
           Next
         </Button>
       </>
     );
   }
-  return <AddressSummary form={checkoutForm} />;
+  return <AddressSummary form={checkoutForm} allDigitalCart={allDigitalCart} />;
 }
 
 export default Ui;
