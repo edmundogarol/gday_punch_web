@@ -22,6 +22,7 @@ function Ui(props) {
     discountAmount,
     cartTotal,
     className,
+    freeShipping,
   } = props;
   return (
     <OrderSummaryContainer className={className}>
@@ -45,6 +46,17 @@ function Ui(props) {
               <TotalLabel>Subtotal:</TotalLabel>
               <h3>A${cartSubtotal.toFixed(2)}</h3>
             </ItemSummarySubtotal>
+            {freeShipping ? (
+              <ItemSummarySubtotal>
+                <TotalLabel>Free Australian Standard Shipping:</TotalLabel>
+                <h3>A$0.00</h3>
+              </ItemSummarySubtotal>
+            ) : (
+              <ItemSummarySubtotal>
+                <TotalLabel>International Standard Shipping:</TotalLabel>
+                <h3>A$13.00</h3>
+              </ItemSummarySubtotal>
+            )}
             {coupon.coupon_type ? (
               <ItemSummarySubtotal>
                 <TotalLabel>
@@ -56,7 +68,9 @@ function Ui(props) {
             ) : null}
             <ItemTotal>
               <TotalLabel>Total:</TotalLabel>
-              <h3>A${cartTotal.toFixed(2)}</h3>
+              <h3>
+                A${(freeShipping ? cartTotal : cartTotal + 13).toFixed(2)}
+              </h3>
             </ItemTotal>
             <GSTLabel>[Price Includes GST]</GSTLabel>
           </div>

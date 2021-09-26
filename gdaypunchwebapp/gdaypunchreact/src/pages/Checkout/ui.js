@@ -621,6 +621,7 @@ function Ui(props) {
                 <OrderSummary
                   className="desktop"
                   items={items}
+                  freeShipping={freeShipping}
                   handleViewProduct={handleViewProduct}
                   cartSubtotal={cartSubtotal}
                   coupon={coupon}
