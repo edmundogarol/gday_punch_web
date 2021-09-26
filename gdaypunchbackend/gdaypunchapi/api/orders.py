@@ -99,12 +99,14 @@ class OrderConfirmationViewSet(viewsets.ModelViewSet):
 
 def send_email_receipt(customer, order, items):
     email_template_name = "emails/receipt.html"
+    all_digital = order.address_line_1 == None
 
     email_config = {
         "customer": customer,
         "order": order,
         "items": items,
         "order_total": "{:.2f}".format(order.amount),
+        "all_digital": all_digital,
         "aus_shipping": order.country == "AU",
         "coupon_desc": order.coupon_details['description'],
         "coupon_amount": "{:.2f}".format(order.coupon_details['discount_amount']) if order.coupon else None,
@@ -135,6 +137,7 @@ def send_email_update(customer, order, order_status, items, notes, update_date, 
     subtitle = None
     refunding = False
     refund_amount = order.amount if not partial_refund else partial_refund
+    all_digital = order.address_line_1 == None
 
     if order_status is SHIPPED:
         subject = "Your items have been shipped!"
@@ -158,6 +161,7 @@ def send_email_update(customer, order, order_status, items, notes, update_date, 
         "notes": notes,
         "update_date": update_date,
         "refunding": refunding,
+        "all_digital": all_digital,
         "order_total": "{:.2f}".format(float(refund_amount)),
         "subtitle": subtitle,
         "website": domain

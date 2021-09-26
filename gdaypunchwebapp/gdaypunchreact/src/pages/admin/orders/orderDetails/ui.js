@@ -411,15 +411,17 @@ function Ui(props) {
       </StatusButtons>
       <AddressBillingContainer>
         <LeftContainer>
-          <AddressContactField>
-            <h4>Fulfillment details</h4>
-            <div>
-              <p>{`${order.first_name} ${order.last_name}`}</p>
-              <p>{`${order.address_line_1} ${order.address_line_2}`}</p>
-              <p>{`${order.city}, ${order.state} ${order.postcode}`}</p>
-              <p>{`${order.country}`}</p>
-            </div>
-          </AddressContactField>
+          {order.address_line_1 ? (
+            <AddressContactField>
+              <h4>Fulfillment details</h4>
+              <div>
+                <p>{`${order.first_name} ${order.last_name}`}</p>
+                <p>{`${order.address_line_1} ${order.address_line_2}`}</p>
+                <p>{`${order.city}, ${order.state} ${order.postcode}`}</p>
+                <p>{`${order.country}`}</p>
+              </div>
+            </AddressContactField>
+          ) : null}
           <AddressContactField>
             <h4>Contact Information</h4>
             <div>

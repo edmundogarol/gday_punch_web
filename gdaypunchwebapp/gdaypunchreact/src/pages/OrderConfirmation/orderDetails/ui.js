@@ -213,10 +213,12 @@ function Ui(props) {
               : "Error"
           }`}</span>
         </div>
-        <div>
-          Shipping
-          <span>{`A$${order.country === "AU" ? "0.00" : "13.00"}`}</span>
-        </div>
+        {order.address_line_1 ? (
+          <div>
+            Shipping
+            <span>{`A$${order.country === "AU" ? "0.00" : "13.00"}`}</span>
+          </div>
+        ) : null}
         {order.coupon !== null && order.coupon.length > 1 && (
           <div>
             {`Discount [Coupon: ${order.coupon_details.description}]`}
@@ -234,15 +236,17 @@ function Ui(props) {
       </ProductTotalsContainer>
       <AddressBillingContainer>
         <LeftContainer>
-          <AddressContactField>
-            <h4>Shipping to</h4>
-            <div>
-              <p>{`${order.first_name} ${order.last_name}`}</p>
-              <p>{`${order.address_line_1} ${order.address_line_2}`}</p>
-              <p>{`${order.city}, ${order.state} ${order.postcode}`}</p>
-              <p>{`${order.country}`}</p>
-            </div>
-          </AddressContactField>
+          {order.address_line_1 ? (
+            <AddressContactField>
+              <h4>Shipping to</h4>
+              <div>
+                <p>{`${order.first_name} ${order.last_name}`}</p>
+                <p>{`${order.address_line_1} ${order.address_line_2}`}</p>
+                <p>{`${order.city}, ${order.state} ${order.postcode}`}</p>
+                <p>{`${order.country}`}</p>
+              </div>
+            </AddressContactField>
+          ) : null}
           <AddressContactField>
             <h4>Contact Information</h4>
             <div>

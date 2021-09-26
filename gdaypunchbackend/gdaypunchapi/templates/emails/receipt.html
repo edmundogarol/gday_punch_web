@@ -70,6 +70,7 @@
     <div>
       <table style="width: 100%;">
         <tr>
+          {% if all_digital %}
           <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
             <h4>Shipping Information</h4>
             <span></span>
@@ -89,6 +90,7 @@
               M: {{ order.phone_number }}
             </p>
           </td>
+          {% endif %}
           <td></td>
           <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
             <h4>Billing Information</h4>
