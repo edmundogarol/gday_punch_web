@@ -153,6 +153,10 @@ function Ui(props) {
   };
 
   const renderActionButton = () => {
+    if (product.product_type.includes("_subscription") && product.purchased) {
+      return <ActionButton disabled>Already Subscribed</ActionButton>;
+    }
+
     if (!freeProduct) {
       if (digitalProduct) {
         return (

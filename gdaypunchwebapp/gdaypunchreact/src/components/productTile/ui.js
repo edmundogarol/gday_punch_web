@@ -38,6 +38,7 @@ function Ui(props) {
     active_price,
     product_type,
     quantity,
+    purchased,
     stock,
     visible,
     user_string: creator,
@@ -83,6 +84,10 @@ function Ui(props) {
   };
 
   const renderActionButton = () => {
+    if (product_type.includes("_subscription") && purchased) {
+      return <ActionButton disabled>Already Subscribed</ActionButton>;
+    }
+
     if (buyableProduct) {
       if (digitalProduct) {
         return (
