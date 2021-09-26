@@ -29,6 +29,7 @@ function Ui(props) {
     history,
     cartCount,
     toggleSideCart,
+    loginCheckFinished,
   } = props;
   const [miniNavOpen, toggleMiniNav] = useState(false);
   const [scrolledMini, toggleScrolledMini] = useState(false);
@@ -131,7 +132,7 @@ function Ui(props) {
               {"Account"}
             </HeaderLink>
           )}
-          {user.is_staff && (
+          {loginCheckFinished && user.is_staff && (
             <HeaderLink
               to="/admin"
               $adminLink
@@ -175,7 +176,7 @@ function Ui(props) {
               {"Account"}
             </HeaderLink>
           )}
-          {user.is_staff && (
+          {loginCheckFinished && user.is_staff && (
             <HeaderLink to="/admin" $current={location === "/admin"}>
               {"Admin"}
             </HeaderLink>

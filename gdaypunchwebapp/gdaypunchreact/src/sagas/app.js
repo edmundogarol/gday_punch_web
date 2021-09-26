@@ -108,6 +108,7 @@ export function* checkLogin() {
     const data = response.data;
     const user = {
       logged_in: data.logged_in,
+      is_staff: data.is_staff,
       ...data.user,
     };
     yield put(updateUser(user));
@@ -133,6 +134,7 @@ export function* login() {
     const data = response.data;
     const user = {
       logged_in: data.logged_in,
+      is_staff: data.is_staff,
       ...data.user,
     };
     yield put(updateUser(user));

@@ -307,6 +307,10 @@ export const OrderSummaryContainer = styled.div`
   @media ${device.laptop} {
     padding-right: 2em;
   }
+
+  #order-summary {
+    width: 100%;
+  }
 `;
 
 export const OrderSummaryFixed = styled.div`

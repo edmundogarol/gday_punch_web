@@ -184,6 +184,7 @@ class LogoutView(APIView):
         logout(request)
         content = {
             "logged_in": False,
+            "is_staff": False,
         }
         return Response(content)
 
@@ -204,6 +205,7 @@ class LoginView(APIView):
         else:
             content = {
                 "logged_in": False,
+                "is_staff": False,
             }
             return Response(content)
 

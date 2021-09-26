@@ -10,7 +10,7 @@ function Ui(props) {
   const { user } = props;
 
   function hasPrivilege(privilege) {
-    if (!user) return true;
+    if (!user.id) return false;
 
     const superUser = user.privileges.includes("super");
     if (superUser) return true;

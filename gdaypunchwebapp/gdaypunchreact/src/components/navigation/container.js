@@ -9,6 +9,7 @@ import {
   selectLoginViewToggle,
   selectLoggedIn,
   selectCartCount,
+  selectLoginCheckFinished,
 } from "selectors/app";
 import Ui from "./ui";
 
@@ -17,6 +18,7 @@ const mapState = createStructuredSelector({
   loggedIn: selectLoggedIn,
   loginView: selectLoginViewToggle,
   cartCount: selectCartCount,
+  loginCheckFinished: selectLoginCheckFinished,
 });
 
 const mapDispatch = {
