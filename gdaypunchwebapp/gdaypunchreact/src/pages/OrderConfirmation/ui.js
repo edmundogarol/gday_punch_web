@@ -69,7 +69,7 @@ function Ui(props) {
   const renderLatestStatus = (status) => {
     const statusString = {
       pending: "Thank you! We've received your order.",
-      purcahsed: "Thank you! We've received your order.",
+      purchased: "Thank you! We've received your order.",
       shipped: "Your order has been shipped!",
       declined: "Your order has been declined.",
       refunded: "Your order has been refunded.",
@@ -79,7 +79,7 @@ function Ui(props) {
     return (
       <>
         {statusString[status.status]}
-        <div>{`- ${status.readable_date.date}`}</div>
+        <div>{`- Last update [${status.readable_date.date}]`}</div>
       </>
     );
   };

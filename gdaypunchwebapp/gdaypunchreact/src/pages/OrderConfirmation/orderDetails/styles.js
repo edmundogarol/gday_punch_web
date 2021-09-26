@@ -202,3 +202,16 @@ export const RightContainer = styled.div`
     width: 48%;
   }
 `;
+
+export const OrderStatuses = styled.div`
+  margin-top: 1em;
+
+  div {
+    display: flex;
+    flex-direction: column;
+
+    span {
+      color: #9c9c9c;
+    }
+  }
+`;

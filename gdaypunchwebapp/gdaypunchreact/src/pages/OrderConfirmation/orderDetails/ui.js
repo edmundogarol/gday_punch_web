@@ -18,6 +18,7 @@ import {
   RightContainer,
   ModalTitle,
   TitleStatus,
+  OrderStatuses,
 } from "./styles";
 
 function Ui(props) {
@@ -143,6 +144,26 @@ function Ui(props) {
     },
   ];
 
+  const statusColumns = [
+    {
+      title: "Date",
+      dataIndex: "readable_date",
+      key: "readable_date",
+      render: ({ date, time }) => (
+        <div>
+          {date}
+          <span>{time}</span>
+        </div>
+      ),
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+      render: (description) => description,
+    },
+  ];
+
   const StatusIcon = renderStatusIcons[order.status];
 
   return (
@@ -253,6 +274,18 @@ function Ui(props) {
           </AddressContactField>
         </RightContainer>
       </AddressBillingContainer>
+      {order.statuses ? (
+        <OrderStatuses>
+          <Table
+            columns={statusColumns}
+            dataSource={order.statuses.map((status) => ({
+              key: status.id,
+              ...status,
+            }))}
+            pagination={false}
+          />
+        </OrderStatuses>
+      ) : null}
     </OrderConfirmationContainer>
   );
 }
