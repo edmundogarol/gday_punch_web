@@ -158,7 +158,7 @@ def send_email_update(customer, order, order_status, items, notes, update_date, 
         "notes": notes,
         "update_date": update_date,
         "refunding": refunding,
-        "order_total": "{:.2f}".format(int(refund_amount)),
+        "order_total": "{:.2f}".format(float(refund_amount)),
         "subtitle": subtitle,
         "website": domain
     }
