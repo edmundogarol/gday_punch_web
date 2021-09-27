@@ -103,7 +103,8 @@ export const PriceSkuContainer = styled.div`
   margin-bottom: 0.7em;
   margin-right: 1em;
 
-  .purchased {
+  .purchased,
+  .free {
     font-size: 1em;
   }
 

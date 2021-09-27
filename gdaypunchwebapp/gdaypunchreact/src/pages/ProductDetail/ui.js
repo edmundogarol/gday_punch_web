@@ -195,6 +195,25 @@ function Ui(props) {
     };
   };
 
+  const priceRenderer = () => {
+    return (
+      <h4 className={freeProduct ? "free" : ""}>
+        {freeProduct ? "Free" : `A$${product.active_price.toFixed(2)}`}
+        <span className="interval">
+          {product.product_type.includes("subscription")
+            ? product.product_type === "mag_subscription"
+              ? "/ per release"
+              : `/ ${
+                  product.subscription_interval < 2
+                    ? "per month"
+                    : `every ${product.subscription_interval} months`
+                }`
+            : null}
+        </span>
+      </h4>
+    );
+  };
+
   return (
     <PageContainer>
       <ProductContainer>
@@ -244,24 +263,11 @@ function Ui(props) {
                   )}
               </TitleInteractionButtonsContainer>
               <PriceSkuContainer>
-                <h4 className={purchasedDigital ? "purchased" : ""}>
-                  {freeProduct
-                    ? "Free"
-                    : purchasedDigital
-                    ? "Purchased"
-                    : `A$${product.active_price.toFixed(2)}`}
-                  <span className="interval">
-                    {product.product_type.includes("subscription")
-                      ? product.product_type === "mag_subscription"
-                        ? "/ per release"
-                        : `/ ${
-                            product.subscription_interval < 2
-                              ? "per month"
-                              : `every ${product.subscription_interval} months`
-                          }`
-                      : null}
-                  </span>
-                </h4>
+                {purchasedDigital ? (
+                  <h4 className="purchased">Purchased {priceRenderer()}</h4>
+                ) : (
+                  priceRenderer()
+                )}
                 {product.sku && (
                   <SkuContainer>
                     <label>SKU:</label>
