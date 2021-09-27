@@ -24,6 +24,12 @@ import {
 
 const { Meta } = Card;
 
+export const DailyPromptContainer = styled.div`
+  .App-header-container {
+    min-height: 84vh;
+  }
+`;
+
 export const DailyPromptCard = styled(Card)`
   width: 67%;
   max-width: max-content;
@@ -98,7 +104,7 @@ class DailyPrompt extends React.Component {
     const styles = getStyles();
 
     return (
-      <div id="top" className="App">
+      <DailyPromptContainer id="top" className="App">
         <div className="App-header-container app-temp-background">
           {prompt && (
             <DailyPromptCard
@@ -171,7 +177,7 @@ class DailyPrompt extends React.Component {
             </DailyPromptCard>
           )}
         </div>
-      </div>
+      </DailyPromptContainer>
     );
   }
 }

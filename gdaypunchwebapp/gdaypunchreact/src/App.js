@@ -136,7 +136,6 @@ function Root(props) {
             />
           )}
         />
-        <Route exact path="/daily-prompt" component={DailyPrompt} />
         <Route path="/">
           <Navigation />
           <SideCart />
@@ -150,6 +149,7 @@ function Root(props) {
               title="Contact"
             />
             <RoutePage exact path="/about" component={About} />
+            <RoutePage exact path="/daily-prompt" component={DailyPrompt} />
             <RoutePage exact path="/cart" component={Cart} />
             <RoutePage exact path="/checkout" component={Checkout} />
             <RoutePage

@@ -15,6 +15,14 @@ export const NavigationContainer = styled.div`
   z-index: 10;
   transition: 0.2s ease;
   border-bottom: 1px #c7c7c7 solid;
+
+  ${(props) =>
+    props.$childNavOpen
+      ? `
+        padding-bottom: 3em;
+        padding-top: 1em;
+      `
+      : ``}
 `;
 
 export const NavSection = styled.div`
@@ -174,6 +182,134 @@ export const HeaderLink = styled(Link)`
 
         &:hover {
           color: #ffc864;
+        }
+      `
+      : ``}
+
+  .child-nav {
+    display: none;
+  }
+
+  // Cart icon and number logic
+  .site-form-item-icon {
+    svg {
+      width: ${(props) => (props.$showOnMiniNav ? "2.2em" : "1.5em")};
+      height: ${(props) => (props.$showOnMiniNav ? "2.2em" : "1.5em")};
+    }
+  }
+`;
+
+export const HeaderParent = styled.span`
+  text-decoration: none;
+  color: #565656;
+  font-size: 1em;
+  letter-spacing: 2pt;
+  white-space: nowrap;
+  width: 100%;
+  text-align: center;
+  background: #f3f3f3;
+  margin-left: unset;
+  padding: 1em;
+  border-bottom: 1px solid #d0d0d0;
+
+  @media ${device.laptop} {
+    width: unset;
+    text-align: inherit;
+    background: transparent;
+    margin-left: 2em;
+    padding: unset;
+    border-bottom: unset;
+
+    display: ${(props) => (props.$adminLink ? "none" : "inherit")};
+  }
+
+  ${(props) =>
+    props.$showOnMiniNav
+      ? `
+    width: unset;
+    text-align: inherit;
+    background: transparent;
+    margin-left: 2em;
+    padding: unset;
+    border-bottom: unset;
+    transform: translate(0, 7pt);
+  `
+      : ``};
+
+  &:hover {
+    color: #ffbd46;
+  }
+
+  ${(props) =>
+    props.$current
+      ? `    
+      color: #ffbd46;
+
+      &:hover {
+        color: #ffc864;
+      }
+    `
+      : ``}
+
+  .child-nav {
+    display: none;
+  }
+
+  ${(props) =>
+    props.$open
+      ? `
+        .child-nav {
+          display: flex;
+          position: absolute;
+          margin-left: unset;
+        }
+
+        .first-child {
+          border: none;
+          background: none;
+          justify-content: center;
+          width: max-content;
+          margin-left: auto;
+          margin-right: auto;
+          left: 0;
+          right: 0;
+          text-align: center;
+          transform: translate(-5em, 0.4em);
+        }
+
+        .second-child {
+          border: none;
+          background: none;
+          justify-content: center;
+          width: max-content;
+          margin-left: auto;
+          margin-right: auto;
+          left: 0;
+          right: 0;
+          text-align: center;
+          transform: translate(4em, 0.4em);
+        }
+
+        height: 7em;
+
+        @media ${device.laptop} {
+          height: unset;
+
+          .second-child {
+            margin-left: unset;
+            margin-right: unset;
+            left: unset;
+            right: unset;
+            transform: translate(4em,2.4em);
+          }
+
+          .first-child {
+            margin-left: unset;
+            margin-right: unset;
+            left: unset;
+            right: unset;
+            transform: translate(-5em,2.4em);
+          }
         }
       `
       : ``}

@@ -15,6 +15,7 @@ import {
   UserProfile,
   HeaderALink,
   HeaderLink,
+  HeaderParent,
   CartNumber,
 } from "./styles";
 
@@ -33,8 +34,15 @@ function Ui(props) {
   } = props;
   const [miniNavOpen, toggleMiniNav] = useState(false);
   const [scrolledMini, toggleScrolledMini] = useState(false);
+  const [parentNavs, updateParentNavs] = useState({
+    resources: false,
+  });
 
   window.onscroll = () => scrollFunction();
+
+  const toggleParentNav = (parent) => {
+    updateParentNavs({ ...parentNavs, [parent]: !parentNavs[parent] });
+  };
 
   const scrollFunction = () => {
     if (
@@ -66,7 +74,12 @@ function Ui(props) {
   const location = window.location.pathname;
 
   return (
-    <NavigationContainer id="navbar">
+    <NavigationContainer
+      id="navbar"
+      $childNavOpen={
+        Object.values(parentNavs).filter((parent) => parent).length
+      }
+    >
       <NavSection>
         <NavLogoContainer>
           <NavLink to="/">
@@ -115,6 +128,28 @@ function Ui(props) {
           >
             {"About"}
           </HeaderLink>
+          <HeaderParent
+            $open={parentNavs.resources}
+            onClick={() => toggleParentNav("resources")}
+          >
+            {"Resources +"}
+            <HeaderLink
+              className="child-nav first-child"
+              to="/daily-prompt"
+              $current={location === "/daily-prompt"}
+              onClick={() => toggleMiniNav(false)}
+            >
+              {"Daily Prompt"}
+            </HeaderLink>
+            <HeaderLink
+              className="child-nav second-child"
+              to="/downloads"
+              $current={location === "/downloads"}
+              onClick={() => toggleMiniNav(false)}
+            >
+              {"Downloads"}
+            </HeaderLink>
+          </HeaderParent>
           <HeaderLink
             to="/contact"
             $current={location === "/contact"}
