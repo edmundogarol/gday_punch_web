@@ -132,10 +132,17 @@ function Ui(props) {
   };
 
   const handleSaveClick = () => {
-    if (!saved) {
-      saveProduct(id);
+    if (!loggedIn) {
+      scrollToTop();
+      props.history.push("/#top");
+      openRegister();
+      suggestRegister("Info: Sign up or Log in to favourite this manga!");
     } else {
-      unsaveProduct(saved);
+      if (!saved) {
+        saveProduct(id);
+      } else {
+        unsaveProduct(saved);
+      }
     }
   };
 

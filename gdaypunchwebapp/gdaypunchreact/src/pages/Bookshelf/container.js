@@ -1,5 +1,6 @@
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import { withRouter } from "react-router-dom";
 
 import Ui from "./ui";
 
@@ -27,4 +28,4 @@ const mapDispatch = {
   fetchProducts: fetchProductsAction,
 };
 
-export default connect(mapState, mapDispatch)(Ui);
+export default connect(mapState, mapDispatch)(withRouter(Ui));
