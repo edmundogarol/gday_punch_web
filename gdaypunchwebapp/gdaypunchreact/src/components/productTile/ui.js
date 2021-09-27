@@ -203,7 +203,7 @@ function Ui(props) {
                   <NumberLabel>{`${comments || 0}`}</NumberLabel>
                 </InteractionContainer>
               </Tooltip>
-              <Tooltip title={saved ? "Saved" : "Save"}>
+              <Tooltip title={saved ? "Favourited" : "Add to Favourites"}>
                 <BookOutlined
                   className={`site-form-item-icon ${saved ? "saved" : ""}`}
                   onClick={() => handleSaveClick()}

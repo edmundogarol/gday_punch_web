@@ -220,6 +220,12 @@ export const InteractionButton = styled.span`
 
 export const LikeCommentConainer = styled.div`
   display: flex;
+
+  .saved {
+    svg {
+      color: #e09200;
+    }
+  }
 `;
 
 export const NumberLabel = styled.span`

@@ -58,7 +58,7 @@ function Ui(props) {
           idx={!isEmpty(purchasedProducts) ? 1 : 0}
           top={isEmpty(purchasedProducts)}
         >
-          <SectionTitle id="saved-manga">Saved Manga</SectionTitle>
+          <SectionTitle id="saved-manga">Favourite Manga</SectionTitle>
           <FeaturedList>
             {savedProducts.map((manga) => {
               return manga ? (

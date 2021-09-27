@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CommentOutlined } from "@ant-design/icons";
+import { CommentOutlined, BookOutlined } from "@ant-design/icons";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebook,
   faTwitter,
   faPinterest,
 } from "@fortawesome/free-brands-svg-icons";
-import { Typography, Select, Spin, message, Badge } from "antd";
+import { Typography, Select, Spin, message, Badge, Tooltip } from "antd";
 import moment from "moment";
 const { Title } = Typography;
 const { Option } = Select;
@@ -238,26 +238,42 @@ function Ui(props) {
                 {digitalProduct &&
                   !product.product_type.includes("_subscription") && (
                     <LikeCommentConainer>
-                      <InteractionButton>
-                        <FontAwesomeIcon
-                          icon={faHeart}
-                          style={
-                            product.manga_details.user_likes
-                              ? { color: "red" }
-                              : null
-                          }
-                        />
-                        <NumberLabel>{`${
-                          product.manga_details.likes || 0
-                        }`}</NumberLabel>
-                      </InteractionButton>
-                      <InteractionContainer>
+                      <Tooltip title="Likes">
                         <InteractionButton>
-                          <CommentOutlined className="site-form-item-icon" />
+                          <FontAwesomeIcon
+                            icon={faHeart}
+                            style={
+                              product.manga_details.user_likes
+                                ? { color: "red" }
+                                : null
+                            }
+                          />
+                          <NumberLabel>{`${
+                            product.manga_details.likes || 0
+                          }`}</NumberLabel>
                         </InteractionButton>
-                        <NumberLabel>{`${
-                          product.manga_details.comments || 0
-                        }`}</NumberLabel>
+                      </Tooltip>
+                      <InteractionContainer>
+                        <Tooltip title="Comments">
+                          <InteractionButton>
+                            <CommentOutlined className="site-form-item-icon" />
+                          </InteractionButton>
+                          <NumberLabel>{`${
+                            product.manga_details.comments || 0
+                          }`}</NumberLabel>
+                        </Tooltip>
+
+                        <Tooltip
+                          title={
+                            product.saved ? "Favourited" : "Add to Favourites"
+                          }
+                        >
+                          <BookOutlined
+                            className={`site-form-item-icon ${
+                              product.saved ? "saved" : ""
+                            }`}
+                          />
+                        </Tooltip>
                       </InteractionContainer>
                     </LikeCommentConainer>
                   )}
