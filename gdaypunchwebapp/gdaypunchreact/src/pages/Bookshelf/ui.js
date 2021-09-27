@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect } from "react";
 import { isEmpty } from "lodash";
 
-import PaymentForm from "components/paymentForm";
 import ProductTile from "components/productTile";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
@@ -20,7 +18,7 @@ function Ui(props) {
     products: { fetchingProducts, finishedFetchingProducts },
     fetchProducts,
     purchasedProducts,
-    freeProducts,
+    savedProducts,
   } = props;
 
   useEffect(() => {
@@ -55,14 +53,14 @@ function Ui(props) {
           </FeaturedList>
         </FeaturedSection>
       )}
-      {!isEmpty(freeProducts) && (
+      {!isEmpty(savedProducts) && (
         <FeaturedSection
           idx={!isEmpty(purchasedProducts) ? 1 : 0}
           top={isEmpty(purchasedProducts)}
         >
           <SectionTitle id="saved-manga">Saved Manga</SectionTitle>
           <FeaturedList>
-            {freeProducts.map((manga) => {
+            {savedProducts.map((manga) => {
               return manga ? (
                 <ProductTile
                   key={manga.id}

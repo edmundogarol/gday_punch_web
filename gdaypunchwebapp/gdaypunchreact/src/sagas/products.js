@@ -18,10 +18,13 @@ import {
   FETCH_VIEWING_PRODUCT,
   fetchingViewingProduct,
   finishedFetchingViewingProduct,
+  SAVE_PRODUCT,
+  UNSAVE_PRODUCT,
 } from "actions/products";
 import { api } from "utils/api";
 import { arrayIdsMapToObject } from "utils/utils";
 import { selectUser } from "src/selectors/app";
+import { ca } from "date-fns/locale";
 
 export function* fetchProductsCall(action) {
   const fetchedProducts = yield all(
@@ -78,9 +81,49 @@ export function* fetchAllProductsCall(addItems = false) {
   }
 }
 
+export function* saveProductCall(action) {
+  const user = yield select(selectUser);
+
+  const response = yield call(api, `product-save/`, {
+    method: "POST",
+    body: {
+      user: user.id,
+      product: action.payload.productId,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield call(fetchAllProductsCall);
+  } else {
+    console.log("Product save error", JSON.stringify(response));
+    message.error(
+      "There was a problem with saving this manga. Try again later."
+    );
+  }
+}
+
+export function* unsaveProductCall(action) {
+  const response = yield call(api, `product-save/${action.payload.saveId}/`, {
+    method: "DELETE",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield call(fetchAllProductsCall);
+  } else {
+    console.log("Product save error", JSON.stringify(response));
+    message.error(
+      "There was a problem with trying to unsave this manga. Try again later."
+    );
+  }
+}
+
 export default function* productSaga() {
   yield all([
     takeLatest(FETCH_PRODUCTS, fetchAllProductsCall),
     takeLatest(FETCH_VIEWING_PRODUCT, fetchViewingProductCall),
+    takeLatest(SAVE_PRODUCT, saveProductCall),
+    takeLatest(UNSAVE_PRODUCT, unsaveProductCall),
   ]);
 }

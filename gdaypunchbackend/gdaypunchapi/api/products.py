@@ -4,14 +4,17 @@ import stripe
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
+from rest_framework.viewsets import ModelViewSet
 
 from ..constants import *
-from ..api_permissions import ProductPermissions
+from ..api_permissions import (
+    ProductPermissions, SavePermissions
+)
 from ..models import (
-    Settings, User, Product, StripePrice
+    Settings, User, Product, StripePrice, Save
 )
 from ..serializers import (
-    ProductSerializer, StripePriceSerializer
+    ProductSerializer, StripePriceSerializer, SaveSerializer
 )
 
 if 'DEVENV' in os.environ:
@@ -221,3 +224,11 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class SaveViewSet(ModelViewSet):
+    queryset = Save.objects.all()
+    serializer_class = SaveSerializer
+
+    # Only allow logged in users to like comments (create)
+    permission_classes = [SavePermissions]

@@ -384,6 +384,33 @@ class Product(models.Model):
 
         return interval
 
+    @property
+    def saved(self):
+        if str(get_current_user()) == "AnonymousUser":
+            return False
+
+        if self.product_type != "digital":
+            return False
+
+        try:
+            user = User.objects.get(email=get_current_user())
+            save = Save.objects.filter(user=user.id).filter(product=self.id)
+
+            if save.first() is not None:
+                return save.first().id
+            else:
+                return False
+
+        except Save.DoesNotExist:
+            return False
+
+
+class Save(models.Model):
+    product = models.ForeignKey(
+        Product,  on_delete=models.PROTECT, blank=False, null=False)
+    user = models.ForeignKey(
+        User,  on_delete=models.PROTECT, blank=False, null=False)
+
 
 class Customer(models.Model):
     SUBSCRIBED_ONLY = 'subscribed_only'

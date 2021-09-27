@@ -1,7 +1,14 @@
 from rest_framework.permissions import (BasePermission)
 
 from .models import (
-    User, Order, Comment, Like, Product, StripeCustomer, Customer,
+    User,
+    Order,
+    Comment,
+    Like,
+    Product,
+    StripeCustomer,
+    Customer,
+    Save
 )
 
 
@@ -239,6 +246,28 @@ class CommentLikePermissions(BasePermission):
             return True
         elif view.action in ['create', 'destroy']:
             return request.user.is_authenticated
+        elif view.action in ['update', 'partial_update', 'list', 'retrieve']:
+            return False
+        else:
+            return False
+
+
+class SavePermissions(BasePermission):
+    def has_permission(self, request, view):
+
+        if staff(request):
+            return True
+        elif view.action in ['create']:
+            return request.user.is_authenticated
+        elif view.action in ['destroy']:
+            save_id = view.kwargs.get('pk')
+
+            if request.user.is_authenticated:
+                try:
+                    save = Save.objects.get(id=save_id)
+                    return save.user.email.strip() == str(request.user).strip()
+                except Save.DoesNotExist:
+                    return False
         elif view.action in ['update', 'partial_update', 'list', 'retrieve']:
             return False
         else:

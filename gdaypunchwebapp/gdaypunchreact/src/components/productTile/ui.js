@@ -1,8 +1,8 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { CommentOutlined } from "@ant-design/icons";
-import { Badge } from "antd";
+import { CommentOutlined, BookOutlined } from "@ant-design/icons";
+import { Badge, Tooltip } from "antd";
 
 import { getGdayPunchStaticUrl, scrollToTop } from "utils/utils";
 
@@ -29,6 +29,8 @@ function Ui(props) {
     suggestRegister,
     updateCartItemQuantity,
     viewProduct,
+    saveProduct,
+    unsaveProduct,
   } = props;
   const { manga_details } = product;
   const {
@@ -39,6 +41,7 @@ function Ui(props) {
     product_type,
     quantity,
     purchased,
+    saved,
     stock,
     visible,
     user_string: creator,
@@ -128,6 +131,14 @@ function Ui(props) {
     }
   };
 
+  const handleSaveClick = () => {
+    if (!saved) {
+      saveProduct(id);
+    } else {
+      unsaveProduct(saved);
+    }
+  };
+
   const BadgeWrapper =
     product.stock < 10 && product.product_type === "physical"
       ? Badge.Ribbon
@@ -177,17 +188,27 @@ function Ui(props) {
           )}
           {digitalProduct && !product_type.includes("_subscription") && (
             <LikeCommentConainer>
-              <a onClick={() => handleLikeClick()}>
-                <FontAwesomeIcon
-                  icon={faHeart}
-                  style={product && user_likes ? { color: "red" } : null}
+              <Tooltip title="Like">
+                <a onClick={() => handleLikeClick()}>
+                  <FontAwesomeIcon
+                    icon={faHeart}
+                    style={product && user_likes ? { color: "red" } : null}
+                  />
+                  <NumberLabel>{`${likes || 0}`}</NumberLabel>
+                </a>
+              </Tooltip>
+              <Tooltip title="Comments">
+                <InteractionContainer onClick={() => handleViewProduct()}>
+                  <CommentOutlined className="site-form-item-icon" />
+                  <NumberLabel>{`${comments || 0}`}</NumberLabel>
+                </InteractionContainer>
+              </Tooltip>
+              <Tooltip title={saved ? "Saved" : "Save"}>
+                <BookOutlined
+                  className={`site-form-item-icon ${saved ? "saved" : ""}`}
+                  onClick={() => handleSaveClick()}
                 />
-                <NumberLabel>{`${likes || 0}`}</NumberLabel>
-              </a>
-              <InteractionContainer onClick={() => handleViewProduct()}>
-                <CommentOutlined className="site-form-item-icon" />
-                <NumberLabel>{`${comments || 0}`}</NumberLabel>
-              </InteractionContainer>
+              </Tooltip>
             </LikeCommentConainer>
           )}
         </PriceLikeCommentConainer>

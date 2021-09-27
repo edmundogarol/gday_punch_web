@@ -103,6 +103,14 @@ export const selectPurchasedDigitalProducts = createSelector(
   }
 );
 
+export const selectSavedProducts = createSelector(
+  selectDomain,
+  ({ products: { productList } }) => {
+    const list = Object.values(productList).filter((product) => product.saved);
+    return orderBy(list, "id", "desc");
+  }
+);
+
 export const selectContactState = createSelector(
   selectDomain,
   ({ contact }) => contact

@@ -10,14 +10,14 @@ import {
   selectLoggedIn,
   selectProductsState,
   selectPurchasedDigitalProducts,
-  selectFreeProducts,
+  selectSavedProducts,
 } from "selectors/app";
 
 const mapState = createStructuredSelector({
   loggedIn: selectLoggedIn,
   products: selectProductsState,
   purchasedProducts: selectPurchasedDigitalProducts,
-  freeProducts: selectFreeProducts,
+  savedProducts: selectSavedProducts,
 });
 
 const mapDispatch = {

@@ -36,7 +36,8 @@ from .gdaypunchapi.api.verify_account import (
 )
 from .gdaypunchapi.api.products import (
     ProductViewSet,
-    ProductDetailView
+    ProductDetailView,
+    SaveViewSet
 )
 from .gdaypunchapi.api.stripe import (
     PriceView,
@@ -76,6 +77,7 @@ router.register(r'prompts-random',
                 PromptRandomStylePanelViewSet, basename="prompts")
 router.register(r'products', ProductViewSet, basename="products")
 router.register(r'product', ProductDetailView, basename="product")
+router.register(r'product-save', SaveViewSet, basename="product-save")
 router.register(r'contact', ContactViewSet, basename="contact")
 router.register(r'customer', CustomerViewSet, basename="customer")
 router.register(r'coupons', CouponViewSet, basename="customer")

@@ -6,7 +6,7 @@ from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
     StripeCustomer, Product, Privileges, StripePrice,
     Contact, Customer, ResetPasswordSession, Order,
-    Coupon, OrderStatusUpdate
+    Coupon, OrderStatusUpdate, Save
 )
 
 
@@ -87,7 +87,13 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ("id", "title", "description", "image", "product_type", "active_price",
                   "sale_price", "visible", "stock", "stripe_prices", "manga_details", "sku",
-                  "manga", "user", "user_string", "purchased", "subscription_interval")
+                  "manga", "user", "user_string", "purchased", "subscription_interval", "saved")
+
+
+class SaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Save
+        fields = ("product", "user")
 
 
 class OrderSerializer(serializers.ModelSerializer):

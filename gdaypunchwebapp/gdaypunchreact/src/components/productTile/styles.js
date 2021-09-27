@@ -104,6 +104,19 @@ export const PriceLikeCommentConainer = styled.div`
 
 export const LikeCommentConainer = styled.div`
   display: flex;
+  align-items: center;
+
+  .anticon {
+    svg {
+      margin-left: 0.5em;
+    }
+  }
+
+  .saved {
+    svg {
+      color: #e09200;
+    }
+  }
 `;
 
 export const NumberLabel = styled.span`
@@ -113,11 +126,7 @@ export const NumberLabel = styled.span`
 
 export const LowStock = styled.div``;
 
-export const InteractionContainer = styled.a`
-  svg {
-    margin-left: 6pt;
-  }
-`;
+export const InteractionContainer = styled.a``;
 
 export const ActionButton = styled.button`
   font-size: 0.9em;

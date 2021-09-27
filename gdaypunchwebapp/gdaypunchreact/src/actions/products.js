@@ -4,6 +4,9 @@ export const FINISHED_FETCHING_VIEWING_PRODUCT =
   "products/FINISHED_FETCHING_VIEWING_PRODUCT";
 export const SET_VIEWING_PRODUCT = "products/SET_VIEWING_PRODUCT";
 
+export const SAVE_PRODUCT = "products/SAVE_PRODUCT";
+export const UNSAVE_PRODUCT = "products/UNSAVE_PRODUCT";
+
 export const fetchViewingProduct = (productId) => ({
   type: FETCH_VIEWING_PRODUCT,
   payload: {
@@ -24,4 +27,18 @@ export const fetchingViewingProduct = () => ({
 
 export const finishedFetchingViewingProduct = () => ({
   type: FINISHED_FETCHING_VIEWING_PRODUCT,
+});
+
+export const saveProduct = (productId) => ({
+  type: SAVE_PRODUCT,
+  payload: {
+    productId,
+  },
+});
+
+export const unsaveProduct = (saveId) => ({
+  type: UNSAVE_PRODUCT,
+  payload: {
+    saveId,
+  },
 });
