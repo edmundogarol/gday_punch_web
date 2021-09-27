@@ -265,7 +265,7 @@ function Ui(props) {
 
                         <Tooltip
                           title={
-                            product.saved ? "Favourited" : "Add to Favourites"
+                            product.saved ? "Favourited" : "Not in Favourites"
                           }
                         >
                           <BookOutlined
@@ -280,7 +280,7 @@ function Ui(props) {
               </TitleInteractionButtonsContainer>
               <PriceSkuContainer>
                 {purchasedDigital ? (
-                  <h4 className="purchased">Purchased {priceRenderer()}</h4>
+                  <span className="purchased">Purchased {priceRenderer()}</span>
                 ) : (
                   priceRenderer()
                 )}
