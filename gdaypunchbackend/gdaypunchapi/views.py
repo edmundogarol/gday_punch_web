@@ -246,7 +246,12 @@ class LikeViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         user = User.objects.get(email=self.request.user)
-        manga = Manga.objects.get(id=request.data['manga'])
+        manga_id = request.data.get('manga', None)
+
+        if manga_id is None:
+            return Response({'error': 'No manga.'}, status=status.HTTP_204_NO_CONTENT)
+
+        manga = Manga.objects.get(id=manga_id)
 
         like = Like.objects.create(
             manga=manga,
