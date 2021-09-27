@@ -60,6 +60,7 @@ function Ui(props) {
   const perma_link = product.title.toLowerCase().split(" ").join("-");
   const buyableProduct = active_price && active_price > 0;
   const digitalProduct = product_type !== "physical";
+  const purchasedDigital = purchased && digitalProduct;
 
   const handleAddToCart = () => {
     updateCartItemQuantity(id, 1, true);
@@ -85,32 +86,43 @@ function Ui(props) {
 
   const renderActionButton = () => {
     if (product_type.includes("_subscription") && purchased) {
-      return <ActionButton disabled>Already Subscribed</ActionButton>;
+      return (
+        <Badge color="#87d068">
+          <ActionButton disabled>Already Subscribed</ActionButton>
+        </Badge>
+      );
     }
 
-    if (buyableProduct) {
-      if (digitalProduct) {
+    if (!buyableProduct || purchasedDigital) {
+      if (purchasedDigital) {
         return (
-          <ActionButton
-            disabled={quantity}
-            onClick={() =>
-              !quantity || quantity < 1 ? handleAddToCart() : null
-            }
-          >
-            {quantity ? "ALREADY IN CART" : "Add to Cart"}
-          </ActionButton>
-        );
-      } else {
-        return (
-          <ActionButton onClick={() => handleAddToCart()}>
-            Add to Cart
-          </ActionButton>
+          <Badge color="#87d068">
+            <ActionButton onClick={() => handleViewProduct()}>
+              Read Now
+            </ActionButton>
+          </Badge>
         );
       }
-    } else {
       return (
         <ActionButton onClick={() => handleViewProduct()}>
           Read Now
+        </ActionButton>
+      );
+    }
+
+    if (digitalProduct) {
+      return (
+        <ActionButton
+          disabled={quantity}
+          onClick={() => (!quantity || quantity < 1 ? handleAddToCart() : null)}
+        >
+          {quantity ? "ALREADY IN CART" : "Add to Cart"}
+        </ActionButton>
+      );
+    } else {
+      return (
+        <ActionButton onClick={() => handleAddToCart()}>
+          Add to Cart
         </ActionButton>
       );
     }
@@ -142,20 +154,24 @@ function Ui(props) {
         <ProductAuthor>{author || creator}</ProductAuthor>
         <PriceLikeCommentConainer>
           {buyableProduct ? (
-            <p>
-              {`A$${active_price}`}
-              <span className="interval">
-                {product.product_type.includes("subscription")
-                  ? product_type === "mag_subscription"
-                    ? "/ per release"
-                    : `/ ${
-                        product.subscription_interval < 2
-                          ? "per month"
-                          : `every ${product.subscription_interval} months`
-                      }`
-                  : null}
-              </span>
-            </p>
+            purchasedDigital ? (
+              <p>Purchased</p>
+            ) : (
+              <p>
+                {`A$${active_price}`}
+                <span className="interval">
+                  {product.product_type.includes("subscription")
+                    ? product_type === "mag_subscription"
+                      ? "/ per release"
+                      : `/ ${
+                          product.subscription_interval < 2
+                            ? "per month"
+                            : `every ${product.subscription_interval} months`
+                        }`
+                    : null}
+                </span>
+              </p>
+            )
           ) : (
             <p>{`FREE`}</p>
           )}

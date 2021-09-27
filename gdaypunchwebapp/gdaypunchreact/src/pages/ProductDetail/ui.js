@@ -76,6 +76,7 @@ function Ui(props) {
   const freeProduct = product && product.active_price === 0;
   const digitalProduct = product && product.product_type !== "physical";
   const qtyRange = digitalProduct && quantity ? 1 : 10;
+  const purchasedDigital = product && product.purchased && digitalProduct;
 
   useEffect(() => {
     if (product) {
@@ -157,30 +158,28 @@ function Ui(props) {
       return <ActionButton disabled>Already Subscribed</ActionButton>;
     }
 
-    if (!freeProduct) {
-      if (digitalProduct) {
-        return (
-          <ActionButton
-            disabled={product.quantity}
-            onClick={() =>
-              !product.quantity || product.quantity < 1
-                ? handleAddToCart()
-                : null
-            }
-          >
-            {product.quantity ? "ALREADY IN CART" : "Add to Cart"}
-          </ActionButton>
-        );
-      } else {
-        return (
-          <ActionButton onClick={() => handleAddToCart()}>
-            Add to Cart
-          </ActionButton>
-        );
-      }
-    } else {
+    if (freeProduct || purchasedDigital) {
       return (
         <ActionButton onClick={() => handleReadManga()}>Read</ActionButton>
+      );
+    }
+
+    if (digitalProduct) {
+      return (
+        <ActionButton
+          disabled={product.quantity}
+          onClick={() =>
+            !product.quantity || product.quantity < 1 ? handleAddToCart() : null
+          }
+        >
+          {product.quantity ? "ALREADY IN CART" : "Add to Cart"}
+        </ActionButton>
+      );
+    } else {
+      return (
+        <ActionButton onClick={() => handleAddToCart()}>
+          Add to Cart
+        </ActionButton>
       );
     }
   };
@@ -245,24 +244,24 @@ function Ui(props) {
                   )}
               </TitleInteractionButtonsContainer>
               <PriceSkuContainer>
-                {freeProduct ? null : (
-                  <h4>
-                    {freeProduct
-                      ? "Free"
-                      : `A$${product.active_price.toFixed(2)}`}
-                    <span className="interval">
-                      {product.product_type.includes("subscription")
-                        ? product.product_type === "mag_subscription"
-                          ? "/ per release"
-                          : `/ ${
-                              product.subscription_interval < 2
-                                ? "per month"
-                                : `every ${product.subscription_interval} months`
-                            }`
-                        : null}
-                    </span>
-                  </h4>
-                )}
+                <h4 className={purchasedDigital ? "purchased" : ""}>
+                  {freeProduct
+                    ? "Free"
+                    : purchasedDigital
+                    ? "Purchased"
+                    : `A$${product.active_price.toFixed(2)}`}
+                  <span className="interval">
+                    {product.product_type.includes("subscription")
+                      ? product.product_type === "mag_subscription"
+                        ? "/ per release"
+                        : `/ ${
+                            product.subscription_interval < 2
+                              ? "per month"
+                              : `every ${product.subscription_interval} months`
+                          }`
+                      : null}
+                  </span>
+                </h4>
                 {product.sku && (
                   <SkuContainer>
                     <label>SKU:</label>
@@ -315,7 +314,7 @@ function Ui(props) {
                 </MoreDetailsContainer>
               )}
               <QuantityAddCartContainer>
-                {freeProduct ? null : (
+                {freeProduct || purchasedDigital ? null : (
                   <>
                     <label>Quantity</label>
                     <Select
