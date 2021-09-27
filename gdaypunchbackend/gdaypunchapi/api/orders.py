@@ -99,7 +99,7 @@ class OrderConfirmationViewSet(viewsets.ModelViewSet):
 
 def send_email_receipt(customer, order, items):
     email_template_name = "emails/receipt.html"
-    all_digital = order.address_line_1 == None
+    all_digital = len(order.address_line_1) < 1
 
     email_config = {
         "customer": customer,
@@ -137,7 +137,7 @@ def send_email_update(customer, order, order_status, items, notes, update_date, 
     subtitle = None
     refunding = False
     refund_amount = order.amount if not partial_refund else partial_refund
-    all_digital = order.address_line_1 == None
+    all_digital = len(order.address_line_1) < 1
 
     if order_status is SHIPPED:
         subject = "Your items have been shipped!"

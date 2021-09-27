@@ -107,7 +107,9 @@ def get_gp_customer(email, customer_payload, subscribe_type):
             existing_customer.user = user
             existing_customer.save()
 
-        if (existing_customer.postcode != customer_payload['postcode']
+        if len(customer_payload['address_line_1']) < 1:
+            pass
+        elif (existing_customer.postcode != customer_payload['postcode']
                 or existing_customer.address_line_1 != customer_payload['address_line_1']
                 or existing_customer.first_name != customer_payload['first_name']):
             existing_customer.subscribed = subscribe_type

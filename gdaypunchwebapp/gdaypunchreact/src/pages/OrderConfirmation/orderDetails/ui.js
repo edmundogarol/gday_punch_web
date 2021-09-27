@@ -250,7 +250,7 @@ function Ui(props) {
           <AddressContactField>
             <h4>Contact Information</h4>
             <div>
-              <p>{`Phone: ${order.phone_number}`}</p>
+              <p>{`Contact: ${order.first_name} ${order.last_name}`}</p>
               <p>{`Email: ${order.email}`}</p>
             </div>
           </AddressContactField>
