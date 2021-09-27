@@ -76,6 +76,17 @@
         <tr>
           {% if all_digital %}
           <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
+            <h4>Contact Information</h4>
+            <span></span>
+            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
+              {{ order.first_name }} {{ order.last_name }}
+            </p>
+            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
+              E: {{ order.email }}
+            </p>
+          </td>
+          {% else %}
+          <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
             <h4>Shipping Information</h4>
             <span></span>
             <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
@@ -92,17 +103,6 @@
             </p>
             <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
               M: {{ order.phone_number }}
-            </p>
-          </td>
-          {% else %}
-          <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
-            <h4>Contact Information</h4>
-            <span></span>
-            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
-              {{ order.first_name }} {{ order.last_name }}
-            </p>
-            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
-              E: {{ order.email }}
             </p>
           </td>
           {% endif %}
