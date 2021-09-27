@@ -390,6 +390,9 @@ class MangaCommentsViewSet(ModelViewSet):
         """
         Retrieve all comments for Manga [id]
         """
+        if pk == 'null' or pk == 'NaN':
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         queryset = Comment.objects.all()
         mangaComments = get_list_or_404(queryset, manga=pk)
         serializer = CommentSerializer(mangaComments, many=True)
@@ -415,6 +418,10 @@ class MangaDetailView(UpdateModelMixin, ViewSet):
 
     def retrieve(self, request, pk=None):
         queryset = Manga.objects.all()
+
+        if pk == 'null' or pk == 'NaN':
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
         manga = get_object_or_404(queryset, pk=pk)
         serializer = MangaSerializer(manga)
         return Response(serializer.data)
