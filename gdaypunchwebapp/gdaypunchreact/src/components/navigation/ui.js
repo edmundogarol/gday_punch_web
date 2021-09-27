@@ -132,6 +132,16 @@ function Ui(props) {
               {"Account"}
             </HeaderLink>
           )}
+          {loggedIn && (
+            <HeaderLink
+              to="/bookshelf"
+              $adminLink
+              $current={location === "/bookshelf"}
+              onClick={() => toggleMiniNav(false)}
+            >
+              {"Bookshelf"}
+            </HeaderLink>
+          )}
           {loginCheckFinished && user.is_staff && (
             <HeaderLink
               to="/admin"
@@ -174,6 +184,11 @@ function Ui(props) {
           {loggedIn && (
             <HeaderLink to="/account" $current={location === "/account"}>
               {"Account"}
+            </HeaderLink>
+          )}
+          {loggedIn && (
+            <HeaderLink to="/bookshelf" $current={location === "/bookshelf"}>
+              {"Bookshelf"}
             </HeaderLink>
           )}
           {loginCheckFinished && user.is_staff && (

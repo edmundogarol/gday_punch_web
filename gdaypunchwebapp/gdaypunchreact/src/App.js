@@ -35,6 +35,7 @@ import Shop from "pages/Shop";
 import About from "pages/About";
 import Contact from "pages/Contact";
 import Account from "pages/Account";
+import Bookshelf from "pages/Bookshelf";
 import ResetPassword from "pages/ResetPassword";
 import ResetPasswordNewPassword from "pages/ResetPassword/newPassword";
 import VerifyEmail from "pages/VerifyEmail";
@@ -199,6 +200,12 @@ function Root(props) {
               exact
               path="/account/:tab"
               component={Account}
+            />
+            <ProtectedRoute
+              condition={user.logged_in}
+              exact
+              path="/bookshelf"
+              component={Bookshelf}
             />
             <ProtectedRoute
               condition={user.logged_in && user.verified === "verified"}
