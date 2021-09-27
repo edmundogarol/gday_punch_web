@@ -404,12 +404,34 @@ class Product(models.Model):
         except Save.DoesNotExist:
             return False
 
+    @property
+    def saved_date(self):
+        if str(get_current_user()) == "AnonymousUser":
+            return None
+
+        if self.product_type != "digital":
+            return None
+
+        try:
+            user = User.objects.get(email=get_current_user())
+            save = Save.objects.filter(user=user.id).filter(product=self.id)
+
+            if save.first() is not None:
+                return save.first().saved_date
+            else:
+                return None
+
+        except Save.DoesNotExist:
+            return None
+
 
 class Save(models.Model):
     product = models.ForeignKey(
         Product,  on_delete=models.PROTECT, blank=False, null=False)
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=False, null=False)
+    saved_date = models.DateTimeField(
+        null=True, blank=True, default=timezone.now)
 
 
 class Customer(models.Model):

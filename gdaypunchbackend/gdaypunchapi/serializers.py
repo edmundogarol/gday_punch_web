@@ -85,9 +85,9 @@ class StripeCustomerSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ("id", "title", "description", "image", "product_type", "active_price",
-                  "sale_price", "visible", "stock", "stripe_prices", "manga_details", "sku",
-                  "manga", "user", "user_string", "purchased", "subscription_interval", "saved")
+        fields = ("id", "title", "description", "image", "product_type", "active_price", "sale_price",
+                  "visible", "stock", "stripe_prices", "manga_details", "sku", "manga", "user", "user_string",
+                  "purchased", "subscription_interval", "saved", "saved_date")
 
 
 class SaveSerializer(serializers.ModelSerializer):

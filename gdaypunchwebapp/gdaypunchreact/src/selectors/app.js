@@ -107,7 +107,7 @@ export const selectSavedProducts = createSelector(
   selectDomain,
   ({ products: { productList } }) => {
     const list = Object.values(productList).filter((product) => product.saved);
-    return orderBy(list, "id", "desc");
+    return orderBy(list, "saved_date", "desc");
   }
 );
 
