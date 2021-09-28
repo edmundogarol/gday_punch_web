@@ -159,22 +159,22 @@ function Ui(props) {
           </HeaderLink>
           {loggedIn && (
             <HeaderLink
-              to="/account"
-              $adminLink
-              $current={location === "/account"}
-              onClick={() => toggleMiniNav(false)}
-            >
-              {"Account"}
-            </HeaderLink>
-          )}
-          {loggedIn && (
-            <HeaderLink
               to="/bookshelf"
               $adminLink
               $current={location === "/bookshelf"}
               onClick={() => toggleMiniNav(false)}
             >
               {"Bookshelf"}
+            </HeaderLink>
+          )}
+          {loggedIn && (
+            <HeaderLink
+              to="/account"
+              $adminLink
+              $current={location === "/account"}
+              onClick={() => toggleMiniNav(false)}
+            >
+              {"Account"}
             </HeaderLink>
           )}
           {loginCheckFinished && user.is_staff && (
@@ -217,13 +217,13 @@ function Ui(props) {
             {user.username && user.username.length ? user.username : user.email}
           </UserProfile> */}
           {loggedIn && (
-            <HeaderLink to="/account" $current={location === "/account"}>
-              {"Account"}
+            <HeaderLink to="/bookshelf" $current={location === "/bookshelf"}>
+              {"Bookshelf"}
             </HeaderLink>
           )}
           {loggedIn && (
-            <HeaderLink to="/bookshelf" $current={location === "/bookshelf"}>
-              {"Bookshelf"}
+            <HeaderLink to="/account" $current={location === "/account"}>
+              {"Account"}
             </HeaderLink>
           )}
           {loginCheckFinished && user.is_staff && (

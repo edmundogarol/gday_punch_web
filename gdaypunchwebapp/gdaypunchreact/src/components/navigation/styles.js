@@ -274,7 +274,7 @@ export const HeaderParent = styled.span`
           left: 0;
           right: 0;
           text-align: center;
-          transform: translate(-5em, 0.4em);
+          transform: translate(-4em, 0.4em);
         }
 
         .second-child {
@@ -287,7 +287,7 @@ export const HeaderParent = styled.span`
           left: 0;
           right: 0;
           text-align: center;
-          transform: translate(4em, 0.4em);
+          transform: translate(5em, 0.4em);
         }
 
         height: 7em;
@@ -300,7 +300,7 @@ export const HeaderParent = styled.span`
             margin-right: unset;
             left: unset;
             right: unset;
-            transform: translate(4em,2.4em);
+            transform: translate(4.5em,2.4em);
           }
 
           .first-child {
@@ -308,7 +308,7 @@ export const HeaderParent = styled.span`
             margin-right: unset;
             left: unset;
             right: unset;
-            transform: translate(-5em,2.4em);
+            transform: translate(-5.5em,2.4em);
           }
         }
       `

@@ -29,13 +29,14 @@ import { doCheckLogin } from "actions/user";
 import { selectUser, selectLoginCheckFinished } from "selectors/app";
 
 import Home from "pages/Home";
-import DailyPrompt from "pages/DailyPrompt";
 import Admin from "pages/Admin";
 import Shop from "pages/Shop";
 import About from "pages/About";
 import Contact from "pages/Contact";
 import Account from "pages/Account";
 import Bookshelf from "pages/Bookshelf";
+import DailyPrompt from "pages/DailyPrompt";
+import Downloads from "pages/ResourceDownloads";
 import ResetPassword from "pages/ResetPassword";
 import ResetPasswordNewPassword from "pages/ResetPassword/newPassword";
 import VerifyEmail from "pages/VerifyEmail";
@@ -150,6 +151,7 @@ function Root(props) {
             />
             <RoutePage exact path="/about" component={About} />
             <RoutePage exact path="/daily-prompt" component={DailyPrompt} />
+            <RoutePage exact path="/downloads" component={Downloads} />
             <RoutePage exact path="/cart" component={Cart} />
             <RoutePage exact path="/checkout" component={Checkout} />
             <RoutePage

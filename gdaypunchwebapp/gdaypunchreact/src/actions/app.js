@@ -28,10 +28,11 @@ export const updateProducts = (products, adding) => ({
   },
 });
 
-export const submitContactForm = (form) => ({
+export const submitContactForm = (form, subscriptionType) => ({
   type: SUBMIT_CONTACT_FORM,
   payload: {
     form,
+    subscriptionType,
   },
 });
 
