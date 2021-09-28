@@ -107,11 +107,20 @@ def get_gp_customer(email, customer_payload, subscribe_type):
             existing_customer.user = user
             existing_customer.save()
 
+        # If digital purchase (Email, name + no address)
         if len(customer_payload['address_line_1']) < 1:
-            pass
-        elif (existing_customer.postcode != customer_payload['postcode']
-                or existing_customer.address_line_1 != customer_payload['address_line_1']
-                or existing_customer.first_name != customer_payload['first_name']):
+            if existing_customer.first_name != customer_payload['first_name']:
+                existing_customer.first_name = customer_payload['first_name']
+                existing_customer.last_name = customer_payload['last_name']
+                existing_customer.subscribed = subscribe_type
+                existing_customer.save()
+            else:
+                existing_customer.subscribed = subscribe_type
+                existing_customer.save()
+                pass
+        # If order details different from current customer details
+        elif (existing_customer.postcode != customer_payload['postcode']) or \
+                (existing_customer.address_line_1 != customer_payload['address_line_1']):
             existing_customer.subscribed = subscribe_type
             existing_customer.first_name = customer_payload['first_name']
             existing_customer.last_name = customer_payload['last_name']

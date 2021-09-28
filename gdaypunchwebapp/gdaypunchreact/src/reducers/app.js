@@ -55,6 +55,7 @@ import { customerReducer } from "./customer";
 import { paymentReducer } from "./payment";
 import { ordersReducer } from "./orders";
 import { accountReducer } from "./account";
+import { resourcesReducer } from "./resources";
 
 const INITIAL_STATE = {
   user: {
@@ -513,4 +514,5 @@ export default combineReducers({
   payment: paymentReducer,
   orders: ordersReducer,
   account: accountReducer,
+  resources: resourcesReducer,
 });

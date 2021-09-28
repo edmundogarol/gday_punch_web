@@ -435,21 +435,10 @@ class Save(models.Model):
 
 
 class Customer(models.Model):
-    SUBSCRIBED_ONLY = 'subscribed_only'
-    PURCHASED_SUBSCRIBED = 'purchased_subscribed'
-    CHECKOUT_SUBSCRIBED = 'checkout_subscribed'
-    NOT_SUBSCRIBED = 'not_subscribed'
-    SUBSCRIPTION_TYPE = (
-        (SUBSCRIBED_ONLY, 'Subscribed Only'),
-        (PURCHASED_SUBSCRIBED, 'Purchased and Subscribed'),
-        (CHECKOUT_SUBSCRIBED, 'Subscribed at Checkout'),
-        (NOT_SUBSCRIBED, 'Not Subscribed'),
-    )
-
     user = models.ForeignKey(
         User,  on_delete=models.PROTECT, blank=True, null=True)
     subscribed = models.TextField(
-        max_length=30, choices=SUBSCRIPTION_TYPE, default=PURCHASED_SUBSCRIBED)
+        max_length=30, choices=SUBSCRIPTION_EVENT_TYPE, default=PURCHASED_SUBSCRIBED)
     mag_subscribed = models.BooleanField(default=False)
     dig_subscribed = models.BooleanField(default=False)
     date_created = models.DateTimeField(

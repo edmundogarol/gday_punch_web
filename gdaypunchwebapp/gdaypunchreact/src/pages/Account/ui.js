@@ -327,6 +327,29 @@ function Ui(props) {
                   </p>
                 </DetailField>
               </Card>
+              <Card
+                className="non-first-tab"
+                type="inner"
+                title="Email Preferences"
+                extra={
+                  <Tooltip placement="top" title={"Edit not available yet"}>
+                    <a href="#" className="disabled">
+                      Edit
+                    </a>
+                  </Tooltip>
+                }
+              >
+                {user.subscribed ? (
+                  <DetailField>
+                    <label>Subscribed</label>
+                    <p>Gday Punch promotions and latest manga news</p>
+                  </DetailField>
+                ) : (
+                  <DetailField>
+                    <p className="unset">Not Subscribed</p>
+                  </DetailField>
+                )}
+              </Card>
             </Card>
           </TabPane>
           <TabPane tab="Orders" key="orders">

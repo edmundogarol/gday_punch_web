@@ -18,31 +18,40 @@ import { getGdayPunchStaticUrl } from "utils/utils";
 import { ErrorField } from "src/components/errorField";
 
 function Ui(props) {
-  const { submitContactForm, contactFormSubmitted, contactState } = props;
-  const { errors: contactErrors, submitted } = contactState;
+  const {
+    user,
+    downloadManuscriptRequest,
+    resetDownloadManuscriptRequest,
+    downloadManuscriptState,
+  } = props;
+  const { errors, requesting, finished } = downloadManuscriptState;
   const [manuscriptEmail, updateManuscriptEmail] = useState(undefined);
 
   useEffect(() => {
-    if (submitted) {
+    return () => {
+      resetDownloadManuscriptRequest();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (finished && !errors) {
       updateManuscriptEmail(undefined);
     }
-
-    return () => {
-      if (submitted) contactFormSubmitted(false);
-    };
-  }, [submitted]);
+  }, [finished, errors]);
 
   const handleSubmitForm = () => {
-    submitContactForm(manuscriptEmail);
+    downloadManuscriptRequest(user.logged_in ? user.email : manuscriptEmail);
   };
 
   return (
     <App id="top" className="App">
       <FeaturedSection top>
         <SectionTitle>Downloads</SectionTitle>
-        {submitted && (
+        {finished && !errors && (
           <SuccessLabel>
-            Thank you for subscribing! Enjoy our free resources.
+            {user.subscribed
+              ? "Download link has been sent to your email."
+              : "Thank you for subscribing! Enjoy our free resources."}
           </SuccessLabel>
         )}
         <DownloadItemContainer>
@@ -57,33 +66,44 @@ function Ui(props) {
               </span>
             </h2>
 
-            <div>
-              <div>
-                <h2>
-                  <span style={{ fontSize: "small" }}>
-                    [We will not send you spam! Only specials and manga related
-                    awesomeness]
-                  </span>
-                </h2>
-              </div>
-            </div>
-            <h4>
-              Email<RequiredField>*</RequiredField>
-            </h4>
-            <Input
-              placeholder={"Email"}
-              value={manuscriptEmail}
-              onChange={(e) => updateManuscriptEmail(e.target.value)}
-            />
-            {contactErrors.email && (
+            {user.subscribed ? null : (
+              <>
+                <div>
+                  <div>
+                    <h2>
+                      <span style={{ fontSize: "small" }}>
+                        [We will not send you spam! Only specials and manga
+                        related awesomeness]
+                      </span>
+                    </h2>
+                  </div>
+                </div>
+                {user.logged_in ? null : (
+                  <>
+                    <h4>
+                      Email<RequiredField>*</RequiredField>
+                    </h4>
+                    <Input
+                      name="email"
+                      placeholder={"Email"}
+                      value={manuscriptEmail}
+                      onChange={(e) => updateManuscriptEmail(e.target.value)}
+                    />
+                  </>
+                )}
+              </>
+            )}
+            {errors && (
               <ErrorField>
                 <div>
-                  <label>Missing Email field</label>
+                  <label>{errors}</label>
                 </div>
               </ErrorField>
             )}
             <SubscribeButton onClick={() => handleSubmitForm()}>
-              <SubscribeText>Subscribe and Download</SubscribeText>
+              <SubscribeText>
+                {user.subscribed ? "Download" : "Subscribe and Download"}
+              </SubscribeText>
             </SubscribeButton>
           </SubscribeContainer>
           <Image src={getGdayPunchStaticUrl("a4-manuscript-preview.jpg")} />

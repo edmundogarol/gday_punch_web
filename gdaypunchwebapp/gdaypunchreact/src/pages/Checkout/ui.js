@@ -270,8 +270,6 @@ function Ui(props) {
     checkoutForm.locale,
   ]);
 
-  console.log({ checkoutForm });
-
   useEffect(() => {
     fetchLocale(checkoutForm);
     fetchLocale(billingForm);

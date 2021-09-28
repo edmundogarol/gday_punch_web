@@ -21,6 +21,7 @@ import customerSaga from "./sagas/customer";
 import checkoutSaga from "./sagas/checkout";
 import orderSaga from "./sagas/orders";
 import accountSaga from "./sagas/account";
+import resourcesSaga from "./sagas/resources";
 
 import appReducer from "reducers/app";
 
@@ -69,6 +70,7 @@ function* rootSaga() {
     checkoutSaga(),
     orderSaga(),
     accountSaga(),
+    resourcesSaga(),
   ]);
 }
 

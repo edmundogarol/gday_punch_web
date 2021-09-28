@@ -49,6 +49,21 @@ ORDER_STATUSES = (
     (PARTIALLY_REFUNDED, 'Partially Refunded'),
 )
 
+# Subscribe Event Types
+SUBSCRIBED_ONLY = 'subscribed_only'
+DOWNLOAD_SUBSCRIBED = 'download_subscribed'
+PURCHASED_SUBSCRIBED = 'purchased_subscribed'
+CHECKOUT_SUBSCRIBED = 'checkout_subscribed'
+NOT_SUBSCRIBED = 'not_subscribed'
+
+SUBSCRIPTION_EVENT_TYPE = (
+    (SUBSCRIBED_ONLY, 'Subscribed Only'),
+    (DOWNLOAD_SUBSCRIBED, 'Downloaded Resource and Subscribed'),
+    (PURCHASED_SUBSCRIBED, 'Purchased and Subscribed'),
+    (CHECKOUT_SUBSCRIBED, 'Subscribed at Checkout'),
+    (NOT_SUBSCRIBED, 'Not Subscribed'),
+)
+
 # Fulfillment Type
 SHIPPING = 'shipping'
 ACCESS = 'access'

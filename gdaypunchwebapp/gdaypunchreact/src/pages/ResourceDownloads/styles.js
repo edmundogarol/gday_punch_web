@@ -5,6 +5,10 @@ import { ErrorField } from "components/errorField";
 
 export const App = styled.div`
   min-height: 84vh;
+
+  ${ErrorField} {
+    font-size: 0.9em;
+  }
 `;
 
 export const RequiredField = styled.span`
@@ -52,6 +56,8 @@ export const DownloadItemContainer = styled.div`
   margin-right: 2em;
   margin-left: 2em;
   justify-content: center;
+  margin-top: 1em;
+  margin-bottom: 2em;
 
   input {
     margin-bottom: 1em;

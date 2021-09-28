@@ -62,6 +62,9 @@ from .gdaypunchapi.api.orders import (
     OrderDetailViewSet,
     OrderConfirmationViewSet
 )
+from .gdaypunchapi.api.marketing import (
+    DownloadManuscript
+)
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet, basename='user')
@@ -103,6 +106,9 @@ urlpatterns = [
 
     # API
     path('api/', include(router.urls)),
+
+    # Marketing Emails
+    url(r'api/manga-manuscript/', DownloadManuscript.as_view()),
 
     # Coupons
     url(r'api/coupon/apply/',
