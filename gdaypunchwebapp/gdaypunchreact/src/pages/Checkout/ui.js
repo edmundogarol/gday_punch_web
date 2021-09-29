@@ -25,11 +25,7 @@ import {
   PaymentMethodLogo,
   EmptyCartMessage,
 } from "./styles";
-import {
-  getResourceImageModule,
-  getImageModule,
-  phoneValidator,
-} from "utils/utils";
+import { getResourceImage, phoneValidator } from "utils/utils";
 
 function Ui(props) {
   const {
@@ -554,7 +550,7 @@ function Ui(props) {
               <CheckoutContainer>
                 <LeftCheckoutContainer id="left-checkout-container">
                   <CheckoutInnerSectionContainer
-                    selectImage={getImageModule("down-arrow.png")}
+                    selectImage={getResourceImage("down-arrow.png")}
                   >
                     <CheckoutInnerSectionTitle>
                       Customer Details
@@ -601,7 +597,7 @@ function Ui(props) {
                     </CheckoutInnerSectionContainer>
                   )}
                   <CheckoutInnerSectionContainer
-                    selectImage={getImageModule("down-arrow.png")}
+                    selectImage={getResourceImage("down-arrow.png")}
                   >
                     <CheckoutInnerSectionTitle>
                       Billing Address
@@ -637,10 +633,10 @@ function Ui(props) {
                       Payment
                       <span className="no-hover">
                         <PaymentMethodLogo
-                          src={getResourceImageModule("visa-logo.png")}
+                          src={getResourceImage("visa-logo.png")}
                         />
                         <PaymentMethodLogo
-                          src={getResourceImageModule("master-card-logo.png")}
+                          src={getResourceImage("master-card-logo.png")}
                         />
                       </span>
                     </CheckoutInnerSectionTitle>

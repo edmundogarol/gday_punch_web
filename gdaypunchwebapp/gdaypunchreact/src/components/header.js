@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { getImageModule } from "utils/utils";
+import { getResourceImage } from "utils/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faPenNib, faBook } from "@fortawesome/free-solid-svg-icons";
 
@@ -11,12 +11,12 @@ export default function Header(props) {
     <div className={`header ${props.loginView ? "exit" : ""}`}>
       <a className="home-logo" href="https://www.gdaypunch.com">
         <img
-          src={getImageModule("gday_big.png")}
+          src={getResourceImage("gday_big.png")}
           className="App-logo-big"
           alt="Gday Punch Logo Big"
         />
         <img
-          src={getImageModule("gday.png")}
+          src={getResourceImage("gday.png")}
           className="App-logo"
           alt="Gday Punch Logo"
         />

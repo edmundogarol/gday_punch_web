@@ -36,7 +36,6 @@ import {
 } from "actions/app";
 import {
   FETCH_CART_ITEMS,
-  updateCartItems,
   fetchingCartItems,
   finishedFetchingCartItems,
 } from "actions/cart";
@@ -302,7 +301,6 @@ export function* fetchCartItemsCall() {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateCartItems(data));
     yield put(finishedFetchingCartItems());
   } else {
     yield put(finishedFetchingCartItems());

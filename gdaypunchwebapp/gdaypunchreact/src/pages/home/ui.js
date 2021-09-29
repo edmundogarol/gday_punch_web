@@ -44,7 +44,7 @@ function Ui(props) {
       </div>
       {!isEmpty(buyableProducts) && (
         <FeaturedSection>
-          <SectionTitle>Products</SectionTitle>
+          <SectionTitle>Shop</SectionTitle>
           <FeaturedList>
             {buyableProducts.map((product) => {
               return product ? (

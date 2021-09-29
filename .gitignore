@@ -136,6 +136,9 @@ node_modules
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 
+# Local assets
+gdaypunchwebapp/gdaypunchreact/public/static/assets
+
 # Build static files
 gdaypunchbackend/public
 gdaypunchbackend/build

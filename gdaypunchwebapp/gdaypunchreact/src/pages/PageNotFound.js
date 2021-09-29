@@ -1,5 +1,5 @@
 import React from "react";
-import { getImageModule } from "utils/utils";
+import { getResourceImage } from "utils/utils";
 
 export default function PageNotFound() {
   return (
@@ -7,7 +7,7 @@ export default function PageNotFound() {
       <div className="App-header-container app-temp-background page-not-found">
         <a className="home-logo" href="https://www.gdaypunch.com">
           <img
-            src={getImageModule("gday.png")}
+            src={getResourceImage("gday.png")}
             className="App-logo"
             alt="Gday Punch Logo"
           />

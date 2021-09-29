@@ -224,7 +224,10 @@ else:
     STATIC_ROOT = "opt/app/gdaypunchbackend/public/static/"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/"),
+    os.path.join(
+        BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/resources"),
+    os.path.join(
+        BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/assets"),
     os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
     os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
 ]

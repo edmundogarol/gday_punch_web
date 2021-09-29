@@ -1,23 +1,21 @@
 import { set } from "lodash";
+
 /**
  * Retrieves an img Module with default data image base64
  *
  * @param {string} name of img to retrieve
  */
-export function getImageModule(url) {
-  return require(`../../public/static/images/${url}`).default;
+export function getResourceImage(resource) {
+  return require(`../../public/static/resources/${resource}`).default;
 }
 
-export function getResourceImageModule(url) {
-  return require(`../../public/static/resources/${url}`).default;
-}
+export function getGdayPunchStaticUrl(asset) {
+  let staticURL =
+    process.env.NODE_ENV === "development"
+      ? "/static"
+      : "https://gdaypunch-static.s3.us-west-2.amazonaws.com";
 
-export function getCoverImage(url) {
-  return require(`../../public/${url}`).default;
-}
-
-export function getGdayPunchStaticUrl(url) {
-  return `https://gdaypunch-static.s3.us-west-2.amazonaws.com/${url}`;
+  return `${staticURL}/${asset}`;
 }
 
 export function arrayIdsMapToObject(list) {

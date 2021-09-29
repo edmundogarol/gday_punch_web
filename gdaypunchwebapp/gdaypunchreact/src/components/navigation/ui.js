@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 
-import { getImageModule, scrollToTop } from "utils/utils";
+import { getResourceImage, scrollToTop } from "utils/utils";
 import {
   NavigationContainer,
   NavSection,
@@ -84,7 +84,7 @@ function Ui(props) {
         <NavLogoContainer>
           <NavLink to="/">
             <NavLogo
-              src={getImageModule("gday_header.png")}
+              src={getResourceImage("gday_header.png")}
               alt="Gday Punch Logo"
             />
           </NavLink>

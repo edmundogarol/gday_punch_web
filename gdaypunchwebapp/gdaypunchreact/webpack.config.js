@@ -1,3 +1,4 @@
+const WriteFilePlugin = require("write-file-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
@@ -70,6 +71,10 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "main.css",
       chunkFilename: "main.css",
+    }),
+    new WriteFilePlugin({
+      // exclude hot-update files
+      test: /^(?!.*(hot)).*/,
     }),
   ],
 };
