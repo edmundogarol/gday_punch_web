@@ -77,26 +77,28 @@ def update_stripe_and_gp_customer(user):
         except StripeCustomer.DoesNotExist:
             print("User email does not have GP_StripeCustomer")
 
-    if gday_stripe_customer is not None:
+    # On email verify, check if User or User.email has associated GP_Customer
+    #
+    #   - Update GP_Customer with new email or new verified user
+    try:
+        gp_customer = Customer.objects.get(
+            user=user)
+
+        gp_customer.email = user.email
+        gp_customer.save()
+
+    except Customer.DoesNotExist:
+        print("No GP_Customer with user, try email")
+
         try:
             gp_customer = Customer.objects.get(
-                user=user)
+                email=user.email)
 
-            gp_customer.email = user.email
+            gp_customer.user = user
             gp_customer.save()
 
         except Customer.DoesNotExist:
-            print("No GP_Customer with user, try email")
-
-            try:
-                gp_customer = Customer.objects.get(
-                    email=user.email)
-
-                gp_customer.user = user
-                gp_customer.save()
-
-            except Customer.DoesNotExist:
-                print("No GP_Customer with user email")
+            print("No GP_Customer with user email")
 
 
 class VerifyAccountViewSet(viewsets.ModelViewSet):

@@ -1,4 +1,16 @@
+import os
+
 from rest_framework.permissions import (BasePermission)
+
+if 'DEVENV' in os.environ:
+    log = True
+else:
+    log = False
+
+
+def devprint(message):
+    if log:
+        print(message)
 
 
 def staff(request):

@@ -184,7 +184,7 @@ def get_customer_details(user_email, customer_payload):
         user = User.objects.get(email=user_email)
 
         gp_customer = get_gp_customer(
-            payment_email, customer_payload, 'purchased_subscribed')
+            payment_email, customer_payload, PURCHASED_SUBSCRIBED)
 
         # Check if user has a GP_StripeCustomer
         #
@@ -258,7 +258,7 @@ def get_customer_details(user_email, customer_payload):
             print("Guest email not associated with user")
 
         gp_customer = get_gp_customer(
-            payment_email, customer_payload, 'purchased_subscribed')
+            payment_email, customer_payload, PURCHASED_SUBSCRIBED)
 
         # Check if email has a GP_StripeCustomer
         #

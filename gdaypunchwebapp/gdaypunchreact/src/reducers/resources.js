@@ -2,7 +2,8 @@ import {
   DOWNLOAD_MANUSCRIPT_REQUESTING,
   DOWNLOAD_MANUSCRIPT_REQUEST_ERRORS,
   DOWNLOAD_MANUSCRIPT_REQUEST_FINISHED,
-} from "src/actions/resources";
+  RESET_DOWNLOAD_MANUSCRIPT_REQUEST,
+} from "actions/resources";
 
 const INITIAL_STATE = {
   downloadManuscript: {
@@ -41,6 +42,11 @@ export const resourcesReducer = (state = INITIAL_STATE, action) => {
           ...state.downloadManuscript,
           errors: payload.errors,
         },
+      };
+    case RESET_DOWNLOAD_MANUSCRIPT_REQUEST:
+      return {
+        ...state,
+        downloadManuscript: INITIAL_STATE.downloadManuscript,
       };
     default:
       return state;

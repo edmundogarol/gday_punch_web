@@ -12,7 +12,7 @@ from django.template.loader import render_to_string
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 
-from ..utils import PostOnly
+from ..utils import PostOnly, devprint
 from ..constants import *
 
 from ..models import User, Customer
@@ -54,6 +54,38 @@ class DownloadManuscript(APIView):
     permission_classes = [PostOnly]
 
     def post(self, request, format=None):
+        loggedIn = str(self.request.user) != "AnonymousUser"
+        user = None
+
+        if loggedIn:
+            user = User.objects.get(email=self.request.user)
+
+            Thread(target=send_manuscript_download_link, args=(email,)).start()
+
+            try:
+                existingCustomer = Customer.objects.get(
+                    email=request.data['email'])
+
+                if existingCustomer.user is None:
+                    existingCustomer.user = user
+                    existingCustomer.save()
+
+                if existingCustomer.subscribed == NOT_SUBSCRIBED:
+                    existingCustomer.subscribed = DOWNLOAD_SUBSCRIBED
+                    existingCustomer.save()
+
+            except Customer.DoesNotExist:
+                customer = Customer.objects.create(
+                    user=user,
+                    email=email,
+                    subscribed=DOWNLOAD_SUBSCRIBED,
+                )
+                customer.save()
+
+            return Response(
+                {'detail': 'We have sent you an email with the download link! Please check your junk folder.'},
+                status=status.HTTP_200_OK
+            )
 
         email = request.data.get("email", None)
 
@@ -70,31 +102,22 @@ class DownloadManuscript(APIView):
 
         Thread(target=send_manuscript_download_link, args=(email,)).start()
 
-        print(self.request.user)
-        loggedIn = str(self.request.user) != "AnonymousUser"
-        user = None
-
-        if loggedIn:
-            print('loggedin')
-            user = User.objects.get(email=self.request.user)
-
         try:
-            print('trying to find existing customer')
             existingCustomer = Customer.objects.get(
                 email=request.data['email'])
 
-            if existingCustomer.subscribed == NOT_SUBSCRIBED:
+            if existingCustomer.subscribed in [NOT_SUBSCRIBED, CHECKOUT_SUBSCRIBED]:
                 existingCustomer.subscribed = DOWNLOAD_SUBSCRIBED
                 existingCustomer.save()
 
+            return Response({'detail': 'We have sent you an email with the download link! Please check your junk folder.'}, status=status.HTTP_208_ALREADY_REPORTED)
+
         except Customer.DoesNotExist:
-            print('No Customer. creating')
             customer = Customer.objects.create(
-                user=user,
+                user=None,
                 email=email,
                 subscribed=DOWNLOAD_SUBSCRIBED,
             )
-            print('Saving Customer', customer.id)
             customer.save()
 
         return Response(
