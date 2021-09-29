@@ -162,7 +162,7 @@ EMAIL_USE_SSL = True
 EMAIL_USE_TLS = False
 
 
-if 'DEVENV' in os.environ:
+if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
     dbconfig = "./gday-db-config.json"
 else:
     dbconfig = '/opt/app/gday-db-config.json'
@@ -218,19 +218,25 @@ USE_L10N = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
-if 'DEVENV' in os.environ:
+if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
     STATIC_ROOT = os.path.join(BASE_DIR, "gdaypunchbackend/public/static/")
 else:
     STATIC_ROOT = "opt/app/gdaypunchbackend/public/static/"
 
-STATICFILES_DIRS = [
-    os.path.join(
-        BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/resources"),
-    os.path.join(
-        BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/assets"),
-    os.path.join(BASE_DIR, "gdaypunchbackend/static/"),
-    os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
-]
+if 'DEPLOYENV' in os.environ:
+    STATICFILES_DIRS = [
+        os.path.join(
+            BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/resources"),
+        os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
+    ]
+else:
+    STATICFILES_DIRS = [
+        os.path.join(
+            BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/resources"),
+        os.path.join(
+            BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/assets"),
+        os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
+    ]
 
 # Static file directory in the React app
 STATIC_URL = '/static/'

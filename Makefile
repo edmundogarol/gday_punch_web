@@ -30,7 +30,7 @@ makemigrations:
 	DEVENV=development python manage.py makemigrations 
 
 static:
-	DEVENV=development python manage.py collectstatic --noinput
+	DEPLOYENV=deployment python manage.py collectstatic --noinput 
 
 migrations: makemigrations migrate
 
