@@ -66,7 +66,11 @@ function Ui(props) {
       title: "Customer",
       dataIndex: "customer",
       key: "customer",
-      render: (val, instance) => `${instance.first_name} ${instance.last_name}`,
+      className: "email-or-name",
+      render: (val, instance) =>
+        instance.first_name
+          ? `${instance.first_name} ${instance.last_name}`
+          : instance.email,
     },
     {
       title: "Items",
@@ -131,13 +135,17 @@ function Ui(props) {
       title: "Customer/Amount/Status",
       dataIndex: "customer",
       key: "customer-amount-status",
-      className: "left",
+      className: "left email-or-name",
       render: (val, instance) => {
         const StatusIcon = renderStatusIcons[instance.status];
 
         return (
           <div className="detail-3-column-compressed">
-            <p>{`${instance.first_name} ${instance.last_name}`}</p>
+            <p>
+              {instance.first_name
+                ? `${instance.first_name} ${instance.last_name}`
+                : instance.email}
+            </p>
             <p>{`A$${instance.amount.toFixed(2)}`}</p>
             <span className={instance.status}>
               <StatusIcon /> {instance.status}

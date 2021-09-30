@@ -595,7 +595,7 @@ class Order(models.Model):
         for item in items:
             product = Product.objects.get(id=item['id'])
 
-            if product.product_type == PHYSICAL:
+            if product.product_type in [PHYSICAL, MAG_SUBSCRIPTION]:
                 fulfillment = SHIPPING
 
         return fulfillment

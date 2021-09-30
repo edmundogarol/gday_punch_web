@@ -5,7 +5,7 @@ export const OrdersContainer = styled.div`
   table {
     color: #525252;
 
-    td {
+    td:not(.email-or-name) {
       text-transform: capitalize;
     }
   }
