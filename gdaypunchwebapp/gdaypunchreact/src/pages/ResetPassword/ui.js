@@ -14,6 +14,7 @@ import {
   SuccessLabel,
 } from "./styles";
 import { ErrorField } from "src/components/errorField";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -26,6 +27,8 @@ function Ui(props) {
   const { errors: resetErrors, submitted, submitting } = resetPasswordState;
   const [resetEmail, updateResetEmail] = useState(undefined);
   const { consumer } = useParams();
+
+  useScrollTop();
 
   useEffect(() => {
     if (consumer) {

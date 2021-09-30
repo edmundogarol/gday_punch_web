@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { isEmpty } from "lodash";
 
-import PaymentForm from "components/paymentForm";
 import ProductTile from "components/productTile";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
@@ -10,6 +8,7 @@ import { SectionTitle } from "components/sectionTitle";
 import LoadingSpinner from "components/loadingSpinner";
 
 import { App } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -22,6 +21,8 @@ function Ui(props) {
     buyableProducts,
     freeProducts,
   } = props;
+
+  useScrollTop();
 
   useEffect(() => {
     if (

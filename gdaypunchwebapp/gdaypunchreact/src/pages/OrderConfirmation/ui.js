@@ -7,6 +7,7 @@ import { PageContainer, StatusContainer } from "./styles";
 import OrderDetails from "./orderDetails";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -24,6 +25,8 @@ function Ui(props) {
     history,
   } = props;
   const { orderSecret } = useParams();
+
+  useScrollTop();
 
   useEffect(() => {
     if (order.id) {

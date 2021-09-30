@@ -16,6 +16,7 @@ import {
 } from "./styles";
 import { getGdayPunchStaticUrl } from "utils/utils";
 import { ErrorField } from "src/components/errorField";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -26,6 +27,8 @@ function Ui(props) {
   } = props;
   const { errors, requesting, finished } = downloadManuscriptState;
   const [manuscriptEmail, updateManuscriptEmail] = useState(undefined);
+
+  useScrollTop();
 
   useEffect(() => {
     return () => {

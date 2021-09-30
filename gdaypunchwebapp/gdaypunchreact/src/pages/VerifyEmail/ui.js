@@ -7,6 +7,7 @@ import LoadingSpinner from "components/loadingSpinner";
 
 import { App, ResetForm, SuccessLabel } from "./styles";
 import { ErrorField } from "src/components/errorField";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -16,6 +17,8 @@ function Ui(props) {
     history,
   } = props;
   const { token } = useParams();
+
+  useScrollTop();
 
   useEffect(() => {
     if (token) {

@@ -32,6 +32,7 @@ import {
   CheckoutButtonContainer,
 } from "./styles";
 import { getGdayPunchStaticUrl } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Option } = Select;
 
@@ -52,6 +53,8 @@ function Ui(props) {
   const [submitCoupon, updateSubmitCoupon] = useState({
     name: "",
   });
+
+  useScrollTop();
 
   const items = Object.values(cartItemsObject)
     .map((item) => item)

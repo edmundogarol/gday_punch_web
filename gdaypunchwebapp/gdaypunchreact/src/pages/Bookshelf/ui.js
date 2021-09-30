@@ -9,6 +9,7 @@ import { SectionTitle } from "components/sectionTitle";
 import LoadingSpinner from "components/loadingSpinner";
 
 import { App, EmptyBookshelfMessage } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -21,6 +22,8 @@ function Ui(props) {
     purchasedProducts,
     savedProducts,
   } = props;
+
+  useScrollTop();
 
   useEffect(() => {
     if (

@@ -16,6 +16,7 @@ import {
 } from "./styles";
 import { getGdayPunchStaticUrl } from "utils/utils";
 import { ErrorField } from "src/components/errorField";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -29,6 +30,8 @@ function Ui(props) {
     reason: "general",
     content: undefined,
   });
+
+  useScrollTop();
 
   useEffect(() => {
     if (submitted) {

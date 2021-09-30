@@ -15,6 +15,7 @@ import {
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import { LikeButton } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -80,6 +81,8 @@ function Ui(props) {
       </>
     ),
   };
+
+  useScrollTop();
 
   useEffect(() => {
     if (manga) {

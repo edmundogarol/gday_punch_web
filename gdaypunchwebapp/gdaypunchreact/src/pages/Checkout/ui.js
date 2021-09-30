@@ -26,6 +26,7 @@ import {
   EmptyCartMessage,
 } from "./styles";
 import { getResourceImage, phoneValidator } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -167,6 +168,8 @@ function Ui(props) {
       getCountry();
     }
   };
+
+  useScrollTop();
 
   useEffect(() => {
     paymentSuccessRef.current = paymentSuccess;

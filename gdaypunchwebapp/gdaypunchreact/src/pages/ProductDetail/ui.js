@@ -38,6 +38,7 @@ import {
 } from "./styles";
 
 import { getGdayPunchStaticUrl, scrollToTop } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const productType = {
   physical: "Paperback",
@@ -77,6 +78,8 @@ function Ui(props) {
   const digitalProduct = product && product.product_type !== "physical";
   const qtyRange = digitalProduct && quantity ? 1 : 10;
   const purchasedDigital = product && product.purchased && digitalProduct;
+
+  useScrollTop();
 
   useEffect(() => {
     if (product) {

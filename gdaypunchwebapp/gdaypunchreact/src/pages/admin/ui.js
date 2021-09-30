@@ -19,6 +19,7 @@ import StripeProducts from "./products/stripeProducts";
 import ProductDetail from "./products/productDetails";
 
 import { AdminContainer, AdminNav, AdminContentContainer } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const { user } = props;
@@ -35,6 +36,8 @@ function Ui(props) {
   const contacts = app === "contacts";
   const stripeProducts = app === "stripe-products";
   const productDetail = app === "product-detail";
+
+  useScrollTop();
 
   function hasPrivilege(privilege) {
     if (!user.id) return false;

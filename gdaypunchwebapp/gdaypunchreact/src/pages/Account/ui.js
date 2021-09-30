@@ -21,6 +21,7 @@ import Image from "components/image";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
 import { App, DetailField, EditButton, SubscriptionItem } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -50,6 +51,8 @@ function Ui(props) {
   const [editingEmail, toggleEditingEmail] = useState(false);
   const [email, updateEmail] = useState(user.email);
   const { tab } = useParams();
+
+  useScrollTop();
 
   useEffect(() => {
     if (

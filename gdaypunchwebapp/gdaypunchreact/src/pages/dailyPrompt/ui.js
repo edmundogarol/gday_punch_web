@@ -9,6 +9,7 @@ import {
   DailyPromptSwitch,
   RedoOutlinedContainer,
 } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -27,6 +28,8 @@ function Ui(props) {
 
   const prompt = prompts[0];
   const stylePrompt = stylePanelPrompt ? stylePanelPrompt[0] : {};
+
+  useScrollTop();
 
   useEffect(() => {
     if (!prompts.length || fetchingPromptsSucess) {

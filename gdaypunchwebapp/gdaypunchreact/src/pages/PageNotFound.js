@@ -1,7 +1,10 @@
 import React from "react";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 import { getResourceImage } from "utils/utils";
 
 export default function PageNotFound() {
+  useScrollTop();
+
   return (
     <div id="top" className="App">
       <div className="App-header-container app-temp-background page-not-found">

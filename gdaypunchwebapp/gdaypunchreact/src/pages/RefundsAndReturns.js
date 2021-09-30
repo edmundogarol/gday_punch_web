@@ -3,6 +3,7 @@ import styled from "styled-components";
 import AboutSection from "components/about";
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 export const App = styled.div`
   .App-header-container {
@@ -20,6 +21,8 @@ export const ContentContainer = styled.div`
 `;
 
 function RefundsAndReturns(props) {
+  useScrollTop();
+
   return (
     <App id="top" className="App">
       <FeaturedSection top>

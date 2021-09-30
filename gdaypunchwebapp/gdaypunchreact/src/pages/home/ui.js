@@ -12,6 +12,7 @@ import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
 
 import { App } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -25,6 +26,8 @@ function Ui(props) {
     freeProducts,
     fetchProducts,
   } = props;
+
+  useScrollTop();
 
   useEffect(() => {
     if (

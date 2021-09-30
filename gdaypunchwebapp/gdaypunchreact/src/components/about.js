@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 import { device } from "utils/styles";
 
@@ -6,8 +6,11 @@ import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 export default function About(props) {
+  useScrollTop();
+
   return (
     <FeaturedSection top={props.top}>
       <SectionTitle>Our Vision</SectionTitle>
