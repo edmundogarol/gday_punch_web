@@ -166,6 +166,28 @@ class User(AbstractBaseUser, PermissionsMixin):
         except StripeCustomer.DoesNotExist:
             return None
 
+    @property
+    def readable_date_joined(self):
+        local_tz = pytz.timezone('Australia/Sydney')
+        local_dt = self.date_joined.replace(
+            tzinfo=pytz.utc).astimezone(local_tz)
+
+        return {
+            'date': local_dt.strftime("%d %b %Y"),
+            'time': local_dt.strftime("%I:%M %p")
+        }
+
+    @property
+    def readable_last_login(self):
+        local_tz = pytz.timezone('Australia/Sydney')
+        local_dt = self.last_login.replace(
+            tzinfo=pytz.utc).astimezone(local_tz)
+
+        return {
+            'date': local_dt.strftime("%d %b %Y"),
+            'time': local_dt.strftime("%I:%M %p")
+        }
+
 
 class Manga(models.Model):
     title = models.TextField(max_length=50, blank=False)

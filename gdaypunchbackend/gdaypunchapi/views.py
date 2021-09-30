@@ -89,13 +89,14 @@ class PostUserRateThrottle(UserRateThrottle):
         return super().allow_request(request, view)
 
 
-class UserViewSet(UpdateModelMixin, ViewSet):
+class UserViewSet(ModelViewSet):
     permission_classes = (UserPermissions, )
 
     def list(self, request, *args, **kwargs):
         queryset = User.objects.all().order_by('-id')
-        serializer = UserSerializer(queryset, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        serializer = UserSerializer(page, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, validated_data):
         user = None

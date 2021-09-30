@@ -38,10 +38,22 @@ import {
   UPDATE_ORDER,
   UPDATE_STATUS_REASON,
   UPDATE_PARTIAL_REFUND_AMOUNT,
+  UPDATE_USERS,
+  UPDATE_USER_CUSTOMER_DETAILS,
+  SET_SELECTED_USER,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
 const INITIAL_STATE = {
+  users: {
+    userList: [],
+    count: 0,
+    next: undefined,
+    fetching: false,
+    finishedFetching: false,
+    selected: undefined,
+  },
+
   tweetLoading: false,
   tweetSuccess: false,
   tweetError: undefined,
@@ -105,6 +117,46 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
   const { payload } = action;
 
   switch (action.type) {
+    case UPDATE_USERS:
+      const {
+        results: userResults,
+        count: userCount,
+        next: userNext,
+      } = action.payload.users;
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          next: userNext,
+          count: userCount,
+          userList: {
+            ...state.users.userList,
+            ...arrayIdsMapToObject(userResults),
+          },
+        },
+      };
+    case UPDATE_USER_CUSTOMER_DETAILS:
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          userList: {
+            ...state.users.userList,
+            [action.payload.userId]: {
+              ...state.users.userList[action.payload.userId],
+              customer_details: action.payload.customerDetails,
+            },
+          },
+        },
+      };
+    case SET_SELECTED_USER:
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          selected: action.payload.userId,
+        },
+      };
     case TWEET_ERROR:
       return {
         ...state,

@@ -2,6 +2,16 @@ import { createSelector } from "reselect";
 
 const selectDomain = (state) => state.admin;
 
+export const selectUsersState = createSelector(
+  selectDomain,
+  ({ users }) => users
+);
+
+export const selectUsersNextPage = createSelector(
+  selectDomain,
+  ({ users: { next } }) => next
+);
+
 export const selectPendingTweet = createSelector(
   selectDomain,
   ({ pendingTweet }) => pendingTweet

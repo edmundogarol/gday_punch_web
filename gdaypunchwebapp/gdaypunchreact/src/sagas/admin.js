@@ -22,6 +22,10 @@ import {
   FETCH_COUPONS,
   CREATE_COUPON,
   FETCH_ORDERS,
+  FETCH_ORDERS_STATUS_UPDATES,
+  UPDATE_ORDER_STATUS,
+  FETCH_USERS,
+  FETCH_USERS_CUSTOMER_DETAILS,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -50,11 +54,13 @@ import {
   updateOrders,
   finishedFetchingOrders,
   updateOrderStatusUpdates,
-  FETCH_ORDERS_STATUS_UPDATES,
-  UPDATE_ORDER_STATUS,
   fetchOrderStatusUpdates,
   updateOrder,
   updateStatusReason,
+  fetchingUsers,
+  updateUsers,
+  finishedFetchingUsers,
+  updateUserCustomerDetails,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -62,11 +68,45 @@ import {
   selectOrdersNextPage,
   selectOrderStatusUpdateReason,
   selectPartialRefundAmount,
+  selectUsersNextPage,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
 
 const NO_MEDIA = "admin-sagas/NO_MEDIA";
 const ERROR_TALKING_TO_GDAYPUNCH = "admin-sagas/ERROR_TALKING_TO_GDAYPUNCH";
+
+export function* fetchUsersCall(action) {
+  const next = yield select(selectUsersNextPage);
+
+  yield put(fetchingUsers());
+  const response = yield call(api, action.payload.fetchNext ? next : `user/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateUsers(data));
+    yield put(finishedFetchingUsers());
+  } else {
+    yield put(finishedFetchingUsers());
+    console.log("Users Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* fetchUserCustomerDetailsCall(action) {
+  const { customerId } = action.payload;
+
+  const response = yield call(api, `customer/${customerId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateUserCustomerDetails(customerId, data));
+  } else {
+    console.log("User Customer Details Fetch error", JSON.stringify(response));
+  }
+}
 
 export function* tweetStatus(mediaId = undefined) {
   const { status } = yield select(selectPendingTweet);
@@ -641,5 +681,7 @@ export default function* adminSaga() {
     takeLatest(FETCH_ORDERS, fetchOrdersCall),
     takeLatest(FETCH_ORDERS_STATUS_UPDATES, fetchOrderStatusUpdatesCall),
     takeLatest(UPDATE_ORDER_STATUS, updateOrderStatusCall),
+    takeLatest(FETCH_USERS, fetchUsersCall),
+    takeLatest(FETCH_USERS_CUSTOMER_DETAILS, fetchUserCustomerDetailsCall),
   ]);
 }

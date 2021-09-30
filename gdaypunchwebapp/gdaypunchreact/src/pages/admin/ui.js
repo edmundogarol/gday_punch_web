@@ -9,6 +9,7 @@ import {
 import Dashboard from "./dashboard";
 import Store from "./store";
 import Socials from "./socials";
+import Users from "./users";
 import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
@@ -28,6 +29,7 @@ function Ui(props) {
   const dashboard = app === undefined;
   const store = app === "store";
   const socials = app === "socials";
+  const users = app === "users";
   const twitter = app === "twitter";
   const prompts = app === "prompts";
   const orders = app === "orders";
@@ -65,6 +67,11 @@ function Ui(props) {
           <NavLink className="mobile-only" to="/admin/socials">
             <ShareAltOutlined className="site-form-item-icon" />
             Socials
+          </NavLink>
+        )}
+        {hasPrivilege("admin") && (
+          <NavLink className="desktop-only" to="/admin/users">
+            Users
           </NavLink>
         )}
         {hasPrivilege("twitter") && (
@@ -107,6 +114,7 @@ function Ui(props) {
         {dashboard && <Dashboard />}
         {store && <Store />}
         {socials && <Socials />}
+        {users && <Users />}
         {twitter && <Twitter />}
         {prompts && <Prompts />}
         {coupons && <Coupons />}

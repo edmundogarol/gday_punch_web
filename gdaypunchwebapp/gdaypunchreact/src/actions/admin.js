@@ -1,3 +1,14 @@
+export const FETCH_USERS = "admin/FETCH_USERS";
+export const UPDATE_USERS = "admin/UPDATE_USERS";
+export const UPDATE_USER_DETAILS = "admin/UPDATE_USER_DETAILS";
+export const FETCHING_USERS = "admin/FETCHING_USERS";
+export const FINISHED_FETCHING_USERS = "admin/FINISHED_FETCHING_USERS";
+export const FETCH_USERS_CUSTOMER_DETAILS =
+  "admin/FETCH_USERS_CUSTOMER_DETAILS";
+export const UPDATE_USER_CUSTOMER_DETAILS =
+  "admin/UPDATE_USER_CUSTOMER_DETAILS";
+export const SET_SELECTED_USER = "admin/SET_SELECTED_USER";
+
 export const DO_TWEET = "admin/DO_TWEET";
 export const DO_UPDATE_TWEET_IMAGE = "admin/DO_UPDATE_TWEET_IMAGE";
 export const DO_UPDATE_TWEET_STATUS = "admin/DO_UPDATE_TWEET_STATUS";
@@ -72,6 +83,57 @@ export const UPDATE_ORDER_STATUS = "admin/UPDATE_ORDER_STATUS";
 export const UPDATE_STATUS_REASON = "admin/UPDATE_STATUS_REASON";
 export const UPDATE_PARTIAL_REFUND_AMOUNT =
   "admin/UPDATE_PARTIAL_REFUND_AMOUNT";
+
+export const fetchUsers = (fetchNext) => ({
+  type: FETCH_USERS,
+  payload: {
+    fetchNext,
+  },
+});
+
+export const updateUsers = (users) => ({
+  type: UPDATE_USERS,
+  payload: {
+    users,
+  },
+});
+
+export const updateUserDetails = (user) => ({
+  type: UPDATE_USER_DETAILS,
+  payload: {
+    user,
+  },
+});
+
+export const fetchingUsers = () => ({
+  type: FETCHING_USERS,
+});
+
+export const finishedFetchingUsers = () => ({
+  type: FINISHED_FETCHING_USERS,
+});
+
+export const fetchUserCustomerDetails = (customerId) => ({
+  type: FETCH_USERS_CUSTOMER_DETAILS,
+  payload: {
+    customerId,
+  },
+});
+
+export const updateUserCustomerDetails = (userId, customerDetails) => ({
+  type: UPDATE_USER_CUSTOMER_DETAILS,
+  payload: {
+    userId,
+    customerDetails,
+  },
+});
+
+export const setSelectedUser = (userId) => ({
+  type: SET_SELECTED_USER,
+  payload: {
+    userId,
+  },
+});
 
 export const doTweet = () => ({
   type: DO_TWEET,
