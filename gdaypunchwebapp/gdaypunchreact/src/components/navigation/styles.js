@@ -122,7 +122,7 @@ export const HeaderALink = styled.a`
     width: unset;
     text-align: inherit;
     background: transparent;
-    margin-left: 2em;
+    margin-left: 1.5em;
     padding: unset;
     border-bottom: unset;
 
@@ -151,7 +151,7 @@ export const HeaderLink = styled(Link)`
     width: unset;
     text-align: inherit;
     background: transparent;
-    margin-left: 2em;
+    margin-left: 1.5em;
     padding: unset;
     border-bottom: unset;
 
@@ -216,7 +216,7 @@ export const HeaderParent = styled.span`
     width: unset;
     text-align: inherit;
     background: transparent;
-    margin-left: 2em;
+    margin-left: 1.5em;
     padding: unset;
     border-bottom: unset;
 
