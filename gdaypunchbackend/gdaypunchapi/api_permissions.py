@@ -137,6 +137,8 @@ class OrdersByUserPermissions(BasePermission):
             return True
         elif view.action in ['retrieve']:
             if request.user.is_authenticated:
+                if customer_id == 'null':
+                    return False
                 try:
                     stripe_customer = StripeCustomer.objects.get(
                         id=customer_id)
