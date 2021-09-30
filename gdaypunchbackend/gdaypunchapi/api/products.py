@@ -112,30 +112,25 @@ class ProductViewSet(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = Product.objects.all().order_by('-id')
         price_filter = request.query_params.get('price')
-
         user = None
+        
         try:
             user = User.objects.get(email=self.request.user)
+
+            if user.is_staff:
+                serializer = ProductSerializer(queryset, many=True)
+                return Response(serializer.data)
+
         except User.DoesNotExist:
             print("Anonymous User")
 
         settings = Settings.objects.first()
 
-        if not settings.shop_visible and not user.is_staff:
+        if not settings.shop_visible:
             all_free_products = []
 
             for product in queryset:
-                if product.sale_price > 0:
-                    pass
-
-                stripe_prices = product.stripe_prices.all()
-
-                price = 0
-                for stripe_price in stripe_prices:
-                    price += StripePrice.objects.get(
-                        id=stripe_price.id).price_amount
-
-                if price > 0:
+                if product.active_price > 0:
                     pass
                 else:
                     all_free_products.append(product)
@@ -143,11 +138,8 @@ class ProductViewSet(viewsets.ModelViewSet):
             serializer = ProductSerializer(all_free_products, many=True)
             return Response(serializer.data)
 
-        if (user is None) or (not user.is_staff):
+        else:
             queryset = queryset.filter(visible=True)
-
-        if price_filter:
-            queryset = queryset.filter(active_price=price_filter)
 
         serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data)

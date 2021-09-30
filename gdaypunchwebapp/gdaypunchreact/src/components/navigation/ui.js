@@ -19,6 +19,10 @@ import {
   CartNumber,
 } from "./styles";
 
+const initialParentNavsState = {
+  resources: false,
+};
+
 function Ui(props) {
   const {
     user,
@@ -34,9 +38,7 @@ function Ui(props) {
   } = props;
   const [miniNavOpen, toggleMiniNav] = useState(false);
   const [scrolledMini, toggleScrolledMini] = useState(false);
-  const [parentNavs, updateParentNavs] = useState({
-    resources: false,
-  });
+  const [parentNavs, updateParentNavs] = useState(initialParentNavsState);
 
   window.onscroll = () => scrollFunction();
 
@@ -98,6 +100,7 @@ function Ui(props) {
             onClick={() => {
               toggleMiniNav(false);
               toggleSideCart(true);
+              updateParentNavs(initialParentNavsState);
             }}
           >
             <ShoppingCartOutlined className="site-form-item-icon" />
@@ -110,26 +113,36 @@ function Ui(props) {
           <HeaderLink
             to="/"
             $current={location === "/"}
-            onClick={() => toggleMiniNav(false)}
+            onClick={() => {
+              toggleMiniNav(false);
+              updateParentNavs(initialParentNavsState);
+            }}
           >
             {"Home"}
           </HeaderLink>
           <HeaderLink
             to="/shop"
             $current={location === "/shop"}
-            onClick={() => toggleMiniNav(false)}
+            onClick={() => {
+              toggleMiniNav(false);
+              updateParentNavs(initialParentNavsState);
+            }}
           >
             {"Shop"}
           </HeaderLink>
           <HeaderLink
             to="/about"
             $current={location === "/about"}
-            onClick={() => toggleMiniNav(false)}
+            onClick={() => {
+              toggleMiniNav(false);
+              updateParentNavs(initialParentNavsState);
+            }}
           >
             {"About"}
           </HeaderLink>
           <HeaderParent
             $open={parentNavs.resources}
+            $current={location === "/downloads" || location === "/daily-prompt"}
             onClick={() => toggleParentNav("resources")}
           >
             {"Resources +"}
@@ -153,7 +166,10 @@ function Ui(props) {
           <HeaderLink
             to="/contact"
             $current={location === "/contact"}
-            onClick={() => toggleMiniNav(false)}
+            onClick={() => {
+              toggleMiniNav(false);
+              updateParentNavs(initialParentNavsState);
+            }}
           >
             {"Contact"}
           </HeaderLink>
@@ -162,7 +178,10 @@ function Ui(props) {
               to="/bookshelf"
               $adminLink
               $current={location === "/bookshelf"}
-              onClick={() => toggleMiniNav(false)}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
             >
               {"Bookshelf"}
             </HeaderLink>
@@ -172,7 +191,10 @@ function Ui(props) {
               to="/account"
               $adminLink
               $current={location === "/account"}
-              onClick={() => toggleMiniNav(false)}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
             >
               {"Account"}
             </HeaderLink>
@@ -182,7 +204,10 @@ function Ui(props) {
               to="/admin"
               $adminLink
               $current={location === "/admin"}
-              onClick={() => toggleMiniNav(false)}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
             >
               {"Admin"}
             </HeaderLink>
@@ -193,6 +218,7 @@ function Ui(props) {
               $adminLink
               onClick={() => {
                 toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
                 return loginView ? handleCloseRegister() : handleOpenRegister();
               }}
             >
@@ -205,6 +231,7 @@ function Ui(props) {
               href="#"
               onClick={() => {
                 toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
                 return logout();
               }}
             >
@@ -217,17 +244,29 @@ function Ui(props) {
             {user.username && user.username.length ? user.username : user.email}
           </UserProfile> */}
           {loggedIn && (
-            <HeaderLink to="/bookshelf" $current={location === "/bookshelf"}>
+            <HeaderLink
+              to="/bookshelf"
+              $current={location === "/bookshelf"}
+              onClick={() => updateParentNavs(initialParentNavsState)}
+            >
               {"Bookshelf"}
             </HeaderLink>
           )}
           {loggedIn && (
-            <HeaderLink to="/account" $current={location === "/account"}>
+            <HeaderLink
+              to="/account"
+              $current={location === "/account"}
+              onClick={() => updateParentNavs(initialParentNavsState)}
+            >
               {"Account"}
             </HeaderLink>
           )}
           {loginCheckFinished && user.is_staff && (
-            <HeaderLink to="/admin" $current={location === "/admin"}>
+            <HeaderLink
+              to="/admin"
+              $current={location === "/admin"}
+              onClick={() => updateParentNavs(initialParentNavsState)}
+            >
               {"Admin"}
             </HeaderLink>
           )}
@@ -235,6 +274,7 @@ function Ui(props) {
             <HeaderALink
               href="#top"
               onClick={() => {
+                updateParentNavs(initialParentNavsState);
                 if (loginView) {
                   handleCloseRegister();
                 } else {
@@ -247,14 +287,23 @@ function Ui(props) {
             </HeaderALink>
           )}
           {loggedIn && (
-            <HeaderALink href="#" onClick={() => logout()}>
+            <HeaderALink
+              href="#"
+              onClick={() => {
+                logout();
+                updateParentNavs(initialParentNavsState);
+              }}
+            >
               Logout
             </HeaderALink>
           )}
           <HeaderLink
             to="#"
             $current={location === "/cart"}
-            onClick={() => toggleSideCart(true)}
+            onClick={() => {
+              toggleSideCart(true);
+              updateParentNavs(initialParentNavsState);
+            }}
           >
             {"Cart"}
             <ShoppingCartOutlined className="site-form-item-icon" />
