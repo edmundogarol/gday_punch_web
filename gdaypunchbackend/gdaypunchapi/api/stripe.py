@@ -467,6 +467,8 @@ def PaymentsWebhookHandler(request):
             if existing_payment_method.card.last4 != incoming_payment_method.card.last4:
                 stripe.Customer.modify(retrieved_stripe_customer.id, invoice_settings={
                     'default_payment_method': payment_intent.payment_method})
+            else:
+                stripe.PaymentMethod.detach(incoming_payment_method.id)
 
         charge = payment_intent.charges.data[0]
         items = payment_intent.metadata['items']
