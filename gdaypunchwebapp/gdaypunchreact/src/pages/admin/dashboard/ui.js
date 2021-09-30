@@ -33,8 +33,9 @@ function Ui(props) {
   ];
 
   const websiteRoutes = [
-    { key: 1, route: "contacts" },
-    { key: 2, route: "prompts" },
+    { key: 1, route: "users" },
+    { key: 2, route: "contacts" },
+    { key: 3, route: "prompts" },
   ];
 
   return (

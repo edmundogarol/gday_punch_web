@@ -68,20 +68,9 @@ export const UsersContainer = styled.div`
       }
     }
   }
+  .subscribed {
+    text-align: center;
 
-  .pending {
-    svg {
-      color: orange;
-      margin-right: 0.3em;
-    }
-  }
-  .purchased {
-    svg {
-      color: #32ca32;
-      margin-right: 0.3em;
-    }
-  }
-  .shipped {
     svg {
       color: #32ca32;
       margin-right: 0.3em;
@@ -90,12 +79,6 @@ export const UsersContainer = styled.div`
   .declined {
     svg {
       color: #e62020;
-      margin-right: 0.3em;
-    }
-  }
-  .refunded {
-    svg {
-      color: #dab502;
       margin-right: 0.3em;
     }
   }

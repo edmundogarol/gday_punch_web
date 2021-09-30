@@ -80,6 +80,13 @@ function Ui(props) {
       },
     },
     {
+      title: "Subscribed",
+      dataIndex: "subscribed",
+      key: "subscribed",
+      className: "subscribed",
+      render: (subscribed) => (subscribed ? <PurchasedIcon /> : null),
+    },
+    {
       title: "Verified",
       dataIndex: "verified",
       key: "verified",
