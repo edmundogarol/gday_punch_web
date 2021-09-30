@@ -32,7 +32,7 @@ function Ui(props) {
   useScrollTop();
 
   useEffect(() => {
-    if (!prompts.length || fetchingPromptsSucess) {
+    if (!prompts.length && !fetchingPromptsSucess) {
       fetchPrompts(true);
       fetchPanelStylePrompt();
     }
@@ -41,7 +41,7 @@ function Ui(props) {
     return () => {
       resetPromptFetch();
     };
-  }, [prompts, fetchingPromptsSucess]);
+  }, []);
 
   return (
     <div id="top" className="App">
