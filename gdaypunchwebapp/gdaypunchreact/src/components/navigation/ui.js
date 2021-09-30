@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
@@ -74,6 +74,12 @@ function Ui(props) {
   };
 
   const location = window.location.pathname;
+
+  useEffect(() => {
+    if (location === "/downloads" || location === "/daily-prompt") {
+      updateParentNavs({ ...parentNavs, resources: true });
+    }
+  }, [location]);
 
   return (
     <NavigationContainer

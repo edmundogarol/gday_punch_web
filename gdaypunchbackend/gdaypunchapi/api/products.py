@@ -113,7 +113,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         queryset = Product.objects.all().order_by('-id')
         price_filter = request.query_params.get('price')
         user = None
-        
+
         try:
             user = User.objects.get(email=self.request.user)
 
@@ -127,15 +127,18 @@ class ProductViewSet(viewsets.ModelViewSet):
         settings = Settings.objects.first()
 
         if not settings.shop_visible:
-            all_free_products = []
+            visible_products = []
 
             for product in queryset:
-                if product.active_price > 0:
+                if product.purchased:
+                    if product.product_type in [DIGITAL, DIG_SUBSCRIPTION]:
+                        visible_products.append(product)
+                elif product.active_price > 0:
                     pass
                 else:
-                    all_free_products.append(product)
+                    visible_products.append(product)
 
-            serializer = ProductSerializer(all_free_products, many=True)
+            serializer = ProductSerializer(visible_products, many=True)
             return Response(serializer.data)
 
         else:
