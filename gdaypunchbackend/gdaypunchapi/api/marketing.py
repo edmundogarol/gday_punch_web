@@ -56,15 +56,17 @@ class DownloadManuscript(APIView):
     def post(self, request, format=None):
         loggedIn = str(self.request.user) != "AnonymousUser"
         user = None
+        email = request.data.get("email", None)
 
         if loggedIn:
             user = User.objects.get(email=self.request.user)
 
-            Thread(target=send_manuscript_download_link, args=(email,)).start()
+            Thread(target=send_manuscript_download_link,
+                   args=(user.email,)).start()
 
             try:
                 existingCustomer = Customer.objects.get(
-                    email=request.data['email'])
+                    email=user.email)
 
                 if existingCustomer.user is None:
                     existingCustomer.user = user
@@ -77,7 +79,7 @@ class DownloadManuscript(APIView):
             except Customer.DoesNotExist:
                 customer = Customer.objects.create(
                     user=user,
-                    email=email,
+                    email=user.email,
                     subscribed=DOWNLOAD_SUBSCRIBED,
                 )
                 customer.save()
@@ -86,8 +88,6 @@ class DownloadManuscript(APIView):
                 {'detail': 'We have sent you an email with the download link! Please check your junk folder.'},
                 status=status.HTTP_200_OK
             )
-
-        email = request.data.get("email", None)
 
         if email is None:
             return Response({'error': 'Must provide email to send download link to.'}, status=status.HTTP_406_NOT_ACCEPTABLE)
