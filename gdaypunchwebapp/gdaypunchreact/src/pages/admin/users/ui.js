@@ -178,7 +178,7 @@ function Ui(props) {
   return (
     <UsersContainer>
       <Title level={4}>Users</Title>
-      {selected && <UserDetailsModal />}
+      {selected && <UserDetailsModal user={userList[selected]} />}
       <Table
         onRow={handleUserOpen}
         className="desktop"

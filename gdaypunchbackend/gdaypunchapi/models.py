@@ -476,6 +476,71 @@ class Customer(models.Model):
     country = models.TextField(max_length=50, blank=True)
     phone_number = models.TextField(max_length=50, blank=True)
 
+    @property
+    def last_3_purchases(self):
+        if str(get_current_user()) == "AnonymousUser":
+            return None
+
+        user = User.objects.get(email=get_current_user())
+        if not user.is_staff:
+            return None
+
+        try:
+            last_3 = Purchase.objects.filter(
+                customer=self.id).order_by('-id')[:3:-1]
+
+            if last_3[0] is not None:
+
+                orders = []
+                for purchase in last_3:
+
+                    try:
+                        order = Order.objects.get(purchase=purchase.id)
+
+                        orders.append({
+                            'key': order.id,
+                            'email': order.email,
+                            'number': order.number,
+                            'amount': order.amount,
+                            'status': order.status,
+                            'readable_date': order.readable_date,
+                            'product_qty_details': order.product_qty_details,
+                            'fulfillment_type': order.fulfillment_type,
+                            'products_total_price': order.products_total_price,
+                            'coupon_details': order.coupon_details,
+                            'first_name': order.first_name,
+                            'last_name': order.last_name,
+                            'address_line_1': order.address_line_1,
+                            'address_line_2': order.address_line_2,
+                            'city': order.city,
+                            'state': order.state,
+                            'postcode': order.postcode,
+                            'country': order.country,
+                            'phone_number': order.phone_number,
+                            'billing_same_address': order.billing_same_address,
+                            'billing_email': order.billing_email,
+                            'billing_first_name': order.billing_first_name,
+                            'billing_last_name': order.billing_last_name,
+                            'billing_address_line_1': order.billing_address_line_1,
+                            'billing_address_line_2': order.billing_address_line_2,
+                            'billing_city': order.billing_city,
+                            'billing_state': order.billing_state,
+                            'billing_postcode': order.billing_postcode,
+                            'billing_country': order.billing_country,
+                            'billing_number': order.billing_number,
+                            'last_four': order.last_four,
+                            'exp_month': order.exp_month,
+                            'exp_year': order.exp_year
+                        })
+
+                    except Order.DoesNotExist:
+                        pass
+
+                return orders if orders else None
+
+        except Purchase.DoesNotExist:
+            return None
+
 
 class Purchase(models.Model):
     product = models.ForeignKey(
@@ -499,6 +564,8 @@ class Order(models.Model):
     amount = models.FloatField(blank=False, default=0)
     products_qty = models.TextField(max_length=500, blank=False, default='{}')
     number = models.TextField(max_length=20, blank=True)
+    purchase = models.ForeignKey(
+        Purchase,  on_delete=models.PROTECT, blank=True, null=True)
     secret = models.TextField(max_length=30, blank=False, null=True)
     date_created = models.DateTimeField(
         null=False, blank=False, default=timezone.now)

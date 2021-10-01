@@ -82,6 +82,8 @@ class CustomerPermissions(BasePermission):
             return True
         elif view.action in ['retrieve']:
             if request.user.is_authenticated:
+                if customer_id == 'null':
+                    return False
                 try:
                     customer = Customer.objects.get(id=customer_id)
                     return customer.user.email.strip() == str(request.user).strip()

@@ -102,7 +102,7 @@ export function* fetchUserCustomerDetailsCall(action) {
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateUserCustomerDetails(customerId, data));
+    yield put(updateUserCustomerDetails(data.user, data));
   } else {
     console.log("User Customer Details Fetch error", JSON.stringify(response));
   }

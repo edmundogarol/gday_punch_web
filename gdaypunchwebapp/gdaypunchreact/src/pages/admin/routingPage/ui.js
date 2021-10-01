@@ -62,7 +62,7 @@ function Ui(props) {
 
   const handleLinkOpen = (link, rowIndex) => {
     return {
-      onClick: (event) => history.push(link.route),
+      onClick: (event) => history.push(`/admin/${link.route}`),
     };
   };
 

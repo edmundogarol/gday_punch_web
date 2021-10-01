@@ -20,6 +20,7 @@ function Ui(props) {
   };
 
   const handleUpdateAddressForm = (field, e) => {
+    console.log({ field, value: e.target.value });
     // Value
     let value = e.target.value;
 
@@ -245,7 +246,8 @@ function Ui(props) {
             : "false"
         }
         className={classNames("form-field", addressForm.province.error, {
-          hidden: conditionalValidationFields.includes("province"),
+          hidden:
+            allDigitalCart && conditionalValidationFields.includes("province"),
         })}
         data-line-count="3"
       >

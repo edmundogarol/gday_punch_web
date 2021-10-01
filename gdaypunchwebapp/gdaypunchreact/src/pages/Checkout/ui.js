@@ -231,7 +231,12 @@ function Ui(props) {
           : { ...checkoutForm.province, value: customer.state },
         country: allDigitalCart
           ? checkoutForm.country
-          : { ...checkoutForm.country, value: customer.country },
+          : {
+              ...checkoutForm.country,
+              value: customer.country.length
+                ? customer.country
+                : checkoutForm.country.value,
+            },
         phone: allDigitalCart
           ? checkoutForm.phone
           : { ...checkoutForm.phone, value: customer.phone_number },

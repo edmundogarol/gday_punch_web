@@ -2,8 +2,12 @@ import styled from "styled-components";
 import { device } from "utils/styles";
 import { Modal } from "antd";
 
-export const OrderModal = styled(Modal)`
+export const UserModal = styled(Modal)`
   width: 100% !important;
+
+  .ant-typography {
+    margin-top: 1em;
+  }
 
   table,
   div {
@@ -67,12 +71,7 @@ export const OrderModal = styled(Modal)`
       margin-right: 0.3em;
     }
   }
-  .purchased {
-    svg {
-      color: #32ca32;
-      margin-right: 0.3em;
-    }
-  }
+  .subscribed,
   .shipped {
     svg {
       color: #32ca32;
@@ -85,21 +84,12 @@ export const OrderModal = styled(Modal)`
       margin-right: 0.3em;
     }
   }
-  .refunded {
+  .refunded,
+  .partially-refunded {
     svg {
       color: #dab502;
       margin-right: 0.3em;
     }
-  }
-  .partially_refunded {
-    svg {
-      color: #dab502;
-      margin-right: 0.3em;
-    }
-  }
-
-  .total {
-    text-align: end;
   }
 `;
 
@@ -135,28 +125,6 @@ export const TitleStatus = styled.div`
     .status {
       margin-left: 1em;
     }
-  }
-`;
-
-export const ModalItemSummary = styled.div`
-  div {
-    margin-top: 1.5em;
-  }
-`;
-
-export const ProductTotalsContainer = styled.div`
-  padding-top: 1em;
-  text-align: end;
-
-  div {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-
-    @media ${device.tablet} {
-      grid-template-columns: 4fr 1fr;
-    }
-
-    padding-right: 1em;
   }
 `;
 
@@ -198,18 +166,5 @@ export const RightContainer = styled.div`
 
   @media ${device.tablet} {
     width: 48%;
-  }
-`;
-
-export const OrderStatuses = styled.div`
-  margin-top: 1em;
-
-  div {
-    display: flex;
-    flex-direction: column;
-
-    span {
-      color: #9c9c9c;
-    }
   }
 `;

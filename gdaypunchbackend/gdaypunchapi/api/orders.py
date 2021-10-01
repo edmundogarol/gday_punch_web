@@ -291,10 +291,12 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
         product = Product.objects.get(id=item['id'])
 
         # Record customer purchase
-        Purchase.objects.create(
+        purchase = Purchase.objects.create(
             customer=customer,
             product=product
         )
+        order.purchase = purchase
+        order.save()
 
         if product.product_type == DIGITAL:
             digital_purchase = digital_purchase + 1
