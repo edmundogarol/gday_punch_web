@@ -498,11 +498,17 @@ class Customer(models.Model):
                         order = Order.objects.get(purchase=purchase.id)
 
                         orders.append({
+                            'id': order.id,
                             'key': order.id,
                             'email': order.email,
                             'number': order.number,
+                            'coupon': order.coupon,
                             'amount': order.amount,
                             'status': order.status,
+                            'secret': order.secret,
+                            'tax': order.tax,
+                            'coupon_details': order.coupon_details,
+                            'total_shippable_items': order.total_shippable_items,
                             'readable_date': order.readable_date,
                             'product_qty_details': order.product_qty_details,
                             'fulfillment_type': order.fulfillment_type,
@@ -530,7 +536,8 @@ class Customer(models.Model):
                             'billing_number': order.billing_number,
                             'last_four': order.last_four,
                             'exp_month': order.exp_month,
-                            'exp_year': order.exp_year
+                            'exp_year': order.exp_year,
+                            'statuses': order.statuses
                         })
 
                     except Order.DoesNotExist:

@@ -21,7 +21,7 @@ export function getGdayPunchStaticUrl(asset) {
 export function arrayIdsMapToObject(list) {
   let finalObject = {};
 
-  if (list[0] === undefined) return finalObject;
+  if (!list || !list.length || list[0] === undefined) return finalObject;
 
   list.map((element) => set(finalObject, element.id, element));
   return finalObject;

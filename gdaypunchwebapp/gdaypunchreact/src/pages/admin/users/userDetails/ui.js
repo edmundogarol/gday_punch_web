@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
+import OrderDetailsModal from "pages/Admin/orders/orderDetails";
 import {
   UserModal,
   AddressContactField,
@@ -25,7 +26,12 @@ const { TextArea } = Input;
 const { Title } = Typography;
 
 function Ui(props) {
-  const { user, setSelectedUser } = props;
+  const {
+    user,
+    setSelectedUser,
+    setSelectedOrder,
+    ordersState: { selected },
+  } = props;
   const { customer_details } = user;
 
   // const markShipped = (orderId, products) => {
@@ -231,24 +237,37 @@ function Ui(props) {
     },
   ];
 
+  const handleOrderOpen = (order) => {
+    return {
+      onClick: (event) => {
+        setSelectedOrder(order.id);
+      },
+    };
+  };
+
+  console.log({ selected });
   return (
-    <UserModal
-      width="80%"
-      title={
-        <ModalTitle>
-          <TitleStatus>
-            {`${user.email}`}
-            <span className="status">{user.username || "Username unset"}</span>
-            <span className={`status ${user.subscribed ? "subscribed" : ""}`}>
-              {user.subscribed ? (
-                <>
-                  <PurchasedIcon />
-                  Subscribed
-                </>
-              ) : null}
-            </span>
-          </TitleStatus>
-          {/* <Button
+    <>
+      {selected && <OrderDetailsModal />}
+      <UserModal
+        width="80%"
+        title={
+          <ModalTitle>
+            <TitleStatus>
+              {`${user.email}`}
+              <span className="status">
+                {user.username || "Username unset"}
+              </span>
+              <span className={`status ${user.subscribed ? "subscribed" : ""}`}>
+                {user.subscribed ? (
+                  <>
+                    <PurchasedIcon />
+                    Subscribed
+                  </>
+                ) : null}
+              </span>
+            </TitleStatus>
+            {/* <Button
             onClick={() =>
               markShipped(
                 order.id,
@@ -264,105 +283,106 @@ function Ui(props) {
           >
             Mark as Shipped
           </Button> */}
-        </ModalTitle>
-      }
-      visible={user}
-      onCancel={() => setSelectedUser(undefined)}
-      cancelText="Close"
-      okButtonProps={{ style: { display: "none" } }}
-    >
-      <StatusButtons>
-        <Button onClick={() => console.log("Unsubscribe")}>
-          {user.subscribed ? "Unsubscribe" : "Subscribe"}
-        </Button>
-      </StatusButtons>
-      {customer_details ? (
-        <AddressBillingContainer>
-          <LeftContainer>
-            {customer_details.address_line_1 ? (
-              <AddressContactField>
-                <h4>Shipping Address</h4>
-                <div>
-                  <p>{`${customer_details.first_name} ${customer_details.last_name}`}</p>
-                  <p>{`${customer_details.address_line_1} ${customer_details.address_line_2}`}</p>
-                  <p>{`${customer_details.city}, ${customer_details.state} ${customer_details.postcode}`}</p>
-                  <p>{`${customer_details.country}`}</p>
-                </div>
-              </AddressContactField>
-            ) : null}
-            <AddressContactField>
-              <h4>Contact Information</h4>
-              <div>
-                <p>{`Phone: ${customer_details.phone_number}`}</p>
-                <p>{`Email: ${customer_details.email}`}</p>
-              </div>
-            </AddressContactField>
-          </LeftContainer>
-          {customer_details.last_3_purchases ? (
-            <RightContainer>
-              <AddressContactField>
-                <h4>Most Recent Billing Details</h4>
-                <div>
-                  <p>{`CC ending in ${customer_details.last_3_purchases[0].last_four} [exp. ${customer_details.last_3_purchases[0].exp_month}/${customer_details.last_3_purchases[0].exp_year}]`}</p>
-                </div>
-              </AddressContactField>
-              <AddressContactField>
-                <h4>Billing Address</h4>
-                {customer_details.last_3_purchases[0].billing_same_address ? (
+          </ModalTitle>
+        }
+        visible={user}
+        onCancel={() => setSelectedUser(undefined)}
+        cancelText="Close"
+        okButtonProps={{ style: { display: "none" } }}
+      >
+        <StatusButtons>
+          <Button onClick={() => console.log("Unsubscribe")}>
+            {user.subscribed ? "Unsubscribe" : "Subscribe"}
+          </Button>
+        </StatusButtons>
+        {customer_details ? (
+          <AddressBillingContainer>
+            <LeftContainer>
+              {customer_details.address_line_1 ? (
+                <AddressContactField>
+                  <h4>Shipping Address</h4>
                   <div>
                     <p>{`${customer_details.first_name} ${customer_details.last_name}`}</p>
                     <p>{`${customer_details.address_line_1} ${customer_details.address_line_2}`}</p>
                     <p>{`${customer_details.city}, ${customer_details.state} ${customer_details.postcode}`}</p>
                     <p>{`${customer_details.country}`}</p>
                   </div>
-                ) : (
-                  <div>
-                    <p>{`${customer_details.last_3_purchases[0].billing_first_name} ${customer_details.last_3_purchases[0].billing_last_name}`}</p>
-                    <p>{`${customer_details.last_3_purchases[0].billing_address_line_1} ${customer_details.last_3_purchases[0].billing_address_line_2}`}</p>
-                    <p>{`${customer_details.last_3_purchases[0].billing_city} ${customer_details.last_3_purchases[0].billing_state}, ${customer_details.last_3_purchases[0].billing_postcode}`}</p>
-                    <p>{`${customer_details.last_3_purchases[0].billing_country}`}</p>
-                  </div>
-                )}
-              </AddressContactField>
+                </AddressContactField>
+              ) : null}
               <AddressContactField>
                 <h4>Contact Information</h4>
-                {customer_details.last_3_purchases[0].billing_same_address ? (
-                  <div>
-                    <p>{`Phone: ${customer_details.phone_number}`}</p>
-                    <p>{`Email: ${customer_details.email}`}</p>
-                  </div>
-                ) : (
-                  <div>
-                    <p>{`Phone: ${customer_details.last_3_purchases[0].billing_number}`}</p>
-                    <p>{`Email: ${customer_details.last_3_purchases[0].billing_email}`}</p>
-                  </div>
-                )}
+                <div>
+                  <p>{`Phone: ${customer_details.phone_number}`}</p>
+                  <p>{`Email: ${customer_details.email}`}</p>
+                </div>
               </AddressContactField>
-            </RightContainer>
-          ) : null}
-        </AddressBillingContainer>
-      ) : null}
-      {customer_details &&
-      customer_details.last_3_purchases &&
-      customer_details.last_3_purchases[0] ? (
-        <>
-          <Title level={4}>Latest Orders</Title>
-          <Table
-            // onRow={handleOrderOpen}
-            className="desktop"
-            dataSource={customer_details.last_3_purchases}
-            columns={columns}
-          />
-          <Table
-            className="mobile"
-            // onRow={handleOrderOpen}
-            dataSource={customer_details.last_3_purchases}
-            showHeader={false}
-            columns={mobileColumns}
-          />
-        </>
-      ) : null}
-    </UserModal>
+            </LeftContainer>
+            {customer_details.last_3_purchases ? (
+              <RightContainer>
+                <AddressContactField>
+                  <h4>Most Recent Billing Details</h4>
+                  <div>
+                    <p>{`CC ending in ${customer_details.last_3_purchases[0].last_four} [exp. ${customer_details.last_3_purchases[0].exp_month}/${customer_details.last_3_purchases[0].exp_year}]`}</p>
+                  </div>
+                </AddressContactField>
+                <AddressContactField>
+                  <h4>Billing Address</h4>
+                  {customer_details.last_3_purchases[0].billing_same_address ? (
+                    <div>
+                      <p>{`${customer_details.first_name} ${customer_details.last_name}`}</p>
+                      <p>{`${customer_details.address_line_1} ${customer_details.address_line_2}`}</p>
+                      <p>{`${customer_details.city}, ${customer_details.state} ${customer_details.postcode}`}</p>
+                      <p>{`${customer_details.country}`}</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p>{`${customer_details.last_3_purchases[0].billing_first_name} ${customer_details.last_3_purchases[0].billing_last_name}`}</p>
+                      <p>{`${customer_details.last_3_purchases[0].billing_address_line_1} ${customer_details.last_3_purchases[0].billing_address_line_2}`}</p>
+                      <p>{`${customer_details.last_3_purchases[0].billing_city} ${customer_details.last_3_purchases[0].billing_state}, ${customer_details.last_3_purchases[0].billing_postcode}`}</p>
+                      <p>{`${customer_details.last_3_purchases[0].billing_country}`}</p>
+                    </div>
+                  )}
+                </AddressContactField>
+                <AddressContactField>
+                  <h4>Contact Information</h4>
+                  {customer_details.last_3_purchases[0].billing_same_address ? (
+                    <div>
+                      <p>{`Phone: ${customer_details.phone_number}`}</p>
+                      <p>{`Email: ${customer_details.email}`}</p>
+                    </div>
+                  ) : (
+                    <div>
+                      <p>{`Phone: ${customer_details.last_3_purchases[0].billing_number}`}</p>
+                      <p>{`Email: ${customer_details.last_3_purchases[0].billing_email}`}</p>
+                    </div>
+                  )}
+                </AddressContactField>
+              </RightContainer>
+            ) : null}
+          </AddressBillingContainer>
+        ) : null}
+        {customer_details &&
+        customer_details.last_3_purchases &&
+        customer_details.last_3_purchases[0] ? (
+          <>
+            <Title level={4}>Latest Orders</Title>
+            <Table
+              onRow={handleOrderOpen}
+              className="desktop"
+              dataSource={customer_details.last_3_purchases}
+              columns={columns}
+            />
+            <Table
+              className="mobile"
+              onRow={handleOrderOpen}
+              dataSource={customer_details.last_3_purchases}
+              showHeader={false}
+              columns={mobileColumns}
+            />
+          </>
+        ) : null}
+      </UserModal>
+    </>
   );
 }
 

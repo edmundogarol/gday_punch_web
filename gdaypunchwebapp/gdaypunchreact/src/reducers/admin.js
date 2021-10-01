@@ -148,6 +148,15 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
             },
           },
         },
+        orders: {
+          ...state.orders,
+          orderList: {
+            ...state.orders.orderList,
+            ...arrayIdsMapToObject(
+              action.payload.customerDetails.last_3_purchases
+            ),
+          },
+        },
       };
     case SET_SELECTED_USER:
       return {
