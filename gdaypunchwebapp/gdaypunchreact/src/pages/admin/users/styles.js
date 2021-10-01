@@ -30,7 +30,7 @@ export const UsersContainer = styled.div`
 
     .center {
       display: flex;
-      width: 100%;
+      width: 30%;
       flex-direction: column;
 
       p {
@@ -41,20 +41,19 @@ export const UsersContainer = styled.div`
     .left {
       display: flex;
       justify-content: start;
-      width: 100%;
+      width: 40%;
     }
 
     .right {
       display: flex;
       justify-content: end;
-      width: 100%;
     }
   }
   .desktop {
     display: none;
   }
 
-  @media ${device.tablet} {
+  @media ${device.laptop} {
     .mobile {
       display: none;
     }

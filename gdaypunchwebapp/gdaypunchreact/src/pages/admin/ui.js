@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import {
   HomeOutlined,
@@ -6,9 +6,7 @@ import {
   ShareAltOutlined,
 } from "@ant-design/icons";
 
-import Dashboard from "./dashboard";
-import Store from "./store";
-import Socials from "./socials";
+import RoutingPage from "./routingPage";
 import Users from "./users";
 import Twitter from "./twitter";
 import Prompts from "./prompts";
@@ -23,7 +21,7 @@ import { AdminContainer, AdminNav, AdminContentContainer } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
-  const { user } = props;
+  const { user, history, loginCheckFinished } = props;
   const { app } = useParams();
 
   const dashboard = app === undefined;
@@ -50,13 +48,21 @@ function Ui(props) {
     return user.privileges.includes(privilege);
   }
 
+  useEffect(() => {
+    if (loginCheckFinished && !hasPrivilege("admin") && dashboard) {
+      history.push("/admin/socials");
+    }
+  }, [app]);
+
   return (
     <AdminContainer className="admin">
       <AdminNav>
-        <NavLink className="desktop-mobile" exact to="/admin/">
-          <HomeOutlined className="site-form-item-icon mobile-only" />
-          Dashboard
-        </NavLink>
+        {hasPrivilege("admin") && (
+          <NavLink className="desktop-mobile" exact to="/admin/">
+            <HomeOutlined className="site-form-item-icon mobile-only" />
+            Dashboard
+          </NavLink>
+        )}
         {hasPrivilege("admin") && (
           <NavLink className="mobile-only" to="/admin/store">
             <ShopOutlined className="site-form-item-icon" />
@@ -111,9 +117,9 @@ function Ui(props) {
         )}
       </AdminNav>
       <AdminContentContainer>
-        {dashboard && <Dashboard />}
-        {store && <Store />}
-        {socials && <Socials />}
+        {dashboard && <RoutingPage pageType="dashboard" />}
+        {store && <RoutingPage pageType="store" />}
+        {socials && <RoutingPage pageType="socials" />}
         {users && <Users />}
         {twitter && <Twitter />}
         {prompts && <Prompts />}

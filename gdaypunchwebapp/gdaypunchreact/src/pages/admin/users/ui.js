@@ -52,20 +52,15 @@ function Ui(props) {
               {instance.username || "Username unset"}
             </p>
             <p>{instance.email}</p>
+            <p>
+              {instance.first_name
+                ? `${instance.first_name} ${instance.last_name}`
+                : "Fullname unset"}
+            </p>
           </>
         );
       },
     },
-    // {
-    //   title: "Name",
-    //   dataIndex: "user",
-    //   key: "user",
-    //   className: "email-or-name",
-    //   render: (val, instance) =>
-    //     instance.first_name
-    //       ? `${instance.first_name} ${instance.last_name}`
-    //       : instance.email,
-    // },
     {
       title: "Last Login",
       dataIndex: "readable_last_login",
@@ -121,82 +116,51 @@ function Ui(props) {
     },
   ];
 
-  // const mobileColumns = [
-  //   {
-  //     title: "Customer/Amount/Status",
-  //     dataIndex: "customer",
-  //     key: "customer-amount-status",
-  //     className: "left email-or-name",
-  //     render: (val, instance) => {
-  //       const StatusIcon = renderStatusIcons[instance.status];
-
-  //       return (
-  //         <div className="detail-3-column-compressed">
-  //           <p>
-  //             {instance.first_name
-  //               ? `${instance.first_name} ${instance.last_name}`
-  //               : instance.email}
-  //           </p>
-  //           <p>{`A$${instance.amount.toFixed(2)}`}</p>
-  //           <span className={instance.status}>
-  //             <StatusIcon /> {instance.status}
-  //           </span>
-  //         </div>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     title: "Items",
-  //     dataIndex: "product_qty_details",
-  //     key: "product_qty_details",
-  //     className: "center",
-  //     render: (products) => {
-  //       if (!products) return <>Problem retrieving items.</>;
-  //       const firstProduct = products[0];
-  //       const items = (
-  //         <p>{`${firstProduct.qty} x ${firstProduct.product.title}`}</p>
-  //       );
-  //       let more = null;
-
-  //       if (products.length > 1) {
-  //         more = (
-  //           <p>{`${products.length - 1} more item${
-  //             products.length - 1 > 1 ? "s" : ""
-  //           }`}</p>
-  //         );
-  //       }
-
-  //       return (
-  //         <>
-  //           {items}
-  //           {more}
-  //         </>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     title: "Number/Date/Type",
-  //     dataIndex: "number",
-  //     key: "customer-amount-status",
-  //     className: "right",
-  //     render: (val, instance) => {
-  //       return (
-  //         <div className="detail-3-column-compressed">
-  //           <p>{`#${instance.number}`}</p>
-  //           <p>{instance.readable_date.date}</p>
-  //           <p>{instance.fulfillment_type}</p>
-  //         </div>
-  //       );
-  //     },
-  //   },
-  // ];
+  const mobileColumns = [
+    {
+      title: "User",
+      dataIndex: "user",
+      key: "user",
+      className: "email-or-name left",
+      render: (val, instance) => {
+        return (
+          <div className="detail-3-column-compressed">
+            <p className={!instance.username ? "unset" : ""}>
+              {instance.username || "Username unset"}
+            </p>
+            <p>{instance.email}</p>
+            <p>
+              {instance.first_name
+                ? `${instance.first_name} ${instance.last_name}`
+                : "Fullname unset"}
+            </p>
+          </div>
+        );
+      },
+    },
+    {
+      title: "Type/Verified/Subscribed",
+      dataIndex: "type-verified-subscribed",
+      key: "type-verified-subscribed",
+      className: "right subscribed",
+      render: (val, instance) => {
+        return (
+          <div className="detail-3-column-compressed">
+            <p>{instance.is_staff ? "Staff" : "Normal"}</p>
+            <p>{instance.verified ? "Verified" : "Unverified"}</p>
+            <p>{instance.subscribed ? <PurchasedIcon /> : null}</p>
+          </div>
+        );
+      },
+    },
+  ];
 
   const handleUserOpen = (user, rowIndex) => {
     return {
       onClick: (event) => {
         setSelectedUser(user.id);
         if (!user.customer_details) {
-          fetchUserCustomerDetails(user.id);
+          fetchUserCustomerDetails(user.customer_id);
         }
       },
     };
@@ -228,13 +192,13 @@ function Ui(props) {
           }
         }}
       />
-      {/* <Table
+      <Table
         className="mobile"
-        onRow={handleOrderOpen}
+        onRow={handleUserOpen}
         dataSource={dataSource}
         showHeader={false}
         columns={mobileColumns}
-      /> */}
+      />
     </UsersContainer>
   );
 }
