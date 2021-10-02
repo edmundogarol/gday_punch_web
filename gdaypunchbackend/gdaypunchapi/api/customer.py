@@ -27,7 +27,12 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         queryset = Customer.objects.all()
-        customer = queryset.get(pk=kwargs.get("pk"))
+        pk = kwargs.get("pk")
+
+        if not pk or pk == 'null':
+            return Response({'error': 'No customer id provided'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        customer = queryset.get(pk=pk)
         serializer = CustomerSerializer(
             customer, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)

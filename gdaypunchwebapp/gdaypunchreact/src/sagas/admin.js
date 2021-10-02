@@ -156,6 +156,7 @@ export function* updateCustomerFieldCall(action) {
     message.success(`Successfully updated customer`);
   } else {
     console.log("Update user details error", JSON.stringify(response));
+    message.error(`Update user details error: ${JSON.stringify(response)}`);
   }
 }
 
