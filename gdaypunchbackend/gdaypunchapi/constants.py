@@ -55,6 +55,7 @@ DOWNLOAD_SUBSCRIBED = 'download_subscribed'
 PURCHASED_SUBSCRIBED = 'purchased_subscribed'
 CHECKOUT_SUBSCRIBED = 'checkout_subscribed'
 NOT_SUBSCRIBED = 'not_subscribed'
+UNSUBSCRIBED = 'unsubscribed'
 
 SUBSCRIPTION_EVENT_TYPE = (
     (SUBSCRIBED_ONLY, 'Subscribed Only'),
@@ -62,6 +63,7 @@ SUBSCRIPTION_EVENT_TYPE = (
     (PURCHASED_SUBSCRIBED, 'Purchased and Subscribed'),
     (CHECKOUT_SUBSCRIBED, 'Subscribed at Checkout'),
     (NOT_SUBSCRIBED, 'Not Subscribed'),
+    (UNSUBSCRIBED, 'Unsubscribed'),
 )
 
 # Fulfillment Type

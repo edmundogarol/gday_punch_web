@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Table, Modal, Button, Input, Typography } from "antd";
+import React from "react";
+import { Table, Modal, Button, Input, Typography, message } from "antd";
 import {
   ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
   PlayCircleOutlined as ShippedIcon,
   InfoCircleOutlined as RefundedIcon,
   CloseCircleOutlined as DeclinedIcon,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
@@ -34,44 +35,32 @@ function Ui(props) {
     setSelectedUser,
     setSelectedOrder,
     ordersState: { selected },
+    updateUserDetails,
+    updateCustomerDetails,
   } = props;
   const { customer_details } = user;
 
-  // const markShipped = (orderId, products) => {
-  //   confirm({
-  //     title: "Mark this order as shipped?",
-  //     icon: <ExclamationCircleOutlined />,
-  //     content: (
-  //       <ModalItemSummary>
-  //         {"Confirm shipment of all shippable items included in order."}
-  //         <div>
-  //           {products.map((product) => (
-  //             <p key={product.id}>{`- ${product.title} x${product.qty}`}</p>
-  //           ))}
-  //         </div>
-  //         <div>
-  //           {"Provide any notes for shipment."}
-  //           <div>
-  //             <TextArea
-  //               rows={10}
-  //               showCount
-  //               maxLength={500}
-  //               value={reason}
-  //               onChange={(e) => updateStatusReason(e.target.value)}
-  //               placeholder="Enter shipment notes."
-  //             />
-  //           </div>
-  //         </div>
-  //       </ModalItemSummary>
-  //     ),
-  //     onOk() {
-  //       updateOrderStatus(orderId, "shipped");
-  //     },
-  //     onCancel() {
-  //       updateStatusReason(undefined);
-  //     },
-  //   });
-  // };
+  const handleSubscribe = () => {
+    confirm({
+      title: user.subscribed ? "Unsubscribe user?" : "Subscribe user?",
+      icon: <ExclamationCircleOutlined />,
+      content: "Confirm subscription update for user: " + user.email,
+      onOk() {
+        if (user.subscribed) {
+          updateCustomerDetails(user, user.customer_id, {
+            subscribed: "unsubscribed",
+          });
+        } else {
+          updateCustomerDetails(user, user.customer_id, {
+            subscribed: "subscribed_only",
+          });
+        }
+      },
+      onCancel() {
+        message.warn("Cancelled customer subscription update.");
+      },
+    });
+  };
 
   const renderStatusIcons = {
     pending: PendingIcon,
@@ -269,22 +258,6 @@ function Ui(props) {
                 ) : null}
               </span>
             </TitleStatus>
-            {/* <Button
-            onClick={() =>
-              markShipped(
-                order.id,
-                order.product_qty_details
-                  .map((elem) => ({
-                    id: elem.id,
-                    qty: elem.qty,
-                    ...elem.product,
-                  }))
-                  .filter((prod) => prod.type !== "digital")
-              )
-            }
-          >
-            Mark as Shipped
-          </Button> */}
           </ModalTitle>
         }
         visible={user}
@@ -323,8 +296,8 @@ function Ui(props) {
           </LeftUserFields>
         </UserFieldsContainer>
         <StatusButtons>
-          <Button onClick={() => console.log("Unsubscribe")}>
-            {user.subscribed ? "Unsubscribe" : "Subscribe"}
+          <Button onClick={() => handleSubscribe()}>
+            {user.subscribed ? "Unsubscribe Emails" : "Subscribe Emails"}
           </Button>
         </StatusButtons>
         {customer_details ? (

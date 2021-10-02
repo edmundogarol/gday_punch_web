@@ -1,6 +1,7 @@
 export const FETCH_USERS = "admin/FETCH_USERS";
 export const UPDATE_USERS = "admin/UPDATE_USERS";
 export const UPDATE_USER_DETAILS = "admin/UPDATE_USER_DETAILS";
+export const UPDATE_CUSTOMER_DETAILS = "admin/UPDATE_CUSTOMER_DETAILS";
 export const FETCHING_USERS = "admin/FETCHING_USERS";
 export const FINISHED_FETCHING_USERS = "admin/FINISHED_FETCHING_USERS";
 export const FETCH_USERS_CUSTOMER_DETAILS =
@@ -99,10 +100,20 @@ export const updateUsers = (users) => ({
   },
 });
 
-export const updateUserDetails = (user) => ({
+export const updateUserDetails = (user, userFields) => ({
   type: UPDATE_USER_DETAILS,
   payload: {
     user,
+    userFields,
+  },
+});
+
+export const updateCustomerDetails = (user, customerId, customerFields) => ({
+  type: UPDATE_CUSTOMER_DETAILS,
+  payload: {
+    user,
+    customerId,
+    customerFields,
   },
 });
 

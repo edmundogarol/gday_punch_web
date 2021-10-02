@@ -141,7 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         try:
             customer = Customer.objects.get(user=self.id)
 
-            if customer.subscribed is not 'not_subscribed':
+            if customer.subscribed not in [NOT_SUBSCRIBED, UNSUBSCRIBED]:
                 return True
             else:
                 return False

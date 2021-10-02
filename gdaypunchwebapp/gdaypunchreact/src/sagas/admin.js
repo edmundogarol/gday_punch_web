@@ -27,6 +27,8 @@ import {
   UPDATE_ORDER_STATUS,
   FETCH_USERS,
   FETCH_USERS_CUSTOMER_DETAILS,
+  UPDATE_CUSTOMER_DETAILS,
+  UPDATE_USER_DETAILS,
   startTweetLoading,
   finishedTweet,
   tweetError,
@@ -63,6 +65,7 @@ import {
   finishedFetchingUsers,
   updateUserCustomerDetails,
   fetchUserCustomerDetails,
+  fetchUsers,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -109,6 +112,50 @@ export function* fetchUsersCall(action) {
   } else {
     yield put(finishedFetchingUsers());
     console.log("Users Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* updateUserFieldCall(action) {
+  const { user, userFields } = action.payload;
+
+  const response = yield call(api, `user/${user.id}/`, {
+    method: "PATCH",
+    body: {
+      ...userFields,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    const user = {
+      ...data,
+    };
+
+    yield put(updateUsers({ results: [user] }));
+    message.success(`Successfully updated user`);
+  } else {
+    console.log("Update user details error", JSON.stringify(response));
+  }
+}
+
+export function* updateCustomerFieldCall(action) {
+  const { user, customerId, customerFields } = action.payload;
+
+  const response = yield call(api, `customer/${customerId}/`, {
+    method: "PATCH",
+    body: {
+      ...customerFields,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(fetchUsers(undefined, user.email));
+    yield put(fetchUserCustomerDetails(customerId));
+    message.success(`Successfully updated customer`);
+  } else {
+    console.log("Update user details error", JSON.stringify(response));
   }
 }
 
@@ -706,5 +753,7 @@ export default function* adminSaga() {
     takeLatest(UPDATE_ORDER_STATUS, updateOrderStatusCall),
     takeLatest(FETCH_USERS, fetchUsersCall),
     takeLatest(FETCH_USERS_CUSTOMER_DETAILS, fetchUserCustomerDetailsCall),
+    takeLatest(UPDATE_USER_DETAILS, updateUserFieldCall),
+    takeLatest(UPDATE_CUSTOMER_DETAILS, updateCustomerFieldCall),
   ]);
 }
