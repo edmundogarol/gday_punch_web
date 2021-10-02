@@ -49,6 +49,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
                     existingCustomer.subscribed = SUBSCRIBED_ONLY
                     existingCustomer.save()
 
+                serializer = CustomerSerializer(existingCustomer)
+                return Response(serializer.data)
+
             except User.DoesNotExist:
                 return Response({'error': 'User details cannot be found'}, status=status.HTTP_404_NOT_FOUND)
 
