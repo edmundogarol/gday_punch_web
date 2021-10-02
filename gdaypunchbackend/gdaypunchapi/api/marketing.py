@@ -72,7 +72,7 @@ class DownloadManuscript(APIView):
                     existingCustomer.user = user
                     existingCustomer.save()
 
-                if existingCustomer.subscribed == NOT_SUBSCRIBED:
+                if existingCustomer.subscribed in [NOT_SUBSCRIBED, UNSUBSCRIBED, CHECKOUT_SUBSCRIBED]:
                     existingCustomer.subscribed = DOWNLOAD_SUBSCRIBED
                     existingCustomer.save()
 
@@ -106,7 +106,7 @@ class DownloadManuscript(APIView):
             existingCustomer = Customer.objects.get(
                 email=request.data['email'])
 
-            if existingCustomer.subscribed in [NOT_SUBSCRIBED, CHECKOUT_SUBSCRIBED]:
+            if existingCustomer.subscribed in [NOT_SUBSCRIBED, UNSUBSCRIBED, CHECKOUT_SUBSCRIBED]:
                 existingCustomer.subscribed = DOWNLOAD_SUBSCRIBED
                 existingCustomer.save()
 

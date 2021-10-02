@@ -1,4 +1,4 @@
-import { call, all, takeLatest, select, put } from "redux-saga/effects";
+import { call, all, takeLatest, select, put, delay } from "redux-saga/effects";
 import { message } from "antd";
 import moment from "moment";
 import { api } from "utils/api";
@@ -75,6 +75,7 @@ import {
   selectPartialRefundAmount,
   selectUsersNextPage,
   selectUsersCount,
+  selectUserDetails,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
 
@@ -141,7 +142,7 @@ export function* updateUserFieldCall(action) {
 export function* updateCustomerFieldCall(action) {
   const { user, customerId, customerFields } = action.payload;
 
-  const response = yield call(api, `customer/${customerId}/`, {
+  const response = yield call(api, `customer/${customerId || "new"}/`, {
     method: "PATCH",
     body: {
       ...customerFields,
@@ -152,7 +153,15 @@ export function* updateCustomerFieldCall(action) {
     const data = response.data;
 
     yield put(fetchUsers(undefined, user.email));
-    yield put(fetchUserCustomerDetails(customerId));
+    yield delay(1000);
+
+    if (!customerId) {
+      const updatedUser = yield select(selectUserDetails(user.id));
+      console.log({ updatedUser });
+      yield put(fetchUserCustomerDetails(updatedUser.customer_id));
+    } else {
+      yield put(fetchUserCustomerDetails(customerId));
+    }
     message.success(`Successfully updated customer`);
   } else {
     console.log("Update user details error", JSON.stringify(response));

@@ -12,6 +12,9 @@ export const selectUsersNextPage = createSelector(
   ({ users: { next } }) => next
 );
 
+export const selectUserDetails = (userId) =>
+  createSelector(selectDomain, ({ users: { userList } }) => userList[userId]);
+
 export const selectUsersCount = createSelector(
   selectDomain,
   ({ users: { count } }) => count

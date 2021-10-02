@@ -53,6 +53,8 @@ function Ui(props) {
         } else {
           updateCustomerDetails(user, user.customer_id, {
             subscribed: "subscribed_only",
+            user: user.id,
+            email: user.email,
           });
         }
       },

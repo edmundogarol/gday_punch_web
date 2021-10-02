@@ -8,6 +8,7 @@ from ..models import (
 from ..serializers import (
     CustomerSerializer,
 )
+from ..constants import *
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -27,10 +28,40 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         queryset = Customer.objects.all()
+        email = request.data.get('email', None)
+        user = request.data.get('user', None)
         pk = kwargs.get("pk")
 
         if not pk or pk == 'null':
             return Response({'error': 'No customer id provided'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        elif pk == 'new':
+            try:
+                user = User.objects.get(
+                    id=user)
+                existingCustomer = Customer.objects.get(
+                    email=email)
+
+                if existingCustomer.user is None:
+                    existingCustomer.user = user
+                    existingCustomer.save()
+
+                if existingCustomer.subscribed in [NOT_SUBSCRIBED, UNSUBSCRIBED, CHECKOUT_SUBSCRIBED]:
+                    existingCustomer.subscribed = SUBSCRIBED_ONLY
+                    existingCustomer.save()
+
+            except User.DoesNotExist:
+                return Response({'error': 'User details cannot be found'}, status=status.HTTP_404_NOT_FOUND)
+
+            except Customer.DoesNotExist:
+                customer = Customer.objects.create(
+                    user=user,
+                    email=user.email,
+                    subscribed=SUBSCRIBED_ONLY,
+                )
+                customer.save()
+
+                serializer = CustomerSerializer(customer)
+                return Response(serializer.data)
 
         customer = queryset.get(pk=pk)
         serializer = CustomerSerializer(
