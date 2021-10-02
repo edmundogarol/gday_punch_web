@@ -19,6 +19,9 @@ import {
   ModalTitle,
   TitleStatus,
   StatusButtons,
+  UserFieldsContainer,
+  UserField,
+  LeftUserFields,
 } from "./styles";
 
 const { confirm } = Modal;
@@ -289,6 +292,36 @@ function Ui(props) {
         cancelText="Close"
         okButtonProps={{ style: { display: "none" } }}
       >
+        <UserFieldsContainer>
+          <LeftUserFields>
+            <UserField>
+              <h4>Email</h4>
+              <div>{user.email}</div>
+            </UserField>
+            <UserField>
+              <h4>Username</h4>
+              <div>{user.username}</div>
+            </UserField>
+            <UserField>
+              <h4>Type</h4>
+              <div>{user.is_staff ? "Staff" : "Normal"}</div>
+            </UserField>
+          </LeftUserFields>
+          <LeftUserFields>
+            <UserField>
+              <h4>Verified</h4>
+              <div>{user.verified ? "Verified" : "Unverified"}</div>
+            </UserField>
+            <UserField>
+              <h4>Last Login</h4>
+              <div>{`${user.readable_last_login.date} ${user.readable_last_login.time}`}</div>
+            </UserField>
+            <UserField>
+              <h4>Date Joined</h4>
+              <div>{user.readable_date_joined.date}</div>
+            </UserField>
+          </LeftUserFields>
+        </UserFieldsContainer>
         <StatusButtons>
           <Button onClick={() => console.log("Unsubscribe")}>
             {user.subscribed ? "Unsubscribe" : "Subscribe"}

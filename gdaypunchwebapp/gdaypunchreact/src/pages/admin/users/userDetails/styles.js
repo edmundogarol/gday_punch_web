@@ -93,6 +93,26 @@ export const UserModal = styled(Modal)`
   }
 `;
 
+export const UserFieldsContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+`;
+
+export const LeftUserFields = styled.div`
+  width: 50%;
+  min-width: 20em;
+`;
+
+export const UserField = styled.div`
+  display: flex;
+  margin: 1em;
+
+  h4 {
+    width: 9em;
+  }
+`;
+
 export const StatusButtons = styled.div`
   margin-top: 1em;
 `;
