@@ -15,6 +15,16 @@ class CustomerViewSet(viewsets.ModelViewSet):
     serializer_class = CustomerSerializer
     permission_classes = (CustomerPermissions, )
 
+    def list(self, request, *args, **kwargs):
+        queryset = Customer.objects.all().order_by('-id')
+        search = request.GET.get('search', None)
+
+        if search:
+            queryset = queryset.filter(email__icontains=search)
+
+        serializer = CustomerSerializer(queryset, many=True)
+        return Response(serializer.data)
+
     def partial_update(self, request, *args, **kwargs):
         queryset = Customer.objects.all()
         customer = queryset.get(pk=kwargs.get("pk"))

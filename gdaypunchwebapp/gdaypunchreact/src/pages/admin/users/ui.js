@@ -1,11 +1,14 @@
-import React, { useEffect } from "react";
-import { Typography, Table } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Input, Button, Space, Typography } from "antd";
+import Highlighter from "react-highlight-words";
 import {
   ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
   PlayCircleOutlined as ShippedIcon,
   InfoCircleOutlined as RefundedIcon,
   CloseCircleOutlined as DeclinedIcon,
+  SearchOutlined,
+  ShoppingOutlined,
 } from "@ant-design/icons";
 
 import UserDetailsModal from "./userDetails";
@@ -26,12 +29,126 @@ function Ui(props) {
     fetchUserCustomerDetails,
     setSelectedUser,
   } = props;
+  const [searchInput, updateSearchInput] = useState(undefined);
+  const [searchText, updateSearchText] = useState("");
+  const [searchedColumn, updateSearchedColumn] = useState("");
 
   useEffect(() => {
     if (!fetching && !finishedFetching) {
       fetchUsers();
     }
   }, [fetching, finishedFetching]);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    updateSearchText(selectedKeys[0]);
+    updateSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    updateSearchText("");
+  };
+
+  const getColumnSearchProps = (dataIndex, mobile) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={(node) => {
+            updateSearchInput(node);
+          }}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => {
+              fetchUsers(undefined, selectedKeys[0]);
+              handleSearch(selectedKeys, confirm, dataIndex);
+            }}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({ closeDropdown: false });
+              updateSearchText(selectedKeys[0]);
+              updateSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex]
+        ? record[dataIndex]
+            .toString()
+            .toLowerCase()
+            .includes(value.toLowerCase())
+        : "",
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.select(), 100);
+      }
+    },
+    render: (text, instance) => {
+      const renderUserColumn = (highlighted) => (
+        <div className="detail-3-column-compressed">
+          {mobile ? (
+            <p>{instance.customer_id ? <ShoppingOutlined /> : null}</p>
+          ) : null}
+          <p className={!instance.username ? "unset" : ""}>
+            {instance.username || "Username unset"}
+          </p>
+          {highlighted ? (
+            <Highlighter
+              highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+              searchWords={[searchText]}
+              autoEscape
+              textToHighlight={text ? text.toString() : ""}
+            />
+          ) : (
+            <p>{instance.email}</p>
+          )}
+          <p className="extra">
+            {instance.first_name
+              ? `${instance.first_name} ${instance.last_name}`
+              : "Fullname unset"}
+          </p>
+        </div>
+      );
+
+      return renderUserColumn(searchedColumn === dataIndex);
+    },
+  });
 
   const columns = [
     {
@@ -42,37 +159,18 @@ function Ui(props) {
     },
     {
       title: "User",
-      dataIndex: "user",
-      key: "user",
+      dataIndex: "email",
+      key: "email",
       className: "email-or-name center",
-      render: (val, instance) => {
-        return (
-          <>
-            <p className={!instance.username ? "unset" : ""}>
-              {instance.username || "Username unset"}
-            </p>
-            <p>{instance.email}</p>
-            <p>
-              {instance.first_name
-                ? `${instance.first_name} ${instance.last_name}`
-                : "Fullname unset"}
-            </p>
-          </>
-        );
-      },
+      ...getColumnSearchProps("email"),
     },
     {
-      title: "Last Login",
-      dataIndex: "readable_last_login",
-      key: "readable_last_login",
-      className: "center",
-      render: (readable_last_login) => {
-        return (
-          <>
-            <p>{readable_last_login.date}</p>
-            <p className="time">{readable_last_login.time}</p>
-          </>
-        );
+      title: "Customer",
+      dataIndex: "customer_id",
+      key: "customer_id",
+      className: "right",
+      render: (customer_id) => {
+        return customer_id ? <ShoppingOutlined /> : null;
       },
     },
     {
@@ -101,15 +199,15 @@ function Ui(props) {
       render: (privileges) => `${privileges.join(", ")}`,
     },
     {
-      title: "Date Joined",
-      dataIndex: "readable_date_joined",
-      key: "readable_date_joined",
+      title: "Last Login",
+      dataIndex: "readable_last_login",
+      key: "readable_last_login",
       className: "center",
-      render: (readable_date_joined) => {
+      render: (readable_last_login) => {
         return (
           <>
-            <p>{readable_date_joined.date}</p>
-            <p className="time">{readable_date_joined.time}</p>
+            <p>{readable_last_login.date}</p>
+            <p className="time">{readable_last_login.time}</p>
           </>
         );
       },
@@ -119,27 +217,12 @@ function Ui(props) {
   const mobileColumns = [
     {
       title: "User",
-      dataIndex: "user",
-      key: "user",
+      dataIndex: "email",
+      key: "email",
       className: "email-or-name left",
-      render: (val, instance) => {
-        return (
-          <div className="detail-3-column-compressed">
-            <p className={!instance.username ? "unset" : ""}>
-              {instance.username || "Username unset"}
-            </p>
-            <p>{instance.email}</p>
-            <p>
-              {instance.first_name
-                ? `${instance.first_name} ${instance.last_name}`
-                : "Fullname unset"}
-            </p>
-          </div>
-        );
-      },
+      ...getColumnSearchProps("email", true),
     },
     {
-      title: "Type/Verified/Subscribed",
       dataIndex: "type-verified-subscribed",
       key: "type-verified-subscribed",
       className: "right subscribed",
@@ -196,7 +279,6 @@ function Ui(props) {
         className="mobile"
         onRow={handleUserOpen}
         dataSource={dataSource}
-        showHeader={false}
         columns={mobileColumns}
       />
     </UsersContainer>

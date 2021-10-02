@@ -12,6 +12,11 @@ export const selectUsersNextPage = createSelector(
   ({ users: { next } }) => next
 );
 
+export const selectUsersCount = createSelector(
+  selectDomain,
+  ({ users: { count } }) => count
+);
+
 export const selectPendingTweet = createSelector(
   selectDomain,
   ({ pendingTweet }) => pendingTweet

@@ -489,7 +489,7 @@ class Customer(models.Model):
             last_3 = Purchase.objects.filter(
                 customer=self.id).order_by('-id')[:3:-1]
 
-            if last_3[0] is not None:
+            if last_3:
 
                 orders = []
                 for purchase in last_3:

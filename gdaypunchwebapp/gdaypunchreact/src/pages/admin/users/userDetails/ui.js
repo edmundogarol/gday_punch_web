@@ -245,10 +245,9 @@ function Ui(props) {
     };
   };
 
-  console.log({ selected });
   return (
     <>
-      {selected && <OrderDetailsModal />}
+      {selected && <OrderDetailsModal customerId={customer_details.id} />}
       <UserModal
         width="80%"
         title={
@@ -365,12 +364,13 @@ function Ui(props) {
         customer_details.last_3_purchases &&
         customer_details.last_3_purchases[0] ? (
           <>
-            <Title level={4}>Latest Orders</Title>
+            <Title level={4}>Most Recent Orders</Title>
             <Table
               onRow={handleOrderOpen}
               className="desktop"
               dataSource={customer_details.last_3_purchases}
               columns={columns}
+              pagination={false}
             />
             <Table
               className="mobile"
@@ -378,6 +378,7 @@ function Ui(props) {
               dataSource={customer_details.last_3_purchases}
               showHeader={false}
               columns={mobileColumns}
+              pagination={false}
             />
           </>
         ) : null}

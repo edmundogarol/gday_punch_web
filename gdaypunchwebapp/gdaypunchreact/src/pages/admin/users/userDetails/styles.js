@@ -85,7 +85,7 @@ export const UserModal = styled(Modal)`
     }
   }
   .refunded,
-  .partially-refunded {
+  .partially_refunded {
     svg {
       color: #dab502;
       margin-right: 0.3em;

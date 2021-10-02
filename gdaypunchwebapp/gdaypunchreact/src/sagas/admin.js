@@ -2,6 +2,7 @@ import { call, all, takeLatest, select, put } from "redux-saga/effects";
 import { message } from "antd";
 import moment from "moment";
 import { api } from "utils/api";
+import { set } from "lodash";
 import {
   DO_TWEET,
   SET_DELETING_TWEET,
@@ -61,6 +62,7 @@ import {
   updateUsers,
   finishedFetchingUsers,
   updateUserCustomerDetails,
+  fetchUserCustomerDetails,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -69,6 +71,7 @@ import {
   selectOrderStatusUpdateReason,
   selectPartialRefundAmount,
   selectUsersNextPage,
+  selectUsersCount,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
 
@@ -76,16 +79,32 @@ const NO_MEDIA = "admin-sagas/NO_MEDIA";
 const ERROR_TALKING_TO_GDAYPUNCH = "admin-sagas/ERROR_TALKING_TO_GDAYPUNCH";
 
 export function* fetchUsersCall(action) {
+  const { fetchNext, search } = action.payload;
   const next = yield select(selectUsersNextPage);
 
   yield put(fetchingUsers());
-  const response = yield call(api, action.payload.fetchNext ? next : `user/`, {
-    method: "GET",
-  });
+  const response = yield call(
+    api,
+    fetchNext ? next : `user/${search ? `?search=${search}` : ""}`,
+    {
+      method: "GET",
+    }
+  );
 
   if (response && response.ok) {
     const data = response.data;
-    yield put(updateUsers(data));
+
+    if (search) {
+      const next = yield select(selectUsersNextPage);
+      const count = yield select(selectUsersCount);
+
+      set(data, "next", next); // Do not update count and next page if searching
+      set(data, "count", count);
+      yield put(updateUsers(data));
+    } else {
+      yield put(updateUsers(data));
+    }
+
     yield put(finishedFetchingUsers());
   } else {
     yield put(finishedFetchingUsers());
@@ -633,7 +652,7 @@ export function* fetchOrderDetails(orderId) {
 }
 
 export function* updateOrderStatusCall(action) {
-  const { orderId, status } = action.payload;
+  const { orderId, status, customerId } = action.payload;
   const reason = yield select(selectOrderStatusUpdateReason);
   const amount = yield select(selectPartialRefundAmount);
 
@@ -652,6 +671,10 @@ export function* updateOrderStatusCall(action) {
     yield put(fetchOrderStatusUpdates(orderId));
     yield call(fetchOrderDetails, orderId);
     yield put(updateStatusReason(undefined));
+
+    if (customerId) {
+      yield put(fetchUserCustomerDetails(customerId));
+    }
   } else {
     console.log("Order Status Update error", JSON.stringify(response));
     message.error(`Order status update error: ${response.data}`);

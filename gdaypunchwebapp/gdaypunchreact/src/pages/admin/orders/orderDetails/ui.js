@@ -34,6 +34,7 @@ function Ui(props) {
     updateOrderStatus,
     updateStatusReason,
     updatePartialRefund,
+    customerId,
   } = props;
   const order = orderList[selected];
 
@@ -65,7 +66,7 @@ function Ui(props) {
         </ModalItemSummary>
       ),
       onOk() {
-        updateOrderStatus(orderId, "shipped");
+        updateOrderStatus(orderId, "shipped", customerId);
       },
       onCancel() {
         updateStatusReason(undefined);
@@ -95,7 +96,7 @@ function Ui(props) {
         </ModalItemSummary>
       ),
       onOk() {
-        updateOrderStatus(order.id, "declined");
+        updateOrderStatus(order.id, "declined", customerId);
       },
       onCancel() {
         updateStatusReason(undefined);
@@ -125,7 +126,7 @@ function Ui(props) {
         </ModalItemSummary>
       ),
       onOk() {
-        updateOrderStatus(order.id, "refunded");
+        updateOrderStatus(order.id, "refunded", customerId);
       },
       onCancel() {
         updateStatusReason(undefined);
@@ -162,7 +163,7 @@ function Ui(props) {
         </ModalItemSummary>
       ),
       onOk() {
-        updateOrderStatus(order.id, "partially_refunded");
+        updateOrderStatus(order.id, "partially_refunded", customerId);
       },
       onCancel() {
         updateStatusReason(undefined);

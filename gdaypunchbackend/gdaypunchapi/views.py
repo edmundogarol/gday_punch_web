@@ -90,10 +90,17 @@ class PostUserRateThrottle(UserRateThrottle):
 
 
 class UserViewSet(ModelViewSet):
+    queryset = User.objects.all().order_by('-id')
+    serializer_class = UserSerializer
     permission_classes = (UserPermissions, )
 
     def list(self, request, *args, **kwargs):
         queryset = User.objects.all().order_by('-id')
+        search = request.GET.get('search', None)
+
+        if search:
+            queryset = queryset.filter(email__icontains=search)
+
         page = self.paginate_queryset(queryset)
         serializer = UserSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)

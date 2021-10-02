@@ -10,6 +10,7 @@ export const UsersContainer = styled.div`
     }
   }
 
+  .extra,
   .unset,
   .time {
     opacity: 0.6;
@@ -18,14 +19,16 @@ export const UsersContainer = styled.div`
   .mobile {
     display: initial;
 
-    .ant-table-row {
+    /* .ant-table-row {
       display: flex;
       width: 100%;
       justify-content: space-between;
-    }
+    } */
 
     .detail-3-column-compressed {
       width: max-content;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .center {
@@ -39,15 +42,21 @@ export const UsersContainer = styled.div`
     }
 
     .left {
-      display: flex;
-      justify-content: start;
-      width: 40%;
+      .detail-3-column-compressed {
+        margin-left: unset;
+        margin-right: unset;
+      }
+
+      p {
+        margin-bottom: unset;
+      }
     }
 
-    .right {
+    /* 
+    .right:not(th) {
       display: flex;
       justify-content: end;
-    }
+    } */
   }
   .desktop {
     display: none;

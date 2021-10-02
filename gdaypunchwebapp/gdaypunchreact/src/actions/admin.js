@@ -84,10 +84,11 @@ export const UPDATE_STATUS_REASON = "admin/UPDATE_STATUS_REASON";
 export const UPDATE_PARTIAL_REFUND_AMOUNT =
   "admin/UPDATE_PARTIAL_REFUND_AMOUNT";
 
-export const fetchUsers = (fetchNext) => ({
+export const fetchUsers = (fetchNext, search) => ({
   type: FETCH_USERS,
   payload: {
     fetchNext,
+    search,
   },
 });
 
@@ -438,11 +439,12 @@ export const updateOrderStatusUpdates = (orderId, statusUpdates) => ({
   },
 });
 
-export const updateOrderStatus = (orderId, status) => ({
+export const updateOrderStatus = (orderId, status, customerId) => ({
   type: UPDATE_ORDER_STATUS,
   payload: {
     orderId,
     status,
+    customerId,
   },
 });
 
