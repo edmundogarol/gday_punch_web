@@ -483,6 +483,33 @@ class Customer(models.Model):
     phone_number = models.TextField(max_length=50, blank=True)
 
     @property
+    def owned_access_count(self):
+        purchases = Purchase.objects.filter(
+            customer=self.id).distinct('product')
+        digital_access = []
+
+        for purchase in purchases:
+            if purchase.product.product_type == DIGITAL:
+                digital_access.append(purchase.product.id)
+
+        return len(digital_access)
+
+    @property
+    def owned_access_products(self):
+        purchases = Purchase.objects.filter(
+            customer=self.id).distinct('product')
+        digital_access = []
+
+        for purchase in purchases:
+            if purchase.product.product_type == DIGITAL:
+                digital_access.append({
+                    'id': purchase.product.id,
+                    'title': purchase.product.title,
+                })
+
+        return digital_access
+
+    @property
     def last_3_purchases(self):
         if str(get_current_user()) == "AnonymousUser":
             return None

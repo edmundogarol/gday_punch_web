@@ -127,6 +127,15 @@ export const UserField = styled.div`
   h4 {
     width: 9em;
   }
+
+  .view-details {
+    color: blue;
+    text-decoration: underline;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 `;
 
 export const StatusButtons = styled.div`

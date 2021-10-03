@@ -366,6 +366,14 @@ function Ui(props) {
                 </div>
               </UserField>
             </LeftUserFields>
+            <LeftUserFields>
+              <UserField>
+                <h4>Owned Digital Access</h4>
+                <div className="view-details">
+                  {customer_details.owned_access_count}
+                </div>
+              </UserField>
+            </LeftUserFields>
           </UserFieldsContainer>
         ) : null}
         <StatusButtons>

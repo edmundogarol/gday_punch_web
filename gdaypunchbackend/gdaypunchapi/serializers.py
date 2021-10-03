@@ -74,7 +74,8 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = ("id", "user", "subscribed", "phone_number", "email", "first_name", "last_name",
                   "address_line_1", "address_line_2", "city", "state", "postcode", "country",
-                  "last_3_purchases", "mag_subscribed", "dig_subscribed")
+                  "last_3_purchases", "mag_subscribed", "dig_subscribed", "owned_access_count",
+                  "owned_access_products")
 
 
 class StripeCustomerSerializer(serializers.ModelSerializer):
