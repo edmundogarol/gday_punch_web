@@ -64,6 +64,43 @@ function Ui(props) {
     });
   };
 
+  const handleMagSubscribe = () => {
+    confirm({
+      title: customer_details.mag_subscribed
+        ? "Unsubscribe user?"
+        : "Subscribe user?",
+      icon: <ExclamationCircleOutlined />,
+      content: "Confirm Magazine subscription update for user: " + user.email,
+      onOk() {
+        updateCustomerDetails(user, user.customer_id, {
+          mag_subscribed: !customer_details.mag_subscribed,
+        });
+      },
+      onCancel() {
+        message.warn("Cancelled customer magazine subscription update.");
+      },
+    });
+  };
+
+  const handleDigSubscribe = () => {
+    confirm({
+      title: customer_details.dig_subscribed
+        ? "Unsubscribe user?"
+        : "Subscribe user?",
+      icon: <ExclamationCircleOutlined />,
+      content:
+        "Confirm Digital Issues subscription update for user: " + user.email,
+      onOk() {
+        updateCustomerDetails(user, user.customer_id, {
+          dig_subscribed: !customer_details.dig_subscribed,
+        });
+      },
+      onCancel() {
+        message.warn("Cancelled customer digital subscription update.");
+      },
+    });
+  };
+
   const renderStatusIcons = {
     pending: PendingIcon,
     purchased: PurchasedIcon,
@@ -288,7 +325,7 @@ function Ui(props) {
           <LeftUserFields>
             <UserField>
               <h4>Verified</h4>
-              <div className={user.subscribed ? "true" : ""}>
+              <div className={user.verified ? "true" : ""}>
                 {user.verified === "verified" ? (
                   <PurchasedIcon />
                 ) : (
@@ -318,13 +355,13 @@ function Ui(props) {
               </UserField>
               <UserField>
                 <h4>Magazine Issues</h4>
-                <div className={user.subscribed ? "true" : ""}>
+                <div className={customer_details.mag_subscribed ? "true" : ""}>
                   {customer_details.mag_subscribed ? <PurchasedIcon /> : "None"}
                 </div>
               </UserField>
               <UserField>
                 <h4>Digital Issues</h4>
-                <div className={user.subscribed ? "true" : ""}>
+                <div className={customer_details.dig_subscribed ? "true" : ""}>
                   {customer_details.dig_subscribed ? <PurchasedIcon /> : "None"}
                 </div>
               </UserField>
@@ -332,9 +369,32 @@ function Ui(props) {
           </UserFieldsContainer>
         ) : null}
         <StatusButtons>
-          <Button onClick={() => handleSubscribe()}>
+          <Button
+            className={user.subscribed ? "remove" : "add"}
+            onClick={() => handleSubscribe()}
+          >
             {user.subscribed ? "Unsubscribe Emails" : "Subscribe Emails"}
           </Button>
+          {customer_details ? (
+            <Button
+              className={customer_details.mag_subscribed ? "remove" : "add"}
+              onClick={() => handleMagSubscribe()}
+            >
+              {customer_details.mag_subscribed
+                ? "Unsubscribe Magazine Subscription"
+                : "Subscribe Magazine Issues"}
+            </Button>
+          ) : null}
+          {customer_details ? (
+            <Button
+              className={customer_details.dig_subscribed ? "remove" : "add"}
+              onClick={() => handleDigSubscribe()}
+            >
+              {customer_details.dig_subscribed
+                ? "Unsubscribe Digital Subscription"
+                : "Subscribe Digital Issues"}
+            </Button>
+          ) : null}
         </StatusButtons>
         {customer_details ? (
           <AddressBillingContainer>

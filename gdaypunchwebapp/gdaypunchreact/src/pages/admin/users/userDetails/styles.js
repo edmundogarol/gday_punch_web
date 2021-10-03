@@ -71,8 +71,23 @@ export const UserModal = styled(Modal)`
       margin-right: 0.3em;
     }
   }
+
+  .add {
+    margin-right: 0.2em;
+    border: none;
+    background: #ebebeb;
+    color: #3e3e3e;
+  }
+  .remove {
+    margin-right: 0.2em;
+    border: none;
+    background: #b3b3b3;
+    color: #ffffff;
+  }
+
   .true,
   .subscribed,
+  .purchased,
   .shipped {
     svg {
       color: #32ca32;

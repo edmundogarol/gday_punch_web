@@ -28,6 +28,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         queryset = Customer.objects.all()
+        subscribed = request.data.get('subscribed', None)
+        mag_subscribed = request.data.get('mag_subscribed', None)
+        dig_subscribed = request.data.get('dig_subscribed', None)
         email = request.data.get('email', None)
         user = request.data.get('user', None)
         pk = kwargs.get("pk")
@@ -45,9 +48,14 @@ class CustomerViewSet(viewsets.ModelViewSet):
                     existingCustomer.user = user
                     existingCustomer.save()
 
-                if existingCustomer.subscribed in [NOT_SUBSCRIBED, UNSUBSCRIBED, CHECKOUT_SUBSCRIBED]:
-                    existingCustomer.subscribed = SUBSCRIBED_ONLY
-                    existingCustomer.save()
+                if subscribed is not None:
+                    existingCustomer.subscribed = subscribed
+                if mag_subscribed is not None:
+                    existingCustomer.mag_subscribed = mag_subscribed
+                if dig_subscribed is not None:
+                    existingCustomer.dig_subscribed = dig_subscribed
+
+                existingCustomer.save()
 
                 serializer = CustomerSerializer(existingCustomer)
                 return Response(serializer.data)
@@ -59,7 +67,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
                 customer = Customer.objects.create(
                     user=user,
                     email=user.email,
-                    subscribed=SUBSCRIBED_ONLY,
+                    subscribed=subscribed,
+                    mag_subscribed=mag_subscribed,
+                    dig_subscribed=dig_subscribed,
                 )
                 customer.save()
 
