@@ -384,6 +384,12 @@ class Product(models.Model):
                 customer=customer.id).filter(product=self.id)
 
             if purchase.first() is not None:
+                if self.product_type == MAG_SUBSCRIPTION:
+                    return customer.mag_subscribed
+
+                if (self.product_type == DIG_SUBSCRIPTION):
+                    return customer.dig_subscribed
+
                 return True
             else:
                 if self.product_type == MAG_SUBSCRIPTION:
