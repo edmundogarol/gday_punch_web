@@ -285,7 +285,9 @@ function Ui(props) {
           <LeftUserFields>
             <UserField>
               <h4>Verified</h4>
-              <div>{user.verified ? "Verified" : "Unverified"}</div>
+              <div>
+                {user.verified === "verified" ? "Verified" : "Not verified"}
+              </div>
             </UserField>
             <UserField>
               <h4>Last Login</h4>

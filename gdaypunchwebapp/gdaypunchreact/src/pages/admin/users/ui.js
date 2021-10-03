@@ -184,7 +184,8 @@ function Ui(props) {
       title: "Verified",
       dataIndex: "verified",
       key: "verified",
-      render: (verified) => (verified ? "Verified" : "Unverified"),
+      render: (verified) =>
+        verified === "verified" ? "Verified" : "Not verified",
     },
     {
       title: "Type",
@@ -230,7 +231,9 @@ function Ui(props) {
         return (
           <div className="detail-3-column-compressed">
             <p>{instance.is_staff ? "Staff" : "Normal"}</p>
-            <p>{instance.verified ? "Verified" : "Unverified"}</p>
+            <p>
+              {instance.verified === "verified" ? "Verified" : "Not verified"}
+            </p>
             <p>{instance.subscribed ? <PurchasedIcon /> : null}</p>
           </div>
         );
