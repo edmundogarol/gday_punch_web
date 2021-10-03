@@ -131,6 +131,40 @@ def send_email_receipt(customer, order, items):
         print("Username and Password not accepted for smtp email config.")
 
 
+def send_email_purchase_requires_sign_up(customer, order, items):
+    email_template_name = "emails/purchase_requires_sign_up.html"
+    all_digital = len(order.address_line_1) < 1
+
+    email_config = {
+        "customer": customer,
+        "order": order,
+        "items": items,
+        "order_total": "{:.2f}".format(order.amount),
+        "all_digital": all_digital,
+        "aus_shipping": order.country == "AU",
+        "coupon_desc": order.coupon_details['description'],
+        "coupon_amount": "{:.2f}".format(order.coupon_details['discount_amount']) if order.coupon else None,
+        "subtotal": "{:.2f}".format(order.products_total_price),
+        "tax": "{:.2f}".format(order.tax),
+        "website": domain
+    }
+
+    try:
+        email = render_to_string(email_template_name, email_config)
+
+        send_mail(
+            subject='Sign up now - You have manga waiting!',
+            message='Sign up now - You have manga waiting!',
+            html_message=email,
+            from_email='Gday Punch Manga Magazine<edmundo.garol@gdaypunch.com>',
+            recipient_list=[order.email],
+            fail_silently=False,
+        )
+
+    except SMTPAuthenticationError:
+        print("Username and Password not accepted for smtp email config.")
+
+
 def send_email_update(customer, order, order_status, items, notes, update_date, partial_refund=None):
     email_template_name = "emails/update.html"
     subject = None
@@ -350,6 +384,10 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
 
     Thread(target=send_email_receipt, args=(
         customer, order, order.product_qty_details,)).start()
+
+    if customer.user is None:
+        Thread(target=send_email_purchase_requires_sign_up, args=(
+            customer, order, order.product_qty_details,)).start()
 
 
 class OrderStatusUpdateViewset(viewsets.ModelViewSet):

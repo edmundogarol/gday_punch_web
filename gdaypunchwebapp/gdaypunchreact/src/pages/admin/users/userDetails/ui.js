@@ -267,6 +267,9 @@ function Ui(props) {
         cancelText="Close"
         okButtonProps={{ style: { display: "none" } }}
       >
+        <Title level={4} className="first">
+          Profile
+        </Title>
         <UserFieldsContainer>
           <LeftUserFields>
             <UserField>
@@ -285,8 +288,12 @@ function Ui(props) {
           <LeftUserFields>
             <UserField>
               <h4>Verified</h4>
-              <div>
-                {user.verified === "verified" ? "Verified" : "Not verified"}
+              <div className={user.subscribed ? "true" : ""}>
+                {user.verified === "verified" ? (
+                  <PurchasedIcon />
+                ) : (
+                  "Not verified"
+                )}
               </div>
             </UserField>
             <UserField>
@@ -299,6 +306,31 @@ function Ui(props) {
             </UserField>
           </LeftUserFields>
         </UserFieldsContainer>
+        <Title level={4}>Subscriptions</Title>
+        {customer_details ? (
+          <UserFieldsContainer>
+            <LeftUserFields>
+              <UserField>
+                <h4>Emails</h4>
+                <div className={user.subscribed ? "true" : ""}>
+                  {user.subscribed ? <PurchasedIcon /> : "None"}
+                </div>
+              </UserField>
+              <UserField>
+                <h4>Magazine Issues</h4>
+                <div className={user.subscribed ? "true" : ""}>
+                  {customer_details.mag_subscribed ? <PurchasedIcon /> : "None"}
+                </div>
+              </UserField>
+              <UserField>
+                <h4>Digital Issues</h4>
+                <div className={user.subscribed ? "true" : ""}>
+                  {customer_details.dig_subscribed ? <PurchasedIcon /> : "None"}
+                </div>
+              </UserField>
+            </LeftUserFields>
+          </UserFieldsContainer>
+        ) : null}
         <StatusButtons>
           <Button onClick={() => handleSubscribe()}>
             {user.subscribed ? "Unsubscribe Emails" : "Subscribe Emails"}

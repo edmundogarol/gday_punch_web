@@ -5,7 +5,7 @@ import { Modal } from "antd";
 export const UserModal = styled(Modal)`
   width: 100% !important;
 
-  .ant-typography {
+  .ant-typography:not(.first) {
     margin-top: 1em;
   }
 
@@ -71,6 +71,7 @@ export const UserModal = styled(Modal)`
       margin-right: 0.3em;
     }
   }
+  .true,
   .subscribed,
   .shipped {
     svg {
