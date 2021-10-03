@@ -100,7 +100,7 @@ export const UserFieldsContainer = styled.div`
 `;
 
 export const LeftUserFields = styled.div`
-  width: 50%;
+  width: 28em;
   min-width: 20em;
 `;
 

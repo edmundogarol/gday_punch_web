@@ -449,6 +449,12 @@ def PaymentsWebhookHandler(request):
     if event['type'] == 'payment_intent.succeeded':
         payment_intent = event['data']['object']
 
+        try:
+            order_secret = payment_intent.metadata['order_secret']
+        except KeyError:
+            print('Not a webapp order.')
+            return HttpResponse(status=200)
+
         stripe_customer = StripeCustomer.objects.get(
             customer_id=payment_intent.customer)
         gp_customer = Customer.objects.get(id=stripe_customer.gp_customer.id)
