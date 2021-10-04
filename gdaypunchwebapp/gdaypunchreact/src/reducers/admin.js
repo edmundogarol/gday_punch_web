@@ -41,17 +41,22 @@ import {
   UPDATE_USERS,
   UPDATE_USER_CUSTOMER_DETAILS,
   SET_SELECTED_USER,
+  UPDATE_PRODUCTS_SIMPLE,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
 const INITIAL_STATE = {
   users: {
-    userList: [],
+    userList: {},
     count: 0,
     next: undefined,
     fetching: false,
     finishedFetching: false,
     selected: undefined,
+  },
+
+  productsSimple: {
+    list: {},
   },
 
   tweetLoading: false,
@@ -155,6 +160,17 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
             ...arrayIdsMapToObject(
               action.payload.customerDetails.last_3_purchases
             ),
+          },
+        },
+      };
+    case UPDATE_PRODUCTS_SIMPLE:
+      return {
+        ...state,
+        productsSimple: {
+          ...state.productsSimple,
+          list: {
+            ...state.productsSimple.list,
+            ...action.payload.productsSimple,
           },
         },
       };

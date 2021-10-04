@@ -5,8 +5,10 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
 
 from ..constants import *
+from ..utils import AdminOnly
 from ..api_permissions import (
     ProductPermissions, SavePermissions
 )
@@ -14,7 +16,10 @@ from ..models import (
     Settings, User, Product, StripePrice, Save
 )
 from ..serializers import (
-    ProductSerializer, StripePriceSerializer, SaveSerializer
+    ProductSerializer,
+    StripePriceSerializer,
+    SaveSerializer,
+    ProductSimpleSerializer,
 )
 
 if 'DEVENV' in os.environ:
@@ -145,6 +150,15 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(visible=True)
 
         serializer = ProductSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class ProductSimpleListView(APIView):
+    permission_classes = [AdminOnly]
+
+    def get(self, request, format=None):
+        queryset = Product.objects.all().order_by('-id')
+        serializer = ProductSimpleSerializer(queryset, many=True)
         return Response(serializer.data)
 
 

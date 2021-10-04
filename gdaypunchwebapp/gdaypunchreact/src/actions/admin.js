@@ -9,6 +9,8 @@ export const FETCH_USERS_CUSTOMER_DETAILS =
 export const UPDATE_USER_CUSTOMER_DETAILS =
   "admin/UPDATE_USER_CUSTOMER_DETAILS";
 export const SET_SELECTED_USER = "admin/SET_SELECTED_USER";
+export const FETCH_PRODUCTS_SIMPLE = "admin/FETCH_PRODUCTS_SIMPLE";
+export const UPDATE_PRODUCTS_SIMPLE = "admin/UPDATE_PRODUCTS_SIMPLE";
 
 export const DO_TWEET = "admin/DO_TWEET";
 export const DO_UPDATE_TWEET_IMAGE = "admin/DO_UPDATE_TWEET_IMAGE";
@@ -123,6 +125,17 @@ export const fetchingUsers = () => ({
 
 export const finishedFetchingUsers = () => ({
   type: FINISHED_FETCHING_USERS,
+});
+
+export const fetchProductsSimple = () => ({
+  type: FETCH_PRODUCTS_SIMPLE,
+});
+
+export const updateProductsSimple = (productsSimple) => ({
+  type: UPDATE_PRODUCTS_SIMPLE,
+  payload: {
+    productsSimple,
+  },
 });
 
 export const fetchUserCustomerDetails = (customerId) => ({

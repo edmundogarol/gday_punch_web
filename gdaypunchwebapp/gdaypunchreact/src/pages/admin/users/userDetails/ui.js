@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table, Modal, Button, Input, Typography, message } from "antd";
 import {
   ClockCircleOutlined as PendingIcon,
@@ -11,6 +11,7 @@ import {
 
 import { getGdayPunchStaticUrl } from "utils/utils";
 import OrderDetailsModal from "pages/Admin/orders/orderDetails";
+import ProductsAccessModal from "../productsAccess";
 import {
   UserModal,
   AddressContactField,
@@ -37,7 +38,9 @@ function Ui(props) {
     ordersState: { selected },
     updateUserDetails,
     updateCustomerDetails,
+    fetchProductsSimple,
   } = props;
+  const [productsAccessOpen, updateProductsAccessOpen] = useState(false);
   const { customer_details } = user;
 
   const handleSubscribe = () => {
@@ -276,8 +279,22 @@ function Ui(props) {
     };
   };
 
+  const handleOwnedDigitalModalOpen = () => {
+    fetchProductsSimple();
+    updateProductsAccessOpen(true);
+  };
+
   return (
     <>
+      {productsAccessOpen && (
+        <ProductsAccessModal
+          customerProducts={
+            customer_details ? customer_details.owned_access_products : []
+          }
+          productsAccessOpen={productsAccessOpen}
+          updateProductsAccessOpen={updateProductsAccessOpen}
+        />
+      )}
       {selected && <OrderDetailsModal customerId={customer_details.id} />}
       <UserModal
         width="80%"
@@ -369,7 +386,10 @@ function Ui(props) {
             <LeftUserFields>
               <UserField>
                 <h4>Owned Digital Access</h4>
-                <div className="view-details">
+                <div
+                  className="view-details"
+                  onClick={() => handleOwnedDigitalModalOpen()}
+                >
                   {customer_details.owned_access_count}
                 </div>
               </UserField>

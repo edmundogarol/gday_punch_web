@@ -66,6 +66,8 @@ import {
   updateUserCustomerDetails,
   fetchUserCustomerDetails,
   fetchUsers,
+  FETCH_PRODUCTS_SIMPLE,
+  updateProductsSimple,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -78,6 +80,7 @@ import {
   selectUserDetails,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
+import { arrayIdsMapToObject } from "utils/utils";
 
 const NO_MEDIA = "admin-sagas/NO_MEDIA";
 const ERROR_TALKING_TO_GDAYPUNCH = "admin-sagas/ERROR_TALKING_TO_GDAYPUNCH";
@@ -136,6 +139,21 @@ export function* updateUserFieldCall(action) {
     message.success(`Successfully updated user`);
   } else {
     console.log("Update user details error", JSON.stringify(response));
+  }
+}
+
+export function* fetchProductsSimpleCall(action) {
+  const response = yield call(api, `products-simple/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(updateProductsSimple(arrayIdsMapToObject(data)));
+  } else {
+    console.log("Products Simple fetch error", JSON.stringify(response));
+    message.error(`Products Simple fetch error: ${JSON.stringify(response)}`);
   }
 }
 
@@ -765,5 +783,6 @@ export default function* adminSaga() {
     takeLatest(FETCH_USERS_CUSTOMER_DETAILS, fetchUserCustomerDetailsCall),
     takeLatest(UPDATE_USER_DETAILS, updateUserFieldCall),
     takeLatest(UPDATE_CUSTOMER_DETAILS, updateCustomerFieldCall),
+    takeLatest(FETCH_PRODUCTS_SIMPLE, fetchProductsSimpleCall),
   ]);
 }

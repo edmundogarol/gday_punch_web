@@ -20,6 +20,11 @@ export const selectUsersCount = createSelector(
   ({ users: { count } }) => count
 );
 
+export const selectProductsSimpleState = createSelector(
+  selectDomain,
+  ({ productsSimple }) => productsSimple
+);
+
 export const selectPendingTweet = createSelector(
   selectDomain,
   ({ pendingTweet }) => pendingTweet

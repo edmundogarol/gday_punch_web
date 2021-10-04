@@ -9,6 +9,7 @@ import {
   setSelectedOrder as setSelectedOrderAction,
   updateUserDetails as updateUserDetailsAction,
   updateCustomerDetails as updateCustomerDetailsAction,
+  fetchProductsSimple as fetchProductsSimpleAction,
 } from "actions/admin";
 
 import Ui from "./ui";
@@ -22,6 +23,7 @@ const mapDispatch = {
   setSelectedOrder: setSelectedOrderAction,
   updateUserDetails: updateUserDetailsAction,
   updateCustomerDetails: updateCustomerDetailsAction,
+  fetchProductsSimple: fetchProductsSimpleAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));

@@ -37,7 +37,8 @@ from .gdaypunchapi.api.verify_account import (
 from .gdaypunchapi.api.products import (
     ProductViewSet,
     ProductDetailView,
-    SaveViewSet
+    SaveViewSet,
+    ProductSimpleListView
 )
 from .gdaypunchapi.api.stripe import (
     PriceView,
@@ -106,6 +107,9 @@ urlpatterns = [
 
     # API
     path('api/', include(router.urls)),
+
+    # Products [Simple]
+    url(r'api/products-simple/', ProductSimpleListView.as_view()),
 
     # Marketing Emails
     url(r'api/manga-manuscript/', DownloadManuscript.as_view()),

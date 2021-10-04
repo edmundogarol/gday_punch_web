@@ -92,6 +92,12 @@ class ProductSerializer(serializers.ModelSerializer):
                   "purchased", "subscription_interval", "saved", "saved_date")
 
 
+class ProductSimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ("id", "title")
+
+
 class SaveSerializer(serializers.ModelSerializer):
     class Meta:
         model = Save
