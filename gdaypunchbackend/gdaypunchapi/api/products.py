@@ -158,6 +158,7 @@ class ProductSimpleListView(APIView):
 
     def get(self, request, format=None):
         queryset = Product.objects.all().order_by('-id')
+        queryset = queryset.filter(product_type=DIGITAL)
         serializer = ProductSimpleSerializer(queryset, many=True)
         return Response(serializer.data)
 
