@@ -23,6 +23,12 @@ export const OrdersContainer = styled.div`
       width: max-content;
     }
 
+    thead {
+      tr {
+        display: flex;
+      }
+    }
+
     .center {
       display: flex;
       width: 100%;

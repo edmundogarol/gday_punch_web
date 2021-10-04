@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
-import { Typography, Table } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Input, Button, Space, Typography } from "antd";
+import Highlighter from "react-highlight-words";
 import {
   ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
   PlayCircleOutlined as ShippedIcon,
   InfoCircleOutlined as RefundedIcon,
   CloseCircleOutlined as DeclinedIcon,
+  SearchOutlined,
 } from "@ant-design/icons";
 
 import OrderDetailsModal from "./orderDetails";
@@ -27,11 +29,169 @@ function Ui(props) {
     setSelectedOrder,
   } = props;
 
+  // const [searchInputs, updateSearchInputs] = useState({
+  //   orderNo: undefined,
+  //   customer: undefined,
+  // });
+  // const [searchTexts, updateSearchTexts] = useState({
+  //   orderNo: "",
+  //   customer: "",
+  // });
+  // const [searchedColumn, updateSearchedColumn] = useState("");
+
+  const [searchInput, updateSearchInput] = useState(undefined);
+  const [searchText, updateSearchText] = useState("");
+  const [searchedColumn, updateSearchedColumn] = useState("");
+
   useEffect(() => {
     if (!fetching && !finishedFetching) {
       fetchOrders();
     }
   }, [fetching, finishedFetching]);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    confirm();
+    updateSearchText(selectedKeys[0]);
+    updateSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    updateSearchText("");
+  };
+
+  const getColumnSearchProps = (dataIndex, mobile) => ({
+    filterDropdown: ({
+      setSelectedKeys,
+      selectedKeys,
+      confirm,
+      clearFilters,
+    }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={(node) => {
+            updateSearchInput(node);
+          }}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ marginBottom: 8, display: "block" }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => {
+              // fetchUsers(undefined, selectedKeys[0]);
+              handleSearch(selectedKeys, confirm, dataIndex);
+            }}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => handleReset(clearFilters)}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              confirm({ closeDropdown: false });
+              updateSearchText(selectedKeys[0]);
+              updateSearchedColumn(dataIndex);
+            }}
+          >
+            Filter
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+    ),
+    onFilter: (value, instance) => {
+      const searchingNames = dataIndex === "name";
+      let valueToSearch = instance[dataIndex];
+
+      if (searchingNames) {
+        valueToSearch = instance.first_name
+          ? `${instance.first_name} ${instance.last_name}`
+          : instance.email;
+      }
+
+      return (searchingNames ? searchingNames : instance[dataIndex])
+        ? valueToSearch.toLowerCase().includes(value.toLowerCase())
+        : "";
+    },
+    onFilterDropdownVisibleChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.select(), 100);
+      }
+    },
+    render: (text, instance) => {
+      const renderHighliter = (highlighted) => {
+        let textToUse = text;
+
+        if (dataIndex === "name") {
+          textToUse = instance.first_name
+            ? `${instance.first_name} ${instance.last_name}`
+            : instance.email;
+        }
+        if (dataIndex === "number") {
+          textToUse = `#${text}`;
+        }
+
+        if (highlighted) {
+          return (
+            <Highlighter
+              highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+              searchWords={[searchText]}
+              autoEscape
+              textToHighlight={textToUse ? textToUse.toString() : ""}
+            />
+          );
+        } else {
+          return <span>{textToUse}</span>;
+        }
+      };
+
+      const renderColumn = (isMobile) => {
+        if (dataIndex === "number" && isMobile) {
+          return (
+            <div className="detail-3-column-compressed">
+              <p>{renderHighliter(searchedColumn === dataIndex)}</p>
+              <p>{instance.readable_date.date}</p>
+              <p>{instance.fulfillment_type}</p>
+            </div>
+          );
+        } else if (dataIndex === "name" && isMobile) {
+          const StatusIcon = renderStatusIcons[instance.status];
+
+          return (
+            <div className="detail-3-column-compressed">
+              <p>{renderHighliter(searchedColumn === dataIndex)}</p>
+              <p>{`A$${instance.amount.toFixed(2)}`}</p>
+              <span className={instance.status}>
+                <StatusIcon /> {instance.status}
+              </span>
+            </div>
+          );
+        } else {
+          return renderHighliter(searchedColumn === dataIndex);
+        }
+      };
+
+      return renderColumn(mobile);
+    },
+  });
 
   const renderStatusIcons = {
     pending: PendingIcon,
@@ -47,6 +207,7 @@ function Ui(props) {
       title: "Order No.",
       dataIndex: "number",
       key: "number",
+      ...getColumnSearchProps("number"),
     },
     {
       title: "Date Ordered",
@@ -64,13 +225,10 @@ function Ui(props) {
     },
     {
       title: "Customer",
-      dataIndex: "customer",
-      key: "customer",
+      dataIndex: "name",
+      key: "name",
       className: "email-or-name",
-      render: (val, instance) =>
-        instance.first_name
-          ? `${instance.first_name} ${instance.last_name}`
-          : instance.email,
+      ...getColumnSearchProps("name"),
     },
     {
       title: "Items",
@@ -132,30 +290,13 @@ function Ui(props) {
 
   const mobileColumns = [
     {
-      title: "Customer/Amount/Status",
-      dataIndex: "customer",
+      title: "Customer",
+      dataIndex: "name",
       key: "customer-amount-status",
       className: "left email-or-name",
-      render: (val, instance) => {
-        const StatusIcon = renderStatusIcons[instance.status];
-
-        return (
-          <div className="detail-3-column-compressed">
-            <p>
-              {instance.first_name
-                ? `${instance.first_name} ${instance.last_name}`
-                : instance.email}
-            </p>
-            <p>{`A$${instance.amount.toFixed(2)}`}</p>
-            <span className={instance.status}>
-              <StatusIcon /> {instance.status}
-            </span>
-          </div>
-        );
-      },
+      ...getColumnSearchProps("name", true),
     },
     {
-      title: "Items",
       dataIndex: "product_qty_details",
       key: "product_qty_details",
       className: "center",
@@ -184,19 +325,11 @@ function Ui(props) {
       },
     },
     {
-      title: "Number/Date/Type",
+      title: "Number",
       dataIndex: "number",
       key: "customer-amount-status",
       className: "right",
-      render: (val, instance) => {
-        return (
-          <div className="detail-3-column-compressed">
-            <p>{`#${instance.number}`}</p>
-            <p>{instance.readable_date.date}</p>
-            <p>{instance.fulfillment_type}</p>
-          </div>
-        );
-      },
+      ...getColumnSearchProps("number", true),
     },
   ];
 
@@ -241,7 +374,6 @@ function Ui(props) {
         className="mobile"
         onRow={handleOrderOpen}
         dataSource={dataSource}
-        showHeader={false}
         columns={mobileColumns}
       />
     </OrdersContainer>
