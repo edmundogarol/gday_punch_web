@@ -1,12 +1,14 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 
+from ..utils import AdminOnly
 from ..api_permissions import CustomerPermissions
 from ..models import (
-    Customer, User
+    Customer, User, Purchase
 )
 from ..serializers import (
     CustomerSerializer,
+    PurchaseSerializer
 )
 from ..constants import *
 
@@ -120,3 +122,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
             serializer = CustomerSerializer(customer)
 
             return Response(serializer.data)
+
+
+class PurchaseViewSet(viewsets.ModelViewSet):
+    pagination_class = None
+    queryset = Purchase.objects.all()
+    serializer_class = PurchaseSerializer
+    permission_classes = (AdminOnly, )

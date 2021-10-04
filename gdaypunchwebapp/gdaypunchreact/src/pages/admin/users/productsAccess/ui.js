@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Transfer, Modal, Button, Input, Typography, message } from "antd";
+import { set, unset } from "lodash";
 import {
   ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
@@ -9,7 +10,7 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { arrayIdsMapToObject, getGdayPunchStaticUrl } from "utils/utils";
 import OrderDetailsModal from "pages/Admin/orders/orderDetails";
 import { ProductsAccessModal } from "./styles";
 
@@ -23,42 +24,62 @@ function Ui(props) {
     productsSimpleState: { list },
     productsAccessOpen,
     updateProductsAccessOpen,
+    updateCustomerAccessProducts,
   } = props;
+  const [initialTargetKeys, setInitialTargetKeys] = useState([]);
   const [targetKeys, setTargetKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
-  const customerProductsKeysComparer = customerProducts.map(
-    (product) => product.id
-  );
+  const customerProductsKeys = customerProducts.map((product) => product.id);
+
+  let allProductsMapped = {
+    ...list,
+    ...arrayIdsMapToObject(customerProducts),
+  };
+
+  const allProductsData = Object.values(allProductsMapped).map((product) => ({
+    ...product,
+    key: product.id,
+  }));
 
   useEffect(() => {
-    if (!targetKeys.length && Object.values(list).length) {
-      setTargetKeys(
-        Object.values(list)
-          .map((product) => {
-            if (customerProductsKeysComparer.includes(product.id)) return null;
-            return product.id;
-          })
-          .filter((productId) => productId !== null)
-      );
+    if (
+      !targetKeys.length &&
+      !initialTargetKeys.length &&
+      Object.values(list).length
+    ) {
+      const incomingTargetKeys = Object.values(list)
+        .map((product) => {
+          if (customerProductsKeys.includes(product.id)) return null;
+          return product.id;
+        })
+        .filter((productId) => productId !== null);
+
+      setTargetKeys(incomingTargetKeys);
+      setInitialTargetKeys(incomingTargetKeys);
     }
   }, [list]);
 
   const onChange = (nextTargetKeys, direction, moveKeys) => {
-    // console.log("targetKeys:", nextTargetKeys);
-    // console.log("direction:", direction);
-    // console.log("moveKeys:", moveKeys);
+    moveKeys.map((key) => {
+      if (direction === "right") {
+        if (!allProductsMapped[key].granting) {
+          set(allProductsMapped[key], "removing", true);
+        } else {
+          unset(allProductsMapped[key], "granting");
+        }
+      } else if (direction === "left") {
+        if (!allProductsMapped[key].removing) {
+          set(allProductsMapped[key], "granting", true);
+        } else {
+          unset(allProductsMapped[key], "removing");
+        }
+      }
+    });
     setTargetKeys(nextTargetKeys);
   };
 
   const onSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
-    // console.log("sourceSelectedKeys:", sourceSelectedKeys);
-    // console.log("targetSelectedKeys:", targetSelectedKeys);
     setSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
-  };
-
-  const onScroll = (direction, e) => {
-    // console.log("direction:", direction);
-    // console.log("target:", e.target);
   };
 
   return (
@@ -68,20 +89,22 @@ function Ui(props) {
         title="Products Access Manager"
         visible={productsAccessOpen}
         onCancel={() => updateProductsAccessOpen(false)}
+        okText="Save"
+        onOk={() => {
+          updateCustomerAccessProducts(allProductsMapped);
+        }}
         cancelText="Close"
-        okButtonProps={{ style: { display: "none" } }}
+        okButtonProps={{
+          disabled: initialTargetKeys.toString() === targetKeys.toString(),
+        }}
       >
         <Transfer
-          dataSource={Object.values(list).map((product) => ({
-            key: product.id,
-            title: product.title,
-          }))}
+          dataSource={allProductsData}
           titles={["Owned", "All Products"]}
           targetKeys={targetKeys}
           selectedKeys={selectedKeys}
           onChange={onChange}
           onSelectChange={onSelectChange}
-          onScroll={onScroll}
           showSelectAll={true}
           render={(item) => item.title}
         />

@@ -51,7 +51,8 @@ from .gdaypunchapi.api.contact import (
     ContactViewSet
 )
 from .gdaypunchapi.api.customer import (
-    CustomerViewSet
+    CustomerViewSet,
+    PurchaseViewSet
 )
 from .gdaypunchapi.api.coupons import (
     CouponViewSet,
@@ -84,6 +85,7 @@ router.register(r'product', ProductDetailView, basename="product")
 router.register(r'product-save', SaveViewSet, basename="product-save")
 router.register(r'contact', ContactViewSet, basename="contact")
 router.register(r'customer', CustomerViewSet, basename="customer")
+router.register(r'purchase', PurchaseViewSet, basename="purchase")
 router.register(r'coupons', CouponViewSet, basename="customer")
 router.register(r'orders', OrderViewSet, basename="orders")
 router.register(r'order', OrderDetailViewSet, basename="order")

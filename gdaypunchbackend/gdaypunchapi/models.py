@@ -503,6 +503,7 @@ class Customer(models.Model):
         for purchase in purchases:
             if purchase.product.product_type == DIGITAL:
                 digital_access.append({
+                    'purchase_id': purchase.id,
                     'id': purchase.product.id,
                     'title': purchase.product.title,
                 })

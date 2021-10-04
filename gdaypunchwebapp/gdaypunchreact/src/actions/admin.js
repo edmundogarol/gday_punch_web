@@ -11,6 +11,8 @@ export const UPDATE_USER_CUSTOMER_DETAILS =
 export const SET_SELECTED_USER = "admin/SET_SELECTED_USER";
 export const FETCH_PRODUCTS_SIMPLE = "admin/FETCH_PRODUCTS_SIMPLE";
 export const UPDATE_PRODUCTS_SIMPLE = "admin/UPDATE_PRODUCTS_SIMPLE";
+export const UPDATE_CUSTOMER_ACCESS_PRODUCTS =
+  "admin/UPDATE_CUSTOMER_ACCESS_PRODUCTS";
 
 export const DO_TWEET = "admin/DO_TWEET";
 export const DO_UPDATE_TWEET_IMAGE = "admin/DO_UPDATE_TWEET_IMAGE";
@@ -135,6 +137,13 @@ export const updateProductsSimple = (productsSimple) => ({
   type: UPDATE_PRODUCTS_SIMPLE,
   payload: {
     productsSimple,
+  },
+});
+
+export const updateCustomerAccessProducts = (updatedProducts) => ({
+  type: UPDATE_CUSTOMER_ACCESS_PRODUCTS,
+  payload: {
+    updatedProducts,
   },
 });
 
