@@ -89,19 +89,41 @@ function Ui(props) {
         width="80%"
         title="Products Access Manager"
         visible={productsAccessOpen}
-        onCancel={() => updateProductsAccessOpen(false)}
-        okText="Save"
-        onOk={() => {
-          updateCustomerAccessProducts(
-            customerId,
-            Object.values(allProductsMapped)
-          );
-          updateProductsAccessOpen(false);
-        }}
-        cancelText="Close"
-        okButtonProps={{
-          disabled: initialTargetKeys.toString() === targetKeys.toString(),
-        }}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              updateProductsAccessOpen(false);
+            }}
+          >
+            Cancel
+          </Button>,
+          <Button
+            disabled={initialTargetKeys.toString() === targetKeys.toString()}
+            type="primary"
+            key="save-email"
+            onClick={() => {
+              message.success("Customer successfully sent summary email");
+              updateProductsAccessOpen(false);
+            }}
+          >
+            Save and Email
+          </Button>,
+          <Button
+            disabled={initialTargetKeys.toString() === targetKeys.toString()}
+            type="primary"
+            key="save"
+            onClick={() => {
+              updateCustomerAccessProducts(
+                customerId,
+                Object.values(allProductsMapped)
+              );
+              updateProductsAccessOpen(false);
+            }}
+          >
+            Save
+          </Button>,
+        ]}
       >
         <Transfer
           dataSource={allProductsData}
