@@ -20,6 +20,7 @@ const { Title } = Typography;
 
 function Ui(props) {
   const {
+    customerId,
     customerProducts,
     productsSimpleState: { list },
     productsAccessOpen,
@@ -91,7 +92,11 @@ function Ui(props) {
         onCancel={() => updateProductsAccessOpen(false)}
         okText="Save"
         onOk={() => {
-          updateCustomerAccessProducts(allProductsMapped);
+          updateCustomerAccessProducts(
+            customerId,
+            Object.values(allProductsMapped)
+          );
+          updateProductsAccessOpen(false);
         }}
         cancelText="Close"
         okButtonProps={{

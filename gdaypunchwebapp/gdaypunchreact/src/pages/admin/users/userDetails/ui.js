@@ -288,6 +288,7 @@ function Ui(props) {
     <>
       {productsAccessOpen && (
         <ProductsAccessModal
+          customerId={customer_details?.id}
           customerProducts={
             customer_details ? customer_details.owned_access_products : []
           }

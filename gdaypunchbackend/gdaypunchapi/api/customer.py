@@ -129,3 +129,20 @@ class PurchaseViewSet(viewsets.ModelViewSet):
     queryset = Purchase.objects.all()
     serializer_class = PurchaseSerializer
     permission_classes = (AdminOnly, )
+
+    def destroy(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+
+        purchase = Purchase.objects.get(id=pk)
+        purchase.delete()
+
+        customer = request.data.get('customer', None)
+        product = request.data.get('product', None)
+
+        other_purchases = Purchase.objects.filter(
+            customer=customer).filter(product=product)
+
+        for other_purchase in other_purchases:
+            other_purchase.delete()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)

@@ -68,6 +68,7 @@ import {
   fetchUsers,
   FETCH_PRODUCTS_SIMPLE,
   updateProductsSimple,
+  UPDATE_CUSTOMER_ACCESS_PRODUCTS,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -199,6 +200,52 @@ export function* fetchUserCustomerDetailsCall(action) {
     yield put(updateUserCustomerDetails(data.user, data));
   } else {
     console.log("User Customer Details Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* updateCustomerAccessProductsCall(action) {
+  const { updatedProducts, customerId } = action.payload;
+  const productsToModify = updatedProducts.filter(
+    (product) => product.removing || product.granting
+  );
+
+  const update = yield all(
+    productsToModify.map((product) =>
+      call(updateCustomerProductAccess, customerId, product)
+    )
+  );
+
+  yield put(fetchUserCustomerDetails(customerId));
+  message.success(
+    `Successfully updated customer products accesses: ${productsToModify
+      .map((prod) => prod.title)
+      .join(", ")}`,
+    7
+  );
+}
+
+export function* updateCustomerProductAccess(customer, product) {
+  const removing = product.removing;
+  const url = removing ? `${product.purchase_id}/` : "";
+
+  const response = yield call(api, `purchase/${url}`, {
+    method: removing ? "DELETE" : "POST",
+    body: {
+      customer,
+      product: product.id,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+  } else {
+    console.log(
+      "Update customer/product purchase error:",
+      JSON.stringify(response)
+    );
+    message.error(
+      `Update customer/product purchase error: ${JSON.stringify(response)}`
+    );
   }
 }
 
@@ -784,5 +831,9 @@ export default function* adminSaga() {
     takeLatest(UPDATE_USER_DETAILS, updateUserFieldCall),
     takeLatest(UPDATE_CUSTOMER_DETAILS, updateCustomerFieldCall),
     takeLatest(FETCH_PRODUCTS_SIMPLE, fetchProductsSimpleCall),
+    takeLatest(
+      UPDATE_CUSTOMER_ACCESS_PRODUCTS,
+      updateCustomerAccessProductsCall
+    ),
   ]);
 }
