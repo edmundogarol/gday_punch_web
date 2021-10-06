@@ -52,7 +52,7 @@ from .gdaypunchapi.api.contact import (
 )
 from .gdaypunchapi.api.customer import (
     CustomerViewSet,
-    PurchaseViewSet
+    UpdatedProductPurchasesViewSet
 )
 from .gdaypunchapi.api.coupons import (
     CouponViewSet,
@@ -85,7 +85,6 @@ router.register(r'product', ProductDetailView, basename="product")
 router.register(r'product-save', SaveViewSet, basename="product-save")
 router.register(r'contact', ContactViewSet, basename="contact")
 router.register(r'customer', CustomerViewSet, basename="customer")
-router.register(r'purchase', PurchaseViewSet, basename="purchase")
 router.register(r'coupons', CouponViewSet, basename="customer")
 router.register(r'orders', OrderViewSet, basename="orders")
 router.register(r'order', OrderDetailViewSet, basename="order")
@@ -110,8 +109,9 @@ urlpatterns = [
     # API
     path('api/', include(router.urls)),
 
-    # Products [Simple]
+    # Products [Simple, Update Purchases]
     url(r'api/products-simple/', ProductSimpleListView.as_view()),
+    url(r'api/update-purchases/', UpdatedProductPurchasesViewSet.as_view()),
 
     # Marketing Emails
     url(r'api/manga-manuscript/', DownloadManuscript.as_view()),

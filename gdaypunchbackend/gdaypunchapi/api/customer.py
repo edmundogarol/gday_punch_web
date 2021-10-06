@@ -1,10 +1,11 @@
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from ..utils import AdminOnly
 from ..api_permissions import CustomerPermissions
 from ..models import (
-    Customer, User, Purchase
+    Customer, User, Purchase, Product
 )
 from ..serializers import (
     CustomerSerializer,
@@ -124,25 +125,32 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
-class PurchaseViewSet(viewsets.ModelViewSet):
-    pagination_class = None
-    queryset = Purchase.objects.all()
-    serializer_class = PurchaseSerializer
-    permission_classes = (AdminOnly, )
+class UpdatedProductPurchasesViewSet(APIView):
+    permission_classes = [AdminOnly]
 
-    def destroy(self, request, *args, **kwargs):
-        pk = kwargs.get("pk")
-
-        purchase = Purchase.objects.get(id=pk)
-        purchase.delete()
-
+    def post(self, request, format=None):
         customer = request.data.get('customer', None)
-        product = request.data.get('product', None)
+        updated_products = request.data.get("updated_products", None)
 
-        other_purchases = Purchase.objects.filter(
-            customer=customer).filter(product=product)
+        for product in updated_products:
 
-        for other_purchase in other_purchases:
-            other_purchase.delete()
+            if product.get('removing', None):
+                purchase = Purchase.objects.get(id=product['purchase_id'])
+                purchase.delete()
+
+                purchases = Purchase.objects.filter(
+                    customer=customer).filter(product=product['id'])
+
+                for purchase in purchases:
+                    purchase.delete()
+
+            elif product.get('granting', None):
+                assigning_product = Product.objects.get(id=product['id'])
+                assigning_customer = Customer.objects.get(id=customer)
+
+                Purchase.objects.create(
+                    customer=assigning_customer,
+                    product=assigning_product
+                )
 
         return Response(status=status.HTTP_204_NO_CONTENT)

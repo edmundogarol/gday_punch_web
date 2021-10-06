@@ -209,45 +209,58 @@ export function* updateCustomerAccessProductsCall(action) {
     (product) => product.removing || product.granting
   );
 
-  const update = yield all(
-    productsToModify.map((product) =>
-      call(updateCustomerProductAccess, customerId, product)
-    )
-  );
-
-  yield put(fetchUserCustomerDetails(customerId));
-  message.success(
-    `Successfully updated customer products accesses: ${productsToModify
-      .map((prod) => prod.title)
-      .join(", ")}`,
-    7
-  );
-}
-
-export function* updateCustomerProductAccess(customer, product) {
-  const removing = product.removing;
-  const url = removing ? `${product.purchase_id}/` : "";
-
-  const response = yield call(api, `purchase/${url}`, {
-    method: removing ? "DELETE" : "POST",
+  const response = yield call(api, `update-purchases/`, {
+    method: "POST",
     body: {
-      customer,
-      product: product.id,
+      customer: customerId,
+      updated_products: productsToModify,
     },
   });
 
   if (response && response.ok) {
     const data = response.data;
+    message.success(
+      `Successfully updated customer products accesses: ${productsToModify
+        .map((prod) => prod.title)
+        .join(", ")}`,
+      7
+    );
+    yield put(fetchUserCustomerDetails(customerId));
   } else {
     console.log(
-      "Update customer/product purchase error:",
+      "Update customer/product purchases error:",
       JSON.stringify(response)
     );
     message.error(
-      `Update customer/product purchase error: ${JSON.stringify(response)}`
+      `Update customer/product purchases error: ${JSON.stringify(response)}`
     );
   }
 }
+
+// export function* updateCustomerProductAccess(customer, product) {
+//   const removing = product.removing;
+//   const url = removing ? `${product.purchase_id}/` : "";
+
+//   const response = yield call(api, `purchase/${url}`, {
+//     method: removing ? "DELETE" : "POST",
+//     body: {
+//       customer,
+//       product: product.id,
+//     },
+//   });
+
+//   if (response && response.ok) {
+//     const data = response.data;
+//   } else {
+//     console.log(
+//       "Update customer/product purchase error:",
+//       JSON.stringify(response)
+//     );
+//     message.error(
+//       `Update customer/product purchase error: ${JSON.stringify(response)}`
+//     );
+//   }
+// }
 
 export function* tweetStatus(mediaId = undefined) {
   const { status } = yield select(selectPendingTweet);
