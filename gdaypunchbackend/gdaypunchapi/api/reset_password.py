@@ -222,6 +222,11 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
                 delete_all_unexpired_sessions_for_user(user)
                 resetSession.delete()
 
+                # Does resetting password 'verify' the account? For now it does, as verification literally only checks
+                # that the email is active and being used by the user
+                if user.verified != "verified":
+                    user.verified = "verified"
+
                 user.set_password(password)
                 user.save()
 

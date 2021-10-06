@@ -48,14 +48,21 @@
     <div style="font-size: 1.5em; font-weight: 400; color: #8e8e8e; text-align: center; padding: 2em; border-bottom: 1px solid #bfbfbf;">
       <div>{{ customer }}, {{ subject }}</div>
       <div style="margin-top: 1em;">
+        {% if signup_prompt %}
+        <a href="{{ website }}/forgot-password" target="_blank" style="text-decoration: none; height: 3em; border: none; background: dimgray; color: white; padding: 1em; letter-spacing: 0.05em; font-family: sans-serif; font-size: 0.7em; white-space: nowrap;">
+          Reset Password to Login
+        </a>
+        {% else %}
         <a href="{{ website }}/bookshelf" target="_blank" style="text-decoration: none; height: 3em; border: none; background: dimgray; color: white; padding: 1em; letter-spacing: 0.05em; font-family: sans-serif; font-size: 0.7em; white-space: nowrap;">
           Go to Bookshelf
         </a>
+        {% endif %}
       </div>
     </div>
     {% if signup_prompt %}
     <div style="text-align: center; padding: 1em; padding-bottom: 1.5em; border-bottom: 1px solid #bfbfbf;">
-      <p>If you don't have an account yet, sign up with this email and you will have instant access to your manga on {{ website }} </p>
+      <p>An account has been created for you so you can have instant access to your manga on {{ website }}. </p>
+      <p>Using this email, reset your password to login.</p>
     </div>
     {% endif %}
     {% if granting_items %}
