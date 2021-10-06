@@ -13,6 +13,7 @@ import {
 import { arrayIdsMapToObject, getGdayPunchStaticUrl } from "utils/utils";
 import OrderDetailsModal from "pages/Admin/orders/orderDetails";
 import { ProductsAccessModal } from "./styles";
+import { ModalItemSummary } from "pages/Admin/orders/orderDetails/styles";
 
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -30,7 +31,9 @@ function Ui(props) {
   const [initialTargetKeys, setInitialTargetKeys] = useState([]);
   const [targetKeys, setTargetKeys] = useState([]);
   const [selectedKeys, setSelectedKeys] = useState([]);
+  const [summaryNotes, updateSummaryNotes] = useState(undefined);
   const customerProductsKeys = customerProducts.map((product) => product.id);
+  const summaryNotesRef = React.useRef(summaryNotes);
 
   let allProductsMapped = {
     ...list,
@@ -59,6 +62,58 @@ function Ui(props) {
       setInitialTargetKeys(incomingTargetKeys);
     }
   }, [list]);
+
+  useEffect(() => {
+    summaryNotesRef.current = summaryNotes;
+  }, [summaryNotes]);
+
+  const saveAndEmailSummary = () => {
+    confirm({
+      title: "Save access updates and email customer?",
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <ModalItemSummary>
+          {"Confirm updated accesses."}
+          <div>
+            {Object.values(allProductsMapped)
+              .filter((product) => product.removing || product.granting)
+              .map((product) => (
+                <p key={product.id}>{`- ${product.title}: ${
+                  product.removing
+                    ? "Removing"
+                    : product.granting
+                    ? "Granting"
+                    : ""
+                }`}</p>
+              ))}
+          </div>
+          <div>
+            {"Provide any notes for access update."}
+            <div>
+              <TextArea
+                rows={10}
+                showCount
+                maxLength={500}
+                value={summaryNotes}
+                onChange={(e) => updateSummaryNotes(e.target.value)}
+                placeholder="Enter access update notes."
+              />
+            </div>
+          </div>
+        </ModalItemSummary>
+      ),
+      onOk() {
+        updateCustomerAccessProducts(
+          customerId,
+          Object.values(allProductsMapped),
+          true,
+          summaryNotesRef.current
+        );
+        updateProductsAccessOpen(false);
+      },
+      onCancel() {},
+    });
+  };
 
   const onChange = (nextTargetKeys, direction, moveKeys) => {
     moveKeys.map((key) => {
@@ -102,10 +157,7 @@ function Ui(props) {
             disabled={initialTargetKeys.toString() === targetKeys.toString()}
             type="primary"
             key="save-email"
-            onClick={() => {
-              message.success("Customer successfully sent summary email");
-              updateProductsAccessOpen(false);
-            }}
+            onClick={() => saveAndEmailSummary()}
           >
             Save and Email
           </Button>,

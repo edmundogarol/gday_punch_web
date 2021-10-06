@@ -139,13 +139,7 @@ def send_email_purchase_requires_sign_up(customer, order, items):
         "customer": customer,
         "order": order,
         "items": items,
-        "order_total": "{:.2f}".format(order.amount),
         "all_digital": all_digital,
-        "aus_shipping": order.country == "AU",
-        "coupon_desc": order.coupon_details['description'],
-        "coupon_amount": "{:.2f}".format(order.coupon_details['discount_amount']) if order.coupon else None,
-        "subtotal": "{:.2f}".format(order.products_total_price),
-        "tax": "{:.2f}".format(order.tax),
         "website": domain
     }
 

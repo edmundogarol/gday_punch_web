@@ -1,6 +1,15 @@
+import os
+import pytz
+from threading import Thread
+from datetime import datetime
+from smtplib import SMTPAuthenticationError
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from ..utils import AdminOnly
 from ..api_permissions import CustomerPermissions
@@ -12,6 +21,12 @@ from ..serializers import (
     PurchaseSerializer
 )
 from ..constants import *
+
+
+if 'DEVENV' in os.environ:
+    domain = "http://localhost:8000"
+else:
+    domain = "https://www.beta-gdaypunch.com"
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -125,12 +140,53 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
+def send_access_updates_email_summary(customer, granting_items, removing_items, notes):
+    email_template_name = "emails/manga_access_update_summary.html"
+
+    if granting_items and not removing_items:
+        subject = 'You have been granted access to manga!'
+    elif removing_items and not granting_items:
+        subject = 'Your access to some manga have been removed.'
+    elif removing_items and granting_items:
+        subject = 'Your access to some manga have been updated.'
+
+    local_tz = pytz.timezone('Australia/Sydney')
+    local_dt = datetime.now().replace(tzinfo=pytz.utc).astimezone(local_tz)
+
+    email_config = {
+        "customer": customer.first_name if len(customer.first_name) else customer.email,
+        "granting_items": granting_items,
+        "removing_items": removing_items,
+        "date": local_dt.strftime("%d %b %Y"),
+        "subject": subject,
+        "notes": notes,
+        "website": domain
+    }
+
+    try:
+        email = render_to_string(email_template_name, email_config)
+
+        send_mail(
+            subject=subject,
+            message=subject,
+            html_message=email,
+            from_email='Gday Punch Manga Magazine<edmundo.garol@gdaypunch.com>',
+            recipient_list=[customer.email],
+            fail_silently=False,
+        )
+
+    except SMTPAuthenticationError:
+        print("Username and Password not accepted for smtp email config.")
+
+
 class UpdatedProductPurchasesViewSet(APIView):
     permission_classes = [AdminOnly]
 
     def post(self, request, format=None):
-        customer = request.data.get('customer', None)
+        customer_id = request.data.get('customer', None)
         updated_products = request.data.get("updated_products", None)
+        email_summary = request.data.get("email_summary", None)
+        email_notes = request.data.get("email_notes", None)
 
         for product in updated_products:
 
@@ -139,18 +195,53 @@ class UpdatedProductPurchasesViewSet(APIView):
                 purchase.delete()
 
                 purchases = Purchase.objects.filter(
-                    customer=customer).filter(product=product['id'])
+                    customer=customer_id).filter(product=product['id'])
 
                 for purchase in purchases:
                     purchase.delete()
 
             elif product.get('granting', None):
                 assigning_product = Product.objects.get(id=product['id'])
-                assigning_customer = Customer.objects.get(id=customer)
+                assigning_customer = Customer.objects.get(id=customer_id)
 
                 Purchase.objects.create(
                     customer=assigning_customer,
                     product=assigning_product
                 )
+
+        if email_summary:
+            customer = Customer.objects.get(id=customer_id)
+
+            granting_items = []
+            removing_items = []
+
+            for item in updated_products:
+                product = Product.objects.get(id=item['id'])
+
+                if item.get('removing', None):
+                    removing_items.append(
+                        {
+                            'id': product.id,
+                            'product': {
+                                'title': product.title,
+                                'image': product.image,
+                                'sku': product.sku,
+                                'type': product.product_type,
+                            },
+                        })
+                elif item.get('granting', None):
+                    granting_items.append(
+                        {
+                            'id': product.id,
+                            'product': {
+                                'title': product.title,
+                                'image': product.image,
+                                'sku': product.sku,
+                                'type': product.product_type,
+                            },
+                        })
+
+            Thread(target=send_access_updates_email_summary, args=(
+                customer, granting_items, removing_items, email_notes,)).start()
 
         return Response(status=status.HTTP_204_NO_CONTENT)

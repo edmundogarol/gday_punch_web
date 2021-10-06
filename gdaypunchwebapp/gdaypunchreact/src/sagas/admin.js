@@ -204,7 +204,8 @@ export function* fetchUserCustomerDetailsCall(action) {
 }
 
 export function* updateCustomerAccessProductsCall(action) {
-  const { updatedProducts, customerId } = action.payload;
+  const { updatedProducts, customerId, emailSummary, emailNotes } =
+    action.payload;
   const productsToModify = updatedProducts.filter(
     (product) => product.removing || product.granting
   );
@@ -214,6 +215,8 @@ export function* updateCustomerAccessProductsCall(action) {
     body: {
       customer: customerId,
       updated_products: productsToModify,
+      email_summary: emailSummary,
+      email_notes: emailNotes,
     },
   });
 

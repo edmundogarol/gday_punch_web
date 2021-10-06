@@ -140,11 +140,18 @@ export const updateProductsSimple = (productsSimple) => ({
   },
 });
 
-export const updateCustomerAccessProducts = (customerId, updatedProducts) => ({
+export const updateCustomerAccessProducts = (
+  customerId,
+  updatedProducts,
+  emailSummary,
+  emailNotes
+) => ({
   type: UPDATE_CUSTOMER_ACCESS_PRODUCTS,
   payload: {
     customerId,
     updatedProducts,
+    emailSummary,
+    emailNotes,
   },
 });
 
