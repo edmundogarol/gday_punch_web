@@ -122,7 +122,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
             customer = Customer.objects.create(
                 user=user if user is not None else None,
                 subscribed=request.data['subscribed'],
-                email=request.data['email'],
+                email=request.data['email'].lower(),
                 first_name=request.data['first_name'],
                 last_name=request.data['last_name'],
                 address_line_1=request.data['address_line_1'],

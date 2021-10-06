@@ -115,7 +115,7 @@ class DownloadManuscript(APIView):
         except Customer.DoesNotExist:
             customer = Customer.objects.create(
                 user=None,
-                email=email,
+                email=email.lower(),
                 subscribed=DOWNLOAD_SUBSCRIBED,
             )
             customer.save()
