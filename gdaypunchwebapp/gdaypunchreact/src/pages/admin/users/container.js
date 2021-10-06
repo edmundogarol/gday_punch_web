@@ -8,6 +8,7 @@ import {
   fetchUsers as fetchUsersAction,
   fetchUserCustomerDetails as fetchUserCustomerDetailsAction,
   setSelectedUser as setSelectedUserAction,
+  adminCreateUser as adminCreateUserAction,
 } from "actions/admin";
 
 import Ui from "./ui";
@@ -20,6 +21,7 @@ const mapDispatch = {
   fetchUsers: fetchUsersAction,
   fetchUserCustomerDetails: fetchUserCustomerDetailsAction,
   setSelectedUser: setSelectedUserAction,
+  adminCreateUser: adminCreateUserAction,
 };
 
 export default connect(mapState, mapDispatch)(withRouter(Ui));

@@ -1,3 +1,4 @@
+export const ADMIN_CREATE_USER = "admin/ADMIN_CREATE_USER";
 export const FETCH_USERS = "admin/FETCH_USERS";
 export const UPDATE_USERS = "admin/UPDATE_USERS";
 export const UPDATE_USER_DETAILS = "admin/UPDATE_USER_DETAILS";
@@ -118,6 +119,15 @@ export const updateCustomerDetails = (user, customerId, customerFields) => ({
     user,
     customerId,
     customerFields,
+  },
+});
+
+export const adminCreateUser = ({ email, firstName, lastName }) => ({
+  type: ADMIN_CREATE_USER,
+  payload: {
+    email,
+    firstName,
+    lastName,
   },
 });
 

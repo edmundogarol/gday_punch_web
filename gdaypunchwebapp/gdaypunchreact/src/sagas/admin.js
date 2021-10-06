@@ -69,6 +69,7 @@ import {
   FETCH_PRODUCTS_SIMPLE,
   updateProductsSimple,
   UPDATE_CUSTOMER_ACCESS_PRODUCTS,
+  ADMIN_CREATE_USER,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -240,30 +241,29 @@ export function* updateCustomerAccessProductsCall(action) {
   }
 }
 
-// export function* updateCustomerProductAccess(customer, product) {
-//   const removing = product.removing;
-//   const url = removing ? `${product.purchase_id}/` : "";
+export function* adminCreateUserCall(action) {
+  const { email, firstName, lastName } = action.payload;
 
-//   const response = yield call(api, `purchase/${url}`, {
-//     method: removing ? "DELETE" : "POST",
-//     body: {
-//       customer,
-//       product: product.id,
-//     },
-//   });
+  const response = yield call(api, `create-user/`, {
+    method: "POST",
+    body: {
+      email,
+      first_name: firstName,
+      last_name: lastName,
+    },
+  });
 
-//   if (response && response.ok) {
-//     const data = response.data;
-//   } else {
-//     console.log(
-//       "Update customer/product purchase error:",
-//       JSON.stringify(response)
-//     );
-//     message.error(
-//       `Update customer/product purchase error: ${JSON.stringify(response)}`
-//     );
-//   }
-// }
+  if (response && response.ok) {
+    const data = response.data;
+    message.success(
+      `Successfully created customer: ${firstName} ${lastName} [${email}]`
+    );
+    yield put(fetchUsers(undefined));
+  } else {
+    console.log("Create cutomer error:", JSON.stringify(response));
+    message.error(`Create customer error: ${JSON.stringify(response)}`);
+  }
+}
 
 export function* tweetStatus(mediaId = undefined) {
   const { status } = yield select(selectPendingTweet);
@@ -847,6 +847,7 @@ export default function* adminSaga() {
     takeLatest(UPDATE_USER_DETAILS, updateUserFieldCall),
     takeLatest(UPDATE_CUSTOMER_DETAILS, updateCustomerFieldCall),
     takeLatest(FETCH_PRODUCTS_SIMPLE, fetchProductsSimpleCall),
+    takeLatest(ADMIN_CREATE_USER, adminCreateUserCall),
     takeLatest(
       UPDATE_CUSTOMER_ACCESS_PRODUCTS,
       updateCustomerAccessProductsCall

@@ -53,6 +53,11 @@
         </a>
       </div>
     </div>
+    {% if signup_prompt %}
+    <div style="text-align: center; padding: 1em; padding-bottom: 1.5em; border-bottom: 1px solid #bfbfbf;">
+      <p>If you don't have an account yet, sign up with this email and you will have instant access to your manga on {{ website }} </p>
+    </div>
+    {% endif %}
     {% if granting_items %}
     <div>
       <h3 style="margin: 1em; font-size: 1.1em;">

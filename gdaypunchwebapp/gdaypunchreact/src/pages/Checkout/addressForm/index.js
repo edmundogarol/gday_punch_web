@@ -20,7 +20,6 @@ function Ui(props) {
   };
 
   const handleUpdateAddressForm = (field, e) => {
-    console.log({ field, value: e.target.value });
     // Value
     let value = e.target.value;
 
@@ -84,7 +83,7 @@ function Ui(props) {
         />
         <Alert
           className="invalid-message"
-          message="Enter an email address"
+          message="Please enter a valid email address"
           type="error"
         />
       </div>

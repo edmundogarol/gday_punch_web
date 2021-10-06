@@ -66,6 +66,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
                     existingCustomer.user = user
                     existingCustomer.save()
 
+                if (existingCustomer.first_name is None and user.first_name is not None) and \
+                        (existingCustomer.first_name is None and user.first_name is not None):
+                    existingCustomer.first_name = user.first_name,
+                    existingCustomer.last_name = user.last_name,
+
                 if subscribed is not None:
                     existingCustomer.subscribed = subscribed
                 if mag_subscribed is not None:
@@ -85,9 +90,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
                 customer = Customer.objects.create(
                     user=user,
                     email=user.email,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
                     subscribed=subscribed,
-                    mag_subscribed=mag_subscribed,
-                    dig_subscribed=dig_subscribed,
+                    mag_subscribed=mag_subscribed if mag_subscribed is not None else False,
+                    dig_subscribed=dig_subscribed if dig_subscribed is not None else False,
                 )
                 customer.save()
 
@@ -140,11 +147,11 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
 
-def send_access_updates_email_summary(customer, granting_items, removing_items, notes):
+def send_access_updates_email_summary(customer, granting_items, removing_items, notes, signup_prompt):
     email_template_name = "emails/manga_access_update_summary.html"
 
     if granting_items and not removing_items:
-        subject = 'You have been granted access to manga!'
+        subject = 'You have been granted access to some manga!'
     elif removing_items and not granting_items:
         subject = 'Your access to some manga have been removed.'
     elif removing_items and granting_items:
@@ -160,6 +167,7 @@ def send_access_updates_email_summary(customer, granting_items, removing_items, 
         "date": local_dt.strftime("%d %b %Y"),
         "subject": subject,
         "notes": notes,
+        "signup_prompt": signup_prompt,
         "website": domain
     }
 
@@ -242,6 +250,6 @@ class UpdatedProductPurchasesViewSet(APIView):
                         })
 
             Thread(target=send_access_updates_email_summary, args=(
-                customer, granting_items, removing_items, email_notes,)).start()
+                customer, granting_items, removing_items, email_notes, customer.user.last_login is None,)).start()
 
         return Response(status=status.HTTP_204_NO_CONTENT)

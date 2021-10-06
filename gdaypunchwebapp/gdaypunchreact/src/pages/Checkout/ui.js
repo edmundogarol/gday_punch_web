@@ -25,7 +25,7 @@ import {
   PaymentMethodLogo,
   EmptyCartMessage,
 } from "./styles";
-import { getResourceImage, phoneValidator } from "utils/utils";
+import { emailValidator, getResourceImage, phoneValidator } from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
@@ -453,6 +453,8 @@ function Ui(props) {
 
       if (key === "phone") {
         validator = phoneValidator;
+      } else if (key === "email") {
+        validator = emailValidator;
       }
       const invalid =
         !empty && validator && !validator(updatingForm[key].value);

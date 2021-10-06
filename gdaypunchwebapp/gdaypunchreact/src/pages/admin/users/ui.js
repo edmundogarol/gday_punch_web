@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Input, Button, Space, Typography } from "antd";
+import { Table, Input, Button, Space, Typography, message } from "antd";
 import Highlighter from "react-highlight-words";
 import {
   ClockCircleOutlined as PendingIcon,
@@ -7,12 +7,15 @@ import {
   PlayCircleOutlined as ShippedIcon,
   InfoCircleOutlined as RefundedIcon,
   CloseCircleOutlined as DeclinedIcon,
+  UserOutlined,
+  UserAddOutlined,
   SearchOutlined,
   ShoppingOutlined,
 } from "@ant-design/icons";
 
 import UserDetailsModal from "./userDetails";
-import { UsersContainer } from "./styles";
+import { UsersContainer, UserCreateContainer, SubmitButton } from "./styles";
+import { emailValidator } from "utils/utils";
 
 const { Title } = Typography;
 
@@ -28,10 +31,16 @@ function Ui(props) {
     fetchUsers,
     fetchUserCustomerDetails,
     setSelectedUser,
+    adminCreateUser,
   } = props;
   const [searchInput, updateSearchInput] = useState(undefined);
   const [searchText, updateSearchText] = useState("");
   const [searchedColumn, updateSearchedColumn] = useState("");
+  const [newUser, updateNewUser] = useState({
+    email: undefined,
+    firstName: undefined,
+    lastName: undefined,
+  });
 
   useEffect(() => {
     if (!fetching && !finishedFetching) {
@@ -205,12 +214,16 @@ function Ui(props) {
       key: "readable_last_login",
       className: "center",
       render: (readable_last_login) => {
-        return (
-          <>
-            <p>{readable_last_login.date}</p>
-            <p className="time">{readable_last_login.time}</p>
-          </>
-        );
+        if (readable_last_login) {
+          return (
+            <>
+              <p>{readable_last_login.date}</p>
+              <p className="time">{readable_last_login.time}</p>
+            </>
+          );
+        } else {
+          return "Never logged in";
+        }
       },
     },
   ];
@@ -252,6 +265,14 @@ function Ui(props) {
     };
   };
 
+  const handleCreateUser = () => {
+    if (!emailValidator(newUser.email)) {
+      message.error("Email invalid. Check and try again.");
+    } else {
+      adminCreateUser(newUser);
+    }
+  };
+
   const dataSource = Object.values(userList)
     .map((user) => ({
       key: user.id,
@@ -263,6 +284,34 @@ function Ui(props) {
 
   return (
     <UsersContainer>
+      <Title level={4}>Create User</Title>
+      <UserCreateContainer>
+        <Input
+          value={newUser.email}
+          onChange={(e) => updateNewUser({ ...newUser, email: e.target.value })}
+          placeholder="Enter Email"
+          prefix={<UserAddOutlined className="site-form-item-icon" />}
+        />
+        <div className="name-row">
+          <Input
+            value={newUser.firstName}
+            onChange={(e) =>
+              updateNewUser({ ...newUser, firstName: e.target.value })
+            }
+            placeholder="Enter first name"
+            prefix={<UserOutlined className="site-form-item-icon" />}
+          />
+          <Input
+            value={newUser.lastName}
+            onChange={(e) =>
+              updateNewUser({ ...newUser, lastName: e.target.value })
+            }
+            placeholder="Enter last name"
+            prefix={<UserOutlined className="site-form-item-icon" />}
+          />
+        </div>
+        <SubmitButton onClick={() => handleCreateUser()}>Create</SubmitButton>
+      </UserCreateContainer>
       <Title level={4}>Users</Title>
       {selected && <UserDetailsModal user={userList[selected]} />}
       <Table

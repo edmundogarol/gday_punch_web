@@ -353,7 +353,11 @@ function Ui(props) {
             </UserField>
             <UserField>
               <h4>Last Login</h4>
-              <div>{`${user.readable_last_login.date} ${user.readable_last_login.time}`}</div>
+              <div>
+                {user.readable_last_login
+                  ? `${user.readable_last_login.date} ${user.readable_last_login.time}`
+                  : "Never logged in"}
+              </div>
             </UserField>
             <UserField>
               <h4>Date Joined</h4>

@@ -39,3 +39,11 @@ export function phoneValidator(inputtxt) {
   }
   return false;
 }
+
+export function emailValidator(inputtxt) {
+  var email = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  if (inputtxt.match(email)) {
+    return true;
+  }
+  return false;
+}

@@ -184,6 +184,31 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
+class AdminCreateUserViewSet(APIView):
+    permission_classes = [AdminOnly]
+
+    def post(self, request, format=None):
+        email = request.data.get('email', None)
+        first_name = request.data.get('first_name', None)
+        last_name = request.data.get('last_name', None)
+        temp_password = token_urlsafe(6)
+
+        print(temp_password)
+        try:
+            user = User.objects.create_user(
+                email=email.lower(),
+                password=temp_password,
+                first_name=first_name,
+                last_name=last_name,
+            )
+
+        except IntegrityError:
+            content = {"error": "Duplicate email. User already exists."}
+            return Response(content, status=status.HTTP_409_CONFLICT)
+
+        return Response(status=status.HTTP_201_CREATED)
+
+
 class GroupViewSet(ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer

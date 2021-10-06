@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { device } from "utils/styles";
+import { Button } from "antd";
 
 export const UsersContainer = styled.div`
   table {
@@ -96,4 +97,23 @@ export const UsersContainer = styled.div`
       margin-right: 0.3em;
     }
   }
+`;
+
+export const UserCreateContainer = styled.div`
+  width: 50%;
+  padding-top: 1em;
+  height: 150px;
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 2em;
+
+  .name-row {
+    display: flex;
+  }
+`;
+
+export const SubmitButton = styled(Button)`
+  width: inherit;
+  align-self: flex-end;
 `;
