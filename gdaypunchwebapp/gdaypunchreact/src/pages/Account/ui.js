@@ -370,7 +370,11 @@ function Ui(props) {
               />
             )}
           </TabPane>
-          <TabPane tab="Subscriptions" key="subscriptions">
+          <TabPane
+            tab="Subscriptions"
+            key="subscriptions"
+            disabled={!gdaySubscriptionProducts.length}
+          >
             <div className="gdaypunch-subscriptions">
               {gdaySubscriptionProducts.map(
                 ({
