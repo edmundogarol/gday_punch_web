@@ -228,6 +228,10 @@ class Manga(models.Model):
     def pdf_live(self):
         user = User.objects.get(email=get_current_user())
 
+        # Temporary fix to keep pdf's live in gdaypunch.com
+        if self.title in ["Gday Punch Manga Magazine Issue #1", "Gday Punch Manga Magazine Issue #4"]:
+            return self.pdf
+
         if user.is_staff:
             return self.pdf
         else:
