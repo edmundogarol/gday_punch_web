@@ -178,7 +178,7 @@ def send_access_updates_email_summary(customer, granting_items, removing_items, 
             subject=subject,
             message=subject,
             html_message=email,
-            from_email='Gday Punch Manga Magazine<edmundo.garol@gdaypunch.com>',
+            from_email='Gday Punch Manga Magazine<info@gdaypunch.com>',
             recipient_list=[customer.email],
             fail_silently=False,
         )
