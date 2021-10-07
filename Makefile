@@ -37,6 +37,9 @@ migrations: makemigrations migrate
 server:
 	DEVENV=development python manage.py runserver 0.0.0.0:8000
 
+mailserver:
+	brew services start mailhog
+
 buildrun: env server
 
 resetdb: deletemigrations deletedb makemigrations migrate

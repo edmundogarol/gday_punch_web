@@ -6,6 +6,14 @@ Repository: `gday_punch_web`
 
 #Starting Gday Punch Web App
 
-> Install Docker
+## Run Server and GUI
+> make app
 
-> Run `docker-compose up` 
+## Run Server
+> make server
+
+## Run GUI
+> make watchgui
+
+## Run Local Mail Server to test emails
+> make mailserver

@@ -172,13 +172,21 @@ DATABASES = {
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = SETTINGS['EMAIL_PORT']
-EMAIL_HOST_USER = SETTINGS['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = SETTINGS['EMAIL_HOST_PASSWORD']
-EMAIL_USE_SSL = True
-EMAIL_USE_TLS = False
+if 'DEVENV' in os.environ:
+    # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = '0.0.0.0'
+    EMAIL_PORT = SETTINGS['EMAIL_PORT']
+    EMAIL_HOST_USER = SETTINGS['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = SETTINGS['EMAIL_HOST_PASSWORD']
+    EMAIL_USE_TLS = False
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_PORT = SETTINGS['EMAIL_PORT']
+    EMAIL_HOST_USER = SETTINGS['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = SETTINGS['EMAIL_HOST_PASSWORD']
+    EMAIL_USE_SSL = True
+    EMAIL_USE_TLS = False
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
