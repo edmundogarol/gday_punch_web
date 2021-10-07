@@ -40,6 +40,9 @@ server:
 mailserver:
 	brew services start mailhog
 
+stopmail:
+	brew services stop mailhog
+
 buildrun: env server
 
 resetdb: deletemigrations deletedb makemigrations migrate
