@@ -95,14 +95,6 @@ function Root(props) {
     props.checkLogin();
   }, []);
 
-  const gdayPunchIssue1 =
-    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf";
-
-  const gdayPunchIssue4 =
-    "https://gdaypunch-static.s3-us-west-2.amazonaws.com/gpmm-4-digital-compressed-s.pdf";
-
-  const orientation = "japanese";
-
   class ProtectedRoute extends Component {
     render() {
       const { ...props } = this.props;

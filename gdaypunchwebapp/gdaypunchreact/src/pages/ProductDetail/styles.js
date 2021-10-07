@@ -143,6 +143,8 @@ export const MoreDetailsContainer = styled.div`
 
 export const LabelFieldContainer = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  line-break: anywhere;
   margin-bottom: 1em;
 
   label {

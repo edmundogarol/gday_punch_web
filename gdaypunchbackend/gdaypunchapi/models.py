@@ -242,6 +242,9 @@ class Manga(models.Model):
                 purchase = Purchase.objects.filter(
                     customer=customer.id).filter(product=product.id)
 
+                # Temporary fix to keep pdf's live in gdaypunch.com
+                if product.sku in ["GPMMD1", "GPMMD4"]:
+                    return self.pdf
                 if customer.dig_subscribed and "GPMMD" in product.sku:
                     return self.pdf
                 if purchase:

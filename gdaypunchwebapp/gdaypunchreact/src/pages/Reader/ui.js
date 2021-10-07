@@ -14,7 +14,8 @@ import {
   faHeart,
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
-import { LikeButton } from "./styles";
+import LoadingSpinner from "components/loadingSpinner";
+import { ReaderContainer, LikeButton } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 import { getGdayPunchStaticUrl } from "utils/utils";
 
@@ -42,7 +43,10 @@ function Ui(props) {
   const [submittingUsername, setSubmittingUsername] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
   const { id } = useParams();
-  const mangaId = parseInt(defaultManga ? defaultManga : id);
+  const mangaId = parseInt(
+    // Temporary Fix for deploying new site and still give access to current gdaypunch.com manga
+    defaultManga ? (defaultManga === 1 ? 3 : defaultManga) : id
+  );
   const styles = getStyles();
 
   const pageCount = manga?.page_count;
@@ -107,9 +111,9 @@ function Ui(props) {
     const newManga = manga?.id !== mangaId;
 
     if (defaultManga && (manga === undefined || newManga)) {
-      setReadingManga(defaultManga);
-      getManga(defaultManga);
-      getComments(defaultManga);
+      setReadingManga(defaultManga === 1 ? 3 : defaultManga);
+      getManga(defaultManga === 1 ? 3 : defaultManga);
+      getComments(defaultManga === 1 ? 3 : defaultManga);
     } else if (manga === undefined || newManga) {
       setReadingManga(mangaId);
       getManga(mangaId);
@@ -128,7 +132,7 @@ function Ui(props) {
       : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1);
 
   return (
-    <div
+    <ReaderContainer
       className={classNames("pdf-reader", {
         "reader-only": readerOnly,
       })}
@@ -156,25 +160,29 @@ function Ui(props) {
           icon={leftNavigatorDisabled ? faHome : faChevronCircleLeft}
           onClick={() => leftClick()}
         />
-        <Document
-          style={{
-            width: `${readerSizeLevels[sizeLevel].container}%`,
-          }}
-          file={getGdayPunchStaticUrl(manga?.pdf_live)}
-          className="pdf-container"
-          options={{
-            rangeChunkSize: 2000000,
-          }}
-        >
-          <Page
-            loading={"Hang on! Loading page..."}
-            pageNumber={pageNumber}
-            width={readerSizeLevels[sizeLevel].page}
-            object-fit="fill"
-            onRenderSuccess={null}
-            size="A4"
-          />
-        </Document>
+        {!manga ? (
+          <LoadingSpinner />
+        ) : (
+          <Document
+            style={{
+              width: `${readerSizeLevels[sizeLevel].container}%`,
+            }}
+            file={getGdayPunchStaticUrl(manga?.pdf_live)}
+            className="pdf-container"
+            options={{
+              rangeChunkSize: 2000000,
+            }}
+          >
+            <Page
+              loading={"Hang on! Loading page..."}
+              pageNumber={pageNumber}
+              width={readerSizeLevels[sizeLevel].page}
+              object-fit="fill"
+              onRenderSuccess={null}
+              size="A4"
+            />
+          </Document>
+        )}
         <FontAwesomeIcon
           className="pdf-button"
           style={styles.pdfNavigator("right")}
@@ -258,7 +266,7 @@ function Ui(props) {
         </div>
       )}
       {contextHolder}
-    </div>
+    </ReaderContainer>
   );
 }
 
