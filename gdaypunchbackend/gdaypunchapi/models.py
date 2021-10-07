@@ -226,13 +226,31 @@ class Manga(models.Model):
 
     @property
     def pdf_live(self):
-        if str(get_current_user()) == "AnonymousUser":
-            return False
-
         user = User.objects.get(email=get_current_user())
+
         if user.is_staff:
             return self.pdf
         else:
+            product_manga = Product.manga.through.objects.filter(manga=self.id)
+            product = product_manga.first().product
+
+            if product.active_price == 0:
+                return self.pdf
+
+            try:
+                customer = Customer.objects.get(user=user.id)
+                purchase = Purchase.objects.filter(
+                    customer=customer.id).filter(product=product.id)
+
+                if customer.dig_subscribed and "GPMMD" in product.sku:
+                    return self.pdf
+                if purchase:
+                    return self.pdf
+            except Customer.DoesNotExist:
+                return None
+            except Purchase.DoesNotExist:
+                return None
+
             return None
 
 
@@ -348,7 +366,7 @@ class Product(models.Model):
                 "likes": manga.likes,
                 "comments": manga.comments,
                 "user_likes": manga.user_likes,
-                "pdf": manga.pdf
+                "pdf_live": manga.pdf_live
             }
 
         return details

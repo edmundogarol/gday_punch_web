@@ -119,14 +119,14 @@ function Root(props) {
           exact
           path="/gpmm/1"
           component={() => (
-            <Reader file={gdayPunchIssue1} pageCount={104} readerOnly />
+            <Reader defaultManga={1} pageCount={104} readerOnly />
           )}
         />
         <Route
           exact
           path="/gpmm/4"
           component={() => (
-            <Reader file={gdayPunchIssue4} pageCount={104} readerOnly />
+            <Reader defaultManga={4} pageCount={104} readerOnly />
           )}
         />
         <Route path="/">

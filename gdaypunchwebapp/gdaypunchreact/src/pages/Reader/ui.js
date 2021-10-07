@@ -22,7 +22,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 function Ui(props) {
   const {
-    file,
+    defaultManga,
     readerOnly,
     manga,
     getManga,
@@ -42,11 +42,11 @@ function Ui(props) {
   const [submittingUsername, setSubmittingUsername] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
   const { id } = useParams();
-  const mangaId = parseInt(id);
+  const mangaId = parseInt(defaultManga ? defaultManga : id);
   const styles = getStyles();
 
-  const pageCount = manga.page_count;
-  const japaneseReading = manga.japanese_reading;
+  const pageCount = manga?.page_count;
+  const japaneseReading = manga?.japanese_reading;
   const firstPage = pageNumber === 1;
   const lastPage = pageNumber === pageCount;
   const leftNavigatorDisabled = japaneseReading ? lastPage : firstPage;
@@ -103,12 +103,14 @@ function Ui(props) {
   }, [newUsername, submittingUsername]);
 
   useEffect(() => {
-    if (file) return;
-
     const { setReadingManga, manga } = props;
     const newManga = manga?.id !== mangaId;
 
-    if (manga === undefined || newManga) {
+    if (defaultManga && (manga === undefined || newManga)) {
+      setReadingManga(defaultManga);
+      getManga(defaultManga);
+      getComments(defaultManga);
+    } else if (manga === undefined || newManga) {
       setReadingManga(mangaId);
       getManga(mangaId);
       getComments(mangaId);
@@ -158,7 +160,7 @@ function Ui(props) {
           style={{
             width: `${readerSizeLevels[sizeLevel].container}%`,
           }}
-          file={file ? file : getGdayPunchStaticUrl(manga?.pdf)}
+          file={getGdayPunchStaticUrl(manga?.pdf_live)}
           className="pdf-container"
           options={{
             rangeChunkSize: 2000000,
