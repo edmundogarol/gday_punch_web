@@ -15,6 +15,12 @@ function Footer() {
       <div className="contact-us">
         <p>+61 484 575 754</p>
         <p>info@gdaypunch.com</p>
+        <NavLink target="_blank" to="/contact">
+          <p className="website">Contact Us</p>
+        </NavLink>
+        <NavLink target="_blank" to="/conditions">
+          <p className="website">Submission Conditions</p>
+        </NavLink>
         <NavLink target="_blank" to="/refunds-and-returns">
           <p className="website">Refunds & Returns Policy</p>
         </NavLink>

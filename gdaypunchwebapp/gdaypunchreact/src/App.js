@@ -44,6 +44,7 @@ import VerifyEmail from "pages/VerifyEmail";
 import Cart from "pages/Cart";
 import Checkout from "pages/Checkout";
 import RefundsAndReturns from "pages/RefundsAndReturns";
+import SubmissionConditions from "pages/SubmissionConditions";
 import OrderConfirmation from "pages/OrderConfirmation";
 import ProductDetail from "pages/ProductDetail";
 import Reader from "pages/Reader";
@@ -134,6 +135,11 @@ function Root(props) {
               title="Contact"
             />
             <RoutePage exact path="/about" component={About} />
+            <RoutePage
+              exact
+              path="/conditions"
+              component={SubmissionConditions}
+            />
             <RoutePage exact path="/daily-prompt" component={DailyPrompt} />
             <RoutePage exact path="/downloads" component={Downloads} />
             <RoutePage exact path="/cart" component={Cart} />

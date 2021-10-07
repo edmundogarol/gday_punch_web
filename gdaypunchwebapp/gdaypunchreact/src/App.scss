@@ -434,6 +434,10 @@ code {
       margin: unset;
       margin-bottom: 2pt;
     }
+    
+    p:not(.website) {
+      opacity: 0.5;
+    }
 
     .website {
       margin-top: 4pt;
