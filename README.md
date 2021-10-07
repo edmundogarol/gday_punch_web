@@ -2,18 +2,18 @@
 
 Repository: `gday_punch_web`
 
-![gday_punch_web_app](https://fdaveq.bn.files.1drv.com/y4mFw4GkikecKsRqMIDaBAqLJHdTaKhQ2Z1hmC2S_cY_ZqGJqDl18ce5UGbEF3gqt48fKwiAI9EUhrumDHCYj824K3XJgKiMoFHIAcDSbYC04FDo_SAhPlIOrr-yMiz1qfBVkeN-4kOoYsYoVZdWk8PUekbV9SeURFS5c0TqN0dhGcGJciJgiZd6CN0_5nSKTVTcAQRgbFIfnnwqjZ1pjeMjA?width=700&height=510&cropmode=none)
+![gday_punch_web_app](https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com/gday-punch-webapp.png)
 
 #Starting Gday Punch Web App
 
 ## Run Server and GUI
-> make app
+> `make app`
 
 ## Run Server
-> make server
+> `make server`
 
 ## Run GUI
-> make watchgui
+> `make watchgui`
 
 ## Run Local Mail Server to test emails
-> make mailserver
+> `make mailserver`
