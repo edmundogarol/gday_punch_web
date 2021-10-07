@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { Page, pdfjs } from "react-pdf";
 import { useParams } from "react-router-dom";
-import { Modal, Input } from "antd";
+import { Modal, Input, Slider } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import { Document } from "react-pdf/dist/entry.webpack";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -16,13 +16,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { LikeButton } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
+import { getGdayPunchStaticUrl } from "utils/utils";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function Ui(props) {
   const {
     file,
-    orientation = "japanese",
     readerOnly,
     manga,
     getManga,
@@ -45,11 +45,8 @@ function Ui(props) {
   const mangaId = parseInt(id);
   const styles = getStyles();
 
-  let pageCount;
-  if (manga && manga.title === "Escape") pageCount = 4;
-  if (manga && manga.title === "Kingslore") pageCount = 8;
-
-  const japaneseReading = orientation === "japanese";
+  const pageCount = manga.page_count;
+  const japaneseReading = manga.japanese_reading;
   const firstPage = pageNumber === 1;
   const lastPage = pageNumber === pageCount;
   const leftNavigatorDisabled = japaneseReading ? lastPage : firstPage;
@@ -111,7 +108,6 @@ function Ui(props) {
     const { setReadingManga, manga } = props;
     const newManga = manga?.id !== mangaId;
 
-    // console.log({ manga, mangaId, newManga });
     if (manga === undefined || newManga) {
       setReadingManga(mangaId);
       getManga(mangaId);
@@ -162,7 +158,7 @@ function Ui(props) {
           style={{
             width: `${readerSizeLevels[sizeLevel].container}%`,
           }}
-          file={file ? file : manga?.pdf}
+          file={file ? file : getGdayPunchStaticUrl(manga?.pdf)}
           className="pdf-container"
           options={{
             rangeChunkSize: 2000000,
@@ -196,7 +192,14 @@ function Ui(props) {
           onClick={() => (higerDisabled ? null : setSizeLevel(sizeLevel + 1))}
         />
       </div>
-
+      <Slider
+        min={1}
+        value={pageNumber}
+        reverse={japaneseReading}
+        defaultValue={1}
+        onChange={(val) => setPageNumber(val)}
+        max={pageCount}
+      />
       {!readerOnly && manga && (
         <div className="pdf-details">
           <h2 style={styles.mangaTitle}>{manga.title}</h2>

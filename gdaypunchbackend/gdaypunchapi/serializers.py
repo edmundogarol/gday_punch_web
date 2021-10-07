@@ -41,7 +41,7 @@ class MangaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Manga
         fields = ("id", "title", "author", "pdf_live", "cover", "likes", "user_likes",
-                  "comments", "author_name")
+                  "comments", "author_name", "page_count", "japanese_reading")
 
 
 class LikeSerializer(serializers.ModelSerializer):

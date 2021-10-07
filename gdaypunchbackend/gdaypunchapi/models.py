@@ -181,6 +181,7 @@ class Manga(models.Model):
     cover = models.TextField(max_length=100, blank=True)
     release_date = models.DateTimeField(null=True, blank=True)
     page_count = models.IntegerField(blank=True, default=0)
+    japanese_reading = models.BooleanField(default=True)
 
     ALL_AGES = 'all_ages'
     TEENS = 'teens'

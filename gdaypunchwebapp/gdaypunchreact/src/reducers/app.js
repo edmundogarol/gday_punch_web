@@ -478,6 +478,8 @@ const appReducer = (state = INITIAL_STATE, action) => {
                 likes: manga.likes,
                 user_likes: manga.user_likes,
                 comments: manga.comments,
+                page_count: manga.page_count,
+                japanese_reading: manga.japanese_reading,
               },
             },
           },
