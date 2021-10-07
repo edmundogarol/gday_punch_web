@@ -122,7 +122,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         try:
             user = User.objects.get(email=self.request.user)
 
-            if user.is_staff:
+            if user.privileges.filter(name="super").exists() or \
+                    user.privileges.filter(name="shop_tester").exists():
                 serializer = ProductSerializer(queryset, many=True)
                 return Response(serializer.data)
 

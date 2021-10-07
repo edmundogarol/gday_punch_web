@@ -209,6 +209,25 @@ class AdminCreateUserViewSet(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
+class UpdateUserPrivilegeViewSet(APIView):
+    permission_classes = [AdminOnly]
+
+    def post(self, request, format=None):
+        user_id = request.data.get('user', None)
+        privileges = request.data.get('privileges', None)
+
+        try:
+            user = User.objects.get(id=user_id)
+            user.privileges.set(privileges)
+            user.save()
+
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+
 class GroupViewSet(ModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer

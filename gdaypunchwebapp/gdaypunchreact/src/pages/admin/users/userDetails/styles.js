@@ -136,6 +136,10 @@ export const UserField = styled.div`
       cursor: pointer;
     }
   }
+
+  .edit {
+    margin-left: 1em;
+  }
 `;
 
 export const StatusButtons = styled.div`

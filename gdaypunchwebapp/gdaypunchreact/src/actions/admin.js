@@ -2,6 +2,7 @@ export const ADMIN_CREATE_USER = "admin/ADMIN_CREATE_USER";
 export const FETCH_USERS = "admin/FETCH_USERS";
 export const UPDATE_USERS = "admin/UPDATE_USERS";
 export const UPDATE_USER_DETAILS = "admin/UPDATE_USER_DETAILS";
+export const UPDATE_USER_PRIVILEGES = "admin/UPDATE_USER_PRIVILEGES";
 export const UPDATE_CUSTOMER_DETAILS = "admin/UPDATE_CUSTOMER_DETAILS";
 export const FETCHING_USERS = "admin/FETCHING_USERS";
 export const FINISHED_FETCHING_USERS = "admin/FINISHED_FETCHING_USERS";
@@ -105,11 +106,19 @@ export const updateUsers = (users) => ({
   },
 });
 
-export const updateUserDetails = (user, userFields) => ({
+export const updateUserDetails = (userId, userFields) => ({
   type: UPDATE_USER_DETAILS,
   payload: {
-    user,
+    userId,
     userFields,
+  },
+});
+
+export const updateUserPrivileges = (userId, privileges) => ({
+  type: UPDATE_USER_PRIVILEGES,
+  payload: {
+    userId,
+    privileges,
   },
 });
 

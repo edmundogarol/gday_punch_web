@@ -25,7 +25,8 @@ from .gdaypunchapi.views import (
     UserViewSet, LoginView, LogoutView, MangaDetailView,
     AllMangaViewSet, LikeViewSet, CommentViewSet, MangaCommentsViewSet,
     CommentLikeViewSet, PromptViewSet, PromptRandomStylePanelViewSet,
-    PromptSelectedViewSet, SwaggerSchemaView, AdminCreateUserViewSet
+    PromptSelectedViewSet, SwaggerSchemaView, AdminCreateUserViewSet,
+    UpdateUserPrivilegeViewSet
 )
 from .gdaypunchapi.api.reset_password import (
     ResetPasswordViewSet
@@ -111,6 +112,7 @@ urlpatterns = [
 
     # Admin
     url(r'api/create-user/', AdminCreateUserViewSet.as_view()),
+    url(r'api/privileges/', UpdateUserPrivilegeViewSet.as_view()),
     # Products [Simple, Update Purchases]
     url(r'api/products-simple/', ProductSimpleListView.as_view()),
     url(r'api/update-purchases/', UpdatedProductPurchasesViewSet.as_view()),

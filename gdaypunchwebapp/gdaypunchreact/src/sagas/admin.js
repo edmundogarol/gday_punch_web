@@ -70,6 +70,7 @@ import {
   updateProductsSimple,
   UPDATE_CUSTOMER_ACCESS_PRODUCTS,
   ADMIN_CREATE_USER,
+  UPDATE_USER_PRIVILEGES,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -122,9 +123,9 @@ export function* fetchUsersCall(action) {
 }
 
 export function* updateUserFieldCall(action) {
-  const { user, userFields } = action.payload;
+  const { userId, userFields } = action.payload;
 
-  const response = yield call(api, `user/${user.id}/`, {
+  const response = yield call(api, `user/${userId}/`, {
     method: "PATCH",
     body: {
       ...userFields,
@@ -141,6 +142,30 @@ export function* updateUserFieldCall(action) {
     message.success(`Successfully updated user`);
   } else {
     console.log("Update user details error", JSON.stringify(response));
+  }
+}
+
+export function* updateUserPrivilegesCall(action) {
+  const { userId, privileges } = action.payload;
+
+  const response = yield call(api, `privileges/`, {
+    method: "POST",
+    body: {
+      user: userId,
+      privileges,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    const user = {
+      ...data,
+    };
+
+    yield put(updateUsers({ results: [user] }));
+    message.success(`Successfully updated user privileges`);
+  } else {
+    console.log("Update user privileges error", JSON.stringify(response));
   }
 }
 
@@ -848,6 +873,7 @@ export default function* adminSaga() {
     takeLatest(UPDATE_CUSTOMER_DETAILS, updateCustomerFieldCall),
     takeLatest(FETCH_PRODUCTS_SIMPLE, fetchProductsSimpleCall),
     takeLatest(ADMIN_CREATE_USER, adminCreateUserCall),
+    takeLatest(UPDATE_USER_PRIVILEGES, updateUserPrivilegesCall),
     takeLatest(
       UPDATE_CUSTOMER_ACCESS_PRODUCTS,
       updateCustomerAccessProductsCall

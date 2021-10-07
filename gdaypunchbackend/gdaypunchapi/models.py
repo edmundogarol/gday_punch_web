@@ -80,21 +80,6 @@ class Role(models.Model):
 
 
 class Privileges(models.Model):
-    SUPER = 1
-    ADMIN = 2
-    PROMPTS = 3
-    PRODUCTS = 4
-    TWITTER = 5
-    INSTAGRAM = 6
-    PRIVILEGES = (
-        (SUPER, 'super'),
-        (ADMIN, 'admin'),
-        (PROMPTS, 'prompts'),
-        (PRODUCTS, 'products'),
-        (TWITTER, 'twitter'),
-        (INSTAGRAM, 'instagram'),
-    )
-
     id = models.PositiveSmallIntegerField(
         choices=PRIVILEGES, primary_key=True)
     name = models.TextField(max_length=20, blank=True)
@@ -195,6 +180,7 @@ class Manga(models.Model):
     pdf = models.TextField(max_length=100, blank=True)
     cover = models.TextField(max_length=100, blank=True)
     release_date = models.DateTimeField(null=True, blank=True)
+    page_count = models.IntegerField(blank=True, default=0)
 
     ALL_AGES = 'all_ages'
     TEENS = 'teens'

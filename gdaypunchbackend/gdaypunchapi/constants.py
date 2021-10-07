@@ -1,3 +1,21 @@
+# User privileges
+SUPER = 1
+ADMIN = 2
+PROMPTS = 3
+PRODUCTS = 4
+TWITTER = 5
+INSTAGRAM = 6
+SHOP_TESTER = 7
+
+PRIVILEGES = (
+    (SUPER, 'super'),
+    (ADMIN, 'admin'),
+    (PROMPTS, 'prompts'),
+    (PRODUCTS, 'products'),
+    (TWITTER, 'twitter'),
+    (INSTAGRAM, 'instagram'),
+    (SHOP_TESTER, 'shop_tester'),
+)
 
 # Product Types
 PHYSICAL = 'physical'

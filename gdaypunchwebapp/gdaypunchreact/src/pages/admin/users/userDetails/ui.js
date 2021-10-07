@@ -12,6 +12,7 @@ import {
 import { getGdayPunchStaticUrl } from "utils/utils";
 import OrderDetailsModal from "pages/Admin/orders/orderDetails";
 import ProductsAccessModal from "../productsAccess";
+import PrivilegesManagerModal from "../privileges";
 import {
   UserModal,
   AddressContactField,
@@ -41,6 +42,7 @@ function Ui(props) {
     fetchProductsSimple,
   } = props;
   const [productsAccessOpen, updateProductsAccessOpen] = useState(false);
+  const [privilegesManagerOpen, updatePrivilegesManagerOpen] = useState(false);
   const { customer_details } = user;
 
   const handleSubscribe = () => {
@@ -286,6 +288,14 @@ function Ui(props) {
 
   return (
     <>
+      {privilegesManagerOpen && (
+        <PrivilegesManagerModal
+          userId={user.id}
+          userPrivileges={user.privileges}
+          privilegesManagerOpen={privilegesManagerOpen}
+          updatePrivilegesManagerOpen={updatePrivilegesManagerOpen}
+        />
+      )}
       {productsAccessOpen && (
         <ProductsAccessModal
           customerId={customer_details?.id}
@@ -338,6 +348,18 @@ function Ui(props) {
             <UserField>
               <h4>Type</h4>
               <div>{user.is_staff ? "Staff" : "Normal"}</div>
+            </UserField>
+            <UserField>
+              <h4>Privileges</h4>
+              <div>{`[${
+                user.privileges.length ? user.privileges.join(", ") : "None"
+              }]`}</div>
+              <div
+                className="view-details edit"
+                onClick={() => updatePrivilegesManagerOpen(true)}
+              >
+                Edit
+              </div>
             </UserField>
           </LeftUserFields>
           <LeftUserFields>
