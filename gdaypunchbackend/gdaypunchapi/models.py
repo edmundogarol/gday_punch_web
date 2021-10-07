@@ -226,13 +226,18 @@ class Manga(models.Model):
 
     @property
     def pdf_live(self):
-        user = User.objects.get(email=get_current_user())
+        user = None
+
+        try:
+            user = User.objects.get(email=get_current_user())
+        except User.DoesNotExist:
+            pass
 
         # Temporary fix to keep pdf's live in gdaypunch.com
         if self.title in ["Gday Punch Manga Magazine Issue #1", "Gday Punch Manga Magazine Issue #4"]:
             return self.pdf
 
-        if user.is_staff:
+        if user and user.is_staff:
             return self.pdf
         else:
             product_manga = Product.manga.through.objects.filter(manga=self.id)

@@ -239,6 +239,7 @@ function Ui(props) {
               <TitleInteractionButtonsContainer>
                 <Title level={4}>{product.title}</Title>
                 {digitalProduct &&
+                  product.manga_details &&
                   !product.product_type.includes("_subscription") && (
                     <LikeCommentConainer>
                       <Tooltip title="Likes">
@@ -308,7 +309,7 @@ function Ui(props) {
                   <FontAwesomeIcon icon={faPinterest} />
                 </a>
               </SocialContainer>
-              {product.manga_details.author && (
+              {product.manga_details && product.manga_details.author && (
                 <MoreDetailsContainer>
                   <MoreDetailsColumn>
                     <LabelFieldContainer>
