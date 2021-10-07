@@ -152,16 +152,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 
-
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = '465'
-EMAIL_HOST_USER = 'edmundo.garol@gdaypunch.com'
-EMAIL_HOST_PASSWORD = 'ojsbXgWVqwpuMjX7DfTD'
-EMAIL_USE_SSL = True
-EMAIL_USE_TLS = False
-
-
 if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
     dbconfig = "./gday-db-config.json"
 else:
@@ -181,6 +171,14 @@ DATABASES = {
         'PORT': SETTINGS['RDS_PORT'],
     }
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = SETTINGS['EMAIL_PORT']
+EMAIL_HOST_USER = SETTINGS['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = SETTINGS['EMAIL_HOST_PASSWORD']
+EMAIL_USE_SSL = True
+EMAIL_USE_TLS = False
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

@@ -3,5 +3,8 @@
     "RDS_USERNAME": "gdayuser",  
     "RDS_PASSWORD": "gdaypassword",  
     "RDS_HOSTNAME": "localhost",  
-    "RDS_PORT": "5432"
+    "RDS_PORT": "5432",
+    "EMAIL_HOST_USER": "edmundo.garol@gdaypunch.com",
+    "EMAIL_HOST_PASSWORD": "ojsbXgWVqwpuMjX7DfTD",
+    "EMAIL_PORT": "465"
 }
