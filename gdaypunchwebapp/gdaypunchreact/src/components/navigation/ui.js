@@ -21,6 +21,7 @@ import {
 
 const initialParentNavsState = {
   resources: false,
+  submissions: false,
 };
 
 function Ui(props) {
@@ -43,7 +44,10 @@ function Ui(props) {
   window.onscroll = () => scrollFunction();
 
   const toggleParentNav = (parent) => {
-    updateParentNavs({ ...parentNavs, [parent]: !parentNavs[parent] });
+    updateParentNavs({
+      ...initialParentNavsState,
+      [parent]: !parentNavs[parent],
+    });
   };
 
   const scrollFunction = () => {
@@ -77,7 +81,14 @@ function Ui(props) {
 
   useEffect(() => {
     if (location === "/downloads" || location === "/daily-prompt") {
-      updateParentNavs({ ...parentNavs, resources: true });
+      updateParentNavs({ ...initialParentNavsState, resources: true });
+    }
+    if (
+      location === "/one-shots" ||
+      location === "/illustrations" ||
+      location === "/vote"
+    ) {
+      updateParentNavs({ ...initialParentNavsState, submissions: true });
     }
   }, [location]);
 
@@ -136,6 +147,56 @@ function Ui(props) {
           >
             {"Shop"}
           </HeaderLink>
+          <HeaderParent
+            $open={parentNavs.submissions}
+            $current={
+              location === "/one-shots" ||
+              location === "/illustrations" ||
+              location === "/vote"
+            }
+            onClick={() => toggleParentNav("submissions")}
+            $firstChildMobXOffset={"-6.5em"}
+            $secondChildMobXOffset={"2em"}
+            $thirdChildMobXOffset={"9em"}
+            $firstChildXOffset={"-8em"}
+            $secondChildXOffset={"-0em"}
+            $thirdChildXOffset={"9em"}
+          >
+            {"Submit +"}
+            <HeaderLink
+              className="child-nav first-child"
+              to="/one-shots"
+              $current={location === "/one-shots"}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
+            >
+              {"One Shots"}
+            </HeaderLink>
+            <HeaderLink
+              className="child-nav second-child"
+              to="/illustrations"
+              $current={location === "/illustrations"}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
+            >
+              {"Illustrations"}
+            </HeaderLink>
+            <HeaderLink
+              className="child-nav third-child"
+              to="/vote"
+              $current={location === "/vote"}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
+            >
+              {"Vote"}
+            </HeaderLink>
+          </HeaderParent>
           <HeaderLink
             to="/about"
             $current={location === "/about"}
@@ -150,13 +211,20 @@ function Ui(props) {
             $open={parentNavs.resources}
             $current={location === "/downloads" || location === "/daily-prompt"}
             onClick={() => toggleParentNav("resources")}
+            $firstChildMobXOffset={"-4em"}
+            $secondChildMobXOffset={"5em"}
+            $firstChildXOffset={"-5.5em"}
+            $secondChildXOffset={"4.5em"}
           >
             {"Resources +"}
             <HeaderLink
               className="child-nav first-child"
               to="/daily-prompt"
               $current={location === "/daily-prompt"}
-              onClick={() => toggleMiniNav(false)}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
             >
               {"Daily Prompt"}
             </HeaderLink>
@@ -164,7 +232,10 @@ function Ui(props) {
               className="child-nav second-child"
               to="/downloads"
               $current={location === "/downloads"}
-              onClick={() => toggleMiniNav(false)}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
             >
               {"Downloads"}
             </HeaderLink>

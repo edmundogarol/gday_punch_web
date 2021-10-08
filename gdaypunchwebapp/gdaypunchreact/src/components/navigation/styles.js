@@ -262,32 +262,25 @@ export const HeaderParent = styled.span`
           display: flex;
           position: absolute;
           margin-left: unset;
+          border: none;
+          background: none;
+          justify-content: center;
+          width: max-content;
+          margin-left: auto;
+          margin-right: auto;
+          left: 0;
+          right: 0;
+          text-align: center;
         }
-
+        
         .first-child {
-          border: none;
-          background: none;
-          justify-content: center;
-          width: max-content;
-          margin-left: auto;
-          margin-right: auto;
-          left: 0;
-          right: 0;
-          text-align: center;
-          transform: translate(-4em, 0.4em);
+          transform: translate(${props.$firstChildMobXOffset}, 0.4em);
         }
-
         .second-child {
-          border: none;
-          background: none;
-          justify-content: center;
-          width: max-content;
-          margin-left: auto;
-          margin-right: auto;
-          left: 0;
-          right: 0;
-          text-align: center;
-          transform: translate(5em, 0.4em);
+          transform: translate(${props.$secondChildMobXOffset}, 0.4em);
+        }
+        .third-child {
+          transform: translate(${props.$thirdChildMobXOffset}, 0.4em);
         }
 
         height: 7em;
@@ -295,20 +288,21 @@ export const HeaderParent = styled.span`
         @media ${device.laptop} {
           height: unset;
 
-          .second-child {
+          .child-nav {
             margin-left: unset;
             margin-right: unset;
             left: unset;
             right: unset;
-            transform: translate(4.5em,2.4em);
           }
 
           .first-child {
-            margin-left: unset;
-            margin-right: unset;
-            left: unset;
-            right: unset;
-            transform: translate(-5.5em,2.4em);
+            transform: translate(${props.$firstChildXOffset}, 2.4em);
+          }
+          .second-child {
+            transform: translate(${props.$secondChildXOffset}, 2.4em);
+          }
+          .third-child {
+            transform: translate(${props.$thirdChildXOffset}, 2.4em);
           }
         }
       `
