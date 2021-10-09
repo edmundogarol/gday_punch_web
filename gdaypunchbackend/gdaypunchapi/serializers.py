@@ -6,7 +6,8 @@ from .models import (
     User, Manga, Like, Comment, CommentLike, Prompt,
     StripeCustomer, Product, Privileges, StripePrice,
     Contact, Customer, ResetPasswordSession, Order,
-    Coupon, OrderStatusUpdate, Save, Purchase
+    Coupon, OrderStatusUpdate, Save, Purchase, VotingRound,
+    VotingItem
 )
 
 
@@ -153,3 +154,14 @@ class ResetPasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResetPasswordSession
         fields = ("id", "user", "token", "created_date")
+
+
+class VotingRoundSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VotingRound
+        fields = ("__all__")
+
+class VotingItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VotingItem
+        fields = ("__all__")

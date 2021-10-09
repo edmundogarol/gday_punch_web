@@ -68,6 +68,9 @@ from .gdaypunchapi.api.orders import (
 from .gdaypunchapi.api.marketing import (
     DownloadManuscript
 )
+from .gdaypunchapi.api.voting import (
+    VotingSystemDetailsViewSet
+)
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet, basename='user')
@@ -116,6 +119,9 @@ urlpatterns = [
     # Products [Simple, Update Purchases]
     url(r'api/products-simple/', ProductSimpleListView.as_view()),
     url(r'api/update-purchases/', UpdatedProductPurchasesViewSet.as_view()),
+
+    # Voting
+    url(r'api/voting-details/', VotingSystemDetailsViewSet.as_view()),
 
     # Marketing Emails
     url(r'api/manga-manuscript/', DownloadManuscript.as_view()),
