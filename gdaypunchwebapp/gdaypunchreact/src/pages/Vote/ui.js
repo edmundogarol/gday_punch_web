@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Input, Button, Select } from "antd";
+import { Alert, Input, Button, Select } from "antd";
 
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
@@ -41,20 +41,24 @@ function Ui(props) {
     <App id="top" className="App">
       <FeaturedSection top>
         <SectionTitle>{`Issue #${issueNo} Voting`}</SectionTitle>
-        {fetching && <LoadingSpinner />}
-        {submitted && (
+        {fetching ? <LoadingSpinner /> : null}
+        {submitted ? (
           <SuccessLabel>
             Great! Your vote has been cast. Thank you for supporting our
             mangaka!
           </SuccessLabel>
-        )}
+        ) : null}
+        {itemsError ? (
+          <Alert message={`Error: ${itemsError}`} type="error" showIcon />
+        ) : null}
         <div>
-          {items.length &&
-            items.map((item) => (
-              <div key={item.idx}>
-                <Image src={item.img} preview={false} />
-              </div>
-            ))}
+          {items.length
+            ? items.map((item) => (
+                <div key={item.idx}>
+                  <Image src={item.img} preview={false} />
+                </div>
+              ))
+            : null}
         </div>
       </FeaturedSection>
     </App>

@@ -337,7 +337,12 @@ export function* fetchVotingItemsCall() {
       "Voting system has not loaded correctly. Please try again later.",
       4
     );
-    yield put(votingItemsError(response.data));
+    yield put(
+      votingItemsError(
+        response.data ||
+          "Voting system has not loaded correctly. Please try again later."
+      )
+    );
     console.log("Voting Items Fetch error", JSON.stringify(response));
   }
 }

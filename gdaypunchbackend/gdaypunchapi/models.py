@@ -865,3 +865,54 @@ class ResetPasswordSession(models.Model):
         max_length=70, blank=False, null=True)
     created_date = models.DateTimeField(
         null=False, blank=False, default=timezone.now)
+
+
+class VotingItem(models.Model):
+    title = models.TextField(max_length=70, blank=False)
+    author = models.TextField(max_length=70, blank=False)
+    img = models.TextField(max_length=70, blank=False)
+
+
+class VotingRound(models.Model):
+    issue = models.IntegerField(blank=False)
+    product = models.ForeignKey(
+        Product,  on_delete=models.PROTECT, blank=False, null=False)
+    item1 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item1_voting_round_set', blank=False, null=True)
+    item2 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item2_voting_round_set', blank=False, null=True)
+    item3 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item3_voting_round_set', blank=False, null=True)
+    item4 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item4_voting_round_set', blank=False, null=True)
+    item5 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item5_voting_round_set', blank=False, null=True)
+    item6 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item6_voting_round_set', blank=False, null=True)
+    item7 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item7_voting_round_set', blank=False, null=True)
+    item8 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item8_voting_round_set', blank=False, null=True)
+    item9 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item9_voting_round_set', blank=False, null=True)
+    item10 = models.ForeignKey(
+        VotingItem,  on_delete=models.PROTECT, related_name='item10_voting_round_set', blank=False, null=True)
+
+
+class Vote(models.Model):
+    customer = models.ForeignKey(
+        Customer,  on_delete=models.PROTECT, blank=False, null=True)
+    voting_round = models.ForeignKey(
+        VotingRound,  on_delete=models.PROTECT, blank=False, null=True)
+    item1 = models.IntegerField(blank=False, null=True)
+    item2 = models.IntegerField(blank=False, null=True)
+    item3 = models.IntegerField(blank=False, null=True)
+    item4 = models.IntegerField(blank=False, null=True)
+    item5 = models.IntegerField(blank=False, null=True)
+    item6 = models.IntegerField(blank=False, null=True)
+    item7 = models.IntegerField(blank=False, null=True)
+    item8 = models.IntegerField(blank=False, null=True)
+    item9 = models.IntegerField(blank=False, null=True)
+    item10 = models.IntegerField(blank=False, null=True)
+    purchase_reason = models.TextField(
+        max_length=30, choices=PURCHASE_REASONS, default=ONLINE_STORE)
