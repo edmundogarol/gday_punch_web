@@ -37,6 +37,7 @@ import Contact from "pages/Contact";
 import Account from "pages/Account";
 import Bookshelf from "pages/Bookshelf";
 import DailyPrompt from "pages/DailyPrompt";
+import Events from "pages/Events";
 import OneShotSubmissions from "pages/OneShotSubmissions";
 import IllustrationSubmissions from "pages/IllustrationSubmissions";
 import Downloads from "pages/ResourceDownloads";
@@ -155,6 +156,7 @@ function Root(props) {
               component={IllustrationSubmissions}
               title="Illustration Submissions"
             />
+            <RoutePage exact path="/events" component={Events} title="Events" />
             <RoutePage exact path="/downloads" component={Downloads} />
             <RoutePage exact path="/cart" component={Cart} />
             <RoutePage exact path="/checkout" component={Checkout} />

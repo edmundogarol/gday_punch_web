@@ -36,20 +36,26 @@ export const SummaryImageContainer = styled.div`
 `;
 
 export const LeftSummaryContainer = styled.div`
-  width: 50%;
-  min-width: 25em;
   margin-bottom: 2em;
+
+  @media ${device.laptop} {
+    width: 50%;
+    min-width: 25em;
+  }
 `;
 
 export const RightImageContainer = styled.div`
-  width: 50%;
   text-align: center;
-  min-width: 25em;
   margin-left: auto;
   margin-right: auto;
 
   .ant-image-img {
     max-height: 27em;
+  }
+
+  @media ${device.laptop} {
+    width: 50%;
+    min-width: 25em;
   }
 `;
 
