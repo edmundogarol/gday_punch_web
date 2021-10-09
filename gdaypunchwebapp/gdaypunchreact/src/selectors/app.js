@@ -182,3 +182,8 @@ export const selectDiscountAmount = createSelector(
     }
   }
 );
+
+export const selectVotingState = createSelector(
+  selectDomain,
+  ({ voting }) => voting
+);

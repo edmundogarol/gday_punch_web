@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { Input, Button, Select } from "antd";
-import moment from "moment";
 
-import PaymentForm from "components/paymentForm";
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
+import { ErrorField } from "components/errorField";
+import { getGdayPunchStaticUrl } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 import {
   App,
@@ -14,9 +14,6 @@ import {
   ContactImageContainer,
   SuccessLabel,
 } from "./styles";
-import { getGdayPunchStaticUrl } from "utils/utils";
-import { ErrorField } from "src/components/errorField";
-import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { TextArea } = Input;
 const { Option } = Select;

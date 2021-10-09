@@ -48,6 +48,16 @@ import {
   UPDATE_COMMENTS,
   UPDATE_COMMENT,
 } from "actions/manga";
+import {
+  UPDATE_VOTING_ITEMS,
+  FETCHING_VOTING_ITEMS,
+  FINISHED_FETCHING_VOTING_ITEMS,
+  VOTING_ITEMS_ERROR,
+  CASTING_VOTE,
+  CASTING_VOTE_FINISHED,
+  CASTING_VOTE_ERROR,
+} from "actions/voting";
+
 import { message } from "antd";
 
 import { adminReducer } from "./admin";
@@ -121,6 +131,18 @@ const INITIAL_STATE = {
   reader: {
     mangaId: undefined,
     comments: [],
+  },
+
+  voting: {
+    items: [],
+    fetching: false,
+    finished: false,
+    itemsError: undefined,
+    issueNo: 0,
+    submitting: false,
+    submitted: false,
+    cast: undefined,
+    castError: undefined,
   },
 };
 
@@ -502,6 +524,68 @@ const appReducer = (state = INITIAL_STATE, action) => {
         reader: {
           ...state.reader,
           comments: [...state.reader.comments, payload.comment],
+        },
+      };
+    case FETCHING_VOTING_ITEMS:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          fetching: true,
+          finished: false,
+        },
+      };
+    case FINISHED_FETCHING_VOTING_ITEMS:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          fetching: false,
+          finished: true,
+        },
+      };
+    case UPDATE_VOTING_ITEMS:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          items: payload.votingItems.items,
+          cast: payload.votingItems.cast,
+          issueNo: payload.votingItems.issueNo,
+        },
+      };
+    case VOTING_ITEMS_ERROR:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          itemsError: payload.error,
+        },
+      };
+    case CASTING_VOTE:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          submitting: true,
+          submitted: false,
+        },
+      };
+    case CASTING_VOTE_FINISHED:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          submitting: false,
+          submitted: true,
+        },
+      };
+    case CASTING_VOTE_ERROR:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          castError: payload.error,
         },
       };
     default:

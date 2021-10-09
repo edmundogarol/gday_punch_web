@@ -45,6 +45,13 @@ import {
   selectUser,
 } from "selectors/app";
 import { api } from "utils/api";
+import {
+  fetchingVotingItems,
+  FETCH_VOTING_ITEMS,
+  finishedFetchingVotingItems,
+  updateVotingItems,
+  votingItemsError,
+} from "src/actions/voting";
 
 export function* register() {
   const pendingRegistration = yield select(selectPendingRegistration);
@@ -308,6 +315,33 @@ export function* fetchCartItemsCall() {
   }
 }
 
+export function* fetchVotingItemsCall() {
+  yield put(fetchingVotingItems());
+  const response = yield call(api, "voting-details/", {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    const details = {
+      items: data.items,
+      issueNo: data.issue_number,
+      cast: data.cast,
+    };
+    yield put(updateVotingItems(details));
+    yield put(finishedFetchingVotingItems());
+  } else {
+    yield put(finishedFetchingVotingItems());
+    message.error(
+      "Voting system has not loaded correctly. Please try again later.",
+      4
+    );
+    yield put(votingItemsError(response.data));
+    console.log("Voting Items Fetch error", JSON.stringify(response));
+  }
+}
+
 export default function* appSaga() {
   yield all([
     takeLatest(UPDATE_USER_DETAILS, patchUser),
@@ -322,5 +356,6 @@ export default function* appSaga() {
     takeLatest(RESET_PASSWORD_SUBMIT_NEW, resetPasswordSubmitNewCall),
     takeLatest(VERIFY_EMAIL, verifyEmailCall),
     takeLatest(REQUEST_EMAIL_VERIFICATION, requestEmailVerificationCall),
+    takeLatest(FETCH_VOTING_ITEMS, fetchVotingItemsCall),
   ]);
 }
