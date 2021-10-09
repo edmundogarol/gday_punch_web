@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { device } from "utils/styles";
+import { Button } from "antd";
 
 export const App = styled.div`
   min-height: 84vh;
@@ -64,4 +65,13 @@ export const VotingItemsContainer = styled.div`
     opacity: 1;
     transform: scale(1.05);
   }
+`;
+
+export const SubmitButton = styled(Button)`
+  margin: 1em;
+  width: 18em;
+  height: 3em;
+  color: white;
+  background: orange;
+  border: none;
 `;

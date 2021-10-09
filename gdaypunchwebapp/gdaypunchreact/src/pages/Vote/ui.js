@@ -15,6 +15,7 @@ import {
   SuccessLabel,
   VotingItemsContainer,
   VotingItemImage,
+  SubmitButton,
 } from "./styles";
 
 function Ui(props) {
@@ -96,7 +97,7 @@ function Ui(props) {
         >{`What prompted you to buy your copy of Gday Punch Manga Magazine Issue #${issueNo}?`}</span>
         <br />
         <br />
-        <div style={{ display: "flex", marginBottom: "2em" }}>
+        <div style={{ display: "flex", marginBottom: "1em" }}>
           <Radio.Group
             onChange={(e) => updatePurchaseReason(e.target.value)}
             value={purchaseReason}
@@ -131,6 +132,7 @@ function Ui(props) {
             <Radio value="other_reason">Other</Radio>
           </Radio.Group>
         </div>
+        <SubmitButton>Submit Vote</SubmitButton>
       </FeaturedSection>
     </App>
   );
