@@ -37,7 +37,8 @@ import Contact from "pages/Contact";
 import Account from "pages/Account";
 import Bookshelf from "pages/Bookshelf";
 import DailyPrompt from "pages/DailyPrompt";
-import OneShots from "pages/OneShots";
+import OneShotSubmissions from "pages/OneShotSubmissions";
+import IllustrationSubmissions from "pages/IllustrationSubmissions";
 import Downloads from "pages/ResourceDownloads";
 import ResetPassword from "pages/ResetPassword";
 import ResetPasswordNewPassword from "pages/ResetPassword/newPassword";
@@ -145,10 +146,15 @@ function Root(props) {
             <RoutePage
               exact
               path="/one-shots"
-              component={OneShots}
+              component={OneShotSubmissions}
               title="One Shot Submissions"
             />
-            <RoutePage exact path="/illustrations" component={OneShots} />
+            <RoutePage
+              exact
+              path="/illustrations"
+              component={IllustrationSubmissions}
+              title="Illustration Submissions"
+            />
             <RoutePage exact path="/downloads" component={Downloads} />
             <RoutePage exact path="/cart" component={Cart} />
             <RoutePage exact path="/checkout" component={Checkout} />

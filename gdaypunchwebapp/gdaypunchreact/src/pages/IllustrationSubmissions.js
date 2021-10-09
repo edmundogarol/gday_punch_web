@@ -64,25 +64,25 @@ export const InstructionsContainer = styled.div`
   }
 `;
 
-function RefundsAndReturns(props) {
+function IllustrationSubmissions(props) {
   useScrollTop();
 
   return (
     <App id="top" className="App">
       <FeaturedSection top idx={1}>
-        <SectionTitle>One Shot Competition</SectionTitle>
+        <SectionTitle>Illustration Submissions</SectionTitle>
         <ContentContainer>
           <p>
             <span style={{ fontSize: "x-large" }}>
-              One-Shot Competition&nbsp;
+              Illustration Submissions&nbsp;
             </span>
             <br />
             <br />
             <SummaryImageContainer>
               <LeftSummaryContainer>
                 <span>
-                  Gday Punch holds one shot competitions open to manga artists
-                  all over Australia!
+                  ​Gday Punch accepts illustration submissions to be featured in
+                  the magazine and/or on our Instagram!
                 </span>
                 <br />
                 <br />
@@ -92,7 +92,7 @@ function RefundsAndReturns(props) {
                 </span>
                 <br />
                 <br />
-                <span>1. Submit their work.</span>
+                <span>1. Submit their illustration.</span>
                 <br />
                 <br />
                 <span>2. Go through an initial vetting process.</span>
@@ -101,14 +101,14 @@ function RefundsAndReturns(props) {
                 <span>3. Be published in the next issue.</span>
                 <br />
                 <br />
-                <span>4. Get votes from readers.</span>
+                <span>4. Attach your socials and website links.</span>
                 <br />
                 <br />
-                <span>5. Win prizes!</span>
+                <span>5. Show the world your work!</span>
                 <br />
                 <br />
                 <span>
-                  The winners are announced in&nbsp;
+                  Successful submissions are shared in&nbsp;
                   <a
                     href="https://www.facebook.com/groups/291634971550929"
                     target="_blank"
@@ -143,7 +143,9 @@ function RefundsAndReturns(props) {
                 <br />
               </LeftSummaryContainer>
               <RightImageContainer>
-                <Image src={getGdayPunchStaticUrl("one-shot-feature.png")} />
+                <Image
+                  src={getGdayPunchStaticUrl("illustration-feature.png")}
+                />
               </RightImageContainer>
             </SummaryImageContainer>
           </p>
@@ -166,28 +168,9 @@ function RefundsAndReturns(props) {
             </strong>
             <br />
             <br />
-            <span>Size formatted to A4. Must be in JPG or PNG format.</span>
-            <br />
-            <span>
-              (Please use our&nbsp;
-              <NavLink to="/downloads">
-                <span style={{ color: "#da8044" }}>
-                  Manga Manuscript Template
-                </span>
-              </NavLink>
-              &nbsp;to correctly size your submissions)
-            </span>
+            <span>Must be in JPG or PNG format.</span>
             <br />
             <br />
-            <span>IMPORTANT:</span>
-            <br />
-            <span>
-              Naming files - Please name pages such as "001.png, 002.png..." and
-              so on.&nbsp;
-            </span>
-            <br />
-            <br />
-            <span>​</span>
             <br />
             <strong>
               <span style={{ fontSize: "large" }}>Rules</span>
@@ -196,22 +179,51 @@ function RefundsAndReturns(props) {
             <br />
             <span>・Tradition and digital work accepted.&nbsp;</span>
             <br />
-            <span>
-              ・Original and complete / semi-complete story. One-shot can end on
-              cliff hanger alluding to next chapter. (Do not submit commercially
-              published work).
-            </span>
-            <br />
-            <span>・Length of 4 - 20 pages maximum (including cover).</span>
+            <span>・1 Illustration</span>
             <br />
             <span>・Must be final inked product. No rough drafts.</span>
             <br />
+            <span>・Work can be created individually or as a team</span>
+            <br />
             <span>
-              ・Accepting Either left-to-right and right-to-left reading
-              orientation
+              ・<strong>Open theme</strong> - No restrictions.
             </span>
             <br />
-            <span>・Work can be created individually or as a team</span>
+            <br />
+            <br />
+            <strong>
+              <span style={{ fontSize: "large" }}>Entry Groups</span>
+            </strong>
+            <br />
+            <br />
+            <span>
+              As of Issue #2, we announced that illustration submissions will be
+              grouped and voted on, within their different age groups.
+              <br />
+              <br />
+              *IMPORTANT: If we don't receive a minimum of 3 submissions per age
+              group, we cannot run the competition - but we may will still
+              publish work in the magazine
+              <br />
+              <br />
+              These groups are:
+              <br />
+              <br />
+              <strong>Weembats</strong> (Primary School Students)
+              <br />
+              <br />
+              <strong>Otakukaburras</strong> (High School Students)
+              <br />
+              <br />
+              <strong>Kangakas</strong> (Young Adults - Adults)
+            </span>
+            <br />
+            <br />
+            <br />
+            <span>
+              * Please include, within your submission, your age or even just
+              the group which your illustration will be placed under.&nbsp;
+            </span>
             <br />
             <br />
             <br />
@@ -220,33 +232,18 @@ function RefundsAndReturns(props) {
             </strong>
             <br />
             <br />
-            <span>
-              Place your one-shot images inside a folder and upload to a cloud
-              drive (Google Drive, One Drive, Dropbox etc)
-            </span>
-            <br />
-            <span>Then send the link of your folder to:&nbsp;</span>
+            <span>All submissions must be sent to:&nbsp;</span>
             <a href="mailto:info@gdaypunch.com" target="_blank" rel="noopener">
               info@gdaypunch.com
             </a>
             <br />
             <br />
-            <br />
-            <strong>
-              <span style={{ fontSize: "large" }}>Winner</span>
-            </strong>
+            Also please remember to include your social link/profile in your
+            submission so we can tag you!
             <br />
             <br />
-            <span>
-              ​The winner with the most votes will receive a cash prize of&nbsp;
-            </span>
-            <strong>$100</strong>
-            <span>&nbsp;(sent via PayPal) and their own&nbsp;</span>
-            <span>
-              copy of &nbsp;
-              <strong>the following issue of Gday Punch Magazine</strong>&nbsp;
-            </span>
-            <span>(shipped to them).&nbsp;</span>
+            .ZIP / .RAR of image file, or link to cloud drive + access
+            permissions
             <br />
             <br />
             <br />
@@ -256,8 +253,8 @@ function RefundsAndReturns(props) {
             <br />
             <br />
             <span>
-              By entering in this contest, you are agreeing to all the terms and
-              conditions detailed in the&nbsp;
+              By submitting, you are agreeing to all the terms and conditions
+              detailed in the&nbsp;
             </span>
             <NavLink to="/conditions">Submissions Conditions</NavLink>
             <span>, so please read them thoroughly before you enter.</span>
@@ -268,4 +265,4 @@ function RefundsAndReturns(props) {
   );
 }
 
-export default RefundsAndReturns;
+export default IllustrationSubmissions;
