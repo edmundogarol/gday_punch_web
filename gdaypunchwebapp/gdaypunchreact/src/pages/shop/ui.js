@@ -38,7 +38,7 @@ function Ui(props) {
     <App id="top" className="App">
       {fetchingProducts && <LoadingSpinner />}
       {!isEmpty(buyableProducts) && (
-        <FeaturedSection top>
+        <FeaturedSection top idx={1}>
           <SectionTitle id="magazines">Magazines</SectionTitle>
           <FeaturedList>
             {buyableProducts.map((product) => {
@@ -58,7 +58,7 @@ function Ui(props) {
       )}
       {!isEmpty(freeProducts) && (
         <FeaturedSection
-          idx={!isEmpty(buyableProducts) ? 1 : 0}
+          idx={!isEmpty(buyableProducts) ? 2 : 1}
           top={isEmpty(buyableProducts)}
         >
           <SectionTitle id="free-manga">Free Manga</SectionTitle>

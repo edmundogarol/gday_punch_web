@@ -137,7 +137,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
             for product in queryset:
                 if product.purchased:
-                    if product.product_type in [DIGITAL, DIG_SUBSCRIPTION]:
+                    if product.product_type in [DIGITAL, DIG_SUBSCRIPTION, MAG_SUBSCRIPTION]:
                         visible_products.append(product)
                 elif product.active_price > 0:
                     pass

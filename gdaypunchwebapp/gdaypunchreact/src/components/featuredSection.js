@@ -17,7 +17,7 @@ export const FeaturedSectionContainer = styled.div`
   align-items: center;
   flex-wrap: wrap;
   flex-direction: column;
-  background: ${(props) => (props.idx === 1 ? "#f1f1f1" : "#ffffff")};
+  background: ${(props) => (props.idx % 2 === 0 ? "#f1f1f1" : "#ffffff")};
   margin-left: auto;
   margin-right: auto;
   padding-top: ${(props) => (props.top ? "7em" : "inherit")};
