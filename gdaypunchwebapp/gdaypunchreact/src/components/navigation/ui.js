@@ -22,6 +22,7 @@ import {
 const initialParentNavsState = {
   resources: false,
   submissions: false,
+  about: false,
 };
 
 function Ui(props) {
@@ -89,6 +90,9 @@ function Ui(props) {
       location === "/vote"
     ) {
       updateParentNavs({ ...initialParentNavsState, submissions: true });
+    }
+    if (location === "/about" || location === "/events") {
+      updateParentNavs({ ...initialParentNavsState, about: true });
     }
   }, [location]);
 
@@ -197,16 +201,39 @@ function Ui(props) {
               {"Vote"}
             </HeaderLink>
           </HeaderParent>
-          <HeaderLink
-            to="/about"
-            $current={location === "/about"}
-            onClick={() => {
-              toggleMiniNav(false);
-              updateParentNavs(initialParentNavsState);
-            }}
+          <HeaderParent
+            $open={parentNavs.about}
+            $current={location === "/about" || location === "/events"}
+            onClick={() => toggleParentNav("about")}
+            $firstChildMobXOffset={"-3.5em"}
+            $secondChildMobXOffset={"4em"}
+            $firstChildXOffset={"-4.5em"}
+            $secondChildXOffset={"3.5em"}
           >
-            {"About"}
-          </HeaderLink>
+            {"About +"}
+            <HeaderLink
+              className="child-nav first-child"
+              to="/about"
+              $current={location === "/about"}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
+            >
+              {"Our Vision"}
+            </HeaderLink>
+            <HeaderLink
+              className="child-nav second-child"
+              to="/events"
+              $current={location === "/events"}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
+            >
+              {"Events"}
+            </HeaderLink>
+          </HeaderParent>
           <HeaderParent
             $open={parentNavs.resources}
             $current={location === "/downloads" || location === "/daily-prompt"}
