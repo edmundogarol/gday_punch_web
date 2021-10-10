@@ -46,7 +46,12 @@ import {
 } from "selectors/app";
 import { api } from "utils/api";
 import {
+  castingVote,
+  castingVoteError,
+  castingVoteFinished,
+  CAST_VOTE,
   fetchingVotingItems,
+  fetchVotingItems,
   FETCH_VOTING_ITEMS,
   finishedFetchingVotingItems,
   updateVotingItems,
@@ -328,6 +333,7 @@ export function* fetchVotingItemsCall() {
       items: data.items,
       issueNo: data.issue_number,
       cast: data.cast,
+      disabled: data.disabled,
     };
     yield put(updateVotingItems(details));
     yield put(finishedFetchingVotingItems());
@@ -338,12 +344,40 @@ export function* fetchVotingItemsCall() {
       4
     );
     yield put(
-      votingItemsError(
+      castingVoteError(
         response.data ||
           "Voting system has not loaded correctly. Please try again later."
       )
     );
     console.log("Voting Items Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* castVoteCall(action) {
+  const { vote, purchaseReason } = action.payload;
+  yield put(castingVote());
+  const response = yield call(api, "voting-cast/", {
+    method: "POST",
+    body: {
+      vote,
+      purchase_reason: purchaseReason,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(fetchVotingItems());
+    yield put(castingVoteFinished());
+  } else {
+    yield put(castingVoteFinished());
+    message.error("Something wrong has occured. Please try again later.", 4);
+    yield put(
+      castingVoteError(
+        response.data || "Something wrong has occured. Please try again later."
+      )
+    );
+    console.log("Cast vote error", JSON.stringify(response));
   }
 }
 
@@ -362,5 +396,6 @@ export default function* appSaga() {
     takeLatest(VERIFY_EMAIL, verifyEmailCall),
     takeLatest(REQUEST_EMAIL_VERIFICATION, requestEmailVerificationCall),
     takeLatest(FETCH_VOTING_ITEMS, fetchVotingItemsCall),
+    takeLatest(CAST_VOTE, castVoteCall),
   ]);
 }

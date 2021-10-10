@@ -139,6 +139,7 @@ const INITIAL_STATE = {
     finished: false,
     itemsError: undefined,
     issueNo: 0,
+    disabled: false,
     submitting: false,
     submitted: false,
     cast: undefined,
@@ -549,9 +550,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         voting: {
           ...state.voting,
-          items: payload.votingItems.items,
-          cast: payload.votingItems.cast,
-          issueNo: payload.votingItems.issueNo,
+          ...payload.votingItems,
         },
       };
     case VOTING_ITEMS_ERROR:

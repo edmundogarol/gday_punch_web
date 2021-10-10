@@ -16,6 +16,10 @@ export const App = styled.div`
       padding: 1em;
     }
   }
+
+  .disable {
+    color: #b7b7b7;
+  }
 `;
 
 export const SuccessLabel = styled.label`
@@ -32,10 +36,28 @@ export const VotingItemImage = styled.div`
   background-size: cover;
   margin: 0.2em;
 
-  &:hover {
-    cursor: pointer;
-    opacity: 1 !important;
-  }
+  ${(props) =>
+    props.disabled
+      ? ""
+      : `
+      &:hover {
+        cursor: pointer;
+        opacity: 1 !important;
+      }
+      `}
+`;
+
+export const DisabledOverlay = styled.div`
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0000007a;
+  color: white;
+  font-size: 3em;
+  font-weight: 200;
 `;
 
 export const VotingItemsContainer = styled.div`
@@ -45,25 +67,32 @@ export const VotingItemsContainer = styled.div`
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 2em;
+  position: relative;
 
   .position-overlay {
     display: none;
   }
 
   ${(props) =>
-    props.active
-      ? `
+    props.disabled
+      ? ""
+      : `
+      ${
+        props.active
+          ? `
+            ${VotingItemImage}:not(.selected) {
+              opacity: 0.5;
+            }
+            `
+          : ""
+      }
+
+      &:hover {
         ${VotingItemImage}:not(.selected) {
           opacity: 0.5;
         }
-        `
-      : ""}
-
-  &:hover {
-    ${VotingItemImage}:not(.selected) {
-      opacity: 0.5;
-    }
-  }
+      }
+  `}
 
   .selected {
     position: relative;

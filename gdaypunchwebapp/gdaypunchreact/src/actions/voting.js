@@ -38,8 +38,10 @@ export const votingItemsError = (error) => ({
 
 export const castVote = (vote, purchaseReason) => ({
   type: CAST_VOTE,
-  vote,
-  purchaseReason,
+  payload: {
+    vote,
+    purchaseReason,
+  },
 });
 
 export const castingVote = () => ({

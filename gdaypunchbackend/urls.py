@@ -69,7 +69,8 @@ from .gdaypunchapi.api.marketing import (
     DownloadManuscript
 )
 from .gdaypunchapi.api.voting import (
-    VotingSystemDetailsViewSet
+    VotingSystemDetailsViewSet,
+    VoteCastingViewSet
 )
 
 router = routers.DefaultRouter()
@@ -122,6 +123,7 @@ urlpatterns = [
 
     # Voting
     url(r'api/voting-details/', VotingSystemDetailsViewSet.as_view()),
+    url(r'api/voting-cast/', VoteCastingViewSet.as_view()),
 
     # Marketing Emails
     url(r'api/manga-manuscript/', DownloadManuscript.as_view()),
