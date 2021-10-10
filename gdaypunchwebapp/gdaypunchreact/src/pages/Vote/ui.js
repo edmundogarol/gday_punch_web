@@ -20,6 +20,7 @@ import {
   VotingItemImage,
   SubmitButton,
   DisabledOverlay,
+  PurchaseReasonContainer,
 } from "./styles";
 
 function Ui(props) {
@@ -185,7 +186,7 @@ function Ui(props) {
             >{`What prompted you to buy your copy of Gday Punch Manga Magazine Issue #${issueNo}?`}</span>
             <br />
             <br />
-            <div style={{ display: "flex", marginBottom: "1em" }}>
+            <PurchaseReasonContainer>
               <Radio.Group
                 disabled={disabled || castExists}
                 onChange={(e) => updatePurchaseReason(e.target.value)}
@@ -222,7 +223,7 @@ function Ui(props) {
                 <Radio value="posters_flyers">Posters and Flyers</Radio>
                 <Radio value="other_reason">Other</Radio>
               </Radio.Group>
-            </div>
+            </PurchaseReasonContainer>
             <SubmitButton
               onClick={() => handleVoteCasting()}
               disabled={

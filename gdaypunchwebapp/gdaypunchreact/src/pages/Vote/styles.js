@@ -22,6 +22,16 @@ export const App = styled.div`
   }
 `;
 
+export const PurchaseReasonContainer = styled.div`
+  display: flex;
+  margin-bottom: 1em;
+  flex-wrap: wrap;
+
+  @media ${device.laptop} {
+    flex-wrap: unset;
+  }
+`;
+
 export const SuccessLabel = styled.label`
   color: #4fbf4f;
   background: #deffde;
@@ -68,6 +78,7 @@ export const VotingItemsContainer = styled.div`
   margin-right: auto;
   margin-bottom: 2em;
   position: relative;
+  justify-content: center;
 
   .position-overlay {
     display: none;
