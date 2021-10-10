@@ -46,6 +46,10 @@ export const VotingItemsContainer = styled.div`
   margin-right: auto;
   margin-bottom: 2em;
 
+  .position-overlay {
+    display: none;
+  }
+
   ${(props) =>
     props.active
       ? `
@@ -62,8 +66,48 @@ export const VotingItemsContainer = styled.div`
   }
 
   .selected {
+    position: relative;
     opacity: 1;
     transform: scale(1.05);
+
+    .position-overlay {
+      display: initial;
+      position: absolute;
+      font-size: 9em;
+      z-index: 1;
+      left: 0;
+      right: 0;
+      font-weight: 900;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+  .casting-1 {
+    .position-overlay {
+      color: gold;
+      background: radial-gradient(gold -114%, transparent);
+      text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff,
+        2px 2px 0 #fff;
+    }
+  }
+  .casting-2 {
+    .position-overlay {
+      color: silver;
+      background: radial-gradient(silver -114%, transparent);
+      text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff,
+        2px 2px 0 #fff;
+    }
+  }
+  .casting-3 {
+    .position-overlay {
+      color: #c1611b;
+      background: radial-gradient(#c1611b -114%, transparent);
+      text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff,
+        2px 2px 0 #fff;
+    }
   }
 `;
 

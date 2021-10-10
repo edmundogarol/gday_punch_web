@@ -63,14 +63,7 @@ function Ui(props) {
         <VotingItemsContainer active={itemRefs.length}>
           {items.length
             ? items.map((elem, idx) => (
-                <VotingItemImage
-                  className={
-                    itemRefs.includes(elem.idx)
-                      ? `selected casting-${itemRefs.findIndex(
-                          (e) => e === elem.idx
-                        )}`
-                      : -1
-                  }
+                <div
                   onClick={() => {
                     if (itemRefs.includes(elem.idx)) {
                       const newItems = itemRefs.filter((e) => e !== elem.idx);
@@ -80,9 +73,25 @@ function Ui(props) {
                       updateItemRefs(itemRefs.concat(elem.idx));
                     }
                   }}
-                  key={idx}
-                  src={getGdayPunchStaticUrl(elem.item.img)}
-                />
+                  className={
+                    itemRefs.includes(elem.idx)
+                      ? `selected casting-${
+                          itemRefs.findIndex((e) => e === elem.idx) + 1
+                        }`
+                      : -1
+                  }
+                >
+                  {itemRefs.includes(elem.idx) ? (
+                    <span className="position-overlay">{`${
+                      itemRefs.findIndex((e) => e === elem.idx) + 1
+                    }`}</span>
+                  ) : null}
+                  <VotingItemImage
+                    className={itemRefs.includes(elem.idx) ? "selected" : ""}
+                    key={idx}
+                    src={getGdayPunchStaticUrl(elem.item.img)}
+                  />
+                </div>
               ))
             : null}
         </VotingItemsContainer>
