@@ -24,6 +24,7 @@ import {
 
 function Ui(props) {
   const {
+    loggedIn,
     votingState: {
       items,
       issueNo,
@@ -124,7 +125,9 @@ function Ui(props) {
             >
               {disabled ? (
                 <DisabledOverlay>
-                  <span>Issue Not Purchased</span>
+                  <span>
+                    {loggedIn ? "Issue Not Purchased" : "Log In to Vote!"}
+                  </span>
                 </DisabledOverlay>
               ) : null}
               {items.length
