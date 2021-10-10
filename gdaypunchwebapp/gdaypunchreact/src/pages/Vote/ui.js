@@ -64,6 +64,7 @@ function Ui(props) {
           {items.length
             ? items.map((elem, idx) => (
                 <div
+                  key={idx}
                   onClick={() => {
                     if (itemRefs.includes(elem.idx)) {
                       const newItems = itemRefs.filter((e) => e !== elem.idx);
@@ -88,7 +89,6 @@ function Ui(props) {
                   ) : null}
                   <VotingItemImage
                     className={itemRefs.includes(elem.idx) ? "selected" : ""}
-                    key={idx}
                     src={getGdayPunchStaticUrl(elem.item.img)}
                   />
                 </div>
@@ -141,7 +141,12 @@ function Ui(props) {
             <Radio value="other_reason">Other</Radio>
           </Radio.Group>
         </div>
-        <SubmitButton>Submit Vote</SubmitButton>
+        <SubmitButton
+          onClick={() => castVote(itemRefs, purchaseReason)}
+          disabled={itemRefs.length < 3 || !purchaseReason}
+        >
+          Submit Vote
+        </SubmitButton>
       </FeaturedSection>
     </App>
   );

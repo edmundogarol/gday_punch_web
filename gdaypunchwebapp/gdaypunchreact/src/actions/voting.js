@@ -36,8 +36,10 @@ export const votingItemsError = (error) => ({
   },
 });
 
-export const castVote = () => ({
+export const castVote = (vote, purchaseReason) => ({
   type: CAST_VOTE,
+  vote,
+  purchaseReason,
 });
 
 export const castingVote = () => ({
