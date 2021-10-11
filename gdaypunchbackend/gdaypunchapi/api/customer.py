@@ -117,8 +117,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
                 stripe_customer.save()
 
             dig_sub_product = Product.objects.get(
-
                 product_type=DIG_SUBSCRIPTION)
+
             Thread(target=send_access_updates_email_summary, args=(
                 customer, [], [{
                     'id': dig_sub_product.id,
