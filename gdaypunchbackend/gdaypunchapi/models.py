@@ -413,6 +413,7 @@ class Product(models.Model):
                 if self.product_type == MAG_SUBSCRIPTION:
                     return customer.mag_subscribed
 
+                # TODO Is this giving access to the temporary public gpmm/1/ url in beta-gdaypunch?
                 if (self.product_type == DIG_SUBSCRIPTION) or ('GPMMD' in self.sku):
                     return customer.dig_subscribed
 

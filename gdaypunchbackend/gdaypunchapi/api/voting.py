@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from ..utils import AdminOrReadOnly, AdminOnly
 from ..constants import *
 
-from ..models import User, Customer, VotingRound, Vote, Purchase
+from ..models import User, Customer, VotingRound, Vote, Purchase, Product
 from ..serializers import VotingItemSerializer
 
 
@@ -58,12 +58,16 @@ class VotingSystemDetailsViewSet(APIView):
             except Vote.DoesNotExist:
                 pass
 
+        corresponding_digital = Product.objects.get(
+            sku='GPMMD' + str(voting_round.issue))
+        purchased = voting_round.product.purchased or corresponding_digital.purchased
+
         return Response(
             {
                 'issue_number': voting_round.issue,
                 'items': items,
                 'cast': customer_vote,
-                'disabled': not voting_round.product.purchased,
+                'disabled': not purchased,
             },
             status=status.HTTP_200_OK
         )
@@ -181,7 +185,7 @@ class VotingDashboard(APIView):
 
             def structure_vote(idx):
                 item = getattr(vote, 'item' + str(idx), None)
-                current_vote[item] = {
+                current_vote['item' + str(idx)] = {
                     'idx': idx,
                     'value': item,
                 }
@@ -201,6 +205,14 @@ class VotingDashboard(APIView):
             'count': len(all_votes)
         }
 
+        def get_position_value(pos):
+            if pos == 1:
+                return 3
+            elif pos == 2:
+                return 2
+            elif pos == 3:
+                return 1
+
         for vote in all_votes:
             def add_to_tally_idx(idx):
                 item = getattr(vote, 'item' + str(idx), None)
@@ -214,7 +226,7 @@ class VotingDashboard(APIView):
                         pass
 
                     vote_tally['item' +
-                               str(idx)] = int(current_idx_tally) + int(item)
+                               str(idx)] = int(current_idx_tally) + int(get_position_value(item))
 
             for idx in range(1, 10):
                 item_has_vote = getattr(vote, 'item' + str(idx), None)

@@ -71,6 +71,10 @@ import {
   UPDATE_CUSTOMER_ACCESS_PRODUCTS,
   ADMIN_CREATE_USER,
   UPDATE_USER_PRIVILEGES,
+  FETCH_VOTING_DASHBOARD,
+  fetchingVotingDashboard,
+  updateVotingDashboard,
+  finishedFetchingVotingDashboard,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -844,6 +848,23 @@ export function* updateOrderStatusCall(action) {
   }
 }
 
+export function* fetchVotingDashboardCall(action) {
+  yield put(fetchingVotingDashboard());
+  const response = yield call(api, `voting-dashboard/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateVotingDashboard(data));
+    yield put(finishedFetchingVotingDashboard());
+  } else {
+    yield put(finishedFetchingVotingDashboard());
+    console.log("Voting Dashboard Fetch error", JSON.stringify(response));
+    message.error(`Voting Dashboard Fetch  error: ${response.data}`);
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -878,5 +899,6 @@ export default function* adminSaga() {
       UPDATE_CUSTOMER_ACCESS_PRODUCTS,
       updateCustomerAccessProductsCall
     ),
+    takeLatest(FETCH_VOTING_DASHBOARD, fetchVotingDashboardCall),
   ]);
 }

@@ -91,6 +91,12 @@ export const UPDATE_STATUS_REASON = "admin/UPDATE_STATUS_REASON";
 export const UPDATE_PARTIAL_REFUND_AMOUNT =
   "admin/UPDATE_PARTIAL_REFUND_AMOUNT";
 
+export const FETCH_VOTING_DASHBOARD = "admin/FETCH_VOTING_DASHBOARD";
+export const UPDATE_VOTING_DASHBOARD = "admin/UPDATE_VOTING_DASHBOARD";
+export const FETCHING_VOTING_DASHBOARD = "admin/FETCHING_VOTING_DASHBOARD";
+export const FINISHED_FETCHING_VOTING_DASHBOARD =
+  "admin/FINISHED_FETCHING_VOTING_DASHBOARD";
+
 export const fetchUsers = (fetchNext, search) => ({
   type: FETCH_USERS,
   payload: {
@@ -534,4 +540,23 @@ export const setSelectedOrder = (orderId) => ({
   payload: {
     orderId,
   },
+});
+
+export const fetchVotingDashboard = () => ({
+  type: FETCH_VOTING_DASHBOARD,
+});
+
+export const updateVotingDashboard = (dashboard) => ({
+  type: UPDATE_VOTING_DASHBOARD,
+  payload: {
+    dashboard,
+  },
+});
+
+export const fetchingVotingDashboard = () => ({
+  type: FETCHING_VOTING_DASHBOARD,
+});
+
+export const finishedFetchingVotingDashboard = () => ({
+  type: FINISHED_FETCHING_VOTING_DASHBOARD,
 });

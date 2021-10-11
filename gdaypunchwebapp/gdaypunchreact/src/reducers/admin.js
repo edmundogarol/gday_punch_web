@@ -42,6 +42,9 @@ import {
   UPDATE_USER_CUSTOMER_DETAILS,
   SET_SELECTED_USER,
   UPDATE_PRODUCTS_SIMPLE,
+  FETCHING_VOTING_DASHBOARD,
+  FINISHED_FETCHING_VOTING_DASHBOARD,
+  UPDATE_VOTING_DASHBOARD,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -115,6 +118,15 @@ const INITIAL_STATE = {
     selected: undefined,
     reason: undefined,
     partial_refund: undefined,
+  },
+
+  voting: {
+    issue_number: 0,
+    items: [],
+    latest_10: [],
+    vote_tally: {},
+    fetching: false,
+    finishedFetching: false,
   },
 };
 
@@ -498,6 +510,32 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
           ...state.orders,
           fetching: false,
           finishedFetching: true,
+        },
+      };
+    case FETCHING_VOTING_DASHBOARD:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          fetching: true,
+          finishedFetching: false,
+        },
+      };
+    case FINISHED_FETCHING_VOTING_DASHBOARD:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          fetching: false,
+          finishedFetching: true,
+        },
+      };
+    case UPDATE_VOTING_DASHBOARD:
+      return {
+        ...state,
+        voting: {
+          ...state.voting,
+          ...payload.dashboard,
         },
       };
     default:

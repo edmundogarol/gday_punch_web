@@ -11,6 +11,7 @@ import Users from "./users";
 import Twitter from "./twitter";
 import Prompts from "./prompts";
 import Products from "./products";
+import Votes from "./votes";
 import Orders from "./orders";
 import Contacts from "./contacts";
 import Coupons from "./coupons";
@@ -31,6 +32,7 @@ function Ui(props) {
   const twitter = app === "twitter";
   const prompts = app === "prompts";
   const orders = app === "orders";
+  const votes = app === "votes";
   const coupons = app === "coupons";
   const products = app === "products";
   const contacts = app === "contacts";
@@ -80,6 +82,11 @@ function Ui(props) {
             Users
           </NavLink>
         )}
+        {hasPrivilege("admin") && (
+          <NavLink className="desktop-only" to="/admin/votes">
+            Votes
+          </NavLink>
+        )}
         {hasPrivilege("twitter") && (
           <NavLink className="desktop-only" to="/admin/twitter">
             Twitter
@@ -124,6 +131,7 @@ function Ui(props) {
         {twitter && <Twitter />}
         {prompts && <Prompts />}
         {coupons && <Coupons />}
+        {votes && <Votes />}
         {products && <Products />}
         {orders && <Orders />}
         {contacts && <Contacts />}

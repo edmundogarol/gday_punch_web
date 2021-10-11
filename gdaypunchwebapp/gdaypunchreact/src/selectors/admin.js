@@ -119,3 +119,8 @@ export const selectPartialRefundAmount = createSelector(
   selectDomain,
   ({ orders: { partial_refund } }) => partial_refund
 );
+
+export const selectVotingDashboardState = createSelector(
+  selectDomain,
+  ({ voting }) => voting
+);

@@ -34,7 +34,8 @@ function Ui(props) {
         ? [
             { key: 1, route: "users" },
             { key: 2, route: "contacts" },
-            { key: 3, route: "prompts" },
+            { key: 3, route: "votes" },
+            { key: 4, route: "prompts" },
           ]
         : [],
     },
