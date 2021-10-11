@@ -18,6 +18,7 @@ from django_currentuser.middleware import (
 from django_currentuser.db.models import CurrentUserField
 
 from .constants import *
+from .utils import get_readable_date_time
 
 
 class Settings(models.Model):
@@ -787,14 +788,7 @@ class OrderStatusUpdate(models.Model):
 
     @property
     def readable_date(self):
-        local_tz = pytz.timezone('Australia/Sydney')
-        local_dt = self.update_date.replace(
-            tzinfo=pytz.utc).astimezone(local_tz)
-
-        return {
-            'date': local_dt.strftime("%d/%m/%y"),
-            'time': local_dt.strftime("%I:%M %p")
-        }
+        return get_readable_date_time(self.update_date)
 
 
 class Coupon(models.Model):
@@ -875,6 +869,8 @@ class VotingItem(models.Model):
 
 class VotingRound(models.Model):
     issue = models.IntegerField(blank=False)
+    created_date = models.DateTimeField(
+        null=False, blank=False, default=timezone.now)
     product = models.ForeignKey(
         Product,  on_delete=models.PROTECT, blank=False, null=False)
     item1 = models.ForeignKey(
@@ -916,3 +912,9 @@ class Vote(models.Model):
     item10 = models.IntegerField(blank=False, null=True)
     purchase_reason = models.TextField(
         max_length=30, choices=PURCHASE_REASONS, default=ONLINE_STORE)
+    created_date = models.DateTimeField(
+        null=False, blank=False, default=timezone.now)
+
+    @property
+    def readable_date(self):
+        return get_readable_date_time(self.created_date)

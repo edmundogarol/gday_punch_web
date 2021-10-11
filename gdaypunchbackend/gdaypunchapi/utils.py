@@ -1,4 +1,5 @@
 import os
+import pytz
 
 from rest_framework.permissions import (BasePermission)
 
@@ -11,6 +12,16 @@ else:
 def devprint(message):
     if log:
         print(message)
+
+
+def get_readable_date_time(date):
+    local_tz = pytz.timezone('Australia/Sydney')
+    local_dt = date.replace(tzinfo=pytz.utc).astimezone(local_tz)
+
+    return {
+        'date': local_dt.strftime("%d/%m/%y"),
+        'time': local_dt.strftime("%I:%M %p")
+    }
 
 
 def staff(request):

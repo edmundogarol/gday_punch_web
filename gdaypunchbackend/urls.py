@@ -70,7 +70,8 @@ from .gdaypunchapi.api.marketing import (
 )
 from .gdaypunchapi.api.voting import (
     VotingSystemDetailsViewSet,
-    VoteCastingViewSet
+    VoteCastingViewSet,
+    VotingDashboard
 )
 
 router = routers.DefaultRouter()
@@ -122,7 +123,8 @@ urlpatterns = [
     url(r'api/update-purchases/', UpdatedProductPurchasesViewSet.as_view()),
 
     # Voting
-    url(r'api/voting-details/', VotingSystemDetailsViewSet.as_view()),
+    # url(r'api/voting-details/', VotingSystemDetailsViewSet.as_view()),
+    url(r'api/voting-details/', VotingDashboard.as_view()),
     url(r'api/voting-cast/', VoteCastingViewSet.as_view()),
 
     # Marketing Emails

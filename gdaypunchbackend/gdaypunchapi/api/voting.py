@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import exceptions
 from rest_framework.permissions import IsAuthenticated
 
-from ..utils import AdminOrReadOnly
+from ..utils import AdminOrReadOnly, AdminOnly
 from ..constants import *
 
 from ..models import User, Customer, VotingRound, Vote, Purchase
@@ -33,109 +33,27 @@ class VotingSystemDetailsViewSet(APIView):
         voting_round = VotingRound.objects.order_by('id')[0]
 
         items = []
-        items.append({
-            'idx': 1,
-            'item': VotingItemSerializer(voting_round.item1).data
-        })
-        items.append({
-            'idx': 2,
-            'item': VotingItemSerializer(voting_round.item2).data
-        })
-        items.append({
-            'idx': 3,
-            'item': VotingItemSerializer(voting_round.item3).data
-        })
+        for idx in range(1, 10):
+            item_has_vote = getattr(voting_round, 'item' + str(idx), None)
 
-        if voting_round.item4:
-            items.append({
-                'idx': 4,
-                'item': VotingItemSerializer(voting_round.item4).data
-            })
-        if voting_round.item5:
-            items.append({
-                'idx': 5,
-                'item': VotingItemSerializer(voting_round.item5).data
-            })
-        if voting_round.item6:
-            items.append({
-                'idx': 6,
-                'item': VotingItemSerializer(voting_round.item6).data
-            })
-        if voting_round.item7:
-            items.append({
-                'idx': 7,
-                'item': VotingItemSerializer(voting_round.item7).data
-            })
-        if voting_round.item8:
-            items.append({
-                'idx': 8,
-                'item': VotingItemSerializer(voting_round.item8).data
-            })
-        if voting_round.item9:
-            items.append({
-                'idx': 9,
-                'item': VotingItemSerializer(voting_round.item9).data
-            })
-        if voting_round.item10:
-            items.append({
-                'idx': 10,
-                'item': VotingItemSerializer(voting_round.item10).data
-            })
+            if item_has_vote:
+                items.append({
+                    'idx': idx,
+                    'item': VotingItemSerializer(item_has_vote).data
+                })
 
         if customer:
             try:
                 vote = Vote.objects.get(customer=customer.id)
 
-                if vote.item1:
-                    customer_vote.append({
-                        'item': 1,
-                        'value': vote.item1
-                    })
-                if vote.item2:
-                    customer_vote.append({
-                        'item': 2,
-                        'value': vote.item2
-                    })
-                if vote.item3:
-                    customer_vote.append({
-                        'item': 3,
-                        'value': vote.item3
-                    })
-                if vote.item4:
-                    customer_vote.append({
-                        'item': 4,
-                        'value': vote.item4
-                    })
-                if vote.item5:
-                    customer_vote.append({
-                        'item': 5,
-                        'value': vote.item5
-                    })
-                if vote.item6:
-                    customer_vote.append({
-                        'item': 6,
-                        'value': vote.item6
-                    })
-                if vote.item7:
-                    customer_vote.append({
-                        'item': 7,
-                        'value': vote.item7
-                    })
-                if vote.item8:
-                    customer_vote.append({
-                        'item': 8,
-                        'value': vote.item8
-                    })
-                if vote.item9:
-                    customer_vote.append({
-                        'item': 9,
-                        'value': vote.item9
-                    })
-                if vote.item10:
-                    customer_vote.append({
-                        'item': 10,
-                        'value': vote.item10
-                    })
+                for idx in range(1, 10):
+                    item_has_vote = getattr(vote, 'item' + str(idx), None)
+
+                    if item_has_vote:
+                        customer_vote.append({
+                            'item': idx,
+                            'value': item_has_vote
+                        })
 
             except Vote.DoesNotExist:
                 pass
@@ -230,5 +148,54 @@ class VoteCastingViewSet(APIView):
 
         return Response(
             {'detail': 'Your vote has successfully been cast!'},
+            status=status.HTTP_200_OK
+        )
+
+
+class VotingDashboard(APIView):
+    permission_classes = [AdminOnly]
+
+    def get(self, request, format=None):
+
+        voting_round = VotingRound.objects.order_by('id')[0]
+
+        items = []
+        for idx in range(1, 10):
+            item_has_vote = getattr(voting_round, 'item' + str(idx), None)
+
+            if item_has_vote:
+                items.append({
+                    'idx': idx,
+                    'item': VotingItemSerializer(item_has_vote).data
+                })
+
+        votes = Vote.objects.order_by('-id')[:10]
+        latest_10 = []
+
+        for vote in votes:
+            current_vote = {'customer': vote.customer.email}
+
+            def structure_vote(idx):
+                item = getattr(vote, 'item' + str(idx), None)
+                current_vote[item] = {
+                    'idx': idx,
+                    'value': item,
+                    'created_date': vote.readable_date
+                }
+
+            for idx in range(1, 10):
+                item_has_vote = getattr(vote, 'item' + str(idx), None)
+
+                if item_has_vote:
+                    structure_vote(idx)
+
+            latest_10.append(current_vote)
+
+        return Response(
+            {
+                'issue_number': voting_round.issue,
+                'items': items,
+                'latest_10': latest_10,
+            },
             status=status.HTTP_200_OK
         )
