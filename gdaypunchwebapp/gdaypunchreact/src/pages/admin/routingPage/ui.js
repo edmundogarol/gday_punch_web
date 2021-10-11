@@ -18,12 +18,6 @@ function Ui(props) {
     orderSalesStatuses: { fetchingGraph, finishedFetchingGraph },
   } = props;
 
-  useEffect(() => {
-    if (!fetchingGraph && !finishedFetchingGraph) {
-      fetchOrdersSalesGraph();
-    }
-  }, [fetchingGraph, finishedFetchingGraph]);
-
   function hasPrivilege(privilege) {
     if (!user.id) return false;
 
@@ -32,6 +26,12 @@ function Ui(props) {
 
     return user.privileges.includes(privilege);
   }
+
+  useEffect(() => {
+    if (!fetchingGraph && !finishedFetchingGraph && hasPrivilege("admin")) {
+      fetchOrdersSalesGraph();
+    }
+  }, [fetchingGraph, finishedFetchingGraph]);
 
   const columns = [
     {
@@ -103,22 +103,26 @@ function Ui(props) {
 
   return (
     <AdminMobileNavLinks>
-      <Title level={4}>{`Sales past fortnight: A$${salesTotal.toFixed(
-        2
-      )}`}</Title>
-      {dataFilled.length > 1 ? (
-        <Chart
-          width={"100%"}
-          height={"25em"}
-          chartType="LineChart"
-          loader={<div>Loading Chart</div>}
-          data={dataFilled}
-          options={{
-            series: { 3: { type: "line" } },
-            legend: { position: "none" },
-            vAxis: { minValue: 0, format: "currency" },
-          }}
-        />
+      {hasPrivilege("admin") ? (
+        <>
+          <Title level={4}>{`Sales past fortnight: A$${salesTotal.toFixed(
+            2
+          )}`}</Title>
+          {dataFilled.length > 1 ? (
+            <Chart
+              width={"100%"}
+              height={"25em"}
+              chartType="LineChart"
+              loader={<div>Loading Chart</div>}
+              data={dataFilled}
+              options={{
+                series: { 3: { type: "line" } },
+                legend: { position: "none" },
+                vAxis: { minValue: 0, format: "currency" },
+              }}
+            />
+          ) : null}
+        </>
       ) : null}
       <Title level={4}>{title}</Title>
       <Table
