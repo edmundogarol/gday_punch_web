@@ -1,12 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Typography, Table } from "antd";
+import Chart from "react-google-charts";
+import moment from "moment";
 
 import { AdminMobileNavLinks } from "./styles";
 
 const { Title } = Typography;
 
 function Ui(props) {
-  const { user, history, pageType } = props;
+  const {
+    user,
+    history,
+    pageType,
+    ordersSales,
+    salesTotal,
+    fetchOrdersSalesGraph,
+    orderSalesStatuses: { fetchingGraph, finishedFetchingGraph },
+  } = props;
+
+  useEffect(() => {
+    if (!fetchingGraph && !finishedFetchingGraph) {
+      fetchOrdersSalesGraph();
+    }
+  }, [fetchingGraph, finishedFetchingGraph]);
 
   function hasPrivilege(privilege) {
     if (!user.id) return false;
@@ -69,8 +85,41 @@ function Ui(props) {
 
   const { title, routes } = routerPageTypes[pageType];
 
+  const sortedSales = Object.values(ordersSales).sort(
+    (a, b) => moment(a.date) - moment(b.date)
+  );
+  const dataFilled = [["This Week", "Sales", "Past Week"]].concat(
+    sortedSales
+      .map((record, idx) => {
+        if (idx > 6) return null;
+        return [
+          moment(record.date).format("ddd"),
+          sortedSales[idx + 7].sale,
+          record.sale,
+        ];
+      })
+      .filter((record) => record !== null)
+  );
+
   return (
     <AdminMobileNavLinks>
+      <Title level={4}>{`Sales past fortnight: A$${salesTotal.toFixed(
+        2
+      )}`}</Title>
+      {dataFilled.length > 1 ? (
+        <Chart
+          width={"100%"}
+          height={"25em"}
+          chartType="LineChart"
+          loader={<div>Loading Chart</div>}
+          data={dataFilled}
+          options={{
+            series: { 3: { type: "line" } },
+            legend: { position: "none" },
+            vAxis: { minValue: 0, format: "currency" },
+          }}
+        />
+      ) : null}
       <Title level={4}>{title}</Title>
       <Table
         onRow={handleLinkOpen}

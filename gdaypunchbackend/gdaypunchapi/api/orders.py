@@ -5,7 +5,7 @@ import pytz
 import random
 
 from threading import Thread
-from datetime import datetime
+from datetime import datetime, timedelta
 from smtplib import SMTPAuthenticationError
 
 from django.core.mail import send_mail
@@ -15,6 +15,7 @@ from django.shortcuts import get_list_or_404
 from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import (IsAuthenticated)
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from ..constants import *
 from ..models import (
@@ -36,7 +37,8 @@ from ..api_permissions import (
     OrderDetailsPermissions
 )
 from ..utils import (
-    AdminOrReadOnly
+    AdminOrReadOnly,
+    AdminOnly,
 )
 
 if 'DEVENV' in os.environ:
@@ -81,6 +83,46 @@ class OrderDetailViewSet(viewsets.ModelViewSet):
         order = Order.objects.get(id=pk)
         serializer = OrderSerializer(order)
         return Response(serializer.data)
+
+
+class OrdersSalesGraph(APIView):
+    permission_classes = [AdminOnly]
+
+    def get(self, request, format=None):
+
+        # Fortnightly range
+        how_many_days = 14
+        orders = Order.objects.filter(
+            date_created__gte=datetime.now()-timedelta(days=how_many_days)).order_by('date_created')
+
+        order_sales = {}
+        for order in orders:
+
+            try:
+                existing_key = order_sales[order.date_created.strftime(
+                    "%m/%d/%y")]
+                order_sales[order.date_created.strftime(
+                    "%m/%d/%y")]['sale'] = float(existing_key['sale']) + float(order.amount)
+
+            except KeyError:
+                order_sales[order.date_created.strftime("%m/%d/%y")] = {
+                    'date': order.date_created.strftime("%m/%d/%y"),
+                    'sale': float(order.amount)
+                }
+
+        today = datetime.now()
+        for idx in range(0, 14):
+            ref = today - timedelta(days=idx)
+
+            try:
+                order_sales[ref.strftime("%m/%d/%y")]
+            except KeyError:
+                order_sales[ref.strftime("%m/%d/%y")] = {
+                    'date': ref.strftime("%m/%d/%y"),
+                    'sale': 0
+                }
+
+        return Response(order_sales)
 
 
 class OrderConfirmationViewSet(viewsets.ModelViewSet):

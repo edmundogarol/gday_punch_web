@@ -45,6 +45,9 @@ import {
   FETCHING_VOTING_DASHBOARD,
   FINISHED_FETCHING_VOTING_DASHBOARD,
   UPDATE_VOTING_DASHBOARD,
+  FETCHING_ORDERS_SALES_GRAPH,
+  FINISHED_FETCHING_ORDERS_SALES_GRAPH,
+  UPDATE_ORDERS_SALES_GRAPH,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -118,6 +121,9 @@ const INITIAL_STATE = {
     selected: undefined,
     reason: undefined,
     partial_refund: undefined,
+    salesGraph: [],
+    fetchingGraph: false,
+    finishedFetchingGraph: false,
   },
 
   voting: {
@@ -536,6 +542,32 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
         voting: {
           ...state.voting,
           ...payload.dashboard,
+        },
+      };
+    case FETCHING_ORDERS_SALES_GRAPH:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          fetchingGraph: true,
+          finishedFetchingGraph: false,
+        },
+      };
+    case FINISHED_FETCHING_ORDERS_SALES_GRAPH:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          fetchingGraph: false,
+          finishedFetchingGraph: true,
+        },
+      };
+    case UPDATE_ORDERS_SALES_GRAPH:
+      return {
+        ...state,
+        orders: {
+          ...state.orders,
+          salesGraph: payload.salesGraph,
         },
       };
     default:

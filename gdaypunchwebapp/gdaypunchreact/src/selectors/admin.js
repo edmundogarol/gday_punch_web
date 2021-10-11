@@ -120,6 +120,30 @@ export const selectPartialRefundAmount = createSelector(
   ({ orders: { partial_refund } }) => partial_refund
 );
 
+export const selectOrdersSalesGraph = createSelector(
+  selectDomain,
+  ({ orders: { salesGraph } }) => salesGraph
+);
+
+export const selectOrdersSalesGraphStatuses = createSelector(
+  selectDomain,
+  ({ orders: { fetchingGraph, finishedFetchingGraph } }) => ({
+    fetchingGraph,
+    finishedFetchingGraph,
+  })
+);
+
+export const selectOrdersSalesGraphTotal = createSelector(
+  selectDomain,
+  ({ orders: { salesGraph } }) => {
+    let counter = 0;
+    Object.values(salesGraph).map((record) => {
+      counter = counter + record.sale;
+    });
+    return counter;
+  }
+);
+
 export const selectVotingDashboardState = createSelector(
   selectDomain,
   ({ voting }) => voting

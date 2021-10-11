@@ -97,6 +97,12 @@ export const FETCHING_VOTING_DASHBOARD = "admin/FETCHING_VOTING_DASHBOARD";
 export const FINISHED_FETCHING_VOTING_DASHBOARD =
   "admin/FINISHED_FETCHING_VOTING_DASHBOARD";
 
+export const FETCH_ORDERS_SALES_GRAPH = "admin/FETCH_ORDERS_SALES_GRAPH";
+export const UPDATE_ORDERS_SALES_GRAPH = "admin/UPDATE_ORDERS_SALES_GRAPH";
+export const FETCHING_ORDERS_SALES_GRAPH = "admin/FETCHING_ORDERS_SALES_GRAPH";
+export const FINISHED_FETCHING_ORDERS_SALES_GRAPH =
+  "admin/FINISHED_FETCHING_ORDERS_SALES_GRAPH";
+
 export const fetchUsers = (fetchNext, search) => ({
   type: FETCH_USERS,
   payload: {
@@ -559,4 +565,23 @@ export const fetchingVotingDashboard = () => ({
 
 export const finishedFetchingVotingDashboard = () => ({
   type: FINISHED_FETCHING_VOTING_DASHBOARD,
+});
+
+export const fetchOrdersSalesGraph = () => ({
+  type: FETCH_ORDERS_SALES_GRAPH,
+});
+
+export const updateOrdersSalesGraph = (salesGraph) => ({
+  type: UPDATE_ORDERS_SALES_GRAPH,
+  payload: {
+    salesGraph,
+  },
+});
+
+export const fetchingOrdersSalesGraph = () => ({
+  type: FETCHING_ORDERS_SALES_GRAPH,
+});
+
+export const finishedFetchingOrdersSalesGraph = () => ({
+  type: FINISHED_FETCHING_ORDERS_SALES_GRAPH,
 });

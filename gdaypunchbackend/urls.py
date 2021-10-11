@@ -63,7 +63,8 @@ from .gdaypunchapi.api.orders import (
     OrderViewSet,
     OrderStatusUpdateViewset,
     OrderDetailViewSet,
-    OrderConfirmationViewSet
+    OrderConfirmationViewSet,
+    OrdersSalesGraph
 )
 from .gdaypunchapi.api.marketing import (
     DownloadManuscript
@@ -121,6 +122,8 @@ urlpatterns = [
     # Products [Simple, Update Purchases]
     url(r'api/products-simple/', ProductSimpleListView.as_view()),
     url(r'api/update-purchases/', UpdatedProductPurchasesViewSet.as_view()),
+    # Orders [Sales Graph] OrdersSalesGraph
+    url(r'api/orders-graph/', OrdersSalesGraph.as_view()),
 
     # Voting
     url(r'api/voting-details/', VotingSystemDetailsViewSet.as_view()),

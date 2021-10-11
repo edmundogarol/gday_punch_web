@@ -75,6 +75,10 @@ import {
   fetchingVotingDashboard,
   updateVotingDashboard,
   finishedFetchingVotingDashboard,
+  FETCH_ORDERS_SALES_GRAPH,
+  fetchingOrdersSalesGraph,
+  updateOrdersSalesGraph,
+  finishedFetchingOrdersSalesGraph,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -865,6 +869,23 @@ export function* fetchVotingDashboardCall(action) {
   }
 }
 
+export function* fetchOrderSalesGraphCall(action) {
+  yield put(fetchingOrdersSalesGraph());
+  const response = yield call(api, `orders-graph/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateOrdersSalesGraph(data));
+    yield put(finishedFetchingOrdersSalesGraph());
+  } else {
+    yield put(finishedFetchingOrdersSalesGraph());
+    console.log("Order Sales Graph Fetch error", JSON.stringify(response));
+    message.error(`Order Sales Graph Fetch  error: ${response.data}`);
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -900,5 +921,6 @@ export default function* adminSaga() {
       updateCustomerAccessProductsCall
     ),
     takeLatest(FETCH_VOTING_DASHBOARD, fetchVotingDashboardCall),
+    takeLatest(FETCH_ORDERS_SALES_GRAPH, fetchOrderSalesGraphCall),
   ]);
 }
