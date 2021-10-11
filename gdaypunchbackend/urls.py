@@ -123,9 +123,9 @@ urlpatterns = [
     url(r'api/update-purchases/', UpdatedProductPurchasesViewSet.as_view()),
 
     # Voting
-    # url(r'api/voting-details/', VotingSystemDetailsViewSet.as_view()),
-    url(r'api/voting-details/', VotingDashboard.as_view()),
+    url(r'api/voting-details/', VotingSystemDetailsViewSet.as_view()),
     url(r'api/voting-cast/', VoteCastingViewSet.as_view()),
+    url(r'api/voting-dashboard/', VotingDashboard.as_view()),
 
     # Marketing Emails
     url(r'api/manga-manuscript/', DownloadManuscript.as_view()),

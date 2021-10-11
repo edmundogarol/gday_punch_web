@@ -169,18 +169,21 @@ class VotingDashboard(APIView):
                     'item': VotingItemSerializer(item_has_vote).data
                 })
 
-        votes = Vote.objects.order_by('-id')[:10]
+        votes = Vote.objects.filter(
+            voting_round=voting_round.id).order_by('-id')[:10]
         latest_10 = []
 
         for vote in votes:
-            current_vote = {'customer': vote.customer.email}
+            current_vote = {
+                'customer': vote.customer.email,
+                'created_date': vote.readable_date
+            }
 
             def structure_vote(idx):
                 item = getattr(vote, 'item' + str(idx), None)
                 current_vote[item] = {
                     'idx': idx,
                     'value': item,
-                    'created_date': vote.readable_date
                 }
 
             for idx in range(1, 10):
@@ -191,11 +194,40 @@ class VotingDashboard(APIView):
 
             latest_10.append(current_vote)
 
+        all_votes = Vote.objects.filter(
+            voting_round=voting_round.id).order_by('-id')
+
+        vote_tally = {
+            'count': len(all_votes)
+        }
+
+        for vote in all_votes:
+            def add_to_tally_idx(idx):
+                item = getattr(vote, 'item' + str(idx), None)
+
+                if item:
+                    current_idx_tally = 0
+
+                    try:
+                        current_idx_tally = vote_tally['item' + str(idx)]
+                    except KeyError:
+                        pass
+
+                    vote_tally['item' +
+                               str(idx)] = int(current_idx_tally) + int(item)
+
+            for idx in range(1, 10):
+                item_has_vote = getattr(vote, 'item' + str(idx), None)
+
+                if item_has_vote:
+                    add_to_tally_idx(idx)
+
         return Response(
             {
                 'issue_number': voting_round.issue,
                 'items': items,
                 'latest_10': latest_10,
+                'vote_tally': vote_tally,
             },
             status=status.HTTP_200_OK
         )
