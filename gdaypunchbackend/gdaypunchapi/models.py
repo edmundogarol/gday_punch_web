@@ -616,6 +616,8 @@ class StripeCustomer(models.Model):
     stripe_email = models.TextField(max_length=70, blank=False)
     gp_customer = models.ForeignKey(
         Customer,  on_delete=models.PROTECT, blank=True, null=True)
+    stripe_subscription_id = models.TextField(
+        max_length=100, blank=False, null=True)
 
 
 class Order(models.Model):

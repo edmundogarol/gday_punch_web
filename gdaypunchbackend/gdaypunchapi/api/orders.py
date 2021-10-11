@@ -350,10 +350,13 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
         subscriptions = json.loads(subscriptions.replace("\'", "\""))
 
         if subscriptions:
-            stripe.Subscription.create(
+            sub = stripe.Subscription.create(
                 customer=stripe_customer.customer_id,
                 items=subscriptions,
             )
+
+            stripe_customer.stripe_subscription_id = sub.id
+            stripe_customer.save()
 
     # Update order status for digital purchases only // Calculate item prices and update product stock
     digital_purchase = 0

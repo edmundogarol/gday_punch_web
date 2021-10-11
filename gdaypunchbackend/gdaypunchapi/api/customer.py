@@ -1,5 +1,6 @@
 import os
 import pytz
+import stripe
 from threading import Thread
 from datetime import datetime
 from smtplib import SMTPAuthenticationError
@@ -14,7 +15,7 @@ from django.template.loader import render_to_string
 from ..utils import AdminOnly
 from ..api_permissions import CustomerPermissions
 from ..models import (
-    Customer, User, Purchase, Product
+    Customer, User, Purchase, Product, StripeCustomer
 )
 from ..serializers import (
     CustomerSerializer,
@@ -24,8 +25,10 @@ from ..constants import *
 
 
 if 'DEVENV' in os.environ:
+    stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
     domain = "http://localhost:8000"
 else:
+    stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
     domain = "https://www.beta-gdaypunch.com"
 
 
@@ -102,6 +105,31 @@ class CustomerViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data)
 
         customer = queryset.get(pk=pk)
+
+        if dig_subscribed is not None and dig_subscribed == False:
+            stripe_customer = StripeCustomer.objects.get(
+                gp_customer=customer.id)
+
+            if stripe_customer and stripe_customer.stripe_subscription_id:
+                stripe.Subscription.delete(
+                    stripe_customer.stripe_subscription_id)
+                stripe_customer.stripe_subscription_id = None
+                stripe_customer.save()
+
+            dig_sub_product = Product.objects.get(
+
+                product_type=DIG_SUBSCRIPTION)
+            Thread(target=send_access_updates_email_summary, args=(
+                customer, [], [{
+                    'id': dig_sub_product.id,
+                    'product': {
+                        'title': dig_sub_product.title,
+                        'image': dig_sub_product.image,
+                        'sku': dig_sub_product.sku,
+                        'type': dig_sub_product.product_type,
+                    },
+                }], "Digital subscription has been cancelled.", False,)).start()
+
         serializer = CustomerSerializer(
             customer, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
