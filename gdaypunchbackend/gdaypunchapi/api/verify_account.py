@@ -16,12 +16,9 @@ from ..models import (User, StripeCustomer, Customer)
 from ..serializers import UserSerializer
 from ..utils import PostOnly
 
-if 'DEVENV' in os.environ:
-    website = "http://localhost:8000"
-    stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
-else:
-    website = "https://www.beta-gdaypunch.com"
-    stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
+from gdaypunchbackend.settings import STRIPE_API_KEY, DOMAIN
+
+stripe.api_key = STRIPE_API_KEY
 
 
 def send_account_verification_email(user, token):
@@ -29,7 +26,7 @@ def send_account_verification_email(user, token):
 
     email_config = {
         "email": user.email,
-        'website': website,
+        'website': DOMAIN,
         "user": user,
         'token': token,
     }

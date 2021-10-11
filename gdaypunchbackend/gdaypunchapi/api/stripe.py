@@ -30,13 +30,9 @@ from ..utils import (
 
 from ..constants import *
 
-if 'DEVENV' in os.environ:
-    stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
-    endpoint_secret = 'whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal'
-    domain = "http://localhost:8000"
-else:
-    stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
-    domain = "https://www.beta-gdaypunch.com"
+from gdaypunchbackend.settings import STRIPE_API_KEY, DOMAIN, STRIPE_ENDPOINT_SECRET
+
+stripe.api_key = STRIPE_API_KEY
 
 
 def calculate_order_amount(items_list, coupon, au_shipping):
@@ -434,7 +430,7 @@ def PaymentsWebhookHandler(request):
         sig_header = request.META['HTTP_STRIPE_SIGNATURE']
 
         event = stripe.Webhook.construct_event(
-            payload, sig_header, endpoint_secret
+            payload, sig_header, STRIPE_ENDPOINT_SECRET
         )
     except ValueError as e:
         # Invalid payload

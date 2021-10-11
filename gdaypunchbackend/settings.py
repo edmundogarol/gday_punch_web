@@ -153,8 +153,10 @@ TEMPLATES = [
 WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 
 if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
+    DOMAIN = "http://localhost:8000"
     dbconfig = "./gday-db-config.json"
 else:
+    DOMAIN = "https://www.beta-gdaypunch.com"
     dbconfig = '/opt/app/gday-db-config.json'
 
 SETTINGS = None
@@ -171,6 +173,9 @@ DATABASES = {
         'PORT': SETTINGS['RDS_PORT'],
     }
 }
+
+STRIPE_API_KEY = SETTINGS['STRIPE_API_KEY']
+STRIPE_ENDPOINT_SECRET = SETTINGS['STRIPE_ENDPOINT_SECRET']
 
 if 'DEVENV' in os.environ:
     # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

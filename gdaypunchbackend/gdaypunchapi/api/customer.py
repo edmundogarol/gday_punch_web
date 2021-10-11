@@ -22,14 +22,9 @@ from ..serializers import (
     PurchaseSerializer
 )
 from ..constants import *
+from gdaypunchbackend.settings import STRIPE_API_KEY, DOMAIN
 
-
-if 'DEVENV' in os.environ:
-    stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
-    domain = "http://localhost:8000"
-else:
-    stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
-    domain = "https://www.beta-gdaypunch.com"
+stripe.api_key = STRIPE_API_KEY
 
 
 class CustomerViewSet(viewsets.ModelViewSet):
@@ -196,7 +191,7 @@ def send_access_updates_email_summary(customer, granting_items, removing_items, 
         "subject": subject,
         "notes": notes,
         "signup_prompt": signup_prompt,
-        "website": domain
+        "website": DOMAIN
     }
 
     try:

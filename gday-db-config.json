@@ -6,5 +6,7 @@
     "RDS_PORT": "5432",
     "EMAIL_HOST_USER": "",
     "EMAIL_HOST_PASSWORD": "",
-    "EMAIL_PORT": "1025"
+    "EMAIL_PORT": "1025",
+    "STRIPE_API_KEY": "sk_test_Z4XLxyrM6xiiRVj54nJv47oU",
+    "STRIPE_ENDPOINT_SECRET": "whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal"
 }

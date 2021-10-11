@@ -22,15 +22,9 @@ from ..serializers import (
     ProductSimpleSerializer,
 )
 
-if 'DEVENV' in os.environ:
-    stripe.api_key = 'sk_test_Z4XLxyrM6xiiRVj54nJv47oU'
-    endpoint_secret = 'whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal'
-    domain = "http://localhost:8000"
-else:
-    stripe.api_key = 'sk_live_YXBR1HhTpxIbLVwoMHsP727I'
-    domain = "https://www.beta-gdaypunch:com"
+from gdaypunchbackend.settings import STRIPE_API_KEY
 
-# price_type: one_time, recurring
+stripe.api_key = STRIPE_API_KEY
 
 
 class ProductViewSet(viewsets.ModelViewSet):
