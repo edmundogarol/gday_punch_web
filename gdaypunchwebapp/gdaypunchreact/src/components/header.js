@@ -9,7 +9,7 @@ export default function Header(props) {
 
   return (
     <div className={`header ${props.loginView ? "exit" : ""}`}>
-      <a className="home-logo" href="https://www.gdaypunch.com">
+      <a className="home-logo" href="https://www.gdaypunch.com.au">
         <img
           src={getResourceImage("gday_big.png")}
           className="App-logo-big"

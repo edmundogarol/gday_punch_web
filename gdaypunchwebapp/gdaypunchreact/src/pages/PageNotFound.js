@@ -8,7 +8,7 @@ export default function PageNotFound() {
   return (
     <div id="top" className="App">
       <div className="App-header-container app-temp-background page-not-found">
-        <a className="home-logo" href="https://www.gdaypunch.com">
+        <a className="home-logo" href="https://www.gdaypunch.com.au">
           <img
             src={getResourceImage("gday.png")}
             className="App-logo"

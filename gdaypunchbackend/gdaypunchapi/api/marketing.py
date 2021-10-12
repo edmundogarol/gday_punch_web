@@ -17,11 +17,7 @@ from ..constants import *
 
 from ..models import User, Customer
 
-if 'DEVENV' in os.environ:
-    website = "http://localhost:8000"
-else:
-    website = "https://www.beta-gdaypunch.com"
-
+from gdaypunchbackend.settings import DOMAIN
 
 # Implement Advertising Manga/Issues for emails that have space for ads: eg. Download links, Announcements etc
 
@@ -31,7 +27,7 @@ def send_manuscript_download_link(email):
 
     email_config = {
         "download": "download",
-        "website": website
+        "website": DOMAIN
     }
 
     try:

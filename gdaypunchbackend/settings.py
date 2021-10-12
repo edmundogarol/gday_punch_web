@@ -185,7 +185,7 @@ if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
     DOMAIN = "http://localhost:8000"
     dbconfig = "./gday-db-config.json"
 else:
-    DOMAIN = "https://www.beta-gdaypunch.com"
+    DOMAIN = "https://www.gdaypunch.com.au"
     dbconfig = '/opt/app/gday-db-config.json'
 
 SETTINGS = None

@@ -25,11 +25,7 @@ from ..models import (
     User, ResetPasswordSession
 )
 from ..serializers import ResetPasswordSerializer
-
-if 'DEVENV' in os.environ:
-    website = "http://localhost:8000"
-else:
-    website = "https://www.beta-gdaypunch.com"
+from gdaypunchbackend.settings import DOMAIN
 
 
 def send_password_reset_email(user, token):
@@ -37,7 +33,7 @@ def send_password_reset_email(user, token):
 
     email_config = {
         "email": user.email,
-        'website': website,
+        'website': DOMAIN,
         "user": user,
         'token': token,
     }
