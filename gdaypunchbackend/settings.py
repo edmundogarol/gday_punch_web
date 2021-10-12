@@ -35,6 +35,8 @@ if 'DEVENV' in os.environ:
     DEBUG = True
 
 ALLOWED_HOSTS = [
+    "gdaypunch.com.au",
+    "www.gdaypunch.com.au",
     "gdaypunch.com",
     ".gdaypunch.com",
     "gdaypunch.elasticbeanstalk.com",
