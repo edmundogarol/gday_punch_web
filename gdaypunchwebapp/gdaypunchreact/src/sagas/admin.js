@@ -758,9 +758,6 @@ export function* createCouponCall(action) {
     method: "POST",
     body: {
       ...action.payload.coupon,
-      expiry_date: moment(action.payload.coupon.expiry_date).format(
-        "YYYY-MM-DD"
-      ),
     },
   });
 

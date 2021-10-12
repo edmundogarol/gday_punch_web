@@ -322,7 +322,7 @@ function Ui(props) {
         onChange={({ current, pageSize }) => {
           if (currentUserCount < availableCount) {
             if (current * pageSize === currentUserCount) {
-              fetchOrders(true); // true = fetch next
+              fetchUsers(true); // true = fetch next
             }
           }
         }}

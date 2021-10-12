@@ -26,7 +26,7 @@ function Ui(props) {
     name: "",
     coupon_type: "percentage",
     expiry_date: undefined,
-    date_created: moment(new Date()).format("YYYY-MM-DD"),
+    date_created: moment(new Date()).format("YYYY-MM-DDThh:mm"),
     amount: undefined,
   });
 
@@ -69,7 +69,11 @@ function Ui(props) {
   }, [fetching, finishedFetching]);
 
   const handleCouponSubmit = () => {
-    createCoupon(newCoupon);
+    const formatCouponDate = {
+      ...newCoupon,
+      expiry_date: moment(newCoupon.expiry_date).format("YYYY-MM-DDThh:mm"),
+    };
+    createCoupon(formatCouponDate);
   };
 
   return (
