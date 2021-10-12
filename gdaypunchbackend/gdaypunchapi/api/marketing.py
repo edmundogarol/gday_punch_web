@@ -39,7 +39,7 @@ def send_manuscript_download_link(email):
 
         send_mail(
             subject='Manga manuscript download ready',
-            message='Manga M=manuscript download ready',
+            message=email_html,
             html_message=email_html,
             from_email='Gday Punch Manga Magazine<info@gdaypunch.com>',
             recipient_list=[email],

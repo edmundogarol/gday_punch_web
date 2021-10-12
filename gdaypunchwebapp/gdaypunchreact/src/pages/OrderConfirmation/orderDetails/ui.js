@@ -281,6 +281,14 @@ function Ui(props) {
       {order.statuses ? (
         <OrderStatuses>
           <Table
+            loading={
+              order.statuses.length < 1
+                ? {
+                    indicator: null,
+                    tip: "If there are no status updates, try refreshing your page. ",
+                  }
+                : false
+            }
             columns={statusColumns}
             dataSource={order.statuses.map((status) => ({
               key: status.id,

@@ -158,7 +158,7 @@ def send_email_receipt(customer, order, items):
 
         send_mail(
             subject='Thank you for your order!',
-            message='Thank you for your order!',
+            message=email,
             html_message=email,
             from_email='Gday Punch Manga Magazine<info@gdaypunch.com>',
             recipient_list=[order.email],
@@ -186,7 +186,7 @@ def send_email_purchase_requires_sign_up(customer, order, items):
 
         send_mail(
             subject='Sign up now - You have manga waiting!',
-            message='Sign up now - You have manga waiting!',
+            message=email,
             html_message=email,
             from_email='Gday Punch Manga Magazine<info@gdaypunch.com>',
             recipient_list=[order.email],
@@ -238,7 +238,7 @@ def send_email_update(customer, order, order_status, items, notes, update_date, 
 
         send_mail(
             subject=subject,
-            message=subject,
+            message=email,
             html_message=email,
             from_email='Gday Punch Manga Magazine<info@gdaypunch.com>',
             recipient_list=[order.email],

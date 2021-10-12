@@ -94,7 +94,19 @@ function Ui(props) {
           <Result
             status="error"
             title={"Oops - Something went wrong."}
-            subTitle={viewingOrderErrors}
+            subTitle={
+              <div>
+                <p>{viewingOrderErrors}</p>
+                {paymentSuccess ? (
+                  <span>
+                    Your card may have been charged but the order did not go
+                    through. Please contact us at{" "}
+                    <a href="mailto:info@gdaypunch.com">info@gdaypunch.com</a>
+                    &nbsp; to fix this problem.
+                  </span>
+                ) : null}
+              </div>
+            }
           ></Result>
         </div>
       ) : null}
