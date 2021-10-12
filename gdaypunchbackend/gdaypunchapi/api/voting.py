@@ -58,9 +58,12 @@ class VotingSystemDetailsViewSet(APIView):
             except Vote.DoesNotExist:
                 pass
 
-        corresponding_digital = Product.objects.get(
-            sku='GPMMD' + str(voting_round.issue))
-        purchased = voting_round.product.purchased or corresponding_digital.purchased
+        try:
+            corresponding_digital = Product.objects.get(
+                sku='GPMMD' + str(voting_round.issue))
+            purchased = voting_round.product.purchased or corresponding_digital.purchased
+        except Product.DoesNotExist:
+            purchased = False
 
         return Response(
             {
