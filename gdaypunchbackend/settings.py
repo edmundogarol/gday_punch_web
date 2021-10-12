@@ -23,8 +23,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&'
 
+
+LOGFILE = '/opt/python/log/django.log'
+
+
 # SECURITY WARNING: don't run with debug turned on in production!
 if 'DEVENV' in os.environ:
+    LOGFILE = './django.log'
     DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -43,6 +48,25 @@ ALLOWED_HOSTS = [
     "172.31.15.249",
     "172.31.6.161",
 ]
+
+if 'DEVENV' in os.environ:
+    LOGGING = {
+        'version': 1,
+        'handlers': {
+            'logfile': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': LOGFILE,
+            },
+        },
+        'loggers': {
+            'debugger': {
+                'level': 'DEBUG',
+                'handlers': ['logfile'],
+                'propagate': False,
+            },
+        }
+    }
 
 
 def is_ec2_linux():
