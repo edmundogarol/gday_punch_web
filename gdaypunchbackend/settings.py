@@ -51,24 +51,24 @@ ALLOWED_HOSTS = [
     "172.31.6.161",
 ]
 
-if 'DEVENV' not in os.environ:
-    LOGGING = {
-        'version': 1,
-        'handlers': {
-            'logfile': {
-                'level': 'DEBUG',
-                'class': 'logging.handlers.RotatingFileHandler',
-                'filename': LOGFILE,
-            },
-        },
-        'loggers': {
-            'debugger': {
-                'level': 'DEBUG',
-                'handlers': ['logfile'],
-                'propagate': False,
-            },
-        }
-    }
+# if 'DEVENV' not in os.environ:
+#     LOGGING = {
+#         'version': 1,
+#         'handlers': {
+#             'logfile': {
+#                 'level': 'DEBUG',
+#                 'class': 'logging.handlers.RotatingFileHandler',
+#                 'filename': LOGFILE,
+#             },
+#         },
+#         'loggers': {
+#             'debugger': {
+#                 'level': 'DEBUG',
+#                 'handlers': ['logfile'],
+#                 'propagate': False,
+#             },
+#         }
+#     }
 
 
 def is_ec2_linux():
