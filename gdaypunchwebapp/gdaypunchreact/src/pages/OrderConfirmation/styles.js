@@ -24,7 +24,7 @@ export const PageContainer = styled.div`
   }
 
   .ant-result {
-    padding-top: 10em;
+    padding-top: 5em;
 
     .ant-btn {
       background: orange;

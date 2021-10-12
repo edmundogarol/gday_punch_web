@@ -58,7 +58,12 @@ function Ui(props) {
     return (
       <Result
         className="server-success"
-        icon={<Image src={getGdayPunchStaticUrl("shopping-success.png")} />}
+        icon={
+          <Image
+            preview={false}
+            src={getGdayPunchStaticUrl("success-merchant-1-25.png")}
+          />
+        }
         title="Awesome, your order was successful!"
         extra={
           <Button type="primary" onClick={() => history.push("/")}>
