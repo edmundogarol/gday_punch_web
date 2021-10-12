@@ -5,8 +5,7 @@ import {
   VerticalAlignTopOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
-import { Typography, Select, Tooltip, Button, Input, message } from "antd";
-import { useStripe } from "@stripe/react-stripe-js";
+import { Typography, Select, Tooltip, Button } from "antd";
 
 import {
   SideCartContainer,
@@ -20,7 +19,6 @@ import {
   ItemMeta,
   ItemSubtotal,
   ItemSubtotalBinContainer,
-  ItemCoupon,
   ItemTotal,
   TotalLabel,
   GSTLabel,
@@ -30,7 +28,6 @@ import {
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
-import { gdayfetch } from "utils/gdayfetch";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -73,45 +70,6 @@ function Ui(props) {
     toggleSideCart(false);
     const perma_link = product.title.toLowerCase().split(" ").join("-");
     props.history.push(`/product/${product.id}/gday-punch-${perma_link}`);
-  };
-
-  const handlePurchaseClick = async () => {
-    const stripe = await useStripe();
-    let stripe_prices = [];
-    items.map((item) => {
-      return item.stripe_prices.map((price) => {
-        stripe_prices = [
-          ...stripe_prices,
-          ...Array.from({ length: item.quantity }).map((x) => price),
-        ];
-      });
-    });
-
-    const response = await gdayfetch("payments/create-checkout-session/", {
-      method: "POST",
-      body: {
-        stripe_ids: stripe_prices,
-      },
-    });
-
-    if (response && response.ok) {
-      const result = await stripe.redirectToCheckout({
-        sessionId: response.data.id,
-      });
-
-      if (result.error) {
-        alert(result.error.message);
-      }
-    } else {
-      console.log("Checkout Purchase error", JSON.stringify(response));
-      message.error({
-        content: "Checkout Purchase error",
-        className: "antd-message-capitalize",
-        style: {
-          textTransform: "capitalize",
-        },
-      });
-    }
   };
 
   const cartItem = (item) => {
@@ -208,10 +166,6 @@ function Ui(props) {
           {items.map((item) => cartItem(item))}
         </SideCartItemsList>
         <SideCartFooterContainer>
-          {/* <ItemCoupon>
-            <Input placeholder="Enter Coupon Code" />
-            <Button>Apply Discount</Button>
-          </ItemCoupon> */}
           <ItemTotalContainer>
             <NavLink target="_blank" to="/refunds-and-returns">
               <p className="website">Refunds & Returns Policy</p>
@@ -237,7 +191,6 @@ function Ui(props) {
             onClick={() => {
               props.history.push("/cart");
               toggleSideCart(false);
-              // handlePurchaseClick();
             }}
           >
             Review Cart
