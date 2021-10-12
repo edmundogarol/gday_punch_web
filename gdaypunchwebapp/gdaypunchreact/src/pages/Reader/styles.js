@@ -29,7 +29,7 @@ export const LikeButton = styled.span`
     margin-left: unset;
 
     @media ${device.laptop} {
-      margin-left: unset;
+      margin-left: 1em;
     }
   }
 
