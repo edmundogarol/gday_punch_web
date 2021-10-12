@@ -26,7 +26,8 @@ SECRET_KEY = '4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&'
 
 if 'DEPLOYENV' not in os.environ:
     LOGFILE = '/opt/python/log/django.log'
-
+else:
+    LOGFILE = './django.log'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 if 'DEVENV' in os.environ:
