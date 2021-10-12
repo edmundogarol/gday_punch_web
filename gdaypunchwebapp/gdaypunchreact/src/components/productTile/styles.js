@@ -18,11 +18,11 @@ export const ProductTileContainer = styled.div`
   }
 
   .img-link {
-    width: 100%;
+    width: auto;
     max-height: 19em;
 
     img {
-      width: 100%;
+      width: auto;
       max-height: 19em;
     }
   }

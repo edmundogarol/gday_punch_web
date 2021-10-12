@@ -40,9 +40,15 @@ export const ProductDetailLeftContainer = styled.div`
   justify-content: center;
 
   .ant-image-img {
-    max-height: 29em;
-    width: unset;
-    max-width: 17em;
+    height: auto;
+    max-height: 22em;
+    width: auto;
+    max-width: unset;
+
+    @media ${device.laptop} {
+      max-height: 29em;
+      max-width: 17em;
+    }
   }
 
   .ant-image {

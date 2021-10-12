@@ -50,6 +50,7 @@ export const RightImageContainer = styled.div`
   margin-right: auto;
 
   .ant-image-img {
+    width: auto;
     max-height: 27em;
   }
 
