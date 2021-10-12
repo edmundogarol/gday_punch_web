@@ -142,6 +142,43 @@ class User(AbstractBaseUser, PermissionsMixin):
             return None
 
     @property
+    def customer_payment_details(self):
+        payment_details = None
+        try:
+            customer = Customer.objects.get(user=self.id)
+            stripe_customer = StripeCustomer.objects.get(
+                gp_customer=customer.id)
+
+            if customer.dig_subscribed or customer.mag_subscribed:
+                if customer.last_four:
+                    payment_details = {
+                        'last_four': customer.last_four,
+                        'exp_month': customer.exp_month,
+                        'exp_year': customer.exp_year
+                    }
+
+                else:
+                    orders = Order.objects.filter(customer=stripe_customer.id)
+
+                    for order in orders:
+                        if DIG_SUBSCRIPTION in order.product_types or MAG_SUBSCRIPTION in order.product_types:
+                            payment_details = {
+                                'last_four': order.last_four,
+                                'exp_month': order.exp_month,
+                                'exp_year': order.exp_year
+                            }
+                            break
+
+                return payment_details
+            else:
+                return None
+
+        except Customer.DoesNotExist:
+            return None
+        except StripeCustomer.DoesNotExist:
+            return None
+
+    @property
     def stripe_customer_id(self):
         try:
             stripe_customer = StripeCustomer.objects.get(user=self.id)
@@ -501,6 +538,9 @@ class Customer(models.Model):
     postcode = models.TextField(max_length=50, blank=True)
     country = models.TextField(max_length=50, blank=True)
     phone_number = models.TextField(max_length=50, blank=True)
+    last_four = models.TextField(max_length=10, blank=True)
+    exp_month = models.TextField(max_length=10, blank=True)
+    exp_year = models.TextField(max_length=10, blank=True)
 
     @property
     def owned_access_count(self):
@@ -540,66 +580,61 @@ class Customer(models.Model):
             return None
 
         try:
-            last_3 = Purchase.objects.filter(
-                customer=self.id).order_by('-id')[:3:-1]
+            stripe_customer = StripeCustomer.objects.get(gp_customer=self.id)
+            last_3 = Order.objects.filter(
+                customer=stripe_customer.id).order_by('-id')[:3:-1]
 
             if last_3:
 
                 orders = []
-                for purchase in last_3:
+                for order in last_3:
 
-                    try:
-                        order = Order.objects.get(purchase=purchase.id)
-
-                        orders.append({
-                            'id': order.id,
-                            'key': order.id,
-                            'email': order.email,
-                            'number': order.number,
-                            'coupon': order.coupon,
-                            'amount': order.amount,
-                            'status': order.status,
-                            'secret': order.secret,
-                            'tax': order.tax,
-                            'coupon_details': order.coupon_details,
-                            'total_shippable_items': order.total_shippable_items,
-                            'readable_date': order.readable_date,
-                            'product_qty_details': order.product_qty_details,
-                            'fulfillment_type': order.fulfillment_type,
-                            'products_total_price': order.products_total_price,
-                            'coupon_details': order.coupon_details,
-                            'first_name': order.first_name,
-                            'last_name': order.last_name,
-                            'address_line_1': order.address_line_1,
-                            'address_line_2': order.address_line_2,
-                            'city': order.city,
-                            'state': order.state,
-                            'postcode': order.postcode,
-                            'country': order.country,
-                            'phone_number': order.phone_number,
-                            'billing_same_address': order.billing_same_address,
-                            'billing_email': order.billing_email,
-                            'billing_first_name': order.billing_first_name,
-                            'billing_last_name': order.billing_last_name,
-                            'billing_address_line_1': order.billing_address_line_1,
-                            'billing_address_line_2': order.billing_address_line_2,
-                            'billing_city': order.billing_city,
-                            'billing_state': order.billing_state,
-                            'billing_postcode': order.billing_postcode,
-                            'billing_country': order.billing_country,
-                            'billing_number': order.billing_number,
-                            'last_four': order.last_four,
-                            'exp_month': order.exp_month,
-                            'exp_year': order.exp_year,
-                            'statuses': order.statuses
-                        })
-
-                    except Order.DoesNotExist:
-                        pass
+                    orders.append({
+                        'id': order.id,
+                        'key': order.id,
+                        'email': order.email,
+                        'number': order.number,
+                        'coupon': order.coupon,
+                        'amount': order.amount,
+                        'status': order.status,
+                        'secret': order.secret,
+                        'tax': order.tax,
+                        'coupon_details': order.coupon_details,
+                        'total_shippable_items': order.total_shippable_items,
+                        'readable_date': order.readable_date,
+                        'product_qty_details': order.product_qty_details,
+                        'fulfillment_type': order.fulfillment_type,
+                        'products_total_price': order.products_total_price,
+                        'coupon_details': order.coupon_details,
+                        'first_name': order.first_name,
+                        'last_name': order.last_name,
+                        'address_line_1': order.address_line_1,
+                        'address_line_2': order.address_line_2,
+                        'city': order.city,
+                        'state': order.state,
+                        'postcode': order.postcode,
+                        'country': order.country,
+                        'phone_number': order.phone_number,
+                        'billing_same_address': order.billing_same_address,
+                        'billing_email': order.billing_email,
+                        'billing_first_name': order.billing_first_name,
+                        'billing_last_name': order.billing_last_name,
+                        'billing_address_line_1': order.billing_address_line_1,
+                        'billing_address_line_2': order.billing_address_line_2,
+                        'billing_city': order.billing_city,
+                        'billing_state': order.billing_state,
+                        'billing_postcode': order.billing_postcode,
+                        'billing_country': order.billing_country,
+                        'billing_number': order.billing_number,
+                        'last_four': order.last_four,
+                        'exp_month': order.exp_month,
+                        'exp_year': order.exp_year,
+                        'statuses': order.statuses
+                    })
 
                 return orders if orders else None
 
-        except Purchase.DoesNotExist:
+        except StripeCustomer.DoesNotExist:
             return None
 
 
@@ -681,6 +716,18 @@ class Order(models.Model):
                     },
                     'qty': item['qty']
                 })
+
+        return item_details
+
+    @property
+    def product_types(self):
+        items = json.loads(self.products_qty.replace("\'", "\""))
+        item_details = []
+
+        for item in items:
+            product = Product.objects.get(id=item['id'])
+
+            item_details.append(product.product_type)
 
         return item_details
 

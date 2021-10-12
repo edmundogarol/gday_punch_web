@@ -436,8 +436,38 @@ function Ui(props) {
               )}
             </div>
           </TabPane>
-          <TabPane tab="Payment" disabled key="payment">
-            Payment Method
+          <TabPane
+            tab="Payment"
+            disabled={!user.customer_payment_details}
+            key="payment"
+          >
+            {user.customer_payment_details ? (
+              <Card
+                className="non-first-tab"
+                type="inner"
+                title="Payment Method"
+                extra={
+                  <Tooltip
+                    placement="top"
+                    title={
+                      "Edit not available yet. Contact info@gdaypunch.com to update subscription details."
+                    }
+                  >
+                    <a href="#" className="disabled">
+                      Edit
+                    </a>
+                  </Tooltip>
+                }
+              >
+                <DetailField>
+                  <label>Card</label>
+                  <p>{`Ending in ${user.customer_payment_details.last_four}`}</p>
+                  <p className="unset">
+                    {`${user.customer_payment_details.exp_month}/${user.customer_payment_details.exp_year}`}
+                  </p>
+                </DetailField>
+              </Card>
+            ) : null}
           </TabPane>
         </Tabs>
       </FeaturedSection>
