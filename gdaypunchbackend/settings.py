@@ -49,7 +49,7 @@ ALLOWED_HOSTS = [
     "172.31.6.161",
 ]
 
-if 'DEVENV' in os.environ:
+if 'DEVENV' not in os.environ:
     LOGGING = {
         'version': 1,
         'handlers': {
