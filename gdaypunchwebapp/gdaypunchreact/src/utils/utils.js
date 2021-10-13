@@ -18,6 +18,15 @@ export function getGdayPunchStaticUrl(asset) {
   return `${staticURL}/${asset}`;
 }
 
+export function getGdayPunchResourceUrl(asset) {
+  let staticURL =
+    process.env.NODE_ENV === "development"
+      ? "/static"
+      : "https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com";
+
+  return `${staticURL}/${asset}`;
+}
+
 export function arrayIdsMapToObject(list) {
   let finalObject = {};
 
@@ -46,4 +55,18 @@ export function emailValidator(inputtxt) {
     return true;
   }
   return false;
+}
+
+export function removeHtml(inputtxt) {
+  return inputtxt.replaceAll(/<[^>]*>/gi, "").trim();
+}
+
+export function generatePermaLink(product) {
+  let prefix = "";
+  if (product.user === 1) {
+    prefix = "gday-punch-";
+  }
+  return (
+    prefix + product.title.toLowerCase().split(" ").join("-").replace("#", "")
+  );
 }

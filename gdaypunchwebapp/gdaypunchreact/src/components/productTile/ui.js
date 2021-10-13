@@ -4,7 +4,11 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { CommentOutlined, BookOutlined } from "@ant-design/icons";
 import { Badge, Tooltip } from "antd";
 
-import { getGdayPunchStaticUrl, scrollToTop } from "utils/utils";
+import {
+  generatePermaLink,
+  getGdayPunchStaticUrl,
+  scrollToTop,
+} from "utils/utils";
 
 import {
   ProductTileContainer,
@@ -60,7 +64,7 @@ function Ui(props) {
     user_likes: undefined,
   };
 
-  const perma_link = product.title.toLowerCase().split(" ").join("-");
+  const perma_link = generatePermaLink(product);
   const buyableProduct = active_price && active_price > 0;
   const digitalProduct = product_type !== "physical";
   const purchasedDigital = purchased && digitalProduct;
@@ -84,7 +88,7 @@ function Ui(props) {
 
   const handleViewProduct = () => {
     viewProduct(id);
-    props.history.push(`/product/${id}/gday-punch-${perma_link}`);
+    props.history.push(`/product/${id}/${perma_link}`);
   };
 
   const renderActionButton = () => {

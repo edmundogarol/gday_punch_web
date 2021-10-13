@@ -27,7 +27,7 @@ import {
   SideCartFooterContainer,
 } from "./styles";
 
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { generatePermaLink, getGdayPunchStaticUrl } from "utils/utils";
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -68,8 +68,8 @@ function Ui(props) {
   const handleViewProduct = (product) => {
     viewProduct(product.id);
     toggleSideCart(false);
-    const perma_link = product.title.toLowerCase().split(" ").join("-");
-    props.history.push(`/product/${product.id}/gday-punch-${perma_link}`);
+    const perma_link = generatePermaLink(product);
+    props.history.push(`/product/${product.id}/${perma_link}`);
   };
 
   const cartItem = (item) => {

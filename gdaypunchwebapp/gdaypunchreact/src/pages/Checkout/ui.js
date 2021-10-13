@@ -25,7 +25,12 @@ import {
   PaymentMethodLogo,
   EmptyCartMessage,
 } from "./styles";
-import { emailValidator, getResourceImage, phoneValidator } from "utils/utils";
+import {
+  emailValidator,
+  generatePermaLink,
+  getResourceImage,
+  phoneValidator,
+} from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
@@ -334,7 +339,7 @@ function Ui(props) {
   const handleViewProduct = (product) => {
     viewProduct(product.id);
     toggleSideCart(false);
-    const perma_link = product.title.toLowerCase().split(" ").join("-");
+    const perma_link = generatePermaLink(product);
     props.history.push(`/product/${product.id}/${perma_link}`);
   };
 

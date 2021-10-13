@@ -13,6 +13,7 @@ import { SectionTitle } from "components/sectionTitle";
 
 import { App } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
+import { getGdayPunchResourceUrl } from "utils/utils";
 
 function Ui(props) {
   const {
@@ -41,6 +42,10 @@ function Ui(props) {
 
   return (
     <App id="top" className="App">
+      <meta
+        name="og:image"
+        content={getGdayPunchResourceUrl("gdaypunch-hero-preview.png")}
+      ></meta>
       <div className="App-header-container app-temp-background">
         <Header loginView={loginView} />
         <Login />

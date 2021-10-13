@@ -37,7 +37,12 @@ import {
   ActionButton,
 } from "./styles";
 
-import { getGdayPunchStaticUrl, scrollToTop } from "utils/utils";
+import {
+  getGdayPunchResourceUrl,
+  getGdayPunchStaticUrl,
+  removeHtml,
+  scrollToTop,
+} from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const productType = {
@@ -127,7 +132,7 @@ function Ui(props) {
       "https://www.pinterest.com/pin/create/button/?url=" +
       window.location.href +
       "&media=" +
-      getGdayPunchStaticUrl(product.image) +
+      getGdayPunchResourceUrl(product.image) +
       "&description=" +
       product.title.replace("#", "%23");
     const options = "toolbar=0,status=0,resizable=1,width=626,height=436";
@@ -219,6 +224,30 @@ function Ui(props) {
 
   return (
     <PageContainer>
+      {product ? (
+        <>
+          {/* SE0 description */}
+          <meta name="description" content={removeHtml(product.description)} />
+          {/* Open Graph meta [Facebook, ] */}
+          <meta
+            name="og:image"
+            content={getGdayPunchResourceUrl(product.image)}
+          ></meta>
+          {/* Twitter Card for twiter sharing with image */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:site" content="@gdaypunch" />
+          <meta name="twitter:creator" content="@GdayPunchMangaMagazine" />
+          <meta name="twitter:title" content={product.title} />
+          <meta
+            name="twitter:description"
+            content={removeHtml(product.description)}
+          />
+          <meta
+            name="twitter:image"
+            content={getGdayPunchResourceUrl(product.image)}
+          ></meta>
+        </>
+      ) : null}
       <ProductContainer>
         {product && product.id ? (
           <ProductDetailContainer>

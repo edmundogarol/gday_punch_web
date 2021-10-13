@@ -31,7 +31,7 @@ import {
   EmptyCartMessage,
   CheckoutButtonContainer,
 } from "./styles";
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchStaticUrl, generatePermaLink } from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Option } = Select;
@@ -63,8 +63,8 @@ function Ui(props) {
   const handleViewProduct = (product) => {
     viewProduct(product.id);
     toggleSideCart(false);
-    const perma_link = product.title.toLowerCase().split(" ").join("-");
-    props.history.push(`/product/${product.id}/gday-punch-${perma_link}`);
+    const perma_link = generatePermaLink(product);
+    props.history.push(`/product/${product.id}/${perma_link}`);
   };
 
   const cartItem = (item) => {
