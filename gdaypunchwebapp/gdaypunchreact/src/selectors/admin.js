@@ -137,8 +137,11 @@ export const selectOrdersSalesGraphTotal = createSelector(
   selectDomain,
   ({ orders: { salesGraph } }) => {
     let counter = 0;
-    Object.values(salesGraph).map((record) => {
-      counter = counter + record.sale;
+    salesGraph.forEach((day) => {
+      day.forEach((week, idx) => {
+        if (idx < 1) return;
+        counter = counter + week;
+      });
     });
     return counter;
   }

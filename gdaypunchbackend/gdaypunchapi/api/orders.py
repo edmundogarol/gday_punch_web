@@ -92,8 +92,14 @@ class OrdersSalesGraph(APIView):
             date_created__gte=datetime.now()-timedelta(days=how_many_days)).order_by('date_created')
 
         order_sales = {}
-        for order in orders:
 
+        local_tz = pytz.timezone('Australia/Sydney')
+        local_dt = datetime.now().replace(tzinfo=pytz.utc).astimezone(local_tz)
+        order_sales[local_dt.strftime("%m/%d/%y")] = {
+            'sale': 0
+        }
+
+        for order in orders:
             try:
                 existing_key = order_sales[order.date_created.strftime(
                     "%m/%d/%y")]
@@ -102,11 +108,10 @@ class OrdersSalesGraph(APIView):
 
             except KeyError:
                 order_sales[order.date_created.strftime("%m/%d/%y")] = {
-                    'date': order.date_created.strftime("%m/%d/%y"),
                     'sale': float(order.amount)
                 }
 
-        today = datetime.now()
+        today = datetime.now().replace(tzinfo=pytz.utc).astimezone(local_tz)
         for idx in range(0, 14):
             ref = today - timedelta(days=idx)
 
@@ -114,11 +119,20 @@ class OrdersSalesGraph(APIView):
                 order_sales[ref.strftime("%m/%d/%y")]
             except KeyError:
                 order_sales[ref.strftime("%m/%d/%y")] = {
-                    'date': ref.strftime("%m/%d/%y"),
                     'sale': 0
                 }
 
-        return Response(order_sales)
+        sales_days = []
+        for idx in range(0, 14):
+            if idx > 6:
+                break
+            ref = today - timedelta(days=idx)
+            last_week_ref = today - timedelta(days=idx + 6)
+
+            sales_days.append([ref.strftime("%a"), order_sales[ref.strftime(
+                "%m/%d/%y")]['sale'], order_sales[last_week_ref.strftime("%m/%d/%y")]['sale']])
+
+        return Response(sales_days[::-1])
 
 
 class OrderConfirmationViewSet(viewsets.ModelViewSet):

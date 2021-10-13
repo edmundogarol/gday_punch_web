@@ -85,21 +85,7 @@ function Ui(props) {
 
   const { title, routes } = routerPageTypes[pageType];
 
-  const sortedSales = Object.values(ordersSales).sort(
-    (a, b) => moment(a.date) - moment(b.date)
-  );
-  const dataFilled = [["This Week", "Sales", "Past Week"]].concat(
-    sortedSales
-      .map((record, idx) => {
-        if (idx > 6) return null;
-        return [
-          moment(record.date).format("ddd"),
-          sortedSales[idx + 7].sale,
-          record.sale,
-        ];
-      })
-      .filter((record) => record !== null)
-  );
+  const dataFilled = [["This Week", "Sales", "Past Week"]].concat(ordersSales);
 
   return (
     <AdminMobileNavLinks>
