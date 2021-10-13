@@ -4,6 +4,7 @@ import { DeleteOutlined } from "@ant-design/icons";
 import moment from "moment";
 
 import { ContactsContainer, ActionsContainer } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Title } = Typography;
 
@@ -24,6 +25,8 @@ function Ui(props) {
     finishedFetchingContactEntries,
   } = contactsState;
   const [showingEntry, updateShowingEntry] = useState(undefined);
+
+  useScrollTop();
 
   useEffect(() => {
     if (!fetchingContactEntries && !finishedFetchingContactEntries) {

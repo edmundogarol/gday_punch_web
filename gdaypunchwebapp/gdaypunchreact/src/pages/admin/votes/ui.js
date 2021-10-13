@@ -4,6 +4,7 @@ import { CheckCircleOutlined } from "@ant-design/icons";
 
 import { VotesContainer, VotingItem, VotingItemsContainer } from "./styles";
 import { getGdayPunchStaticUrl } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Title } = Typography;
 
@@ -19,6 +20,8 @@ function Ui(props) {
     },
     fetchVotingDashboard,
   } = props;
+
+  useScrollTop();
 
   useEffect(() => {
     if (!fetching && !finishedFetching) {

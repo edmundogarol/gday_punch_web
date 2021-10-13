@@ -31,12 +31,11 @@ import {
   ProductLeftContainer,
   ProductRightContainer,
   SubmitButton,
-  ProductTempImageFilenameInput,
 } from "./styles";
 
 import { getGdayPunchStaticUrl } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
-const { TextArea } = Input;
 const { Title } = Typography;
 
 const productType = {
@@ -85,6 +84,8 @@ function Ui(props) {
     charge_type: "per_release",
     month_interval: undefined,
   });
+
+  useScrollTop();
 
   useEffect(() => {
     if (!fetchingAdminProducts && !finishedFetchingAdminProducts) {

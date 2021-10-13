@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { Input, Tooltip, Typography, Table, Radio, Button } from "antd";
 import {
   InfoCircleOutlined,
@@ -13,6 +12,7 @@ import {
   PromptCreateContainer,
   SubmitButton,
 } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Title } = Typography;
 
@@ -31,6 +31,8 @@ function Ui(props) {
     source: "",
     type: 1,
   });
+
+  useScrollTop();
 
   const dataSource = prompts.map((prompt, idx) => ({ key: idx, ...prompt }));
 
@@ -126,12 +128,5 @@ function Ui(props) {
     </PromptsContainer>
   );
 }
-
-Ui.propTypes = {
-  // tweetSuccess: PropTypes.bool,
-  // embeddedTweet: PropTypes.object,
-  // tweetError: PropTypes.string,
-  // tweet: PropTypes.func,
-};
 
 export default Ui;

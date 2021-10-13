@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import PropTypes from "prop-types";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AvatarEditor from "react-avatar-editor";
 import {
@@ -13,6 +12,7 @@ import Slider from "rc-slider";
 import classNames from "classnames";
 import { ErrorField } from "components/errorField";
 import { isEqual } from "lodash";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
@@ -37,8 +37,8 @@ function Ui(props) {
   const editorRef = useRef();
   const {} = props;
   const { app } = useParams();
-  const twitter = app === "twitter";
-  const prompts = app === "prompts";
+
+  useScrollTop();
 
   useEffect(() => {
     if (tweetSuccess) {
@@ -263,18 +263,5 @@ function Ui(props) {
     </div>
   );
 }
-
-Ui.propTypes = {
-  tweetLoading: PropTypes.bool,
-  tweetSuccess: PropTypes.bool,
-  embeddedTweet: PropTypes.object,
-  tweetError: PropTypes.string,
-  pendingTweet: PropTypes.object,
-
-  tweet: PropTypes.func,
-  updateTweetImage: PropTypes.func,
-  updateTweetStatus: PropTypes.func,
-  deleteTweet: PropTypes.func,
-};
 
 export default Ui;

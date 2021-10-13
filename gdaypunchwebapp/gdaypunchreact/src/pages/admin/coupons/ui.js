@@ -13,6 +13,7 @@ import {
   CouponCreateContainer,
   SubmitButton,
 } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Title } = Typography;
 
@@ -63,6 +64,8 @@ function Ui(props) {
       sorter: (a, b) => moment(b.expiry_date) - moment(a.expiry_date),
     },
   ];
+
+  useScrollTop();
 
   useEffect(() => {
     if (!finishedFetching && !fetching) fetchCoupons();

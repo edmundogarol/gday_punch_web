@@ -12,6 +12,7 @@ import {
 
 import OrderDetailsModal from "./orderDetails";
 import { OrdersContainer } from "./styles";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Title } = Typography;
 
@@ -29,19 +30,11 @@ function Ui(props) {
     setSelectedOrder,
   } = props;
 
-  // const [searchInputs, updateSearchInputs] = useState({
-  //   orderNo: undefined,
-  //   customer: undefined,
-  // });
-  // const [searchTexts, updateSearchTexts] = useState({
-  //   orderNo: "",
-  //   customer: "",
-  // });
-  // const [searchedColumn, updateSearchedColumn] = useState("");
-
   const [searchInput, updateSearchInput] = useState(undefined);
   const [searchText, updateSearchText] = useState("");
   const [searchedColumn, updateSearchedColumn] = useState("");
+
+  useScrollTop();
 
   useEffect(() => {
     if (!fetching && !finishedFetching) {
@@ -84,7 +77,6 @@ function Ui(props) {
           <Button
             type="primary"
             onClick={() => {
-              // fetchUsers(undefined, selectedKeys[0]);
               handleSearch(selectedKeys, confirm, dataIndex);
             }}
             icon={<SearchOutlined />}

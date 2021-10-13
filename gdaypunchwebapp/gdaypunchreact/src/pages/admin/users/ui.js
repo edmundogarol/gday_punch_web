@@ -16,6 +16,7 @@ import {
 import UserDetailsModal from "./userDetails";
 import { UsersContainer, UserCreateContainer, SubmitButton } from "./styles";
 import { emailValidator } from "utils/utils";
+import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Title } = Typography;
 
@@ -41,6 +42,8 @@ function Ui(props) {
     firstName: undefined,
     lastName: undefined,
   });
+
+  useScrollTop();
 
   useEffect(() => {
     if (!fetching && !finishedFetching) {
@@ -332,6 +335,13 @@ function Ui(props) {
         onRow={handleUserOpen}
         dataSource={dataSource}
         columns={mobileColumns}
+        onChange={({ current, pageSize }) => {
+          if (currentUserCount < availableCount) {
+            if (current * pageSize === currentUserCount) {
+              fetchUsers(true); // true = fetch next
+            }
+          }
+        }}
       />
     </UsersContainer>
   );
