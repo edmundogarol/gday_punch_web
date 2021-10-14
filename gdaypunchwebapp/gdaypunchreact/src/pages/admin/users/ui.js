@@ -216,12 +216,18 @@ function Ui(props) {
       dataIndex: "readable_last_login",
       key: "readable_last_login",
       className: "center",
-      render: (readable_last_login) => {
+      render: (readable_last_login, instance) => {
         if (readable_last_login) {
           return (
             <>
               <p>{readable_last_login.date}</p>
               <p className="time">{readable_last_login.time}</p>
+              <a
+                target="_blank"
+                href={`https://tools.keycdn.com/geo?host=${instance.last_ip}`}
+              >
+                <p className="time">{instance.last_ip}</p>
+              </a>
             </>
           );
         } else {

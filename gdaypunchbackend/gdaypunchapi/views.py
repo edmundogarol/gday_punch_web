@@ -32,6 +32,7 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 from django.http import HttpResponse
 
 from .utils import (
+    visitor_ip_address,
     AdminOnly,
     PostOnly,
     AdminOrReadOnly,
@@ -108,6 +109,8 @@ class UserViewSet(ModelViewSet):
     def create(self, validated_data):
         user = None
 
+        ip_data = visitor_ip_address(validated_data)
+
         if not validated_data.data["password"] or not validated_data.data["email"]:
             content = {"error": "Please provide both email and password."}
             return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -128,6 +131,7 @@ class UserViewSet(ModelViewSet):
             content = {"error": "Duplicate email. User already exists."}
             return Response(content, status=status.HTTP_409_CONFLICT)
 
+        user.last_ip = ip_data['ip'] if ip_data['valid'] else None
         user.verified = token_urlsafe(20)
         user.set_password(validated_data.data["password"])
         user.save()
@@ -251,8 +255,13 @@ class LoginView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, format=None):
+        ip_data = visitor_ip_address(request)
+
         if str(self.request.user) != "AnonymousUser":
             user = User.objects.get(email=self.request.user)
+            user.last_ip = ip_data['ip'] if ip_data['valid'] else None
+            user.save()
+
             serializer = UserSerializer(user)
             content = {
                 "user": serializer.data,
@@ -270,6 +279,7 @@ class LoginView(APIView):
 
         email = request.data.get("email", None)
         password = request.data.get("password", None)
+        ip_data = visitor_ip_address(request)
 
         if not email or not password:
             raise AuthenticationFailed("No credentials provided.")
@@ -288,6 +298,9 @@ class LoginView(APIView):
             raise AuthenticationFailed("User inactive or deleted.")
 
         user = User.objects.get(email=self.request.user)
+        user.last_ip = ip_data['ip'] if ip_data['valid'] else None
+        user.save()
+
         serializer = UserSerializer(user)
         content = {
             "user": serializer.data,

@@ -104,6 +104,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_login = models.DateTimeField(null=True)
     privileges = models.ManyToManyField(Privileges, blank=True)
     verified = models.TextField(max_length=50, blank=False, null=True)
+    last_ip = models.TextField(max_length=30, blank=False, null=True)
 
     objects = UserManager()
 

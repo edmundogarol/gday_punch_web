@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("first_name", "last_name", "username", "email", "bio", "privileges", "verified",
                   "location", "birth_date", "roles", "password", "id", "is_staff", "subscribed",
                   "customer_id", "stripe_customer_id", "readable_last_login", "readable_date_joined",
-                  "customer_payment_details")
+                  "customer_payment_details", "last_ip")
         extra_kwargs = {'password': {'write_only': True}}
 
 
