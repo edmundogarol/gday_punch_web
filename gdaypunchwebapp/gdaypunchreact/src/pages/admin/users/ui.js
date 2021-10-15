@@ -199,6 +199,7 @@ function Ui(props) {
       title: "Verified",
       dataIndex: "verified",
       key: "verified",
+      className: "verified",
       render: (verified) =>
         verified === "verified" ? <PurchasedIcon /> : null,
     },

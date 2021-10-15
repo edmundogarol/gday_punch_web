@@ -77,6 +77,7 @@ export const UsersContainer = styled.div`
       }
     }
   }
+  .verified,
   .subscribed {
     text-align: center;
 
