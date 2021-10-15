@@ -79,7 +79,10 @@ function Ui(props) {
           onChange={(e) =>
             setSelectedKeys(e.target.value ? [e.target.value] : [])
           }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          onPressEnter={() => {
+            fetchUsers(undefined, selectedKeys[0]);
+            handleSearch(selectedKeys, confirm, dataIndex);
+          }}
           style={{ marginBottom: 8, display: "block" }}
         />
         <Space>
@@ -190,14 +193,14 @@ function Ui(props) {
       dataIndex: "subscribed",
       key: "subscribed",
       className: "subscribed",
-      render: (subscribed) => (subscribed ? <PurchasedIcon /> : null),
+      render: (subscribed) => (subscribed ? "Subscribed" : null),
     },
     {
       title: "Verified",
       dataIndex: "verified",
       key: "verified",
       render: (verified) =>
-        verified === "verified" ? "Verified" : "Not verified",
+        verified === "verified" ? <PurchasedIcon /> : null,
     },
     {
       title: "Type",
@@ -253,10 +256,13 @@ function Ui(props) {
         return (
           <div className="detail-3-column-compressed">
             <p>{instance.is_staff ? "Staff" : "Normal"}</p>
-            <p>
-              {instance.verified === "verified" ? "Verified" : "Not verified"}
-            </p>
-            <p>{instance.subscribed ? <PurchasedIcon /> : null}</p>
+            <p>{instance.verified === "verified" ? <PurchasedIcon /> : null}</p>
+            <a
+              target="_blank"
+              href={`https://tools.keycdn.com/geo?host=${instance.last_ip}`}
+            >
+              <p className="time">{instance.last_ip}</p>
+            </a>
           </div>
         );
       },
