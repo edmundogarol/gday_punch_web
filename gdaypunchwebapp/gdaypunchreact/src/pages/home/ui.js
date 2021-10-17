@@ -31,6 +31,15 @@ function Ui(props) {
   useScrollTop();
 
   useEffect(() => {
+    document.head.querySelector('meta[name="og:title"]').content =
+      "Gday Punch Manga Magazine Web App";
+    document.head.querySelector('meta[name="og:description"]').content =
+      "Your #1 Manga Magazine in Australia, for and by Australian Artists - Welcome to our brand new Web Store and App!";
+    document.head.querySelector('meta[name="og:image"]').content =
+      getGdayPunchResourceUrl("gdaypunch-hero-preview.png");
+  }, []);
+
+  useEffect(() => {
     if (
       isEmpty(buyableProducts) &&
       !fetchingProducts &&
@@ -42,10 +51,6 @@ function Ui(props) {
 
   return (
     <App id="top" className="App">
-      <meta
-        name="og:image"
-        content={getGdayPunchResourceUrl("gdaypunch-hero-preview.png")}
-      ></meta>
       <div className="App-header-container app-temp-background">
         <Header loginView={loginView} />
         <Login />

@@ -88,7 +88,21 @@ function Ui(props) {
 
   useEffect(() => {
     if (product) {
-      document.title = `${product.title} | Gday Punch`;
+      const title = `${product.title} | Gday Punch`;
+      const description = removeHtml(product.description);
+      const image = getGdayPunchResourceUrl(product.image);
+
+      document.title = title;
+
+      document.head.querySelector('meta[name="og:title"]').content = title;
+      document.head.querySelector('meta[name="og:image"]').content = image;
+      document.head.querySelector('meta[name="og:description"]').content =
+        description;
+
+      document.head.querySelector('meta[name="twitter:title"]').content = title;
+      document.head.querySelector('meta[name="twitter:image"]').content = image;
+      document.head.querySelector('meta[name="twitter:description"]').content =
+        description;
     }
   }, [product]);
 
@@ -224,30 +238,6 @@ function Ui(props) {
 
   return (
     <PageContainer>
-      {product ? (
-        <>
-          {/* SE0 description */}
-          <meta name="description" content={removeHtml(product.description)} />
-          {/* Open Graph meta [Facebook, ] */}
-          <meta
-            name="og:image"
-            content={getGdayPunchResourceUrl(product.image)}
-          ></meta>
-          {/* Twitter Card for twiter sharing with image */}
-          <meta name="twitter:card" content="summary_large_image" />
-          <meta name="twitter:site" content="@gdaypunch" />
-          <meta name="twitter:creator" content="@GdayPunchMangaMagazine" />
-          <meta name="twitter:title" content={product.title} />
-          <meta
-            name="twitter:description"
-            content={removeHtml(product.description)}
-          />
-          <meta
-            name="twitter:image"
-            content={getGdayPunchResourceUrl(product.image)}
-          ></meta>
-        </>
-      ) : null}
       <ProductContainer>
         {product && product.id ? (
           <ProductDetailContainer>
