@@ -91,7 +91,7 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ("id", "title", "description", "image", "product_type", "active_price", "sale_price",
                   "visible", "stock", "stripe_prices", "manga_details", "sku", "manga", "user", "user_string",
-                  "purchased", "subscription_interval", "saved", "saved_date")
+                  "purchased", "subscription_interval", "saved", "saved_date", "saves")
 
 
 class PurchaseSerializer(serializers.ModelSerializer):

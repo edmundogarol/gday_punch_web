@@ -46,6 +46,7 @@ function Ui(props) {
     quantity,
     purchased,
     saved,
+    saves,
     stock,
     visible,
     user_string: creator,
@@ -220,6 +221,16 @@ function Ui(props) {
                   onClick={() => handleSaveClick()}
                 />
               </Tooltip>
+              {saves && saves > 0 ? (
+                <Tooltip title={"Total Saves (Admin only)"}>
+                  <InteractionContainer>
+                    <BookOutlined
+                      className={`site-form-item-icon ${saves ? "saved" : ""}`}
+                    />
+                    <NumberLabel>{`${saves || 0}`}</NumberLabel>
+                  </InteractionContainer>
+                </Tooltip>
+              ) : null}
             </LikeCommentConainer>
           )}
         </PriceLikeCommentConainer>

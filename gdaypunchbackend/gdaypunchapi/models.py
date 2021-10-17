@@ -491,6 +491,17 @@ class Product(models.Model):
             return False
 
     @property
+    def saves(self):
+        if str(get_current_user()) == "AnonymousUser":
+            return None
+
+        user = User.objects.get(email=get_current_user())
+        if not user.is_staff:
+            return None
+
+        return Save.objects.all().filter(product=self.id).count()
+
+    @property
     def saved_date(self):
         if str(get_current_user()) == "AnonymousUser":
             return None
