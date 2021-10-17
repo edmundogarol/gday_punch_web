@@ -119,6 +119,7 @@ INSTALLED_APPS = [
     'gdaypunchbackend.gdaypunchapi',
     'gdaypunchbackend',
     'gdaypunchwebapp',
+    'gdaypunchwebapp.templatetags',
     'gdaypunchbackend.gdaypunchapi.templates',
     'rest_framework_swagger',
 ]

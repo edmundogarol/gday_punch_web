@@ -94,7 +94,7 @@ function Ui(props) {
 
       document.title = title;
 
-      document.head.querySelector('meta[name="og:title"]').content = title;
+      // document.head.querySelector('meta[name="og:title"]').content = title;
       document.head.querySelector('meta[name="og:image"]').content = image;
       document.head.querySelector('meta[name="og:description"]').content =
         description;

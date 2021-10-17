@@ -10,10 +10,11 @@
   <title>Gday Punch Web App</title>
   <meta name="description" content="Your #1 Manga Magazine in Australia, for and by Australian Artists - Welcome to our brand new Web Store and App!" />
   
-  <meta name="og:title" content="__META_OG_TITLE__"/>
+  <meta name="og:title" content="{% if page.title %}{{page.title}}{% else %}__META_OG_TITLE__{% endif %}"/>
   <meta name="og:description" content="__META_OG_DESCRIPTION__"/>
   <meta name="og:image" content="__META_OG_IMAGE__"/>
 
+  <meta name="user" content="{{ user }}" />
   <meta name="twitter:title" content="__META_TWITTER_TITLE__"/>
   <meta name="twitter:description" content="__META_TWITTER_DESCRIPTION__"/>
   <meta name="twitter:image" content="__META_TWITTER_IMAGE__"/>

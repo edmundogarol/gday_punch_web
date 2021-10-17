@@ -871,9 +871,10 @@ class Coupon(models.Model):
             return "{} A${:.2f} off".format(self.name, self.amount)
 
 
-class ProductSEO(models.Model):
+class PageSEO(models.Model):
     permalink = models.TextField(max_length=100, blank=True)
     title = models.TextField(max_length=100, blank=True)
+    img = models.TextField(max_length=100, blank=True)
     product = models.ForeignKey(
         Product,  on_delete=models.PROTECT, blank=False, null=True)
     description = models.TextField(max_length=500, blank=True)
