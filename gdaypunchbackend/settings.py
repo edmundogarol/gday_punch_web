@@ -184,9 +184,11 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 
 if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
     DOMAIN = "http://localhost:8000"
+    RESOURCE_URL = DOMAIN + "/static/"
     dbconfig = "./gday-db-config.json"
 else:
     DOMAIN = "https://www.gdaypunch.com.au"
+    RESOURCE_URL = "https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com"
     dbconfig = '/opt/app/gday-db-config.json'
 
 SETTINGS = None

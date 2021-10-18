@@ -40,7 +40,6 @@ import {
 import {
   getGdayPunchResourceUrl,
   getGdayPunchStaticUrl,
-  removeHtml,
   scrollToTop,
 } from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
@@ -89,20 +88,7 @@ function Ui(props) {
   useEffect(() => {
     if (product) {
       const title = `${product.title} | Gday Punch`;
-      const description = removeHtml(product.description);
-      const image = getGdayPunchResourceUrl(product.image);
-
       document.title = title;
-
-      // document.head.querySelector('meta[name="og:title"]').content = title;
-      document.head.querySelector('meta[name="og:image"]').content = image;
-      document.head.querySelector('meta[name="og:description"]').content =
-        description;
-
-      document.head.querySelector('meta[name="twitter:title"]').content = title;
-      document.head.querySelector('meta[name="twitter:image"]').content = image;
-      document.head.querySelector('meta[name="twitter:description"]').content =
-        description;
     }
   }, [product]);
 

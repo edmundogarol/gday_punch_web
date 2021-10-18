@@ -8,16 +8,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Gday Punch Web App</title>
-  <meta name="description" content="Your #1 Manga Magazine in Australia, for and by Australian Artists - Welcome to our brand new Web Store and App!" />
+  <meta name="description" content="{% if page %}{{page.description}}{% else %}__META_DESCRIPTION__{% endif %}"/>
   
   <meta name="og:title" content="{% if page.title %}{{page.title}}{% else %}__META_OG_TITLE__{% endif %}"/>
-  <meta name="og:description" content="__META_OG_DESCRIPTION__"/>
-  <meta name="og:image" content="__META_OG_IMAGE__"/>
+  <meta name="og:description" content="{% if page %}{{page.description}}{% else %}__META_OG_DESCRIPTION__{% endif %}"/>
+  <meta name="og:image" content="{% if page %}{{ resource_url }}{{page.img}}{% else %}__META_OG_IMAGE__{% endif %}"/>
 
-  <meta name="user" content="{{ user }}" />
-  <meta name="twitter:title" content="__META_TWITTER_TITLE__"/>
-  <meta name="twitter:description" content="__META_TWITTER_DESCRIPTION__"/>
-  <meta name="twitter:image" content="__META_TWITTER_IMAGE__"/>
+  <meta name="twitter:title" content="{% if page %}{{page.title}}{% else %}__META_TWITTER_TITLE__{% endif %}"/>
+  <meta name="twitter:description" content="{% if page %}{{page.description}}{% else %}__META_TWITTER_DESCRIPTION__{% endif %}"/>
+  <meta name="twitter:image" content="{% if page %}{{ resource_url }}{{page.img}}{% else %}__META_TWITTER_IMAGE__{% endif %}"/>
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="www.gdaypunch.com.au" />
   <meta name="twitter:creator" content="@gdaymanga" />

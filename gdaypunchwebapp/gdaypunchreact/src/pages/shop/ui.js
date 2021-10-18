@@ -9,7 +9,6 @@ import LoadingSpinner from "components/loadingSpinner";
 
 import { App } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
-import { getGdayPunchResourceUrl } from "utils/utils";
 
 function Ui(props) {
   const {
@@ -24,15 +23,6 @@ function Ui(props) {
   } = props;
 
   useScrollTop();
-
-  useEffect(() => {
-    document.head.querySelector('meta[name="og:title"]').content =
-      "Shop | Gday Punch Manga Magazine";
-    document.head.querySelector('meta[name="og:description"]').content =
-      "Buy instant, unlimited access to our awesome line up of Aussie made manga!";
-    document.head.querySelector('meta[name="og:image"]').content =
-      getGdayPunchResourceUrl("shop-preview.png");
-  }, []);
 
   useEffect(() => {
     if (
