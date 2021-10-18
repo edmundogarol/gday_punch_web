@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { NavLink, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Input, Button, Card, Badge, Tabs, Tooltip, Result, Table } from "antd";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
@@ -19,8 +19,9 @@ import LoadingSpinner from "components/loadingSpinner";
 import { ErrorField } from "components/errorField";
 import Image from "components/image";
 
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 import { App, DetailField, EditButton, SubscriptionItem } from "./styles";
+import ProfilePictureUploader from "./profilePicture";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
@@ -50,6 +51,10 @@ function Ui(props) {
   } = emailVerificationState;
   const [editingEmail, toggleEditingEmail] = useState(false);
   const [email, updateEmail] = useState(user.email);
+  const [editingProfile, toggleEditingProfile] = useState(false);
+  const [loading, toggleLoading] = useState(false);
+  const [imageUrl, updateImageUrl] = useState(false);
+
   const { tab } = useParams();
 
   useScrollTop();
@@ -96,24 +101,54 @@ function Ui(props) {
     }
   };
 
-  const editSaveCancelRender = (header) => {
-    if (!editingEmail) {
+  const handleUpdateProfile = () => {
+    if (!imageUrl) {
+      toggleEditingProfile(false);
+    } else {
+      updateUserDetails({ image: imageUrl });
+    }
+  };
+
+  const editSaveCancelRender = (field, header) => {
+    const editingField = {
+      email: {
+        activeField: editingEmail,
+        toggleEditing: toggleEditingEmail,
+        handleUpdate: handleUpdateEmail,
+        resetErrors: () => updateUserDetailsError(undefined),
+      },
+      profile: {
+        activeField: editingProfile,
+        toggleEditing: toggleEditingProfile,
+        handleUpdate: handleUpdateProfile,
+        resetErrors: () => updateUserDetailsError(undefined),
+      },
+    };
+    const currentField = editingField[field];
+
+    if (!currentField.activeField) {
       return (
-        <EditButton separator={header} onClick={() => toggleEditingEmail(true)}>
+        <EditButton
+          separator={header}
+          onClick={() => currentField.toggleEditing(true)}
+        >
           Edit
         </EditButton>
       );
     }
     return (
       <div>
-        <EditButton separator="true" onClick={() => handleUpdateEmail()}>
+        <EditButton
+          separator="true"
+          onClick={() => currentField.handleUpdate()}
+        >
           Save
         </EditButton>
         <EditButton
           separator={header}
           onClick={() => {
-            toggleEditingEmail(false);
-            updateUserDetailsError(undefined);
+            currentField.toggleEditing(false);
+            currentField.resetErrors();
           }}
         >
           Cancel
@@ -220,6 +255,24 @@ function Ui(props) {
     };
   };
 
+  const renderUserUpdateError = (field) => {
+    if (userUpdateError && userUpdateError[field]) {
+      return (
+        <ErrorField>
+          <div>
+            {Object.keys(userUpdateError).map((field) => (
+              <p key={field}>
+                <span>{field} - </span>
+                {userUpdateError[field]}
+                &nbsp;
+              </p>
+            ))}
+          </div>
+        </ErrorField>
+      );
+    }
+  };
+
   return (
     <App id="top" className="App">
       <FeaturedSection top>
@@ -241,7 +294,7 @@ function Ui(props) {
                 extra={
                   user.verified !== "verified" ? (
                     <>
-                      {editSaveCancelRender(true)}
+                      {editSaveCancelRender("email", true)}
                       <Tooltip
                         placement="top"
                         title={"Request a verification email"}
@@ -281,35 +334,36 @@ function Ui(props) {
                   {user.verified !== "verified" ? (
                     <p className="error">Email Verification Needed</p>
                   ) : (
-                    editSaveCancelRender()
+                    editSaveCancelRender("email")
                   )}
                 </DetailField>
-                {userUpdateError && (
-                  <ErrorField>
-                    <div>
-                      {Object.keys(userUpdateError).map((field) => (
-                        <p key={field}>
-                          <span>{field} - </span>
-                          {userUpdateError[field]}
-                          &nbsp;
-                        </p>
-                      ))}
-                    </div>
-                  </ErrorField>
-                )}
+                {renderUserUpdateError("email")}
               </Card>
               <Card
                 className="non-first-tab"
                 type="inner"
                 title="User"
                 extra={
-                  <Tooltip placement="top" title={"Edit not available yet"}>
-                    <a href="#" className="disabled">
-                      Edit
-                    </a>
+                  <Tooltip placement="top" title={"Edit User Details"}>
+                    {editSaveCancelRender("profile")}
                   </Tooltip>
                 }
               >
+                <DetailField className="avatar">
+                  <label>Avatar</label>
+                  <ProfilePictureUploader
+                    editing={editingProfile}
+                    imageUrl={
+                      user.image && !imageUrl
+                        ? getGdayPunchStaticUrl(user.image)
+                        : imageUrl
+                    }
+                    updateImageUrl={updateImageUrl}
+                    loading={loading}
+                    toggleLoading={toggleLoading}
+                  />
+                </DetailField>
+                {renderUserUpdateError("image")}
                 <DetailField>
                   <label>Username</label>
                   <p
@@ -329,6 +383,7 @@ function Ui(props) {
                     )}
                   </p>
                 </DetailField>
+                {renderUserUpdateError("username")}
               </Card>
               <Card
                 className="non-first-tab"

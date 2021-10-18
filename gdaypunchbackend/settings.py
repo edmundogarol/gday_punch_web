@@ -261,6 +261,9 @@ USE_L10N = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
+MEDIA_ROOT = os.path.join(
+    BASE_DIR, 'gdaypunchwebapp/gdaypunchreact/public/static/assets')
+
 if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
     STATIC_ROOT = os.path.join(BASE_DIR, "gdaypunchbackend/public/static/")
 else:

@@ -116,6 +116,31 @@ export const App = styled.div`
       margin-right: 0.3em;
     }
   }
+
+  .avatar {
+    label {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  .ant-upload {
+    border-radius: 6em;
+
+    div {
+      display: block;
+    }
+
+    img {
+      border-radius: 6em;
+    }
+  }
+
+  .ant-upload-disabled {
+    &:hover {
+      cursor: pointer;
+    }
+  }
 `;
 
 export const DetailField = styled.div`

@@ -105,6 +105,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     privileges = models.ManyToManyField(Privileges, blank=True)
     verified = models.TextField(max_length=50, blank=False, null=True)
     last_ip = models.TextField(max_length=30, blank=False, null=True)
+    image = models.ImageField(upload_to='user_profile', null=True)
 
     objects = UserManager()
 

@@ -87,12 +87,26 @@ export function* register() {
 
 export function* patchUser(action) {
   const currentUser = yield select(selectUser);
+  let form_data;
+
+  if (action.payload.user.image) {
+    const blobFetch = yield call(fetch, action.payload.user.image);
+    const blob = yield blobFetch.blob();
+
+    console.log({ blob });
+    form_data = new FormData();
+    form_data.append(
+      "image",
+      blob,
+      `${currentUser.username || currentUser.email}.png`
+    );
+  }
 
   const response = yield call(api, `user/${currentUser.id}/`, {
     method: "PATCH",
-    body: {
-      ...action.payload.user,
-    },
+    body: form_data,
+    // Use null here so gtfetch knows to remove contentType setting
+    contentType: null,
   });
 
   if (response && response.ok) {

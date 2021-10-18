@@ -1,10 +1,12 @@
+
+import os
+import pytz
 import datetime
 from datetime import timezone
 from next_prev import next_in_order
 from secrets import token_urlsafe
 from threading import Thread
 from dateutil.parser import parse
-import pytz
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -20,6 +22,7 @@ from rest_framework_swagger import renderers
 from rest_framework.schemas import SchemaGenerator
 from rest_framework.permissions import (
     AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission)
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from django.db.models import Q
 from django.core.validators import validate_email
@@ -64,6 +67,7 @@ from .serializers import (
     CommentLikeSerializer,
     ResetPasswordSerializer,
 )
+from gdaypunchbackend.settings import MEDIA_ROOT
 
 
 class SwaggerSchemaView(APIView):
@@ -94,6 +98,7 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all().order_by('-id')
     serializer_class = UserSerializer
     permission_classes = (UserPermissions, )
+    parser_classes = (MultiPartParser, FormParser)
 
     def list(self, request, *args, **kwargs):
         queryset = User.objects.all().order_by('-id')
@@ -173,9 +178,14 @@ class UserViewSet(ModelViewSet):
 
         queryset = User.objects.all()
         user = queryset.get(pk=kwargs.get("pk"))
+        curr_image = user.image
+
         serializer = UserSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        if request.data.get("image", None) and curr_image:
+            os.remove(os.path.join(MEDIA_ROOT, curr_image.name))
 
         if email is not None:
             user = User.objects.get(id=user.id)
