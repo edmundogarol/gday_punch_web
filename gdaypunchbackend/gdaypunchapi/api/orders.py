@@ -123,11 +123,12 @@ class OrdersSalesGraph(APIView):
                 }
 
         sales_days = []
+        print(order_sales)
         for idx in range(0, 14):
-            if idx > 6:
+            if idx == 7:
                 break
             ref = today - timedelta(days=idx)
-            last_week_ref = today - timedelta(days=idx + 6)
+            last_week_ref = today - timedelta(days=idx + 7)
 
             sales_days.append([ref.strftime("%a"), order_sales[ref.strftime(
                 "%m/%d/%y")]['sale'], order_sales[last_week_ref.strftime("%m/%d/%y")]['sale']])
