@@ -123,7 +123,7 @@ class OrdersSalesGraph(APIView):
                 }
 
         sales_days = []
-        print(order_sales)
+
         for idx in range(0, 14):
             if idx == 7:
                 break

@@ -358,6 +358,7 @@ function Ui(props) {
                         ? getGdayPunchStaticUrl(user.image)
                         : imageUrl
                     }
+                    toggleEditingProfile={toggleEditingProfile}
                     updateImageUrl={updateImageUrl}
                     loading={loading}
                     toggleLoading={toggleLoading}

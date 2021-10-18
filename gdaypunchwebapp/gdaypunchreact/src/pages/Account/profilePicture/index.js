@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Upload } from "antd";
 import ImgCrop from "antd-img-crop";
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import { getGdayPunchResourceUrl } from "utils/utils";
+import classNames from "classnames";
+import { LoadingOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
+import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
+import Image from "components/image";
 
 function Ui(props) {
-  const { editing, imageUrl, updateImageUrl, loading, toggleLoading } = props;
+  const {
+    editing,
+    imageUrl,
+    updateImageUrl,
+    loading,
+    toggleLoading,
+    toggleEditingProfile,
+  } = props;
 
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -35,12 +44,14 @@ function Ui(props) {
   };
 
   const onPreview = async (file) => {
-    let src = file.url;
+    let src = file?.url;
     if (!src) {
       src = await new Promise((resolve) => {
         const reader = new FileReader();
-        reader.readAsDataURL(file.originFileObj);
-        reader.onload = () => resolve(reader.result);
+        if (typeof file === "blob") {
+          reader.readAsDataURL(file?.originFileObj);
+          reader.onload = () => resolve(reader.result);
+        }
       });
     }
     const image = new Image();
@@ -55,15 +66,26 @@ function Ui(props) {
         disabled={!editing}
         name="avatar"
         listType="picture-card"
-        className="avatar-uploader"
+        className={classNames("avatar-uploader", { editing })}
         showUploadList={false}
-        customRequest={() => console.log("Stop default")}
+        openFileDialogOnClick={true}
+        customRequest={() => null}
         beforeUpload={beforeUpload}
         onChange={handleChange}
         onPreview={onPreview}
       >
+        {editing ? (
+          <div className="edit-hover">
+            {loading ? <LoadingOutlined /> : <EditOutlined />}
+            <div style={{ marginTop: 8 }}>Edit</div>
+          </div>
+        ) : null}
         {imageUrl ? (
-          <img src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+          !editing ? (
+            <Image src={imageUrl} alt="avatar" style={{ width: "100%" }} />
+          ) : (
+            <img src={imageUrl} alt="User Avatar" style={{ width: "100%" }} />
+          )
         ) : !editing ? (
           <img
             src={getGdayPunchResourceUrl("default-avatar.png")}

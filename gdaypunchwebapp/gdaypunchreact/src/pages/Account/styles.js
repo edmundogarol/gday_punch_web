@@ -126,6 +126,7 @@ export const App = styled.div`
 
   .ant-upload {
     border-radius: 6em;
+    position: relative;
 
     div {
       display: block;
@@ -133,6 +134,33 @@ export const App = styled.div`
 
     img {
       border-radius: 6em;
+    }
+
+    .edit-hover {
+      display: none;
+    }
+
+    &:hover {
+      .edit-hover {
+        opacity: 0.5;
+        position: absolute;
+        background: white;
+        display: flex;
+        height: 8em;
+        width: 8em;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        color: #181818;
+        font-weight: 500;
+        z-index: 2;
+      }
+    }
+  }
+
+  .editing {
+    .ant-upload-select-picture-card {
+      border: 5px dashed #d9d9d9;
     }
   }
 
