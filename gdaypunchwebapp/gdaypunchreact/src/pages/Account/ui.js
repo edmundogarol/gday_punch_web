@@ -19,7 +19,11 @@ import LoadingSpinner from "components/loadingSpinner";
 import { ErrorField } from "components/errorField";
 import Image from "components/image";
 
-import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
+import {
+  getGdayPunchResourceUrl,
+  getGdayPunchStaticUrl,
+  hasPrivilege,
+} from "utils/utils";
 import { App, DetailField, EditButton, SubscriptionItem } from "./styles";
 import ProfilePictureUploader from "./profilePicture";
 import { useScrollTop } from "utils/hooks/useScrollTop";
@@ -354,8 +358,19 @@ function Ui(props) {
                 type="inner"
                 title="User"
                 extra={
-                  <Tooltip placement="top" title={"Edit User Details"}>
-                    {editSaveCancelRender("profile")}
+                  <Tooltip
+                    placement="top"
+                    title={
+                      user.is_staff && hasPrivilege(user, "admin")
+                        ? "Edit User Details"
+                        : "Feature Coming Soon"
+                    }
+                  >
+                    {user.is_staff && hasPrivilege(user, "admin") ? (
+                      editSaveCancelRender("profile")
+                    ) : (
+                      <p className="disabled">Edit</p>
+                    )}
                   </Tooltip>
                 }
               >

@@ -27,6 +27,15 @@ export function getGdayPunchResourceUrl(asset) {
   return `${staticURL}/${asset}`;
 }
 
+export function hasPrivilege(user, privilege) {
+  if (!user.id) return false;
+
+  const superUser = user.privileges.includes("super");
+  if (superUser) return true;
+
+  return user.privileges.includes(privilege);
+}
+
 export function arrayIdsMapToObject(list) {
   let finalObject = {};
 
