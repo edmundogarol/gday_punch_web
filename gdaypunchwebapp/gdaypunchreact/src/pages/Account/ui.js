@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Input, Button, Card, Badge, Tabs, Tooltip, Result, Table } from "antd";
 import classNames from "classnames";
-import { isEmpty } from "lodash";
+import { isEmpty, set } from "lodash";
 const { TabPane } = Tabs;
 import {
   CheckCircleOutlined,
@@ -51,6 +51,7 @@ function Ui(props) {
   } = emailVerificationState;
   const [editingEmail, toggleEditingEmail] = useState(false);
   const [email, updateEmail] = useState(user.email);
+  const [username, updateUsername] = useState(user.username);
   const [editingProfile, toggleEditingProfile] = useState(false);
   const [loading, toggleLoading] = useState(false);
   const [imageUrl, updateImageUrl] = useState(false);
@@ -102,11 +103,20 @@ function Ui(props) {
   };
 
   const handleUpdateProfile = () => {
-    if (!imageUrl) {
+    const profileUpdates = {};
+    if (!imageUrl && username === user.username) {
       toggleEditingProfile(false);
-    } else {
-      updateUserDetails({ image: imageUrl });
+      return;
     }
+
+    if (imageUrl) {
+      set(profileUpdates, "image", imageUrl);
+    }
+    if (username !== user.username) {
+      set(profileUpdates, "username", username);
+    }
+
+    updateUserDetails(profileUpdates);
   };
 
   const editSaveCancelRender = (field, header) => {
@@ -367,22 +377,30 @@ function Ui(props) {
                 {renderUserUpdateError("image")}
                 <DetailField>
                   <label>Username</label>
-                  <p
-                    className={classNames({
-                      unset: !user.username || !user.username.length,
-                    })}
-                  >
-                    {!user.username || !user.username.length ? (
-                      <Tooltip
-                        placement="top"
-                        title={"Set username by commenting on a manga :)"}
-                      >
-                        Unset
-                      </Tooltip>
-                    ) : (
-                      user.username
-                    )}
-                  </p>
+                  {editingProfile ? (
+                    <Input
+                      name="username"
+                      value={username}
+                      onChange={(e) => updateUsername(e.target.value)}
+                    />
+                  ) : (
+                    <p
+                      className={classNames({
+                        unset: !user.username || !user.username.length,
+                      })}
+                    >
+                      {!user.username || !user.username.length ? (
+                        <Tooltip
+                          placement="top"
+                          title={"Set username by commenting on a manga :)"}
+                        >
+                          Unset
+                        </Tooltip>
+                      ) : (
+                        user.username
+                      )}
+                    </p>
+                  )}
                 </DetailField>
                 {renderUserUpdateError("username")}
               </Card>

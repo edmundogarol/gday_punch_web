@@ -57,6 +57,7 @@ import {
   updateVotingItems,
   votingItemsError,
 } from "src/actions/voting";
+import { APPLICATION_JSON } from "utils/gdayfetch";
 
 export function* register() {
   const pendingRegistration = yield select(selectPendingRegistration);
@@ -100,11 +101,20 @@ export function* patchUser(action) {
       blob,
       `${currentUser.username || currentUser.email}.png`
     );
+
+    Object.keys(action.payload.user).map((key) => {
+      form_data.append(key, action.payload.user[key]);
+    });
+  } else {
+    form_data = new FormData();
+    Object.keys(action.payload.user).map((key) => {
+      form_data.append(key, action.payload.user[key]);
+    });
   }
 
   const response = yield call(api, `user/${currentUser.id}/`, {
     method: "PATCH",
-    body: form_data,
+    body: form_data || { ...action.payload.user },
     // Use null here so gtfetch knows to remove contentType setting
     contentType: null,
   });

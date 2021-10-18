@@ -4,7 +4,7 @@ import oauthSignature from "oauth-signature";
 import uuid from "uuid";
 import moment from "moment";
 
-const APPLICATION_JSON = "application/json";
+export const APPLICATION_JSON = "application/json";
 
 /**
  * Gday Punch Web App fetch wrapper.

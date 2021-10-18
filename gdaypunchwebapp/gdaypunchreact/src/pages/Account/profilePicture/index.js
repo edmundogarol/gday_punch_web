@@ -74,7 +74,7 @@ function Ui(props) {
         onChange={handleChange}
         onPreview={onPreview}
       >
-        {editing ? (
+        {editing && imageUrl ? (
           <div className="edit-hover">
             {loading ? <LoadingOutlined /> : <EditOutlined />}
             <div style={{ marginTop: 8 }}>Edit</div>

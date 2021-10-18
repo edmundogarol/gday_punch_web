@@ -98,7 +98,6 @@ class UserViewSet(ModelViewSet):
     queryset = User.objects.all().order_by('-id')
     serializer_class = UserSerializer
     permission_classes = (UserPermissions, )
-    parser_classes = (MultiPartParser, FormParser)
 
     def list(self, request, *args, **kwargs):
         queryset = User.objects.all().order_by('-id')
@@ -160,6 +159,9 @@ class UserViewSet(ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         password = request.data.get("password", None)
         email = request.data.get("email", None)
+
+        if request.data.get("image", None):
+            parser_classes = (MultiPartParser, FormParser)
 
         if password is not None:
             try:
