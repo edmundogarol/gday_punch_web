@@ -22,6 +22,9 @@ import {
   EMAIL_VERIFIED,
   REQUESTING_EMAIL_VERIFICATION,
   REQUEST_EMAIL_VERIFICATION_FINISHED,
+  UPDATING_USER,
+  UPDATING_USER_FINISHED,
+  UPDATE_USER_ERROR,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -82,6 +85,8 @@ const INITIAL_STATE = {
     roles: [],
     verified: false,
     errors: undefined,
+    updating: false,
+    finished: false,
   },
 
   emailVerification: {
@@ -211,6 +216,32 @@ const appReducer = (state = INITIAL_STATE, action) => {
         loginView: false,
         user: { ...state.user, ...payload.user },
         loginCheckFinished: true,
+      };
+    case UPDATING_USER:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          updating: true,
+          finished: false,
+        },
+      };
+    case UPDATING_USER_FINISHED:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          updating: false,
+          finished: true,
+        },
+      };
+    case UPDATE_USER_ERROR:
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          errors: payload.error,
+        },
       };
     case LOGOUT_SUCESS:
       return {

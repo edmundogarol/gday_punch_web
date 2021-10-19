@@ -27,6 +27,9 @@ import {
   verifyingEmailFinished,
   requestingEmailVerification,
   requestEmailVerificationFinished,
+  updatingUser,
+  updatingUserFinished,
+  updateUserError,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -55,9 +58,7 @@ import {
   FETCH_VOTING_ITEMS,
   finishedFetchingVotingItems,
   updateVotingItems,
-  votingItemsError,
 } from "src/actions/voting";
-import { APPLICATION_JSON } from "utils/gdayfetch";
 
 export function* register() {
   const pendingRegistration = yield select(selectPendingRegistration);
@@ -87,6 +88,7 @@ export function* register() {
 }
 
 export function* patchUser(action) {
+  yield put(updatingUser());
   const currentUser = yield select(selectUser);
   let form_data;
 
@@ -94,7 +96,6 @@ export function* patchUser(action) {
     const blobFetch = yield call(fetch, action.payload.user.image);
     const blob = yield blobFetch.blob();
 
-    console.log({ blob });
     form_data = new FormData();
     form_data.append(
       "image",
@@ -126,10 +127,12 @@ export function* patchUser(action) {
     };
 
     yield put(updateUser(user));
+    yield put(updatingUserFinished());
     message.success(`Successfully updated profile`);
   } else {
     console.log("Update user details error", JSON.stringify(response));
-    yield put(updateRegistrationError(response.data));
+    yield put(updatingUserFinished());
+    yield put(updateUserError(response.data));
   }
 }
 

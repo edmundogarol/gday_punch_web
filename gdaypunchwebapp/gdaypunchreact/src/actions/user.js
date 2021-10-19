@@ -13,6 +13,9 @@ export const UPDATE_REGISTRATION_ERROR = "user/UPDATE_REGISTRATION_ERROR";
 export const SUGGEST_REGISTER_TO_CONTINUE = "user/SUGGEST_REGISTER_TO_CONTINUE";
 
 export const UPDATE_USER = "user/UPDATE_USER";
+export const UPDATING_USER = "user/UPDATING_USER";
+export const UPDATING_USER_FINISHED = "user/UPDATING_USER_FINISHED";
+export const UPDATE_USER_ERROR = "user/UPDATE_USER_ERROR";
 export const UPDATE_USER_DETAILS = "user/UPDATE_USER_DETAILS";
 
 export const RESET_PASSWORD = "user/RESET_PASSWORD";
@@ -38,6 +41,21 @@ export const updateUser = (user) => ({
   type: UPDATE_USER,
   payload: {
     user,
+  },
+});
+
+export const updatingUser = () => ({
+  type: UPDATING_USER,
+});
+
+export const updatingUserFinished = () => ({
+  type: UPDATING_USER_FINISHED,
+});
+
+export const updateUserError = (error) => ({
+  type: UPDATE_USER_ERROR,
+  payload: {
+    error,
   },
 });
 

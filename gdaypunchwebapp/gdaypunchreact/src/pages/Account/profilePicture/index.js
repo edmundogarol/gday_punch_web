@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Upload } from "antd";
+import { Upload, message } from "antd";
 import ImgCrop from "antd-img-crop";
 import classNames from "classnames";
 import { LoadingOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
@@ -7,14 +7,7 @@ import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 import Image from "components/image";
 
 function Ui(props) {
-  const {
-    editing,
-    imageUrl,
-    updateImageUrl,
-    loading,
-    toggleLoading,
-    toggleEditingProfile,
-  } = props;
+  const { editing, imageUrl, updateImageUrl, loading, toggleLoading } = props;
 
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -74,29 +67,43 @@ function Ui(props) {
         onChange={handleChange}
         onPreview={onPreview}
       >
-        {editing && imageUrl ? (
-          <div className="edit-hover">
-            {loading ? <LoadingOutlined /> : <EditOutlined />}
-            <div style={{ marginTop: 8 }}>Edit</div>
-          </div>
-        ) : null}
-        {imageUrl ? (
-          !editing ? (
-            <Image src={imageUrl} alt="avatar" style={{ width: "100%" }} />
-          ) : (
-            <img src={imageUrl} alt="User Avatar" style={{ width: "100%" }} />
-          )
-        ) : !editing ? (
-          <img
-            src={getGdayPunchResourceUrl("default-avatar.png")}
-            alt="User Avatar"
-            style={{ width: "100%" }}
-          />
+        {loading ? (
+          <LoadingOutlined />
         ) : (
-          <div>
-            {loading ? <LoadingOutlined /> : <PlusOutlined />}
-            <div style={{ marginTop: 8 }}>Upload</div>
-          </div>
+          <>
+            {editing && imageUrl ? (
+              <div className="edit-hover">
+                <EditOutlined />
+                <div style={{ marginTop: 8 }}>Edit</div>
+              </div>
+            ) : null}
+            {imageUrl ? (
+              !editing ? (
+                <Image
+                  src={imageUrl + `?${Date.now()}`}
+                  alt="avatar"
+                  style={{ width: "100%" }}
+                />
+              ) : (
+                <img
+                  src={imageUrl}
+                  alt="User Avatar"
+                  style={{ width: "100%" }}
+                />
+              )
+            ) : !editing ? (
+              <img
+                src={getGdayPunchResourceUrl("default-avatar.png")}
+                alt="User Avatar"
+                style={{ width: "100%" }}
+              />
+            ) : (
+              <div>
+                <PlusOutlined />
+                <div style={{ marginTop: 8 }}>Upload</div>
+              </div>
+            )}
+          </>
         )}
       </Upload>
     </ImgCrop>

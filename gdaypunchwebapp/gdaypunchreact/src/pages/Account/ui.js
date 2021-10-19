@@ -385,13 +385,25 @@ function Ui(props) {
                           : getGdayPunchStaticUrl(user.image)
                         : imageUrl
                     }
-                    toggleEditingProfile={toggleEditingProfile}
                     updateImageUrl={updateImageUrl}
-                    loading={loading}
+                    loading={user.updating || loading}
                     toggleLoading={toggleLoading}
                   />
                 </DetailField>
                 {renderUserUpdateError("image")}
+                {user.errors ? (
+                  <ErrorField>
+                    <div>
+                      {Object.keys(user.errors).map((field) => (
+                        <p key={field}>
+                          <span>{field} - </span>
+                          {user.errors[field]}
+                          &nbsp;
+                        </p>
+                      ))}
+                    </div>
+                  </ErrorField>
+                ) : null}
                 <DetailField>
                   <label>Username</label>
                   {editingProfile ? (
