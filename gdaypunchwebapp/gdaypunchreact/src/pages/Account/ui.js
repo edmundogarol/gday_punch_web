@@ -358,19 +358,8 @@ function Ui(props) {
                 type="inner"
                 title="User"
                 extra={
-                  <Tooltip
-                    placement="top"
-                    title={
-                      user.is_staff && hasPrivilege(user, "admin")
-                        ? "Edit User Details"
-                        : "Feature Coming Soon"
-                    }
-                  >
-                    {user.is_staff && hasPrivilege(user, "admin") ? (
-                      editSaveCancelRender("profile")
-                    ) : (
-                      <p className="disabled">Edit</p>
-                    )}
+                  <Tooltip placement="top" title={"Edit User Details"}>
+                    {editSaveCancelRender("profile")}
                   </Tooltip>
                 }
               >

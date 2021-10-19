@@ -100,7 +100,9 @@ export function* patchUser(action) {
     form_data.append(
       "image",
       blob,
-      `${currentUser.username || currentUser.email}.png`
+      `${currentUser.id}_${(
+        currentUser.username || currentUser.email
+      ).toLowerCase()}.png`
     );
 
     Object.keys(action.payload.user).map((key) => {
