@@ -391,19 +391,6 @@ function Ui(props) {
                   />
                 </DetailField>
                 {renderUserUpdateError("image")}
-                {user.errors ? (
-                  <ErrorField>
-                    <div>
-                      {Object.keys(user.errors).map((field) => (
-                        <p key={field}>
-                          <span>{field} - </span>
-                          {user.errors[field]}
-                          &nbsp;
-                        </p>
-                      ))}
-                    </div>
-                  </ErrorField>
-                ) : null}
                 <DetailField>
                   <label>Username</label>
                   {editingProfile ? (
@@ -433,6 +420,21 @@ function Ui(props) {
                 </DetailField>
                 {renderUserUpdateError("username")}
               </Card>
+              {user.errors ? (
+                <ErrorField>
+                  <div>
+                    {Object.keys(user.errors).length
+                      ? Object.keys(user.errors).map((field) => (
+                          <p key={field}>
+                            <span>{field} - </span>
+                            {user.errors[field]}
+                            &nbsp;
+                          </p>
+                        ))
+                      : "Something went wrong. Please try again later."}
+                  </div>
+                </ErrorField>
+              ) : null}
               <Card
                 className="non-first-tab"
                 type="inner"
