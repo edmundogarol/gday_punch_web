@@ -67,7 +67,7 @@ from .serializers import (
     CommentLikeSerializer,
     ResetPasswordSerializer,
 )
-from gdaypunchbackend.settings import MEDIA_ROOT
+from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE
 
 
 class SwaggerSchemaView(APIView):
@@ -180,14 +180,16 @@ class UserViewSet(ModelViewSet):
 
         queryset = User.objects.all()
         user = queryset.get(pk=kwargs.get("pk"))
-        curr_image = user.image
+
+        if request.data.get("image", None) and user.image:
+            if S3_STORAGE:
+                user.image.delete()
+            else:
+                os.remove(os.path.join(MEDIA_ROOT, user.image.name))
 
         serializer = UserSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-
-        if request.data.get("image", None) and curr_image:
-            os.remove(os.path.join(MEDIA_ROOT, curr_image.name))
 
         if email is not None:
             user = User.objects.get(id=user.id)

@@ -185,11 +185,13 @@ WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
 if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
     DOMAIN = "http://localhost:8000"
     RESOURCE_URL = DOMAIN + "/static/"
+    S3_STORAGE = False
     dbconfig = "./gday-db-config.json"
 else:
     DOMAIN = "https://www.gdaypunch.com.au"
     RESOURCE_URL = "https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com/"
     dbconfig = '/opt/app/gday-db-config.json'
+    S3_STORAGE = True
 
 SETTINGS = None
 with open(dbconfig) as f:
@@ -209,21 +211,29 @@ DATABASES = {
 STRIPE_API_KEY = SETTINGS['STRIPE_API_KEY']
 STRIPE_ENDPOINT_SECRET = SETTINGS['STRIPE_ENDPOINT_SECRET']
 
+EMAIL_PORT = SETTINGS['EMAIL_PORT']
+EMAIL_HOST_USER = SETTINGS['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = SETTINGS['EMAIL_HOST_PASSWORD']
+EMAIL_USE_TLS = False
+
 if 'DEVENV' in os.environ:
     # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = '0.0.0.0'
-    EMAIL_PORT = SETTINGS['EMAIL_PORT']
-    EMAIL_HOST_USER = SETTINGS['EMAIL_HOST_USER']
-    EMAIL_HOST_PASSWORD = SETTINGS['EMAIL_HOST_PASSWORD']
-    EMAIL_USE_TLS = False
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = SETTINGS['EMAIL_PORT']
-    EMAIL_HOST_USER = SETTINGS['EMAIL_HOST_USER']
-    EMAIL_HOST_PASSWORD = SETTINGS['EMAIL_HOST_PASSWORD']
     EMAIL_USE_SSL = True
-    EMAIL_USE_TLS = False
+
+    AWS_ACCESS_KEY_ID = SETTINGS['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = SETTINGS['AWS_SECRET_ACCESS_KEY']
+    AWS_STORAGE_BUCKET_NAME = SETTINGS['AWS_STORAGE_BUCKET_NAME']
+    AWS_S3_SIGNATURE_VERSION = SETTINGS['AWS_S3_SIGNATURE_VERSION']
+    AWS_S3_REGION_NAME = SETTINGS['AWS_S3_REGION_NAME']
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_VERIFY = True
+    AWS_QUERYSTRING_AUTH = False
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators

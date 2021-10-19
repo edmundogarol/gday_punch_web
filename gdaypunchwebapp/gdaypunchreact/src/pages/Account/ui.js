@@ -380,7 +380,9 @@ function Ui(props) {
                     editing={editingProfile}
                     imageUrl={
                       user.image && !imageUrl
-                        ? getGdayPunchStaticUrl(user.image)
+                        ? user.image.includes("gdaypunch-static.s3.amazonaws")
+                          ? user.image
+                          : getGdayPunchStaticUrl(user.image)
                         : imageUrl
                     }
                     toggleEditingProfile={toggleEditingProfile}

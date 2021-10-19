@@ -8,5 +8,10 @@
     "EMAIL_HOST_PASSWORD": "",
     "EMAIL_PORT": "1025",
     "STRIPE_API_KEY": "sk_test_Z4XLxyrM6xiiRVj54nJv47oU",
-    "STRIPE_ENDPOINT_SECRET": "whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal"
+    "STRIPE_ENDPOINT_SECRET": "whsec_Ff0bJ3CeMLroLNsaOroj3n8Wz3mRQPal",
+    "AWS_ACCESS_KEY_ID": "",
+    "AWS_SECRET_ACCESS_KEY": "",
+    "AWS_STORAGE_BUCKET_NAME": "",
+    "AWS_S3_SIGNATURE_VERSION": "",
+    "AWS_S3_REGION_NAME": ""
 }
