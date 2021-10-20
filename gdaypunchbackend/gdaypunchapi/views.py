@@ -159,6 +159,7 @@ class UserViewSet(ModelViewSet):
     def partial_update(self, request, *args, **kwargs):
         password = request.data.get("password", None)
         email = request.data.get("email", None)
+        username = request.data.get("username", None)
 
         if request.data.get("image", None):
             parser_classes = (MultiPartParser, FormParser)
@@ -177,6 +178,14 @@ class UserViewSet(ModelViewSet):
             except ValidationError as e:
                 content = {"error": e}
                 return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+
+        if username is not None:
+            try:
+                user = User.objects.get(username=username)
+                content = {"Error": "User with this username already exists."}
+                return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
+            except User.DoesNotExist:
+                pass
 
         queryset = User.objects.all()
         user = queryset.get(pk=kwargs.get("pk"))

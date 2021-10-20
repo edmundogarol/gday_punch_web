@@ -322,6 +322,10 @@ class Comment(models.Model):
         return self.user.username if self.user.username else self.user.email
 
     @property
+    def user_avatar(self):
+        return self.user.image.name
+
+    @property
     def likes(self):
         return CommentLike.objects.all().filter(comment=self.id).count()
 
