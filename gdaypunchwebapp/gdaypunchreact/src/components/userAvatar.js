@@ -2,6 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import { Popover, Tooltip } from "antd";
 import { TeamOutlined, UserAddOutlined, LikeOutlined } from "@ant-design/icons";
+import moment from "moment";
 
 import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 
@@ -70,8 +71,9 @@ export default function UserAvatar(props) {
       src={
         image
           ? image.includes("gdaypunch-static.s3.amazonaws")
-            ? image + `?${Date.now()}`
-            : getGdayPunchStaticUrl(image) + `?${Date.now()}`
+            ? image + `?${moment(moment.now()).format("YYMMDDhhmm")}`
+            : getGdayPunchStaticUrl(image) +
+              `?${moment(moment.now()).format("YYMMDDhhmm")}`
           : getGdayPunchResourceUrl("default-avatar.png")
       }
     />
