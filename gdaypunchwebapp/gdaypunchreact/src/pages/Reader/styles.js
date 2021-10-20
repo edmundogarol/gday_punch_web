@@ -15,12 +15,23 @@ export const ReaderContainer = styled.div`
   }
 
   .comment {
+    align-items: center;
     flex-wrap: wrap;
 
     @media ${device.laptop} {
       flex-wrap: unset;
     }
   }
+`;
+
+export const UserAvatar = styled.div`
+  background-image: url(${(props) => props.src});
+  background-size: cover;
+  background-position: center;
+  width: 2em;
+  height: 2em;
+  margin-right: 0.4em;
+  border-radius: 1em;
 `;
 
 export const LikeButton = styled.span`

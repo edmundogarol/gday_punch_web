@@ -15,9 +15,9 @@ import {
   faHome,
 } from "@fortawesome/free-solid-svg-icons";
 import LoadingSpinner from "components/loadingSpinner";
-import { ReaderContainer, LikeButton } from "./styles";
+import { ReaderContainer, UserAvatar, LikeButton } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -232,6 +232,19 @@ function Ui(props) {
           <div className="comments-container">
             {comments.map((comment) => (
               <div className="comment" key={comment.id}>
+                <UserAvatar
+                  className="avatar"
+                  src={
+                    comment.user_avatar
+                      ? comment.user_avatar.includes(
+                          "gdaypunch-static.s3.amazonaws"
+                        )
+                        ? user.image + `?${Date.now()}`
+                        : getGdayPunchStaticUrl(comment.user_avatar) +
+                          `?${Date.now()}`
+                      : getGdayPunchResourceUrl("default-avatar.png")
+                  }
+                />
                 <div className="author">{comment.user_username}</div>
                 <div className="content">{comment.content}</div>
                 <LikeButton
