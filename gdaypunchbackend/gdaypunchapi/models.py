@@ -453,6 +453,10 @@ class Product(models.Model):
         return self.user.author_name
 
     @property
+    def user_avatar(self):
+        return self.user.image.name
+
+    @property
     def purchased(self):
         if str(get_current_user()) == "AnonymousUser":
             return False

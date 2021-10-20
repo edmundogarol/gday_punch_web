@@ -52,6 +52,7 @@ function Ui(props) {
     saves,
     stock,
     visible,
+    user_avatar,
     user_string: creator,
   } = product;
   const {
@@ -182,7 +183,7 @@ function Ui(props) {
       {renderActionButton()}
       <ProductDetails>
         <UserAvatar
-          image={author_avatar}
+          image={manga_details.id ? author_avatar : user_avatar}
           author={author || creator}
           author_likes={author_likes}
         />
