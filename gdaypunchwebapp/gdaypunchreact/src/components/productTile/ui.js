@@ -6,6 +6,7 @@ import { Badge, Tooltip } from "antd";
 
 import {
   generatePermaLink,
+  getGdayPunchResourceUrl,
   getGdayPunchStaticUrl,
   scrollToTop,
 } from "utils/utils";
@@ -22,7 +23,9 @@ import {
   PriceLikeCommentConainer,
   LikeCommentConainer,
   LowStock,
+  ArtistActionsContainer,
 } from "./styles";
+import UserAvatar from "../userAvatar";
 
 function Ui(props) {
   const {
@@ -57,9 +60,13 @@ function Ui(props) {
     comments,
     likes,
     user_likes,
+    author_avatar,
+    author_likes,
   } = manga_details || {
     id: undefined,
     author: undefined,
+    author_avatar: undefined,
+    author_likes: undefined,
     comments: undefined,
     likes: undefined,
     user_likes: undefined,
@@ -172,68 +179,77 @@ function Ui(props) {
           <ProductImage alt={title} src={getGdayPunchStaticUrl(image)} />
         </a>
       </BadgeWrapper>
+      {renderActionButton()}
       <ProductDetails>
-        {renderActionButton()}
-        <ProductAuthor>{author || creator}</ProductAuthor>
-        <PriceLikeCommentConainer>
-          {buyableProduct ? (
-            purchasedDigital ? (
-              <p>Purchased</p>
+        <UserAvatar
+          image={author_avatar}
+          author={author || creator}
+          author_likes={author_likes}
+        />
+        <ArtistActionsContainer>
+          <ProductAuthor>{author || creator}</ProductAuthor>
+          <PriceLikeCommentConainer>
+            {buyableProduct ? (
+              purchasedDigital ? (
+                <p>Purchased</p>
+              ) : (
+                <p>
+                  {`A$${active_price}`}
+                  <span className="interval">
+                    {product.product_type.includes("subscription")
+                      ? product_type === "mag_subscription"
+                        ? "/ per release"
+                        : `/ ${
+                            product.subscription_interval < 2
+                              ? "per month"
+                              : `every ${product.subscription_interval} months`
+                          }`
+                      : null}
+                  </span>
+                </p>
+              )
             ) : (
-              <p>
-                {`A$${active_price}`}
-                <span className="interval">
-                  {product.product_type.includes("subscription")
-                    ? product_type === "mag_subscription"
-                      ? "/ per release"
-                      : `/ ${
-                          product.subscription_interval < 2
-                            ? "per month"
-                            : `every ${product.subscription_interval} months`
-                        }`
-                    : null}
-                </span>
-              </p>
-            )
-          ) : (
-            <p>{`FREE`}</p>
-          )}
-          {digitalProduct && !product_type.includes("_subscription") && (
-            <LikeCommentConainer>
-              <Tooltip title="Like">
-                <a onClick={() => handleLikeClick()}>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    style={product && user_likes ? { color: "red" } : null}
-                  />
-                  <NumberLabel>{`${likes || 0}`}</NumberLabel>
-                </a>
-              </Tooltip>
-              <Tooltip title="Comments">
-                <InteractionContainer onClick={() => handleViewProduct()}>
-                  <CommentOutlined className="site-form-item-icon" />
-                  <NumberLabel>{`${comments || 0}`}</NumberLabel>
-                </InteractionContainer>
-              </Tooltip>
-              <Tooltip title={saved ? "Favourited" : "Add to Favourites"}>
-                <BookOutlined
-                  className={`site-form-item-icon ${saved ? "saved" : ""}`}
-                  onClick={() => handleSaveClick()}
-                />
-              </Tooltip>
-              {saves && saves > 0 ? (
-                <Tooltip title={"Total Saves (Admin only)"}>
-                  <InteractionContainer>
-                    <BookOutlined
-                      className={`site-form-item-icon ${saves ? "saved" : ""}`}
+              <p>{`FREE`}</p>
+            )}
+            {digitalProduct && !product_type.includes("_subscription") && (
+              <LikeCommentConainer>
+                <Tooltip title="Like">
+                  <a onClick={() => handleLikeClick()}>
+                    <FontAwesomeIcon
+                      icon={faHeart}
+                      style={product && user_likes ? { color: "red" } : null}
                     />
-                    <NumberLabel>{`${saves || 0}`}</NumberLabel>
+                    <NumberLabel>{`${likes || 0}`}</NumberLabel>
+                  </a>
+                </Tooltip>
+                <Tooltip title="Comments">
+                  <InteractionContainer onClick={() => handleViewProduct()}>
+                    <CommentOutlined className="site-form-item-icon" />
+                    <NumberLabel>{`${comments || 0}`}</NumberLabel>
                   </InteractionContainer>
                 </Tooltip>
-              ) : null}
-            </LikeCommentConainer>
-          )}
-        </PriceLikeCommentConainer>
+                <Tooltip title={saved ? "Favourited" : "Add to Favourites"}>
+                  <BookOutlined
+                    className={`site-form-item-icon ${saved ? "saved" : ""}`}
+                    onClick={() => handleSaveClick()}
+                  />
+                </Tooltip>
+                {saves && saves > 0 ? (
+                  <Tooltip title={"Total Saves (Admin only)"}>
+                    <InteractionContainer>
+                      <BookOutlined
+                        className={`site-form-item-icon ${
+                          saves ? "saved" : ""
+                        }`}
+                      />
+                      <NumberLabel>{`${saves || 0}`}</NumberLabel>
+                    </InteractionContainer>
+                  </Tooltip>
+                ) : null}
+              </LikeCommentConainer>
+            )}
+          </PriceLikeCommentConainer>
+        </ArtistActionsContainer>
       </ProductDetails>
       <a onClick={() => handleViewProduct()}>
         <ProductTitle>

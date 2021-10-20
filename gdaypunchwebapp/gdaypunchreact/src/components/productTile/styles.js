@@ -39,9 +39,19 @@ export const ProductTileContainer = styled.div`
   .ant-ribbon {
     transform: translate(0, 16em);
   }
+
+  .ant-badge-status {
+    width: 100%;
+
+    button {
+      margin: unset;
+    }
+  }
 `;
 
-export const ProductImage = styled(Image)``;
+export const ProductImage = styled(Image)`
+  margin-bottom: 1em;
+`;
 
 export const ProductTitle = styled.h2`
   font-size: 1em;
@@ -58,12 +68,12 @@ export const ProductAuthor = styled.h4`
 `;
 
 export const ProductDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  text-align: start;
   width: 100%;
   margin-top: 10pt;
   margin-bottom: 0.2em;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 6fr;
 
   a {
     text-decoration: none;
@@ -87,6 +97,14 @@ export const ProductDetails = styled.div`
     margin-bottom: unset;
     color: dimgray;
   }
+`;
+
+export const ArtistActionsContainer = styled.div`
+  text-align: start;
+  width: 100%;
+  margin-bottom: 0.2em;
+  display: flex;
+  flex-direction: column;
 `;
 
 export const PriceLikeCommentConainer = styled.div`
@@ -144,7 +162,6 @@ export const ActionButton = styled.button`
     ${(props) => (props.disabled ? "dimgrey" : "#d69e5a")} 114%,
     transparent 5%
   );
-  margin-bottom: 1em;
 
   ${(props) =>
     props.disabled

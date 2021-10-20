@@ -123,6 +123,20 @@ class User(AbstractBaseUser, PermissionsMixin):
             return self.email
 
     @property
+    def total_manga_likes(self):
+        total = 0
+        mangas = Manga.objects.all().filter(author=self.id)
+
+        if not mangas:
+            return 0
+
+        for manga in mangas:
+            total = total + manga.likes
+        
+        return total
+
+
+    @property
     def subscribed(self):
         try:
             customer = Customer.objects.get(user=self.id)
@@ -326,6 +340,10 @@ class Comment(models.Model):
         return self.user.image.name
 
     @property
+    def user_manga_likes(self):
+        return self.user.total_manga_likes
+
+    @property
     def likes(self):
         return CommentLike.objects.all().filter(comment=self.id).count()
 
@@ -418,6 +436,8 @@ class Product(models.Model):
                 "id": manga.id,
                 "title": manga.title,
                 "author": manga.author.author_name,
+                "author_avatar": manga.author.image.name,
+                "author_likes": manga.author.total_manga_likes,
                 "release_date": manga.release_date,
                 "age_rating": manga.age_rating,
                 "likes": manga.likes,

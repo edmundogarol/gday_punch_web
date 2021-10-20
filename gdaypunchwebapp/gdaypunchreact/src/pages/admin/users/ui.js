@@ -336,6 +336,8 @@ function Ui(props) {
         dataSource={dataSource}
         columns={columns}
         onChange={({ current, pageSize }) => {
+          useScrollTop();
+
           if (currentUserCount < availableCount) {
             if (current * pageSize === currentUserCount) {
               fetchUsers(true); // true = fetch next
@@ -349,6 +351,8 @@ function Ui(props) {
         dataSource={dataSource}
         columns={mobileColumns}
         onChange={({ current, pageSize }) => {
+          useScrollTop();
+
           if (currentUserCount < availableCount) {
             if (current * pageSize === currentUserCount) {
               fetchUsers(true); // true = fetch next

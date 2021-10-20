@@ -24,16 +24,6 @@ export const ReaderContainer = styled.div`
   }
 `;
 
-export const UserAvatar = styled.div`
-  background-image: url(${(props) => props.src});
-  background-size: cover;
-  background-position: center;
-  width: 2em;
-  height: 2em;
-  margin-right: 0.4em;
-  border-radius: 1em;
-`;
-
 export const LikeButton = styled.span`
   svg {
     margin-right: 0.3em;

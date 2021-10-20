@@ -62,7 +62,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ("id", "content", "manga", "user", "user_avatar",
-                  "user_username", "likes", "user_likes")
+                  "user_username", "likes", "user_likes", "user_manga_likes")
 
 
 class PromptSerializer(serializers.ModelSerializer):
