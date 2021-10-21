@@ -24,7 +24,7 @@ from rest_framework.permissions import (
     AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission)
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from django.db.models import Q
+from django.db.models import Q, F
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
@@ -105,7 +105,7 @@ class UserViewSet(ModelViewSet):
 
         settings = Settings.objects.first()
         if settings.user_list_order == BY_LAST_LOGIN:
-            queryset = User.objects.all().order_by('last_login')
+            queryset = User.objects.all().order_by(F('last_login').desc(nulls_last=True))
 
         if search:
             queryset = queryset.filter(email__icontains=search)
