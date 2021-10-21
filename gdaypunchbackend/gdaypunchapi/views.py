@@ -105,7 +105,7 @@ class UserViewSet(ModelViewSet):
 
         settings = Settings.objects.first()
         if settings.user_list_order == BY_LAST_LOGIN:
-            queryset = User.objects.all().order_by('-last_login')
+            queryset = User.objects.all().order_by('last_login')
 
         if search:
             queryset = queryset.filter(email__icontains=search)
