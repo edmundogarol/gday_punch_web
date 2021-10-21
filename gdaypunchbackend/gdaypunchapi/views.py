@@ -44,7 +44,7 @@ from .utils import (
 )
 
 from .api.verify_account import send_account_verification_email
-
+from .constants import *
 from .api_permissions import (
     CommentPermissions,
     MangaCommentsPermissions,
@@ -55,7 +55,7 @@ from .api_permissions import (
     CommentLikePermissions
 )
 from .models import (
-    User, Manga, Like, Comment, CommentLike, Prompt
+    User, Manga, Like, Comment, CommentLike, Prompt, Settings
 )
 from .serializers import (
     UserSerializer,
@@ -102,6 +102,10 @@ class UserViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = User.objects.all().order_by('-id')
         search = request.GET.get('search', None)
+
+        settings = Settings.objects.first()
+        if settings.user_list_order == BY_LAST_LOGIN:
+            queryset = User.objects.all().order_by('-last_login')
 
         if search:
             queryset = queryset.filter(email__icontains=search)

@@ -48,10 +48,24 @@ import {
   FETCHING_ORDERS_SALES_GRAPH,
   FINISHED_FETCHING_ORDERS_SALES_GRAPH,
   UPDATE_ORDERS_SALES_GRAPH,
+  FETCHING_SETTINGS,
+  FINISHED_FETCHING_SETTINGS,
+  UPDATE_SETTINGS,
+  CHANGING_SETTINGS,
+  FINISHED_CHANGING_SETTINGS,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
 const INITIAL_STATE = {
+  settings: {
+    id: undefined,
+    user_list_order: "by_id",
+    fetching: false,
+    finishedFetching: false,
+    changing: false,
+    finishedChanging: false,
+  },
+
   users: {
     userList: {},
     count: 0,
@@ -140,6 +154,50 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
   const { payload } = action;
 
   switch (action.type) {
+    case FETCHING_SETTINGS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          fetching: true,
+          finishedFetching: false,
+        },
+      };
+    case FINISHED_FETCHING_SETTINGS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          fetching: false,
+          finishedFetching: true,
+        },
+      };
+    case UPDATE_SETTINGS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          ...payload.updatedSettings,
+        },
+      };
+    case CHANGING_SETTINGS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          changing: true,
+          finishedChanging: false,
+        },
+      };
+    case FINISHED_CHANGING_SETTINGS:
+      return {
+        ...state,
+        settings: {
+          ...state.settings,
+          changing: false,
+          finishedChanging: true,
+        },
+      };
     case UPDATE_USERS:
       const {
         results: userResults,

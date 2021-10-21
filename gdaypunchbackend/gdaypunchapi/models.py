@@ -23,6 +23,8 @@ from .utils import get_readable_date_time
 
 class Settings(models.Model):
     shop_visible = models.BooleanField(default=True)
+    user_list_order = models.TextField(
+        max_length=30, choices=USER_LIST_ORDER, default=BY_ID)
 
 
 class UserManager(BaseUserManager):
@@ -926,6 +928,7 @@ class Contact(models.Model):
     SUBSCRIPTION = 'subscription'
     SUBSCRIPTION_CANCELLATION = 'subscription_cancellation'
     UNSUBSCRIBE = 'unsubscribe'
+    BUG_REPORT = 'bug_report'
     CONTACT_REASONS = (
         (GENERAL, 'General'),
         (ORDER, 'Order'),
@@ -933,6 +936,7 @@ class Contact(models.Model):
         (SUBSCRIPTION, 'Subscription'),
         (SUBSCRIPTION_CANCELLATION, 'SubCancellation'),
         (UNSUBSCRIBE, 'EmailUnsubscribe'),
+        (BUG_REPORT, 'Bug Report'),
     )
 
     name = models.TextField(max_length=50, blank=False)

@@ -7,7 +7,7 @@ from .models import (
     StripeCustomer, Product, Privileges, StripePrice,
     Contact, Customer, ResetPasswordSession, Order,
     Coupon, OrderStatusUpdate, Save, Purchase, VotingRound,
-    VotingItem
+    VotingItem, Settings
 )
 
 
@@ -29,7 +29,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("first_name", "last_name", "username", "email", "bio", "privileges", "verified",
                   "location", "birth_date", "roles", "password", "id", "is_staff", "subscribed",
                   "customer_id", "stripe_customer_id", "readable_last_login", "readable_date_joined",
-                  "customer_payment_details", "last_ip", "image")
+                  "customer_payment_details", "last_ip", "image", "last_login")
         extra_kwargs = {'password': {'write_only': True}}
 
 
@@ -167,3 +167,10 @@ class VotingItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = VotingItem
         fields = ("__all__")
+    
+
+class SettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Settings
+        fields = ("__all__")
+    

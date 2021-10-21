@@ -151,3 +151,8 @@ export const selectVotingDashboardState = createSelector(
   selectDomain,
   ({ voting }) => voting
 );
+
+export const selectSettings = createSelector(
+  selectDomain,
+  ({ settings }) => settings
+);

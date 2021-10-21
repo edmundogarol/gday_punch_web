@@ -1,6 +1,5 @@
 import { call, all, takeLatest, select, put, delay } from "redux-saga/effects";
 import { message } from "antd";
-import moment from "moment";
 import { api } from "utils/api";
 import { set } from "lodash";
 import {
@@ -79,6 +78,13 @@ import {
   fetchingOrdersSalesGraph,
   updateOrdersSalesGraph,
   finishedFetchingOrdersSalesGraph,
+  FETCH_SETTINGS,
+  updateSettings,
+  CHANGE_SETTINGS,
+  fetchingSettings,
+  finishedFetchingSettings,
+  changingSettings,
+  finishedChangingSettings,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -89,12 +95,58 @@ import {
   selectUsersNextPage,
   selectUsersCount,
   selectUserDetails,
+  selectSettings,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
 import { arrayIdsMapToObject } from "utils/utils";
 
 const NO_MEDIA = "admin-sagas/NO_MEDIA";
 const ERROR_TALKING_TO_GDAYPUNCH = "admin-sagas/ERROR_TALKING_TO_GDAYPUNCH";
+
+export function* fetchSettingsCall() {
+  yield put(fetchingSettings());
+  const response = yield call(api, `settings/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(updateSettings(data));
+    yield put(finishedFetchingSettings());
+  } else {
+    console.log("Settings fetch error", JSON.stringify(response));
+    message.error(`Settings fetch error: ${JSON.stringify(response)}`);
+    yield put(finishedFetchingSettings());
+  }
+}
+
+export function* changeSettingsCall(action) {
+  const { id } = yield select(selectSettings);
+  yield put(changingSettings());
+
+  const response = yield call(api, `settings/${id}/`, {
+    method: "PATCH",
+    body: {
+      ...action.payload.newSettings,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(updateSettings(data));
+    yield put(finishedChangingSettings());
+
+    if (action.payload.newSettings.user_list_order) {
+      yield put(fetchUsers());
+    }
+  } else {
+    console.log("Settings change error", JSON.stringify(response));
+    message.error(`Settings change error: ${JSON.stringify(response)}`);
+    yield put(finishedChangingSettings());
+  }
+}
 
 export function* fetchUsersCall(action) {
   const { fetchNext, search } = action.payload;
@@ -919,5 +971,7 @@ export default function* adminSaga() {
     ),
     takeLatest(FETCH_VOTING_DASHBOARD, fetchVotingDashboardCall),
     takeLatest(FETCH_ORDERS_SALES_GRAPH, fetchOrderSalesGraphCall),
+    takeLatest(FETCH_SETTINGS, fetchSettingsCall),
+    takeLatest(CHANGE_SETTINGS, changeSettingsCall),
   ]);
 }

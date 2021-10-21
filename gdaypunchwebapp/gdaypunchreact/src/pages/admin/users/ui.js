@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Table, Input, Button, Space, Typography, message } from "antd";
+import { Table, Input, Button, Space, Typography, message, Select } from "antd";
 import Highlighter from "react-highlight-words";
 import {
-  ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
-  PlayCircleOutlined as ShippedIcon,
-  InfoCircleOutlined as RefundedIcon,
-  CloseCircleOutlined as DeclinedIcon,
   UserOutlined,
   UserAddOutlined,
   SearchOutlined,
   ShoppingOutlined,
 } from "@ant-design/icons";
+import moment from "moment";
 
 import UserDetailsModal from "./userDetails";
 import { UsersContainer, UserCreateContainer, SubmitButton } from "./styles";
@@ -19,9 +16,18 @@ import { emailValidator } from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 const { Title } = Typography;
+const { Option } = Select;
 
 function Ui(props) {
   const {
+    fetchSettings,
+    changeSettings,
+    settingsState: {
+      id,
+      user_list_order,
+      fetching: fetchingSettings,
+      fetchingFinished: fetchingSettingsFinished,
+    },
     usersState: {
       userList,
       count: availableCount,
@@ -50,6 +56,12 @@ function Ui(props) {
       fetchUsers();
     }
   }, [fetching, finishedFetching]);
+
+  useEffect(() => {
+    if (!fetchingSettings && !fetchingSettingsFinished && !id) {
+      fetchSettings();
+    }
+  }, [fetchingSettings, fetchingSettingsFinished]);
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     confirm();
@@ -257,7 +269,12 @@ function Ui(props) {
         return (
           <div className="detail-3-column-compressed">
             <p>{instance.is_staff ? "Staff" : "Normal"}</p>
-            <p>{instance.verified === "verified" ? <PurchasedIcon /> : null}</p>
+            {instance.readable_last_login ? (
+              <>
+                <p className="date">{instance.readable_last_login.date}</p>
+                <p className="time">{instance.readable_last_login.time}</p>
+              </>
+            ) : null}
             <a
               target="_blank"
               href={`https://tools.keycdn.com/geo?host=${instance.last_ip}`}
@@ -294,7 +311,12 @@ function Ui(props) {
       key: user.id,
       ...user,
     }))
-    .sort((a, b) => -(a.id - b.id));
+    .sort((a, b) => {
+      if (user_list_order === "by_last_login") {
+        return -(moment(a.last_login) - moment(b.last_login));
+      }
+      return -(a.id - b.id);
+    });
 
   const currentUserCount = Object.values(userList).length;
 
@@ -328,7 +350,17 @@ function Ui(props) {
         </div>
         <SubmitButton onClick={() => handleCreateUser()}>Create</SubmitButton>
       </UserCreateContainer>
-      <Title level={4}>Users</Title>
+      <Title level={4}>
+        Users
+        <Select
+          defaultValue={user_list_order}
+          style={{ width: 120 }}
+          onSelect={(val) => changeSettings({ user_list_order: val })}
+        >
+          <Option value="by_id">ID</Option>
+          <Option value="by_last_login">Last Login</Option>
+        </Select>
+      </Title>
       {selected && <UserDetailsModal user={userList[selected]} />}
       <Table
         onRow={handleUserOpen}

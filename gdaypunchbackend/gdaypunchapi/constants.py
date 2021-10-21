@@ -17,6 +17,15 @@ PRIVILEGES = (
     (SHOP_TESTER, 'shop_tester'),
 )
 
+# User list ordering (Admin)
+BY_ID = 'by_id'
+BY_LAST_LOGIN = 'by_last_login'
+
+USER_LIST_ORDER = (
+    (BY_ID, "By Id"),
+    (BY_LAST_LOGIN, "By Last Login")
+)
+
 # Product Types
 PHYSICAL = 'physical'
 DIGITAL = 'digital'

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Input, Button, Select } from "antd";
+import { Input, Button, Select, message } from "antd";
 
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
 import { ErrorField } from "components/errorField";
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchStaticUrl, emailValidator } from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 import {
@@ -46,7 +46,11 @@ function Ui(props) {
   }, [submitted]);
 
   const handleSubmitForm = () => {
-    submitContactForm(contactForm);
+    if (!emailValidator(contactForm.email)) {
+      message.error("Invalid email. Please check and try again.");
+    } else {
+      submitContactForm(contactForm);
+    }
   };
 
   const contactReasons = {
@@ -56,6 +60,7 @@ function Ui(props) {
     subscription: "Subscription Enquiry",
     subscription_cancellation: "Cancel Subscription",
     unsubscribe: "Email Unsubscribe",
+    bug_report: "Bug Report",
   };
 
   return (

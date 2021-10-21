@@ -1,3 +1,11 @@
+export const FETCH_SETTINGS = "admin/FETCH_SETTINGS";
+export const FETCHING_SETTINGS = "admin/FETCHING_SETTINGS";
+export const FINISHED_FETCHING_SETTINGS = "admin/FINISHED_FETCHING_SETTINGS";
+export const CHANGE_SETTINGS = "admin/CHANGE_SETTINGS";
+export const CHANGING_SETTINGS = "admin/CHANGING_SETTINGS";
+export const FINISHED_CHANGING_SETTINGS = "admin/FINISHED_CHANGING_SETTINGS";
+export const UPDATE_SETTINGS = "admin/UPDATE_SETTINGS";
+
 export const ADMIN_CREATE_USER = "admin/ADMIN_CREATE_USER";
 export const FETCH_USERS = "admin/FETCH_USERS";
 export const UPDATE_USERS = "admin/UPDATE_USERS";
@@ -102,6 +110,40 @@ export const UPDATE_ORDERS_SALES_GRAPH = "admin/UPDATE_ORDERS_SALES_GRAPH";
 export const FETCHING_ORDERS_SALES_GRAPH = "admin/FETCHING_ORDERS_SALES_GRAPH";
 export const FINISHED_FETCHING_ORDERS_SALES_GRAPH =
   "admin/FINISHED_FETCHING_ORDERS_SALES_GRAPH";
+
+export const fetchSettings = () => ({
+  type: FETCH_SETTINGS,
+});
+
+export const fetchingSettings = () => ({
+  type: FETCHING_SETTINGS,
+});
+
+export const finishedFetchingSettings = () => ({
+  type: FINISHED_FETCHING_SETTINGS,
+});
+
+export const changeSettings = (newSettings) => ({
+  type: CHANGE_SETTINGS,
+  payload: {
+    newSettings,
+  },
+});
+
+export const changingSettings = () => ({
+  type: CHANGING_SETTINGS,
+});
+
+export const finishedChangingSettings = () => ({
+  type: FINISHED_CHANGING_SETTINGS,
+});
+
+export const updateSettings = (updatedSettings) => ({
+  type: UPDATE_SETTINGS,
+  payload: {
+    updatedSettings,
+  },
+});
 
 export const fetchUsers = (fetchNext, search) => ({
   type: FETCH_USERS,

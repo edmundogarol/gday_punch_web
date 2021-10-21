@@ -74,6 +74,9 @@ from .gdaypunchapi.api.voting import (
     VoteCastingViewSet,
     VotingDashboard
 )
+from .gdaypunchapi.api.gp_settings import (
+    SettingsViewSet,
+)
 
 router = routers.DefaultRouter()
 router.register(r'user', UserViewSet, basename='user')
@@ -101,6 +104,7 @@ router.register(r'order-confirmation', OrderConfirmationViewSet,
                 basename="order-confirmation")
 router.register(r'reset-password', ResetPasswordViewSet,
                 basename="reset-password")
+router.register(r'settings', SettingsViewSet, basename="settings")
 
 # Inactive endpoints
 

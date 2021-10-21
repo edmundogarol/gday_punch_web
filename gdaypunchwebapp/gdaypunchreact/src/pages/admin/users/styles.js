@@ -11,10 +11,18 @@ export const UsersContainer = styled.div`
     }
   }
 
+  .ant-select {
+    margin-left: 1em;
+  }
+
   .extra,
   .unset,
   .time {
     opacity: 0.6;
+  }
+
+  .date {
+    margin: unset;
   }
 
   .mobile {
