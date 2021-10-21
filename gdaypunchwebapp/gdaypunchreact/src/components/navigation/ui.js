@@ -18,11 +18,13 @@ import {
   HeaderParent,
   CartNumber,
 } from "./styles";
+import UserAvatar from "../userAvatar";
 
 const initialParentNavsState = {
   resources: false,
   submissions: false,
   about: false,
+  account: false,
 };
 
 function Ui(props) {
@@ -93,6 +95,13 @@ function Ui(props) {
     }
     if (location === "/about" || location === "/events") {
       updateParentNavs({ ...initialParentNavsState, about: true });
+    }
+    if (
+      location === "/my-stall" ||
+      location === "/account" ||
+      location === "/admin"
+    ) {
+      updateParentNavs({ ...initialParentNavsState, submissions: true });
     }
   }, [location]);
 
@@ -290,7 +299,7 @@ function Ui(props) {
               {"Bookshelf"}
             </HeaderLink>
           )}
-          {loggedIn && (
+          {/* {loggedIn && (
             <HeaderLink
               to="/account"
               $adminLink
@@ -315,6 +324,60 @@ function Ui(props) {
             >
               {"Admin"}
             </HeaderLink>
+          )} */}
+          {loggedIn && (
+            <HeaderParent
+              $open={parentNavs.submissions}
+              $current={
+                location === "/my-stall" ||
+                location === "/account" ||
+                location === "/admin"
+              }
+              onClick={() => toggleParentNav("submissions")}
+              $firstChildMobXOffset={"-6.5em"}
+              $secondChildMobXOffset={"2em"}
+              $thirdChildMobXOffset={"9em"}
+              $firstChildXOffset={"-8em"}
+              $secondChildXOffset={"-0em"}
+              $thirdChildXOffset={"9em"}
+            >
+              <UserAvatar author={user.username} image={user.iamge} />
+              <HeaderLink
+                className="child-nav first-child"
+                to="/my-stall"
+                $current={location === "/my-stall"}
+                onClick={() => {
+                  toggleMiniNav(false);
+                  updateParentNavs(initialParentNavsState);
+                }}
+              >
+                {"My Stall"}
+              </HeaderLink>
+              <HeaderLink
+                to="/account"
+                $adminLink
+                $current={location === "/account"}
+                onClick={() => {
+                  toggleMiniNav(false);
+                  updateParentNavs(initialParentNavsState);
+                }}
+              >
+                {"Account"}
+              </HeaderLink>
+              {loginCheckFinished && user.is_staff && (
+                <HeaderLink
+                  to="/admin"
+                  $adminLink
+                  $current={location === "/admin"}
+                  onClick={() => {
+                    toggleMiniNav(false);
+                    updateParentNavs(initialParentNavsState);
+                  }}
+                >
+                  {"Admin"}
+                </HeaderLink>
+              )}
+            </HeaderParent>
           )}
           {!loggedIn && (
             <HeaderALink
