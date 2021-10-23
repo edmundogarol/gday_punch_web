@@ -19,8 +19,10 @@ export const NavigationContainer = styled.div`
   ${(props) =>
     props.$childNavOpen
       ? `
+      @media ${device.laptop} {
         padding-bottom: 3em;
         padding-top: 1em;
+      }
       `
       : ``}
 `;

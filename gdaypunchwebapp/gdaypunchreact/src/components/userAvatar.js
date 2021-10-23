@@ -61,8 +61,14 @@ const PreviewContainer = styled.div`
 `;
 
 export default function UserAvatar(props) {
-  const { author, image, author_likes, author_friends, author_followers } =
-    props;
+  const {
+    author,
+    image,
+    author_likes,
+    author_friends,
+    author_followers,
+    noPreview,
+  } = props;
 
   const avatarRenderer = (preview) => (
     <UserAvatarComponent
@@ -108,5 +114,12 @@ export default function UserAvatar(props) {
     </PreviewContainer>
   );
 
+  if (noPreview) {
+    return (
+      <Tooltip title="Profile" placement="bottom">
+        {avatarRenderer(false)}
+      </Tooltip>
+    );
+  }
   return <Popover content={content(true)}>{avatarRenderer(false)}</Popover>;
 }
