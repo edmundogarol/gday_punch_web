@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { CommentOutlined, BookOutlined } from "@ant-design/icons";
@@ -6,7 +7,6 @@ import { Badge, Tooltip } from "antd";
 
 import {
   generatePermaLink,
-  getGdayPunchResourceUrl,
   getGdayPunchStaticUrl,
   scrollToTop,
 } from "utils/utils";
@@ -26,10 +26,11 @@ import {
   ArtistActionsContainer,
 } from "./styles";
 import UserAvatar from "../userAvatar";
+import { selectLoggedIn } from "selectors/app";
 
 function Ui(props) {
+  const loggedIn = useSelector(selectLoggedIn);
   const {
-    loggedIn,
     product,
     likeManga,
     openRegister,
@@ -50,7 +51,6 @@ function Ui(props) {
     purchased,
     saved,
     saves,
-    stock,
     visible,
     user_avatar,
     user_string: creator,

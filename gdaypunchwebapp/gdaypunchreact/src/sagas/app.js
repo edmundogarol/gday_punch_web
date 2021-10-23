@@ -191,7 +191,7 @@ export function* logout() {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     yield put(logoutSuccess());
     yield put(doCheckLogin());
     yield put(fetchProducts());
@@ -207,7 +207,7 @@ export function* submitContactFormCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     message.success(`Contact Form Submitted.`);
     yield put(contactFormSubmitted(true));
   } else {
@@ -227,7 +227,7 @@ export function* resetPasswordCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     message.success(`Reset Password Submitted.`);
     yield put(resetPasswordSubmitted(true));
   } else {
@@ -270,7 +270,7 @@ export function* resetPasswordSubmitNewCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     yield put(resetPasswordSubmitted(true));
     yield put(updateResetPasswordErrors({}));
   } else {
@@ -292,7 +292,7 @@ export function* verifyEmailCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
 
     yield put(emailVerified());
     yield put(verifyingEmailFinished());
@@ -316,7 +316,7 @@ export function* requestEmailVerificationCall() {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
 
     yield put(requestEmailVerificationFinished());
     yield put(doCheckLogin());
@@ -341,7 +341,7 @@ export function* fetchCartItemsCall() {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     yield put(finishedFetchingCartItems());
   } else {
     yield put(finishedFetchingCartItems());
@@ -394,8 +394,7 @@ export function* castVoteCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
-
+    // const data = response.data;
     yield put(fetchVotingItems());
     yield put(castingVoteFinished());
   } else {

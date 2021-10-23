@@ -15,11 +15,7 @@ import {
   doLikeComment,
   doLikeManga,
 } from "actions/manga";
-import {
-  selectLoginViewToggle,
-  selectLoggedIn,
-  selectUser,
-} from "selectors/app";
+import { selectLoggedIn, selectUser } from "selectors/app";
 import { selectReadingManga, selectComments } from "selectors/manga";
 
 import Ui from "./ui";
@@ -27,7 +23,6 @@ import Ui from "./ui";
 const mapState = createStructuredSelector({
   user: selectUser,
   loggedIn: selectLoggedIn,
-  loginView: selectLoginViewToggle,
   manga: selectReadingManga,
   comments: selectComments,
 });

@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect } from "react";
 import { isEmpty } from "lodash";
 
 import Header from "components/header";
 import Login from "components/login";
 import ProductTile from "components/productTile";
-import PaymentForm from "components/paymentForm";
 import About from "components/about";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
@@ -13,12 +11,10 @@ import { SectionTitle } from "components/sectionTitle";
 
 import { App } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
-import { getGdayPunchResourceUrl } from "utils/utils";
 
 function Ui(props) {
   const {
     loggedIn,
-    loginView,
     openRegister,
     suggestRegister,
     likeManga,
@@ -29,15 +25,6 @@ function Ui(props) {
   } = props;
 
   useScrollTop();
-
-  // useEffect(() => {
-  //   document.head.querySelector('meta[name="og:title"]').content =
-  //     "Gday Punch Manga Magazine Web App";
-  //   document.head.querySelector('meta[name="og:description"]').content =
-  //     "Your #1 Manga Magazine in Australia, for and by Australian Artists - Welcome to our brand new Web Store and App!";
-  //   document.head.querySelector('meta[name="og:image"]').content =
-  //     getGdayPunchResourceUrl("gdaypunch-hero-preview.png");
-  // }, []);
 
   useEffect(() => {
     if (
@@ -51,10 +38,9 @@ function Ui(props) {
 
   return (
     <App id="top" className="App">
-      <div className="App-header-container app-temp-background">
-        <Header loginView={loginView} />
+      <Header>
         <Login />
-      </div>
+      </Header>
       {!isEmpty(buyableProducts) && (
         <FeaturedSection idx={1}>
           <SectionTitle>Shop</SectionTitle>

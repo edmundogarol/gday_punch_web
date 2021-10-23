@@ -53,6 +53,7 @@ import OrderConfirmation from "pages/OrderConfirmation";
 import ProductDetail from "pages/ProductDetail";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
+import MyStall from "pages/MyStall/MyStall";
 
 import RoutePage from "components/routePage";
 import SideCart from "components/sideCart";
@@ -80,6 +81,7 @@ function* rootSaga() {
 }
 
 const stripePromise = loadStripe(
+  // eslint-disable-next-line no-undef
   process.env.NODE_ENV === "development"
     ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
     : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
@@ -94,7 +96,7 @@ const store = createStore(
 sagaMiddleware.run(rootSaga);
 
 function Root(props) {
-  const { user, loginCheckFinished } = props;
+  const { user } = props;
 
   useEffect(() => {
     props.checkLogin();
@@ -162,6 +164,13 @@ function Root(props) {
             <RoutePage exact path="/downloads" component={Downloads} />
             <RoutePage exact path="/cart" component={Cart} />
             <RoutePage exact path="/checkout" component={Checkout} />
+            <RoutePage
+              exact
+              path="/my-stall"
+              component={MyStall}
+              condition={user.logged_in}
+            />
+            <RoutePage exact path="/stall/:user" component={MyStall} />
             <RoutePage
               exact
               path="/forgot-password"

@@ -4,12 +4,13 @@
         "es6": true
     },
     "extends": [
-        "standard",
         "eslint:recommended",
-        "plugin:import/warnings",
-        "plugin:import/typescript",
         "plugin:react/recommended"
     ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly"
+    },
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
@@ -18,8 +19,7 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react",
-        "import"
+        "react"
     ],
     "rules": {
         "semi": "off",
@@ -29,16 +29,8 @@
         "generator-star-spacing": "off",
         "no-case-declarations": "off",
         "react/no-unused-state": "error",
-        "import/no-unresolved": [
-            2, 
-            { "caseSensitive": true }
-         ]
-    },
-    "settings": {
-        "import/resolver": {
-          "webpack": {
-            "config": "webpack.config.js"
-          }
-        }
+        "import/no-unresolved": 0,
+        "no-undef": "error",
+        "react/prop-types": 0
     }
 }
