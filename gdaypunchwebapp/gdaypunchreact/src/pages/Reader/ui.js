@@ -34,7 +34,6 @@ function Ui(props) {
     comments,
     likeComment,
     likeManga,
-    loggedIn,
     user,
   } = props;
   const [pageNumber, setPageNumber] = useState(1);
