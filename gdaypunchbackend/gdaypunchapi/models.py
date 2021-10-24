@@ -268,10 +268,12 @@ class Manga(models.Model):
             return False
 
         user = User.objects.get(email=get_current_user())
-        liked = Like.objects.all().filter(user=user, manga=self.id).count()
-        if liked > 0:
-            return True
-        else:
+
+        try: 
+            liked = Like.objects.all().get(user=user, manga=self.id)
+
+            return liked.id
+        except Like.DoesNotExist:
             return False
 
     @property

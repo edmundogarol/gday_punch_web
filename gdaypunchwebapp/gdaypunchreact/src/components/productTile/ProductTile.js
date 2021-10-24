@@ -1,10 +1,21 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { withRouter } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { CommentOutlined, BookOutlined } from "@ant-design/icons";
 import { Badge, Tooltip } from "antd";
 
+import UserAvatar from "components/userAvatar";
+import { doLikeManga, unlikeManga } from "actions/manga";
+import { doSuggestRegister, openRegistration } from "actions/user";
+import { updateCartItemQuantity } from "actions/cart";
+import {
+  saveProduct,
+  setViewingProduct,
+  unsaveProduct,
+} from "actions/products";
+import { selectLoggedIn } from "selectors/app";
 import {
   generatePermaLink,
   getGdayPunchStaticUrl,
@@ -25,21 +36,9 @@ import {
   LowStock,
   ArtistActionsContainer,
 } from "./styles";
-import UserAvatar from "../userAvatar";
-import { selectLoggedIn } from "selectors/app";
 
-function Ui(props) {
-  const loggedIn = useSelector(selectLoggedIn);
-  const {
-    product,
-    likeManga,
-    openRegister,
-    suggestRegister,
-    updateCartItemQuantity,
-    viewProduct,
-    saveProduct,
-    unsaveProduct,
-  } = props;
+function ProductTile(props) {
+  const { history, product } = props;
   const { manga_details } = product;
   const {
     id,
@@ -73,31 +72,37 @@ function Ui(props) {
     user_likes: undefined,
   };
 
+  const loggedIn = useSelector(selectLoggedIn);
+  const dispatch = useDispatch();
+
   const perma_link = generatePermaLink(product);
   const buyableProduct = active_price && active_price > 0;
   const digitalProduct = product_type !== "physical";
   const purchasedDigital = purchased && digitalProduct;
 
   const handleAddToCart = () => {
-    updateCartItemQuantity(id, 1, true);
+    dispatch(updateCartItemQuantity(id, 1, true));
   };
 
   const handleLikeClick = () => {
     if (!loggedIn) {
       scrollToTop();
-      props.history.push("/#top");
-      openRegister();
-      suggestRegister("Info: Sign up or Log in to like this manga!");
+      history.push("/#top");
+      dispatch(openRegistration());
+      dispatch(
+        doSuggestRegister("Info: Sign up or Log in to like this manga!")
+      );
     } else if (!user_likes) {
-      likeManga(mangaId, false);
+      dispatch(doLikeManga(mangaId, false));
     } else {
+      dispatch(unlikeManga(user_likes));
       // Implement Unlike Manga
     }
   };
 
   const handleViewProduct = () => {
-    viewProduct(id);
-    props.history.push(`/product/${id}/${perma_link}`);
+    dispatch(setViewingProduct(id));
+    history.push(`/product/${id}/${perma_link}`);
   };
 
   const renderActionButton = () => {
@@ -147,14 +152,16 @@ function Ui(props) {
   const handleSaveClick = () => {
     if (!loggedIn) {
       scrollToTop();
-      props.history.push("/#top");
-      openRegister();
-      suggestRegister("Info: Sign up or Log in to favourite this manga!");
+      history.push("/#top");
+      dispatch(openRegistration());
+      dispatch(
+        doSuggestRegister("Info: Sign up or Log in to favourite this manga!")
+      );
     } else {
       if (!saved) {
-        saveProduct(id);
+        dispatch(saveProduct(id));
       } else {
-        unsaveProduct(saved);
+        dispatch(unsaveProduct(saved));
       }
     }
   };
@@ -261,4 +268,4 @@ function Ui(props) {
   );
 }
 
-export default Ui;
+export default withRouter(ProductTile);

@@ -17,6 +17,7 @@ import {
   updateManga,
   updateComments,
   updateComment,
+  UNLIKE_MANGA,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { api } from "utils/api";
@@ -71,6 +72,21 @@ export function* likeManga(action) {
     body: {
       manga: mangaId,
     },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateManga(data));
+  } else {
+    console.log("Like error", JSON.stringify(response));
+  }
+}
+
+export function* unlikeManga(action) {
+  const { likeId } = action.payload;
+
+  const response = yield call(api, `like/${likeId}/`, {
+    method: "DELETE",
   });
 
   if (response && response.ok) {
@@ -150,6 +166,7 @@ export default function* mangaSaga() {
   yield all([
     takeLatest(DO_GET_MANGA, getManga),
     takeEvery(DO_LIKE_MANGA, likeManga),
+    takeEvery(UNLIKE_MANGA, unlikeManga),
     takeEvery(DO_COMMENT_MANGA, commentManga),
     takeEvery(DO_GET_COMMENTS, getComments),
     takeEvery(DO_LIKE_COMMENT, likeComment),

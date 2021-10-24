@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { isEmpty } from "lodash";
 import { ShopOutlined } from "@ant-design/icons";
 
-import ProductTile from "components/productTile";
+import ProductTile from "components/ProductTile/ProductTile";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
@@ -13,10 +13,6 @@ import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
-    loggedIn,
-    openRegister,
-    suggestRegister,
-    likeManga,
     products: { fetchingProducts, finishedFetchingProducts },
     fetchProducts,
     purchasedProducts,
@@ -58,10 +54,6 @@ function Ui(props) {
                 <ProductTile
                   key={`${product.id}_${product.quantity || 0}`}
                   product={product}
-                  loggedIn={loggedIn}
-                  likeManga={likeManga}
-                  openRegister={openRegister}
-                  suggestRegister={suggestRegister}
                 />
               ) : null;
             })}
@@ -77,14 +69,7 @@ function Ui(props) {
           <FeaturedList>
             {savedProducts.map((manga) => {
               return manga ? (
-                <ProductTile
-                  key={manga.id}
-                  product={manga}
-                  loggedIn={loggedIn}
-                  likeManga={likeManga}
-                  openRegister={openRegister}
-                  suggestRegister={suggestRegister}
-                />
+                <ProductTile key={manga.id} product={manga} />
               ) : null;
             })}
           </FeaturedList>

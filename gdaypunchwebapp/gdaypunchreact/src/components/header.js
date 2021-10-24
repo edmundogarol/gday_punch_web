@@ -25,7 +25,6 @@ export const HeaderContainer = styled.div`
     `url(${props.background || "/static/launch-background.png"})`};
   background-position: center;
   background-size: 136%;
-  background-repeat: no-repeat;
   background-blend-mode: ${(props) =>
     props.background ? "unset" : "color-burn"};
 
@@ -36,6 +35,7 @@ export const HeaderContainer = styled.div`
   ${(props) =>
     props.background
       ? `
+        background-repeat: no-repeat;
         background-size: cover;
         background-position-y: 4.3em;
 

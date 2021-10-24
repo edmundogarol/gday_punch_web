@@ -14,7 +14,7 @@ const { Title } = Typography;
 const { Option } = Select;
 
 import Image from "components/image";
-import { LowStock } from "components/productTile/styles";
+import { LowStock } from "components/ProductTile/styles";
 import {
   PageContainer,
   ProductContainer,

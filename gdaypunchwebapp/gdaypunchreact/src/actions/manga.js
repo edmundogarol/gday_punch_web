@@ -1,6 +1,7 @@
 export const DO_GET_MANGA = "manga/DO_GET_GP_MANGA";
 export const UPDATE_MANGA = "manga/UPDATE_MANGA";
 export const DO_LIKE_MANGA = "manga/DO_LIKE_MANGA";
+export const UNLIKE_MANGA = "manga/UNLIKE_MANGA";
 export const DO_COMMENT_MANGA = "manga/DO_COMMENT_MANGA";
 export const DO_GET_COMMENTS = "manga/DO_GET_COMMENTS";
 export const DO_LIKE_COMMENT = "manga/DO_LIKE_COMMENT";
@@ -34,6 +35,13 @@ export const doLikeManga = (mangaId) => ({
   type: DO_LIKE_MANGA,
   payload: {
     mangaId,
+  },
+});
+
+export const unlikeManga = (likeId) => ({
+  type: UNLIKE_MANGA,
+  payload: {
+    likeId,
   },
 });
 

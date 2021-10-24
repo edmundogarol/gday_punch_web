@@ -3,7 +3,7 @@ import { isEmpty } from "lodash";
 
 import Header from "components/header";
 import Login from "components/login";
-import ProductTile from "components/productTile";
+import ProductTile from "components/ProductTile/ProductTile";
 import About from "components/about";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
@@ -14,10 +14,6 @@ import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
-    loggedIn,
-    openRegister,
-    suggestRegister,
-    likeManga,
     products: { fetchingProducts, finishedFetchingProducts },
     buyableProducts,
     freeProducts,
@@ -50,10 +46,6 @@ function Ui(props) {
                 <ProductTile
                   key={`${product.id}_${product.quantity || 0}`}
                   product={product}
-                  loggedIn={loggedIn}
-                  likeManga={likeManga}
-                  openRegister={openRegister}
-                  suggestRegister={suggestRegister}
                 />
               ) : null;
             })}
@@ -66,14 +58,7 @@ function Ui(props) {
           <FeaturedList>
             {freeProducts.map((manga) => {
               return manga ? (
-                <ProductTile
-                  key={manga.id}
-                  product={manga}
-                  loggedIn={loggedIn}
-                  likeManga={likeManga}
-                  openRegister={openRegister}
-                  suggestRegister={suggestRegister}
-                />
+                <ProductTile key={manga.id} product={manga} />
               ) : null;
             })}
           </FeaturedList>

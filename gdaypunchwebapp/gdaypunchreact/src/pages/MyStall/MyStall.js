@@ -5,13 +5,11 @@ import { isEmpty } from "lodash";
 import { TeamOutlined, UserAddOutlined, LikeOutlined } from "@ant-design/icons";
 
 import Header from "components/header";
-import ProductTile from "components/productTile";
+import ProductTile from "components/ProductTile/ProductTile";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
 import UserAvatar from "components/userAvatar";
-import { doLikeManga } from "actions/manga";
-import { doSuggestRegister, openRegistration } from "actions/user";
 import { fetchProducts } from "actions/app";
 import {
   selectBuyableProducts,
@@ -94,9 +92,6 @@ function MyStall() {
                 <ProductTile
                   key={`${product.id}_${product.quantity || 0}`}
                   product={product}
-                  likeManga={() => dispatch(doLikeManga())}
-                  openRegister={() => dispatch(openRegistration())}
-                  suggestRegister={() => dispatch(doSuggestRegister())}
                 />
               ) : null;
             })}

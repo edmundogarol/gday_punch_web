@@ -337,7 +337,7 @@ class LoginView(APIView):
 
 
 class LikeViewSet(ModelViewSet):
-    queryset = Like.objects.none()
+    queryset = Like.objects.all()
     serializer_class = LikeSerializer
     permission_classes = [LikePermissions]
 
@@ -361,7 +361,17 @@ class LikeViewSet(ModelViewSet):
         return Response(serializer.data)
 
     # TODO Implement Unlike
-    # def destroy(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs):
+        try:
+            like = Like.objects.get(pk=kwargs.get("pk"))
+        except Like.DoesNotExist:
+            return Response({'error': 'Like does not exist.'}, status=status.HTTP_204_NO_CONTENT)
+
+        manga = Manga.objects.get(id=like.manga.id)
+        like.delete()
+
+        serializer = MangaSerializer(manga)
+        return Response(serializer.data)
 
 
 class CommentLikeViewSet(ModelViewSet):
