@@ -1,9 +1,22 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import { MenuOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 
 import { getResourceImage, scrollToTop } from "utils/utils";
+import {
+  selectCartCount,
+  selectLoggedIn,
+  selectLoginCheckFinished,
+  selectLoginViewToggle,
+  selectUser,
+  selectNavMinified,
+} from "selectors/app";
+import { closeRegistration, doLogout, openRegistration } from "actions/user";
+import { toggleSideCart } from "actions/cart";
+import UserAvatar from "components/userAvatar";
+
 import {
   NavigationContainer,
   NavSection,
@@ -12,13 +25,12 @@ import {
   NavLinksMiddle,
   NavDropDownButton,
   NavLinksRight,
-  UserProfile,
   HeaderALink,
   HeaderLink,
   HeaderParent,
   CartNumber,
 } from "./styles";
-import UserAvatar from "../userAvatar";
+import { toggleNavMinified } from "actions/app";
 
 const initialParentNavsState = {
   resources: false,
@@ -27,21 +39,18 @@ const initialParentNavsState = {
   account: false,
 };
 
-function Ui(props) {
-  const {
-    user,
-    loggedIn,
-    loginView,
-    closeRegister,
-    openRegister,
-    logout,
-    history,
-    cartCount,
-    toggleSideCart,
-    loginCheckFinished,
-  } = props;
+function Navigation(props) {
+  const { history } = props;
+
+  const user = useSelector(selectUser);
+  const loggedIn = useSelector(selectLoggedIn);
+  const loginView = useSelector(selectLoginViewToggle);
+  const cartCount = useSelector(selectCartCount);
+  const loginCheckFinished = useSelector(selectLoginCheckFinished);
+  const navMinified = useSelector(selectNavMinified);
+  const dispatch = useDispatch();
+
   const [miniNavOpen, toggleMiniNav] = useState(false);
-  const [scrolledMini, toggleScrolledMini] = useState(false);
   const [parentNavs, updateParentNavs] = useState(initialParentNavsState);
 
   window.onscroll = () => scrollFunction();
@@ -51,6 +60,10 @@ function Ui(props) {
       ...initialParentNavsState,
       [parent]: !parentNavs[parent],
     });
+
+    if (parent === "account") {
+      dispatch(toggleNavMinified(parentNavs[parent]));
+    }
   };
 
   const scrollFunction = () => {
@@ -60,11 +73,9 @@ function Ui(props) {
     ) {
       document.getElementById("navbar").style.minHeight = "8vh";
       document.getElementById("navbar").style.fontSize = "14px";
-      toggleScrolledMini(true);
     } else {
       document.getElementById("navbar").style.minHeight = "11.5vh";
       document.getElementById("navbar").style.fontSize = "15px";
-      toggleScrolledMini(false);
     }
   };
 
@@ -72,12 +83,12 @@ function Ui(props) {
     if (window.location.pathname !== "/") {
       history.push("/");
     }
-    openRegister();
+    dispatch(openRegistration());
   };
 
   const handleCloseRegister = () => {
     history.push("/");
-    closeRegister();
+    dispatch(closeRegistration());
   };
 
   const location = window.location.pathname;
@@ -129,7 +140,7 @@ function Ui(props) {
             $current={location === "/cart"}
             onClick={() => {
               toggleMiniNav(false);
-              toggleSideCart(true);
+              dispatch(toggleSideCart(true));
               updateParentNavs(initialParentNavsState);
             }}
           >
@@ -139,7 +150,7 @@ function Ui(props) {
             )}
           </HeaderLink>
         )}
-        <NavLinksMiddle $open={miniNavOpen} $scrolledMini={scrolledMini}>
+        <NavLinksMiddle $open={miniNavOpen} $scrolledMini={navMinified}>
           <HeaderLink
             to="/"
             $current={location === "/"}
@@ -345,7 +356,7 @@ function Ui(props) {
               onClick={() => {
                 toggleMiniNav(false);
                 updateParentNavs(initialParentNavsState);
-                return logout();
+                return dispatch(doLogout());
               }}
             >
               Logout
@@ -457,7 +468,7 @@ function Ui(props) {
             <HeaderALink
               href="#"
               onClick={() => {
-                logout();
+                dispatch(doLogout());
                 updateParentNavs(initialParentNavsState);
               }}
             >
@@ -468,7 +479,7 @@ function Ui(props) {
             to="#"
             $current={location === "/cart"}
             onClick={() => {
-              toggleSideCart(true);
+              dispatch(toggleSideCart(true));
               updateParentNavs(initialParentNavsState);
             }}
           >
@@ -485,4 +496,4 @@ function Ui(props) {
   );
 }
 
-export default Ui;
+export default withRouter(Navigation);

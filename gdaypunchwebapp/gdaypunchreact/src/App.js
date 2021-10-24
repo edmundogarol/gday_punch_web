@@ -55,10 +55,10 @@ import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
 import MyStall from "pages/MyStall/MyStall";
 
+import Navigation from "components/Navigation/Navigation";
 import RoutePage from "components/routePage";
 import SideCart from "components/sideCart";
 import Footer from "components/footer";
-import Navigation from "components/navigation";
 
 import "antd/dist/antd.css";
 import "./App.scss";

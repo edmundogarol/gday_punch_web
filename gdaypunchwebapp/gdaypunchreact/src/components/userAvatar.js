@@ -6,7 +6,7 @@ import moment from "moment";
 
 import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 
-const UserAvatarComponent = styled.div`
+export const UserAvatarComponent = styled.div`
   background-image: url(${(props) => props.src});
   background-size: cover;
   background-position: center;

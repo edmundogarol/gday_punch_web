@@ -32,6 +32,7 @@ import {
   UPDATE_PRODUCTS,
   UPDATE_CONTACT_FORM_ERRORS,
   UPDATE_CONTACT_FORM_SUBMITTED,
+  TOGGLE_NAV_MINIFIED,
 } from "actions/app";
 import {
   FETCHING_CART_ITEMS,
@@ -88,6 +89,8 @@ const INITIAL_STATE = {
     updating: false,
     finished: false,
   },
+
+  navMinified: false,
 
   emailVerification: {
     verifying: false,
@@ -155,6 +158,11 @@ const INITIAL_STATE = {
 const appReducer = (state = INITIAL_STATE, action) => {
   const { payload } = action;
   switch (action.type) {
+    case TOGGLE_NAV_MINIFIED:
+      return {
+        ...state,
+        navMinified: payload.minified,
+      };
     case DO_LOGIN:
       return {
         ...state,

@@ -4,6 +4,11 @@ import { selectPaymentState } from "./payment";
 
 const selectDomain = (state) => state.app;
 
+export const selectNavMinified = createSelector(
+  selectDomain,
+  ({ navMinified }) => navMinified
+);
+
 export const selectUser = createSelector(selectDomain, ({ user }) => user);
 
 export const selectLoginViewToggle = createSelector(

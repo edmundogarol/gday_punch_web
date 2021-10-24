@@ -3,7 +3,8 @@ import { getResourceImage } from "utils/utils";
 import styled from "styled-components";
 import { device } from "utils/styles";
 import { useSelector } from "react-redux";
-import { selectLoginViewToggle } from "selectors/app";
+import { selectLoginViewToggle, selectNavMinified } from "selectors/app";
+import { UserAvatarComponent } from "./userAvatar";
 
 export const HeaderContainer = styled.div`
   background-color: #f1f1f1;
@@ -24,12 +25,45 @@ export const HeaderContainer = styled.div`
     `url(${props.background || "/static/launch-background.png"})`};
   background-position: center;
   background-size: 136%;
+  background-repeat: no-repeat;
   background-blend-mode: ${(props) =>
     props.background ? "unset" : "color-burn"};
 
   @media ${device.laptop} {
     background-size: 88%;
   }
+
+  ${(props) =>
+    props.background
+      ? `
+        background-size: cover;
+        background-position-y: 4.3em;
+
+        @media ${device.laptop} {
+          background-position-y: ${props.navMinified ? "4.3em" : "5.3em"};
+          background-size: cover;
+        }
+
+        ${UserAvatarComponent} {
+          border: 0.4em solid white;
+          border-radius: 7em;
+          position: absolute;
+
+          width: 12em;
+          height: 12em;
+          left: 9em;
+          top: 11em;
+
+          @media ${device.mobileM} {
+            border-radius: 5em;
+            width: 9em;
+            height: 9em;
+            left: 5em;
+            top: 16em;
+          }
+        }
+      `
+      : ""}
 `;
 export const HomeHeroLogo = styled.div`
   align-items: center;
@@ -43,10 +77,11 @@ export const HomeHeroLogo = styled.div`
 
 export default function Header(props) {
   const { children, background } = props;
+  const navMinified = useSelector(selectNavMinified);
   const loginView = useSelector(selectLoginViewToggle);
 
   return (
-    <HeaderContainer background={background}>
+    <HeaderContainer background={background} navMinified={navMinified}>
       {background ? (
         children
       ) : (
