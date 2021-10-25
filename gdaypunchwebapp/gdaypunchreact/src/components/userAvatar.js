@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Popover, Tooltip, Button } from "antd";
 import { TeamOutlined, UserAddOutlined, LikeOutlined } from "@ant-design/icons";
@@ -7,6 +7,7 @@ import moment from "moment";
 
 import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 import { followUser, unfollowUser } from "actions/user";
+import { selectUser } from "selectors/app";
 
 export const UserAvatarComponent = styled.div`
   background-image: url(${(props) => props.src});
@@ -91,6 +92,7 @@ export default function UserAvatar(props) {
     noPreview,
   } = props;
 
+  const user = useSelector(selectUser);
   const dispatch = useDispatch();
 
   const avatarRenderer = (preview) => (
@@ -133,7 +135,7 @@ export default function UserAvatar(props) {
               className={`icon-amount-container ${
                 following_author ? "active-social-icon" : ""
               }`}
-              onClick={() => handleFollow()}
+              onClick={() => (user.id !== author_id ? handleFollow() : null)}
             >
               <TeamOutlined className="site-form-item-icon" />
               <span className="amount">{author_followers}</span>
@@ -145,12 +147,16 @@ export default function UserAvatar(props) {
               <span className="amount">{author_likes}</span>
             </div>
           </Tooltip>
-          {!following_author ? (
-            <SocialButton type="primary" onClick={() => handleFollow()}>
-              Follow
-            </SocialButton>
+          {user.id !== author_id ? (
+            <>
+              {!following_author ? (
+                <SocialButton type="primary" onClick={() => handleFollow()}>
+                  Follow
+                </SocialButton>
+              ) : null}
+              <SocialButton type="primary">Add Friend</SocialButton>
+            </>
           ) : null}
-          <SocialButton type="primary">Add Friend</SocialButton>
         </div>
       </div>
     </PreviewContainer>
