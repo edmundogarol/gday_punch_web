@@ -169,10 +169,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def author_details(self):
         return {
+            "id": self.id,
             "name": self.author_name,
+            "image": self.image.name,
             "likes": self.total_manga_likes,
             "friends": self.friends,
             "followers": self.followers,
+            "following": self.following,
         }
 
     @property

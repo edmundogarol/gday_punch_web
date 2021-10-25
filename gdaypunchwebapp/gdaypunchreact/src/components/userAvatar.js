@@ -137,14 +137,13 @@ export default function UserAvatar({ author, noPreview }) {
   const dispatch = useDispatch();
 
   // FIXME Temporary before Add Friend is created as the button will remain visible for a while
-  const selfProfilePreview = user.id !== id;
+  const selfProfilePreview = user.id === id;
 
   const useImage = author ? image : user.image;
   const avatarRenderer = (preview) => (
     <UserAvatarComponent
       className="avatar"
       preview={preview}
-      selfProfilePreview={selfProfilePreview}
       src={
         useImage
           ? useImage.includes("gdaypunch-static.s3.amazonaws")
@@ -190,7 +189,7 @@ export default function UserAvatar({ author, noPreview }) {
                 className={`icon-amount-container ${
                   following ? "active-social-icon" : ""
                 }`}
-                onClick={() => (user.id !== id ? handleFollow() : null)}
+                onClick={() => (!selfProfilePreview ? handleFollow() : null)}
               >
                 <TeamOutlined className="site-form-item-icon" />
                 <span className="amount">{followers}</span>
@@ -203,7 +202,7 @@ export default function UserAvatar({ author, noPreview }) {
               </div>
             </Tooltip>
           </div>
-          {user.id !== id ? (
+          {!selfProfilePreview ? (
             <div className="socials">
               {!following ? (
                 <SocialButton type="primary" onClick={() => handleFollow()}>

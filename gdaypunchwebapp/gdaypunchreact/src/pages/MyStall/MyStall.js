@@ -28,20 +28,6 @@ function MyStall() {
   const { fetchingProducts, finishedFetchingProducts } = productsState;
   const dispatch = useDispatch();
 
-  const {
-    name,
-    friends: author_friends,
-    followers: author_followers,
-    likes: author_likes,
-  } = user.author_details
-    ? user.author_details
-    : {
-        name: "",
-        friends: 0,
-        followers: 0,
-        likes: 0,
-      };
-
   useScrollTop();
 
   useEffect(() => {
@@ -64,44 +50,45 @@ function MyStall() {
             : getGdayPunchResourceUrl("launch-background.png")
         }
       >
-        <UserAvatar
-          image={user.image}
-          author={name}
-          author_id={user.id}
-          author_friends={author_friends}
-          author_followers={author_followers}
-          author_likes={author_likes}
-        />
+        <UserAvatar author={user.author_details} />
       </Header>
       <FeaturedSection idx={1}>
-        <ProfileDetails>
-          <SectionTitle>{user.username || user.email}</SectionTitle>
-          <div className="stats">
-            <Tooltip title="Friends (Coming Soon)">
-              <div className="icon-amount-container coming-soon">
-                <UserAddOutlined className="site-form-item-icon" />
-                <span className="amount">{author_friends}</span>
+        {user.author_details ? (
+          <>
+            <ProfileDetails>
+              <SectionTitle>{user.author_details.name}</SectionTitle>
+              <div className="stats">
+                <Tooltip title="Friends (Coming Soon)">
+                  <div className="icon-amount-container coming-soon">
+                    <UserAddOutlined className="site-form-item-icon" />
+                    <span className="amount">
+                      {user.author_details.friends}
+                    </span>
+                  </div>
+                </Tooltip>
+                <Tooltip title="Followers">
+                  <div className="icon-amount-container">
+                    <TeamOutlined className="site-form-item-icon" />
+                    <span className="amount">
+                      {user.author_details.followers}
+                    </span>
+                  </div>
+                </Tooltip>
+                <Tooltip title="Manga Likes">
+                  <div className="icon-amount-container">
+                    <LikeOutlined className="site-form-item-icon" />
+                    <span className="amount">{user.author_details.likes}</span>
+                  </div>
+                </Tooltip>
               </div>
-            </Tooltip>
-            <Tooltip title="Followers">
-              <div className="icon-amount-container">
-                <TeamOutlined className="site-form-item-icon" />
-                <span className="amount">{author_followers}</span>
+              <div className="socials">
+                <SocialButton type="primary">Follow</SocialButton>
+                {/* <SocialButton type="primary">Add Friend</SocialButton> */}
               </div>
-            </Tooltip>
-            <Tooltip title="Manga Likes">
-              <div className="icon-amount-container">
-                <LikeOutlined className="site-form-item-icon" />
-                <span className="amount">{author_likes}</span>
-              </div>
-            </Tooltip>
-          </div>
-          <div className="socials">
-            <SocialButton type="primary">Follow</SocialButton>
-            {/* <SocialButton type="primary">Add Friend</SocialButton> */}
-          </div>
-        </ProfileDetails>
-        <p className="bio">&ldquo;{user.bio || "No bio."}&rdquo;</p>
+            </ProfileDetails>
+            <p className="bio">&ldquo;{user.bio || "No bio."}&rdquo;</p>
+          </>
+        ) : null}
       </FeaturedSection>
       {!isEmpty(buyableProducts) && (
         <FeaturedSection idx={2}>
