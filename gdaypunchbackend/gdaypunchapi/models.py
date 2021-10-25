@@ -149,7 +149,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def following(self):
-        current_user = User.objects.get(email=get_current_user())
+        try:
+            current_user = User.objects.get(email=get_current_user())
+        except User.DoesNotExist:
+            return None
 
         follower = None
         try:
