@@ -17,6 +17,7 @@ import {
   unfollowUser,
 } from "actions/user";
 import { selectLoggedIn, selectUser } from "selectors/app";
+import { device } from "utils/styles";
 
 export const UserAvatarComponent = styled.div`
   background-image: url(${(props) => props.src});
@@ -31,8 +32,8 @@ export const UserAvatarComponent = styled.div`
   ${(props) =>
     props.preview
       ? `
-      width: 5em;
-      height: 5em;
+      min-width: 5em;
+      min-height: 5em;
       border-radius: 4em;
       margin-right: 1em;
         `
@@ -45,6 +46,10 @@ const PreviewContainer = styled.div`
 
   ${UserAvatarComponent} {
     margin-right: 1em;
+
+    @media ${device.laptop} {
+      height: 5em;
+    }
   }
 
   p {
@@ -70,6 +75,10 @@ const PreviewContainer = styled.div`
 
   .coming-soon {
     color: #bfbfbf;
+
+    .amount {
+      color: #bfbfbf;
+    }
   }
 
   .author {
@@ -80,6 +89,30 @@ const PreviewContainer = styled.div`
     svg,
     .amount {
       color: #5799c1;
+    }
+  }
+
+  .stats-socials-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    .socials {
+      margin-left: -0.5em;
+    }
+
+    button {
+      width: 7em;
+    }
+
+    @media ${device.laptop} {
+      button {
+        width: 10em;
+      }
+
+      .socials {
+        margin-left: unset;
+      }
     }
   }
 `;
@@ -105,10 +138,14 @@ export default function UserAvatar(props) {
   const loggedIn = useSelector(selectLoggedIn);
   const dispatch = useDispatch();
 
+  // FIXME Temporary before Add Friend is created as the button will remain visible for a while
+  const selfProfilePreview = user.id !== author_id;
+
   const avatarRenderer = (preview) => (
     <UserAvatarComponent
       className="avatar"
       preview={preview}
+      selfProfilePreview={selfProfilePreview}
       src={
         image
           ? image.includes("gdaypunch-static.s3.amazonaws")
@@ -141,39 +178,45 @@ export default function UserAvatar(props) {
       {avatarRenderer(preview)}
       <div>
         <p className="author">{author}</p>
-        <div className="stats">
-          <Tooltip title="Friends">
-            <div className="icon-amount-container">
-              <UserAddOutlined className={`site-form-item-icon`} />
-              <span className="amount">{author_friends}</span>
-            </div>
-          </Tooltip>
-          <Tooltip title={following_author ? "Following" : "Followers"}>
-            <div
-              className={`icon-amount-container ${
-                following_author ? "active-social-icon" : ""
-              }`}
-              onClick={() => (user.id !== author_id ? handleFollow() : null)}
-            >
-              <TeamOutlined className="site-form-item-icon" />
-              <span className="amount">{author_followers}</span>
-            </div>
-          </Tooltip>
-          <Tooltip title="Manga Likes">
-            <div className="icon-amount-container">
-              <LikeOutlined className="site-form-item-icon" />
-              <span className="amount">{author_likes}</span>
-            </div>
-          </Tooltip>
+        <div className="stats-socials-container">
+          <div className="stats">
+            <Tooltip title="Friends (Coming Soon)">
+              <div className="icon-amount-container coming-soon">
+                <UserAddOutlined className={`site-form-item-icon`} />
+                <span className="amount">{author_friends}</span>
+              </div>
+            </Tooltip>
+            <Tooltip title={following_author ? "Following" : "Followers"}>
+              <div
+                className={`icon-amount-container ${
+                  following_author ? "active-social-icon" : ""
+                }`}
+                onClick={() => (user.id !== author_id ? handleFollow() : null)}
+              >
+                <TeamOutlined className="site-form-item-icon" />
+                <span className="amount">{author_followers}</span>
+              </div>
+            </Tooltip>
+            <Tooltip title="Manga Likes">
+              <div className="icon-amount-container">
+                <LikeOutlined className="site-form-item-icon" />
+                <span className="amount">{author_likes}</span>
+              </div>
+            </Tooltip>
+          </div>
           {user.id !== author_id ? (
-            <>
+            <div className="socials">
               {!following_author ? (
                 <SocialButton type="primary" onClick={() => handleFollow()}>
                   Follow
                 </SocialButton>
               ) : null}
-              <SocialButton type="primary">Add Friend</SocialButton>
-            </>
+              <Tooltip title="Coming Soon">
+                <SocialButton type="primary" disabled>
+                  Add Friend
+                </SocialButton>
+              </Tooltip>
+            </div>
           ) : null}
         </div>
       </div>

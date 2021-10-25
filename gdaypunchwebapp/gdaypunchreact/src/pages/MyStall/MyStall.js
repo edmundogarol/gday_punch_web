@@ -77,14 +77,14 @@ function MyStall() {
         <ProfileDetails>
           <SectionTitle>{user.username || user.email}</SectionTitle>
           <div className="stats">
-            <Tooltip title="Friends">
+            <Tooltip title="Friends (Coming Soon)">
               <div className="icon-amount-container coming-soon">
                 <UserAddOutlined className="site-form-item-icon" />
                 <span className="amount">{author_friends}</span>
               </div>
             </Tooltip>
             <Tooltip title="Followers">
-              <div className="icon-amount-container coming-soon">
+              <div className="icon-amount-container">
                 <TeamOutlined className="site-form-item-icon" />
                 <span className="amount">{author_followers}</span>
               </div>
@@ -98,7 +98,7 @@ function MyStall() {
           </div>
           <div className="socials">
             <SocialButton type="primary">Follow</SocialButton>
-            <SocialButton type="primary">Add Friend</SocialButton>
+            {/* <SocialButton type="primary">Add Friend</SocialButton> */}
           </div>
         </ProfileDetails>
         <p className="bio">&ldquo;{user.bio || "No bio."}&rdquo;</p>

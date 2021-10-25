@@ -32,13 +32,24 @@ class FollowViewSet(ModelViewSet):
 
         user = User.objects.get(email=self.request.user)
 
-        follow = Follow.objects.create(
-            follower=user,
-            user=to_follow,
-        )
-        follow.save()
+        try:
+            follow = Follow.objects.get(
+                follower=user,
+                user=to_follow,
+            )
 
-        return Response({"detail": "Successfully followed user."})
+            return Response(
+                {"error": "Already following"}, status=status.HTTP_208_ALREADY_REPORTED
+            )
+
+        except Follow.DoesNotExist:
+            follow = Follow.objects.create(
+                follower=user,
+                user=to_follow,
+            )
+            follow.save()
+
+            return Response({"detail": "Successfully followed user."})
 
     def destroy(self, request, *args, **kwargs):
         try:
