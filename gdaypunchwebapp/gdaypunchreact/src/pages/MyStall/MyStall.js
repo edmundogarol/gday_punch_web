@@ -1,8 +1,13 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Tooltip } from "antd";
+import { Tooltip, Skeleton } from "antd";
 import { isEmpty } from "lodash";
-import { TeamOutlined, UserAddOutlined, LikeOutlined } from "@ant-design/icons";
+import {
+  TeamOutlined,
+  UserAddOutlined,
+  LikeOutlined,
+  FileAddOutlined,
+} from "@ant-design/icons";
 
 import Header from "components/header";
 import ProductTile from "components/ProductTile/ProductTile";
@@ -19,7 +24,12 @@ import {
 import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
-import { MyStallContainer, ProfileDetails, SocialButton } from "./styles";
+import {
+  MyStallContainer,
+  ProfileDetails,
+  SocialButton,
+  EmptySection,
+} from "./styles";
 
 function MyStall() {
   const user = useSelector(selectUser);
@@ -83,28 +93,42 @@ function MyStall() {
               </div>
               <div className="socials">
                 <SocialButton type="primary">Follow</SocialButton>
-                {/* <SocialButton type="primary">Add Friend</SocialButton> */}
+                <Tooltip title="Coming Soon">
+                  <SocialButton type="primary" disabled>
+                    Add Friend
+                  </SocialButton>
+                </Tooltip>
               </div>
             </ProfileDetails>
             <p className="bio">&ldquo;{user.bio || "No bio."}&rdquo;</p>
           </>
-        ) : null}
+        ) : (
+          <Skeleton avatar paragraph={{ rows: 3 }} />
+        )}
       </FeaturedSection>
-      {!isEmpty(buyableProducts) && (
-        <FeaturedSection idx={2}>
-          <SectionTitle>Shop</SectionTitle>
-          <FeaturedList>
-            {buyableProducts.map((product) => {
-              return product ? (
-                <ProductTile
-                  key={`${product.id}_${product.quantity || 0}`}
-                  product={product}
-                />
-              ) : null;
-            })}
-          </FeaturedList>
-        </FeaturedSection>
-      )}
+      <FeaturedSection idx={2}>
+        <SectionTitle>Gallery</SectionTitle>
+        <FeaturedList>
+          {[].map((product) => {
+            return product ? (
+              <ProductTile
+                key={`${product.id}_${product.quantity || 0}`}
+                product={product}
+              />
+            ) : null;
+          })}
+          {}
+          <div className="empty-section">
+            <EmptySection>
+              <h4>No Manga</h4>
+              <div>
+                <h2 onClick={() => alert("Upload Manga")}>Upload Now</h2>
+                <FileAddOutlined className="site-form-item-icon" />
+              </div>
+            </EmptySection>
+          </div>
+        </FeaturedList>
+      </FeaturedSection>
     </MyStallContainer>
   );
 }

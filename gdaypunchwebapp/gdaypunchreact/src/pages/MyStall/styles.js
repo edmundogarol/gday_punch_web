@@ -40,6 +40,37 @@ export const MyStallContainer = styled.div`
     display: flex;
     min-width: max-content;
   }
+
+  .empty-section {
+    position: relative;
+    height: 20em;
+    width: 100%;
+  }
+
+  .ant-skeleton {
+    width: 90%;
+  }
+
+  @media ${device.mobileM} {
+    .ant-skeleton {
+      width: 17em;
+      margin: 1em;
+    }
+  }
+
+  @media ${device.tabletL} {
+    .ant-skeleton {
+      width: 26em;
+      margin: 1em;
+    }
+  }
+
+  @media ${device.laptop} {
+    .ant-skeleton {
+      width: 50em;
+      margin: 1em;
+    }
+  }
 `;
 
 export const ProfileDetails = styled.div`
@@ -91,6 +122,37 @@ export const ProfileDetails = styled.div`
     text-shadow: 0.07em 0em white, -0.07em 0em white, 0em 0.07em white,
       0em -0.07em white, 0.07em 0.07em white, -0.07em 0.07em white,
       -0.07em -0.07em white, 0.07em -0.07em white;
+  }
+`;
+
+export const EmptySection = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 50%;
+
+  div {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+  }
+
+  h4 {
+    color: dimgray;
+  }
+
+  h2 {
+    margin-bottom: unset;
+    color: #efa114;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  svg {
+    height: 2em;
+    width: 2em;
+    margin-left: 1em;
+    color: #efa114;
   }
 `;
 
