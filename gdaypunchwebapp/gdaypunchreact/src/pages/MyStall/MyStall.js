@@ -67,6 +67,7 @@ function MyStall() {
         <UserAvatar
           image={user.image}
           author={name}
+          author_id={user.id}
           author_friends={author_friends}
           author_followers={author_followers}
           author_likes={author_likes}
@@ -76,13 +77,13 @@ function MyStall() {
         <ProfileDetails>
           <SectionTitle>{user.username || user.email}</SectionTitle>
           <div className="stats">
-            <Tooltip title="Friends (Coming Soon)">
+            <Tooltip title="Friends">
               <div className="icon-amount-container coming-soon">
                 <UserAddOutlined className="site-form-item-icon" />
                 <span className="amount">{author_friends}</span>
               </div>
             </Tooltip>
-            <Tooltip title="Followers (Coming Soon)">
+            <Tooltip title="Followers">
               <div className="icon-amount-container coming-soon">
                 <TeamOutlined className="site-form-item-icon" />
                 <span className="amount">{author_followers}</span>
