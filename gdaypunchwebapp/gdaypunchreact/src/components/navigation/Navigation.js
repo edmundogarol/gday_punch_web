@@ -312,6 +312,19 @@ function Navigation(props) {
           )}
           {loggedIn && (
             <HeaderLink
+              to="/my-stall"
+              $adminLink
+              $current={location === "/my-stall"}
+              onClick={() => {
+                toggleMiniNav(false);
+                updateParentNavs(initialParentNavsState);
+              }}
+            >
+              {"My Stall"}
+            </HeaderLink>
+          )}
+          {loggedIn && (
+            <HeaderLink
               to="/account"
               $adminLink
               $current={location === "/account"}

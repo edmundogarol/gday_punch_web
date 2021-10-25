@@ -1,9 +1,9 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Upload, message } from "antd";
 import ImgCrop from "antd-img-crop";
 import classNames from "classnames";
 import { LoadingOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
-import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchResourceUrl } from "utils/utils";
 import Image from "components/image";
 
 function Ui(props) {
@@ -41,6 +41,7 @@ function Ui(props) {
     if (!src) {
       src = await new Promise((resolve) => {
         const reader = new FileReader();
+        // eslint-disable-next-line valid-typeof
         if (typeof file === "blob") {
           reader.readAsDataURL(file?.originFileObj);
           reader.onload = () => resolve(reader.result);

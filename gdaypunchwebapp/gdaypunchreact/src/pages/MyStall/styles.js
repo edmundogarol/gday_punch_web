@@ -27,6 +27,18 @@ export const MyStallContainer = styled.div`
     max-width: 50em;
     padding-left: 2em;
     padding-right: 2em;
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+
+    @media ${device.laptop} {
+      padding-left: unset;
+    }
+  }
+
+  .socials {
+    display: flex;
+    min-width: max-content;
   }
 `;
 

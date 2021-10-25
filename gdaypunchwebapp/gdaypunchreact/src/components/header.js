@@ -1,10 +1,23 @@
 import React from "react";
-import { getResourceImage } from "utils/utils";
 import styled from "styled-components";
-import { device } from "utils/styles";
 import { useSelector } from "react-redux";
+import { EditOutlined } from "@ant-design/icons";
+
 import { selectLoginViewToggle, selectNavMinified } from "selectors/app";
 import { UserAvatarComponent } from "./userAvatar";
+import { device } from "utils/styles";
+import { getResourceImage } from "utils/utils";
+
+export const Overlay = styled.div`
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 0.5;
+  display: none;
+`;
 
 export const HeaderContainer = styled.div`
   background-color: #f1f1f1;
@@ -19,6 +32,7 @@ export const HeaderContainer = styled.div`
   grid-column-end: 2;
   grid-row-start: 1;
   grid-row-end: 1;
+  position: relative;
 
   height: 100%;
   background-image: ${(props) =>
@@ -64,6 +78,41 @@ export const HeaderContainer = styled.div`
         }
       `
       : ""}
+
+  ${(props) =>
+    props.overlay
+      ? `
+        &:hover {
+          // ${Overlay} {
+          //   display: initial;
+          // }
+
+          .anticon {
+            svg {
+              color: white;
+            }
+          }
+        }
+  
+        `
+      : ""}
+
+  .anticon {
+    z-index: 2;
+    position: absolute;
+    right: 1em;
+    bottom: 1em;
+
+    svg {
+      height: 2em;
+      width: 2em;
+      color: #343434;
+    }
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
 `;
 export const HomeHeroLogo = styled.div`
   align-items: center;
@@ -76,12 +125,18 @@ export const HomeHeroLogo = styled.div`
 `;
 
 export default function Header(props) {
-  const { children, background } = props;
+  const { children, background, editable } = props;
   const navMinified = useSelector(selectNavMinified);
   const loginView = useSelector(selectLoginViewToggle);
 
   return (
-    <HeaderContainer background={background} navMinified={navMinified}>
+    <HeaderContainer
+      background={background}
+      navMinified={navMinified}
+      overlay={editable}
+    >
+      {editable && <Overlay />}
+      {editable && <EditOutlined />}
       {background ? (
         children
       ) : (

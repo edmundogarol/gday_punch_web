@@ -170,7 +170,12 @@ function Root(props) {
               component={MyStall}
               condition={user.logged_in}
             />
-            <RoutePage exact path="/stall/:user" component={MyStall} />
+            <RoutePage
+              exact
+              path="/stall/:user"
+              title="My Stall"
+              component={MyStall}
+            />
             <RoutePage
               exact
               path="/forgot-password"

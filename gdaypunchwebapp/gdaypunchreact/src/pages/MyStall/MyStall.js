@@ -16,7 +16,7 @@ import {
   selectProductsState,
   selectUser,
 } from "selectors/app";
-import { getGdayPunchResourceUrl } from "utils/utils";
+import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 import { MyStallContainer, ProfileDetails, SocialButton } from "./styles";
@@ -28,7 +28,19 @@ function MyStall() {
   const { fetchingProducts, finishedFetchingProducts } = productsState;
   const dispatch = useDispatch();
 
-  const [author_friends, author_followers, author_likes] = [7, 19, 304];
+  const {
+    name,
+    friends: author_friends,
+    followers: author_followers,
+    likes: author_likes,
+  } = user.author_details
+    ? user.author_details
+    : {
+        name: "",
+        friends: 0,
+        followers: 0,
+        likes: 0,
+      };
 
   useScrollTop();
 
@@ -44,10 +56,17 @@ function MyStall() {
 
   return (
     <MyStallContainer className="App">
-      <Header background={getGdayPunchResourceUrl("issue-4-hero.png")}>
+      <Header
+        editable
+        background={
+          user.cover
+            ? getGdayPunchStaticUrl(user.cover)
+            : getGdayPunchResourceUrl("launch-background.png")
+        }
+      >
         <UserAvatar
           image={user.image}
-          author={user.username || user.email}
+          author={name}
           author_friends={author_friends}
           author_followers={author_followers}
           author_likes={author_likes}
@@ -76,7 +95,7 @@ function MyStall() {
               </div>
             </Tooltip>
           </div>
-          <div>
+          <div className="socials">
             <SocialButton type="primary">Follow</SocialButton>
             <SocialButton type="primary">Add Friend</SocialButton>
           </div>
