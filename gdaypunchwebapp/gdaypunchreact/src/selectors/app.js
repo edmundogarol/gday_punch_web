@@ -11,6 +11,9 @@ export const selectNavMinified = createSelector(
 
 export const selectUser = createSelector(selectDomain, ({ user }) => user);
 
+export const selectUserById = (id) =>
+  createSelector(selectDomain, ({ users: { list } }) => list[id]);
+
 export const selectLoginViewToggle = createSelector(
   selectDomain,
   ({ loginView }) => loginView

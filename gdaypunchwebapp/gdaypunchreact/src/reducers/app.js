@@ -33,6 +33,7 @@ import {
   UPDATE_CONTACT_FORM_ERRORS,
   UPDATE_CONTACT_FORM_SUBMITTED,
   TOGGLE_NAV_MINIFIED,
+  UPDATE_USERS,
 } from "actions/app";
 import {
   FETCHING_CART_ITEMS,
@@ -70,6 +71,8 @@ import { paymentReducer } from "./payment";
 import { ordersReducer } from "./orders";
 import { accountReducer } from "./account";
 import { resourcesReducer } from "./resources";
+import { extractProductUsers } from "utils/users";
+import { arrayIdsMapToObject } from "utils/utils";
 
 const INITIAL_STATE = {
   user: {
@@ -88,6 +91,10 @@ const INITIAL_STATE = {
     errors: undefined,
     updating: false,
     finished: false,
+  },
+
+  users: {
+    list: {},
   },
 
   navMinified: false,
@@ -320,6 +327,24 @@ const appReducer = (state = INITIAL_STATE, action) => {
         products: {
           ...state.products,
           productList: adding ? newProductList : payload.products,
+        },
+        users: {
+          ...state.users,
+          list: {
+            ...state.list,
+            ...extractProductUsers(adding ? newProductList : payload.products),
+          },
+        },
+      };
+    case UPDATE_USERS:
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            ...arrayIdsMapToObject(payload.users),
+          },
         },
       };
     case FETCHING_PRODUCTS:

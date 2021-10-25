@@ -122,35 +122,34 @@ export const SocialButton = styled(Button)`
   margin: 0.5em;
 `;
 
-export default function UserAvatar(props) {
-  const {
-    author,
-    author_id,
-    image,
-    author_likes,
-    author_friends,
-    author_followers,
-    following_author,
-    noPreview,
-  } = props;
+export default function UserAvatar({ author, noPreview }) {
+  const { id, name, image, likes, followers, friends, following } = author || {
+    id: undefined,
+    image: undefined,
+    likes: 0,
+    followers: 0,
+    friends: 0,
+    following: undefined,
+  };
 
   const user = useSelector(selectUser);
   const loggedIn = useSelector(selectLoggedIn);
   const dispatch = useDispatch();
 
   // FIXME Temporary before Add Friend is created as the button will remain visible for a while
-  const selfProfilePreview = user.id !== author_id;
+  const selfProfilePreview = user.id !== id;
 
+  const useImage = author ? image : user.image;
   const avatarRenderer = (preview) => (
     <UserAvatarComponent
       className="avatar"
       preview={preview}
       selfProfilePreview={selfProfilePreview}
       src={
-        image
-          ? image.includes("gdaypunch-static.s3.amazonaws")
-            ? image + `?${moment(moment.now()).format("YYMMDDhhmm")}`
-            : getGdayPunchStaticUrl(image) +
+        useImage
+          ? useImage.includes("gdaypunch-static.s3.amazonaws")
+            ? useImage + `?${moment(moment.now()).format("YYMMDDhhmm")}`
+            : getGdayPunchStaticUrl(useImage) +
               `?${moment(moment.now()).format("YYMMDDhhmm")}`
           : getGdayPunchResourceUrl("default-avatar.png")
       }
@@ -166,10 +165,10 @@ export default function UserAvatar(props) {
       );
     }
 
-    if (following_author) {
-      dispatch(unfollowUser(following_author));
+    if (following) {
+      dispatch(unfollowUser(following));
     } else {
-      dispatch(followUser(author_id));
+      dispatch(followUser(id));
     }
   };
 
@@ -177,36 +176,36 @@ export default function UserAvatar(props) {
     <PreviewContainer>
       {avatarRenderer(preview)}
       <div>
-        <p className="author">{author}</p>
+        <p className="author">{name}</p>
         <div className="stats-socials-container">
           <div className="stats">
             <Tooltip title="Friends (Coming Soon)">
               <div className="icon-amount-container coming-soon">
                 <UserAddOutlined className={`site-form-item-icon`} />
-                <span className="amount">{author_friends}</span>
+                <span className="amount">{friends}</span>
               </div>
             </Tooltip>
-            <Tooltip title={following_author ? "Following" : "Followers"}>
+            <Tooltip title={following ? "Following" : "Followers"}>
               <div
                 className={`icon-amount-container ${
-                  following_author ? "active-social-icon" : ""
+                  following ? "active-social-icon" : ""
                 }`}
-                onClick={() => (user.id !== author_id ? handleFollow() : null)}
+                onClick={() => (user.id !== id ? handleFollow() : null)}
               >
                 <TeamOutlined className="site-form-item-icon" />
-                <span className="amount">{author_followers}</span>
+                <span className="amount">{followers}</span>
               </div>
             </Tooltip>
             <Tooltip title="Manga Likes">
               <div className="icon-amount-container">
                 <LikeOutlined className="site-form-item-icon" />
-                <span className="amount">{author_likes}</span>
+                <span className="amount">{likes}</span>
               </div>
             </Tooltip>
           </div>
-          {user.id !== author_id ? (
+          {user.id !== id ? (
             <div className="socials">
-              {!following_author ? (
+              {!following ? (
                 <SocialButton type="primary" onClick={() => handleFollow()}>
                   Follow
                 </SocialButton>

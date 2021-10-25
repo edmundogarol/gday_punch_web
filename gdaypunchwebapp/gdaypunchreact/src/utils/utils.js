@@ -1,3 +1,6 @@
+/* eslint-disable no-useless-escape */
+/* eslint-disable no-undef */
+
 import { set } from "lodash";
 
 /**

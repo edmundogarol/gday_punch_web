@@ -1,11 +1,4 @@
-import {
-  call,
-  all,
-  takeLatest,
-  takeEvery,
-  select,
-  put,
-} from "redux-saga/effects";
+import { call, all, takeLatest, select, put } from "redux-saga/effects";
 import { message } from "antd";
 
 import {
@@ -24,7 +17,6 @@ import {
 import { api } from "utils/api";
 import { arrayIdsMapToObject } from "utils/utils";
 import { selectUser } from "src/selectors/app";
-import { ca } from "date-fns/locale";
 
 export function* fetchProductsCall(action) {
   const fetchedProducts = yield all(
@@ -64,7 +56,7 @@ export function* fetchViewingProductCall(action) {
   yield put(finishedFetchingViewingProduct());
 }
 
-export function* fetchAllProductsCall(addItems = false) {
+export function* fetchAllProductsCall() {
   yield put(fetchingProducts());
   const response = yield call(api, `products/`, {
     method: "GET",
@@ -93,7 +85,6 @@ export function* saveProductCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
     yield call(fetchAllProductsCall);
   } else {
     console.log("Product save error", JSON.stringify(response));
@@ -109,7 +100,6 @@ export function* unsaveProductCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
     yield call(fetchAllProductsCall);
   } else {
     console.log("Product save error", JSON.stringify(response));

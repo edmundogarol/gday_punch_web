@@ -1,4 +1,7 @@
 export const TOGGLE_NAV_MINIFIED = "app/TOGGLE_NAV_MINIFIED";
+
+export const UPDATE_USERS = "app/UPDATE_USERS";
+
 export const FETCH_PRODUCTS = "app/FETCH_PRODUCTS";
 export const FETCHING_PRODUCTS = "app/FETCHING_PRODUCTS";
 export const FINISHED_FETCHING_PRODUCTS = "app/FINISHED_FETCHING_PRODUCTS";
@@ -13,6 +16,13 @@ export const toggleNavMinified = (minified) => ({
   type: TOGGLE_NAV_MINIFIED,
   payload: {
     minified,
+  },
+});
+
+export const updateUsers = (users) => ({
+  type: UPDATE_USERS,
+  payload: {
+    users,
   },
 });
 

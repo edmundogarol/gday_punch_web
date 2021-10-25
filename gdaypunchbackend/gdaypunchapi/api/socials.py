@@ -49,14 +49,35 @@ class FollowViewSet(ModelViewSet):
             )
             follow.save()
 
-            return Response({"detail": "Successfully followed user."})
+            return Response(
+                {
+                    "id": to_follow.id,
+                    "name": to_follow.author_name,
+                    "image": to_follow.image.name,
+                    "likes": to_follow.total_manga_likes,
+                    "friends": to_follow.friends,
+                    "followers": to_follow.followers,
+                    "following": to_follow.following,
+                }
+            )
 
     def destroy(self, request, *args, **kwargs):
         try:
             follow = Follow.objects.get(pk=kwargs.get("pk"))
+            was_following = follow.user
             follow.delete()
 
-            return Response({"detail": "Successfully unfollowed user."})
+            return Response(
+                {
+                    "id": was_following.id,
+                    "name": was_following.author_name,
+                    "image": was_following.image.name,
+                    "likes": was_following.total_manga_likes,
+                    "friends": was_following.friends,
+                    "followers": was_following.followers,
+                    "following": was_following.following,
+                }
+            )
 
         except Follow.DoesNotExist:
             return Response(
