@@ -367,7 +367,6 @@ class LikeViewSet(ModelViewSet):
         serializer = MangaSerializer(manga)
         return Response(serializer.data)
 
-    # TODO Implement Unlike
     def destroy(self, request, *args, **kwargs):
         try:
             like = Like.objects.get(pk=kwargs.get("pk"))

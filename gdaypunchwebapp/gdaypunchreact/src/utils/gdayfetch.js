@@ -67,6 +67,7 @@ export async function gdayfetch(url, params = {}) {
     return response;
   }
 
+  console.log({ response });
   if (response.ok && !responseContentType.startsWith(accept)) {
     console.warn(`Expected ${accept} got ${responseContentType}`);
     return {

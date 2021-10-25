@@ -57,19 +57,27 @@ function ProductTile(props) {
   const {
     id: mangaId,
     author,
+    author_id,
     comments,
     likes,
     user_likes,
     author_avatar,
     author_likes,
+    author_friends,
+    author_followers,
+    following_author,
   } = manga_details || {
     id: undefined,
+    author_id: undefined,
     author: undefined,
     author_avatar: undefined,
     author_likes: undefined,
     comments: undefined,
     likes: undefined,
     user_likes: undefined,
+    author_friends: 0,
+    author_followers: 0,
+    following_author: false,
   };
 
   const loggedIn = useSelector(selectLoggedIn);
@@ -190,9 +198,15 @@ function ProductTile(props) {
       {renderActionButton()}
       <ProductDetails>
         <UserAvatar
-          image={manga_details.id ? author_avatar : user_avatar}
+          author_id={author_id}
+          image={
+            manga_details && manga_details.id ? author_avatar : user_avatar
+          }
           author={author || creator}
           author_likes={author_likes}
+          author_followers={author_followers}
+          author_friends={author_friends}
+          following_author={following_author}
         />
         <ArtistActionsContainer>
           <ProductAuthor>{author || creator}</ProductAuthor>

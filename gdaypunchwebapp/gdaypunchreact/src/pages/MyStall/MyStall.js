@@ -88,7 +88,7 @@ function MyStall() {
                 <span className="amount">{author_followers}</span>
               </div>
             </Tooltip>
-            <Tooltip title="Total User Manga Likes">
+            <Tooltip title="Manga Likes">
               <div className="icon-amount-container">
                 <LikeOutlined className="site-form-item-icon" />
                 <span className="amount">{author_likes}</span>

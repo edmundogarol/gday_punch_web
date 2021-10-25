@@ -37,6 +37,11 @@ export const REQUESTING_EMAIL_VERIFICATION =
 export const REQUEST_EMAIL_VERIFICATION_FINISHED =
   "user/REQUEST_EMAIL_VERIFICATION_FINISHED";
 
+export const FOLLOW_USER = "user/FOLLOW_USER";
+export const UNFOLLOW_USER = "user/UNFOLLOW_USER";
+export const REQUEST_TO_ADD_FRIEND = "user/REQUEST_TO_ADD_FRIEND";
+export const UNFRIEND = "user/UNFRIEND";
+
 export const updateUser = (user) => ({
   type: UPDATE_USER,
   payload: {
@@ -218,5 +223,33 @@ export const requestEmailVerificationFinished = (errors) => ({
   type: REQUEST_EMAIL_VERIFICATION_FINISHED,
   payload: {
     errors,
+  },
+});
+
+export const followUser = (userId) => ({
+  type: FOLLOW_USER,
+  payload: {
+    userId,
+  },
+});
+
+export const unfollowUser = (followId) => ({
+  type: UNFOLLOW_USER,
+  payload: {
+    followId,
+  },
+});
+
+export const requestToAddFriend = (userId) => ({
+  type: REQUEST_TO_ADD_FRIEND,
+  payload: {
+    userId,
+  },
+});
+
+export const unfriend = (userId) => ({
+  type: UNFRIEND,
+  payload: {
+    userId,
   },
 });

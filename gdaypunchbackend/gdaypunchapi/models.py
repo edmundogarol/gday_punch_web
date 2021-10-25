@@ -148,6 +148,22 @@ class User(AbstractBaseUser, PermissionsMixin):
             return 0
 
     @property
+    def following(self):
+        current_user = User.objects.get(email=get_current_user())
+
+        follower = None
+        try:
+            follower = Follow.objects.filter(user=self.id).filter(
+                follower=current_user.id
+            )
+            if follower:
+                return follower.first().id
+            else:
+                return None
+        except Follow.DoesNotExist:
+            return None
+
+    @property
     def author_details(self):
         return {
             "name": self.author_name,
@@ -481,19 +497,35 @@ class Product(models.Model):
         mangas = self.manga.all()
 
         details = {}
-        for manga in mangas:
+
+        if mangas:
+            for manga in mangas:
+                details = {
+                    "id": manga.id,
+                    "title": manga.title,
+                    "author": manga.author.author_name,
+                    "author_id": manga.author.id,
+                    "author_avatar": manga.author.image.name,
+                    "author_likes": manga.author.total_manga_likes,
+                    "author_friends": manga.author.friends,
+                    "author_followers": manga.author.followers,
+                    "release_date": manga.release_date,
+                    "following_author": manga.author.following,
+                    "age_rating": manga.age_rating,
+                    "likes": manga.likes,
+                    "comments": manga.comments,
+                    "user_likes": manga.user_likes,
+                    "pdf_live": manga.pdf_live,
+                }
+        else:
             details = {
-                "id": manga.id,
-                "title": manga.title,
-                "author": manga.author.author_name,
-                "author_avatar": manga.author.image.name,
-                "author_likes": manga.author.total_manga_likes,
-                "release_date": manga.release_date,
-                "age_rating": manga.age_rating,
-                "likes": manga.likes,
-                "comments": manga.comments,
-                "user_likes": manga.user_likes,
-                "pdf_live": manga.pdf_live,
+                "author": self.user.author_name,
+                "author_id": self.user.id,
+                "author_avatar": self.user.image.name,
+                "author_likes": self.user.total_manga_likes,
+                "author_friends": self.user.friends,
+                "author_followers": self.user.followers,
+                "following_author": self.user.following,
             }
 
         return details
