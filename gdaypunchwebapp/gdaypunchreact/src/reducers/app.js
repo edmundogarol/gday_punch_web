@@ -71,7 +71,7 @@ import { paymentReducer } from "./payment";
 import { ordersReducer } from "./orders";
 import { accountReducer } from "./account";
 import { resourcesReducer } from "./resources";
-import { extractProductUsers } from "utils/users";
+import { extractCommentUsers, extractProductUsers } from "utils/users";
 import { arrayIdsMapToObject } from "utils/utils";
 
 const INITIAL_STATE = {
@@ -578,6 +578,13 @@ const appReducer = (state = INITIAL_STATE, action) => {
         reader: {
           ...state.reader,
           comments: payload.comments,
+        },
+        users: {
+          ...state.users,
+          list: {
+            ...state.list,
+            ...extractCommentUsers(payload.comments),
+          },
         },
       };
     case UPDATE_COMMENT:

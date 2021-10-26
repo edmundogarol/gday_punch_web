@@ -25,6 +25,11 @@ export function extractProductUsers(products) {
   return arrayIdsMapToObject(productAuthorsArray);
 }
 
+export function extractCommentUsers(comments) {
+  const commentsAuthorsArray = comments.map((comment) => comment.author);
+  return arrayIdsMapToObject(commentsAuthorsArray);
+}
+
 export function normaliseAuthorData(user) {
   if (!user) return;
   // Loggedin User
