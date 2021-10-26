@@ -98,10 +98,10 @@ function Stall() {
   const viewingUser = myStallView
     ? normaliseAuthorData(currentUser)
     : normaliseAuthorData(user) || initialUserStall;
-  const userProducts =
-    viewingUser && currentUser
-      ? useSelector(selectUserProducts(viewingUser.id))
-      : [];
+
+  const userProducts = viewingUser
+    ? useSelector(selectUserProducts(viewingUser.id))
+    : [];
 
   const [uploadingManga, updateUploadingManga] = useState(false);
   const [uploadingMangaData, updateUploadingMangaData] = useState(undefined);
