@@ -61,6 +61,7 @@ function Ui(props) {
     subscription_cancellation: "Cancel Subscription",
     unsubscribe: "Email Unsubscribe",
     bug_report: "Bug Report",
+    report: "Report",
   };
 
   return (

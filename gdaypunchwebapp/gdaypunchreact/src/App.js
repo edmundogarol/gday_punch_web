@@ -41,6 +41,7 @@ import Events from "pages/Events";
 import Vote from "pages/Vote";
 import OneShotSubmissions from "pages/OneShotSubmissions";
 import IllustrationSubmissions from "pages/IllustrationSubmissions";
+import UploadConditions from "pages/UploadConditions";
 import Downloads from "pages/ResourceDownloads";
 import ResetPassword from "pages/ResetPassword";
 import ResetPasswordNewPassword from "pages/ResetPassword/newPassword";
@@ -147,6 +148,12 @@ function Root(props) {
               component={SubmissionConditions}
             />
             <RoutePage exact path="/daily-prompt" component={DailyPrompt} />
+            <RoutePage
+              exact
+              path="/upload-conditions"
+              component={UploadConditions}
+              title="Upload Conditions"
+            />
             <RoutePage
               exact
               path="/one-shots"

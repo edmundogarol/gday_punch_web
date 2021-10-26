@@ -1,7 +1,101 @@
 import styled from "styled-components";
-import { Button } from "antd";
+import { Button, Modal } from "antd";
 import { device } from "utils/styles";
 import { SectionTitle } from "components/sectionTitle";
+
+export const MangaUploaderModal = styled(Modal)`
+  max-width: 72em;
+
+  .right-container {
+    display: flex;
+    flex-direction: column;
+    width: 20em;
+    width: 100%;
+    min-width: 20em;
+    height: 100%;
+
+    @media ${device.laptop} {
+      width: 47%;
+    }
+
+    .cover-preview {
+      padding: 2em;
+      border: 1px solid #d9d9d9;
+      margin-bottom: 1em;
+
+      canvas {
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .cover-title {
+        margin-bottom: 1em;
+      }
+
+      .react-pdf__Document {
+        margin-bottom: 1em;
+      }
+    }
+
+    .ant-picker-input {
+      height: 3em;
+    }
+    .ant-picker {
+      margin-bottom: 1em;
+    }
+
+    .ant-radio-wrapper {
+      height: max-content;
+      padding: 1em;
+      border: 1px solid #c5c5c5;
+      white-space: pre-wrap;
+      padding-top: 1em;
+      padding-bottom: 1em;
+    }
+  }
+
+  .ant-modal-body {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .details {
+    width: 100%;
+
+    @media ${device.laptop} {
+      width: 47%;
+      margin-right: 2em;
+    }
+
+    input {
+      margin-bottom: 1em;
+      height: 4em;
+    }
+
+    textarea {
+      padding: 1em;
+    }
+
+    .ant-input-textarea {
+      margin-bottom: 1em;
+    }
+
+    .ant-select {
+      width: 100%;
+      margin-bottom: 1em;
+
+      .ant-select-selector {
+        height: 4em;
+        padding: 1em;
+      }
+    }
+
+    .ql-container {
+      height: 19em;
+    }
+  }
+`;
 
 export const StallContainer = styled.div`
   .stats {

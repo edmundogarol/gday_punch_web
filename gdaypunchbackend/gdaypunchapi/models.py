@@ -1014,6 +1014,7 @@ class Contact(models.Model):
     SUBSCRIPTION_CANCELLATION = "subscription_cancellation"
     UNSUBSCRIBE = "unsubscribe"
     BUG_REPORT = "bug_report"
+    REPORT = "report"
     CONTACT_REASONS = (
         (GENERAL, "General"),
         (ORDER, "Order"),
@@ -1022,6 +1023,7 @@ class Contact(models.Model):
         (SUBSCRIPTION_CANCELLATION, "SubCancellation"),
         (UNSUBSCRIBE, "EmailUnsubscribe"),
         (BUG_REPORT, "Bug Report"),
+        (REPORT, "Report"),
     )
 
     name = models.TextField(max_length=50, blank=False)

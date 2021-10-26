@@ -1,9 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
-import { Tooltip, Skeleton, Upload } from "antd";
+import { NavLink, useParams } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import moment from "moment";
+import {
+  Tooltip,
+  Skeleton,
+  Upload,
+  message,
+  Input,
+  Button,
+  Slider,
+  Select,
+  DatePicker,
+  Radio,
+} from "antd";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
+import { Document } from "react-pdf/dist/entry.webpack";
+import { Page, pdfjs } from "react-pdf";
+const { Option } = Select;
+
 import {
   TeamOutlined,
   UserAddOutlined,
@@ -35,6 +53,7 @@ import {
   ProfileDetails,
   SocialButton,
   EmptySection,
+  MangaUploaderModal,
 } from "./styles";
 
 const initialUserStall = {
@@ -46,6 +65,8 @@ const initialUserStall = {
   followers: 0,
   friends: 0,
 };
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function Stall() {
   const { userId } = useParams();
@@ -63,6 +84,19 @@ function Stall() {
   const userProducts = viewingUser
     ? useSelector(selectUserProducts(viewingUser.id))
     : [];
+
+  const [uploadingManga, updateUploadingManga] = useState(false);
+  const [uploadingMangaData, updateUploadingMangaData] = useState(undefined);
+  const [coverPageNumber, updateCoverPageNumber] = useState(1);
+  const [uploadingDetails, updateUploadingDetails] = useState({
+    title: undefined,
+    description: undefined,
+    pages: undefined,
+    orientation: "japanese", // or "english"
+    age_rating: "teens", // all_ages, young_adults, adults
+    release_date: undefined,
+    cover: undefined,
+  });
 
   useScrollTop();
 
@@ -83,6 +117,32 @@ function Stall() {
     }
   }, [viewingUser]);
 
+  const getBase64 = (img, callback) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => callback(reader.result));
+    reader.readAsDataURL(img);
+  };
+
+  const beforeUpload = (file) => {
+    const isPdf = file.type === "application/pdf";
+    if (!isPdf) {
+      message.error("You can only upload a PDF file!");
+    }
+    const isLt40M = file.size / 1024 / 1024 < 40;
+    if (!isLt40M) {
+      message.error("PDF must smaller than 40MB!");
+    }
+    return isPdf && isLt40M;
+  };
+
+  const handleChange = (info) => {
+    getBase64(info.file.originFileObj, (mangaUrl) => {
+      updateUploadingMangaData(mangaUrl);
+      updateUploadingManga(true);
+    });
+  };
+
+  console.log({ uploadingDetails, uploadingManga });
   return (
     <StallContainer className="App">
       <Header
@@ -162,30 +222,188 @@ function Stall() {
             </div>
           )}
           {myStallView && userProducts.length ? (
-            <Upload
-              name="manga-uploader"
-              listType="picture-card"
-              className={classNames("manga-uploader", { editing: false })}
-              showUploadList={false}
-              openFileDialogOnClick={true}
-              customRequest={() => null}
-              // beforeUpload={beforeUpload}
-              // onChange={handleChange}
-              // onPreview={onPreview}
+            <div
+              onClick={() =>
+                uploadingMangaData ? updateUploadingManga(true) : null
+              }
             >
-              {/* <img
-                src={undefined}
-                alt="User Avatar"
-                style={{ width: "100%" }}
-              /> */}
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>
-            </Upload>
+              <Upload
+                disabled={!!uploadingMangaData}
+                name="manga-uploader"
+                listType="picture-card"
+                className={classNames("manga-uploader", { editing: false })}
+                showUploadList={false}
+                openFileDialogOnClick={true}
+                customRequest={() => null}
+                beforeUpload={beforeUpload}
+                onChange={handleChange}
+                // onPreview={onPreview}
+              >
+                {!uploadingMangaData ? (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                ) : (
+                  <div>
+                    <FileAddOutlined />
+                    <div style={{ marginTop: 8 }}>Adding Manga</div>
+                  </div>
+                )}
+              </Upload>
+            </div>
           ) : null}
         </FeaturedList>
       </FeaturedSection>
+      <MangaUploaderModal
+        width="80%"
+        title="Manga Uploader"
+        visible={uploadingManga}
+        closeable={false}
+        closeIcon={<div style={{ display: "none" }} />}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              updateUploadingManga(false);
+            }}
+          >
+            Cancel
+          </Button>,
+          <Button
+            disabled={!uploadingDetails.title}
+            type="primary"
+            key="save"
+            onClick={() => {
+              console.log(uploadingDetails);
+              console.log(
+                uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
+                  .currentSrc
+              );
+            }}
+          >
+            Upload
+          </Button>,
+        ]}
+      >
+        <div className="details">
+          <h4>Manga Title</h4>
+          <Input
+            placeholder="Enter Manga Title"
+            value={uploadingDetails.title}
+            onChange={(e) =>
+              updateUploadingDetails({
+                ...uploadingDetails,
+                title: e.target.value,
+              })
+            }
+          />
+          <h4>Description</h4>
+          <ReactQuill
+            theme="snow"
+            placeholder="Enter Manga description"
+            // value={uploadingDetails.description}
+            onChange={(val) => {
+              console.log(val);
+              updateUploadingDetails({
+                ...uploadingDetails,
+                description: val,
+              });
+            }}
+            style={{ minHeight: "300px" }}
+          />
+          <h4>Age Rating</h4>
+          <Select
+            defaultValue={"all_ages"}
+            value={uploadingDetails.age_rating}
+            onSelect={(val) =>
+              updateUploadingDetails({
+                ...uploadingDetails,
+                age_rating: val,
+              })
+            }
+          >
+            <Option value="all_ages">All Ages</Option>
+            <Option value="teens">Teens</Option>
+            <Option value="young_adults">Young Adults</Option>
+            <Option value="adults">Adults</Option>
+          </Select>
+          <h4>Reading Direction</h4>
+          <Select
+            defaultValue={"english"}
+            value={uploadingDetails.orientation}
+            onSelect={(val) =>
+              updateUploadingDetails({
+                ...uploadingDetails,
+                orientation: val,
+              })
+            }
+          >
+            <Option value="japanese">Japanese (Left to Right)</Option>
+            <Option value="english">English (Right to Left)</Option>
+          </Select>
+        </div>
+        <div className="right-container">
+          <div className="cover-preview">
+            <h4 className="cover-title">Cover Preview</h4>
+            <Document
+              style={{ width: "30em" }}
+              file={uploadingMangaData}
+              width={150}
+              options={{
+                rangeChunkSize: 2000000,
+              }}
+              onLoadSuccess={(success) => {
+                console.log({ success });
+                if (!uploadingDetails.pages) {
+                  updateUploadingDetails({
+                    ...uploadingDetails,
+                    pages: success._pdfInfo.numPages,
+                  });
+                }
+              }}
+            >
+              <Page
+                style={{ width: "10em" }}
+                loading={"Hang on! Loading page..."}
+                pageNumber={coverPageNumber}
+                width={150}
+                object-fit="fill"
+                onRenderSuccess={null}
+                size="A4"
+                onLoadSuccess={(success) => {
+                  updateUploadingDetails({
+                    ...uploadingDetails,
+                    cover: success.objs._objs,
+                  });
+                }}
+              />
+            </Document>
+            <Slider
+              min={1}
+              value={coverPageNumber}
+              defaultValue={1}
+              onChange={(val) => updateCoverPageNumber(val)}
+              max={uploadingDetails.pages}
+            />
+          </div>
+          <h4>Release Date</h4>
+          <DatePicker
+            value={uploadingDetails.release_date}
+            onChange={(val) =>
+              updateUploadingDetails({ ...uploadingDetails, release_date: val })
+            }
+          />
+          <h4>Upload Terms and Conditions</h4>
+          <Radio value="agree">
+            By checking and uploading, you are agreeing to our{" "}
+            <NavLink to="/upload-conditions" target="_blank">
+              Manga Upload Terms and Conditions
+            </NavLink>{" "}
+            to use our platform to share your manga.
+          </Radio>
+        </div>
+      </MangaUploaderModal>
     </StallContainer>
   );
 }
