@@ -44,7 +44,7 @@ export const MangaUploaderModal = styled(Modal)`
       margin-bottom: 1em;
     }
 
-    .ant-radio-wrapper {
+    .ant-checkbox-wrapper {
       height: max-content;
       padding: 1em;
       border: 1px solid #c5c5c5;

@@ -14,7 +14,7 @@ import {
   Slider,
   Select,
   DatePicker,
-  Radio,
+  Checkbox,
 } from "antd";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
@@ -96,6 +96,7 @@ function Stall() {
     age_rating: "teens", // all_ages, young_adults, adults
     release_date: undefined,
     cover: undefined,
+    agreeTerms: false,
   });
 
   useScrollTop();
@@ -271,7 +272,11 @@ function Stall() {
             Cancel
           </Button>,
           <Button
-            disabled={!uploadingDetails.title}
+            disabled={
+              !uploadingDetails.title ||
+              !uploadingDetails.description ||
+              !uploadingDetails.agreeTerms
+            }
             type="primary"
             key="save"
             onClick={() => {
@@ -395,13 +400,20 @@ function Stall() {
             }
           />
           <h4>Upload Terms and Conditions</h4>
-          <Radio value="agree">
+          <Checkbox
+            onChange={(e) =>
+              updateUploadingDetails({
+                ...uploadingDetails,
+                agreeTerms: e.target.checked,
+              })
+            }
+          >
             By checking and uploading, you are agreeing to our{" "}
             <NavLink to="/upload-conditions" target="_blank">
               Manga Upload Terms and Conditions
             </NavLink>{" "}
             to use our platform to share your manga.
-          </Radio>
+          </Checkbox>
         </div>
       </MangaUploaderModal>
     </StallContainer>
