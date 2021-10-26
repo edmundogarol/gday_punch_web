@@ -25,7 +25,7 @@ export function extractProductUsers(products) {
   return arrayIdsMapToObject(productAuthorsArray);
 }
 
-export function normaliseUserStallData(user) {
+export function normaliseAuthorData(user) {
   if (!user) return;
   // Loggedin User
   if (user.author_details) {

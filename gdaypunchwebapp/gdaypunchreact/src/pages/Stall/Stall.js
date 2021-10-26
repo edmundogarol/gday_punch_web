@@ -27,7 +27,7 @@ import {
   selectUserProducts,
 } from "selectors/app";
 import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
-import { normaliseUserStallData } from "utils/users";
+import { normaliseAuthorData } from "utils/users";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 import {
@@ -58,8 +58,8 @@ function Stall() {
 
   const myStallView = !userId;
   const viewingUser = myStallView
-    ? normaliseUserStallData(currentUser)
-    : normaliseUserStallData(user) || initialUserStall;
+    ? normaliseAuthorData(currentUser)
+    : normaliseAuthorData(user) || initialUserStall;
   const userProducts = viewingUser
     ? useSelector(selectUserProducts(viewingUser.id))
     : [];

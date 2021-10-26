@@ -31,6 +31,7 @@ import {
   CartNumber,
 } from "./styles";
 import { toggleNavMinified } from "actions/app";
+import { normaliseAuthorData } from "utils/users";
 
 const initialParentNavsState = {
   resources: false,
@@ -404,7 +405,7 @@ function Navigation(props) {
               $secondChildXOffset={!user.is_staff ? "2em" : "-1.5em"}
               $thirdChildXOffset={"5.5em"}
             >
-              <UserAvatar image={user.image} noPreview />
+              <UserAvatar author={normaliseAuthorData(user)} noPreview />
               <HeaderLink
                 className="child-nav first-child"
                 to="/my-stall"
