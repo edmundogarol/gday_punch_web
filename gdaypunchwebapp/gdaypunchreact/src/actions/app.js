@@ -26,8 +26,11 @@ export const updateUsers = (users) => ({
   },
 });
 
-export const fetchProducts = () => ({
+export const fetchProducts = (userId) => ({
   type: FETCH_PRODUCTS,
+  payload: {
+    userId,
+  },
 });
 
 export const fetchingProducts = () => ({

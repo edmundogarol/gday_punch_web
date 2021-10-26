@@ -98,7 +98,6 @@ class MangaSerializer(serializers.ModelSerializer):
             "title",
             "author",
             "pdf_live",
-            "cover",
             "likes",
             "user_likes",
             "comments",

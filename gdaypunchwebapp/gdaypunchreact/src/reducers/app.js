@@ -73,6 +73,7 @@ import { accountReducer } from "./account";
 import { resourcesReducer } from "./resources";
 import { extractCommentUsers, extractProductUsers } from "utils/users";
 import { arrayIdsMapToObject } from "utils/utils";
+import { stallReducer } from "./stall";
 
 const INITIAL_STATE = {
   user: {
@@ -582,7 +583,7 @@ const appReducer = (state = INITIAL_STATE, action) => {
         users: {
           ...state.users,
           list: {
-            ...state.list,
+            ...state.users.list,
             ...extractCommentUsers(payload.comments),
           },
         },
@@ -671,4 +672,5 @@ export default combineReducers({
   orders: ordersReducer,
   account: accountReducer,
   resources: resourcesReducer,
+  stall: stallReducer,
 });

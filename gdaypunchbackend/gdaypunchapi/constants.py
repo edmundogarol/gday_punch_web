@@ -26,6 +26,8 @@ USER_LIST_ORDER = (
     (BY_LAST_LOGIN, "By Last Login")
 )
 
+NO_SKU = "NO_SKU"
+
 # Product Types
 PHYSICAL = 'physical'
 DIGITAL = 'digital'

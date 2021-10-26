@@ -6,15 +6,12 @@ from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from ..constants import *
 from ..utils import AdminOnly
-from ..api_permissions import (
-    ProductPermissions, SavePermissions
-)
-from ..models import (
-    Settings, User, Product, StripePrice, Save
-)
+from ..api_permissions import ProductPermissions, SavePermissions
+from ..models import Settings, User, Product, StripePrice, Save, Manga
 from ..serializers import (
     ProductSerializer,
     StripePriceSerializer,
@@ -31,27 +28,47 @@ class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [ProductPermissions]
+    parser_classes = (MultiPartParser, FormParser)
 
     def create(self, request, *args, **kwargs):
         user = None
-        product_type = request.data['product_type']
+
+        if request.data.get("image", None):
+            parser_classes = (MultiPartParser, FormParser)
+
+        product_type = request.data.get("product_type", None)
+        sku = request.data.get("sku", NO_SKU)
+        active_price = request.data.get("active_price", 0)
+        manga = request.data.get("manga", None)
+        visible = request.data.get("visible", False)
+        stock = request.data.get("stock", 1)
+        sale_price = request.data.get("sale_price", 0)
+        stripe_prices = request.data.get("stripe_prices", [])
 
         if str(self.request.user) != "AnonymousUser":
             user = User.objects.get(email=self.request.user)
 
-        if not user.is_staff and (product_type == MAG_SUBSCRIPTION or product_type == DIG_SUBSCRIPTION):
+        if not user.is_staff and (
+            product_type == MAG_SUBSCRIPTION or product_type == DIG_SUBSCRIPTION
+        ):
             return Response(
-                {'error': 'Unauthorised to create this product'},
-                status=status.HTTP_401_UNAUTHORIZED
+                {"error": "Unauthorised to create this product"},
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        free = request.data['active_price'] == 0 or request.data['active_price'] == "" or None
-        use_existing_price = len(request.data['stripe_prices']) > 0
+        if sku and "GPMM" in sku and not user.is_staff:
+            return Response(
+                {"error": "SKU contains reserved combination 'GPMM'."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        free = active_price is None or active_price == 0 or active_price == ""
+        use_existing_price = len(active_price) > 0 if active_price else False
         create_stripe_price = not free and not use_existing_price
 
         if create_stripe_price:
             recurring = False
-            month_interval = request.data.get('month_interval')
+            month_interval = request.data.get("month_interval")
 
             # Subscription done manually through Admin portal (Per release)
             if product_type == SUBSCRIPTION:
@@ -63,61 +80,102 @@ class ProductViewSet(viewsets.ModelViewSet):
                 month_interval = 0
 
             stripe_price = stripe.Price.create(
-                unit_amount=int(float(request.data['active_price'])*100),
+                unit_amount=int(float(active_price) * 100),
                 currency="aud",
                 recurring={
                     "interval": "month",
                     "interval_count": month_interval if month_interval else 1,
-                } if recurring else None,
+                }
+                if recurring
+                else None,
                 product_data={
-                    "name": request.data['title'],
-                })
+                    "name": request.data["title"],
+                },
+            )
 
             stripe_product = stripe.Product.retrieve(stripe_price.product)
-            stripe.Product.modify(stripe_product.id, images=[
-                "https://gdaypunch-static.s3.us-west-2.amazonaws.com/" + request.data['image']])
+            stripe.Product.modify(
+                stripe_product.id,
+                images=[
+                    "https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com/"
+                    + request.data["image"]
+                ],
+            )
 
             new_stripe_price = StripePrice(
                 price_amount=(stripe_price.unit_amount / 100),
                 price_id=stripe_price.id,
-                price_title=request.data['title'],
+                price_title=request.data["title"],
                 price_type=RECURRING if recurring else ONE_TIME,
-                month_interval=month_interval
+                month_interval=month_interval,
             )
             new_stripe_price.save()
 
-        product = Product.objects.create(
-            description=request.data['description'],
-            title=request.data['title'],
-            image=request.data['image'],
-            sale_price=request.data['sale_price'],
-            visible=request.data['visible'],
-            stock=request.data['stock'],
-            sku=request.data['sku'],
-            product_type=product_type,
-            user=User.objects.get(email=self.request.user)
-        )
+        current_user = User.objects.get(email=self.request.user)
 
-        if create_stripe_price:
-            product.stripe_prices.add(new_stripe_price)
-        else:
-            product.stripe_prices.set(request.data['stripe_prices'])
+        try:
+            product = Product.objects.create(
+                description=request.data["description"],
+                title=request.data["title"],
+                image=request.data["image"],
+                sale_price=sale_price,
+                visible=True if manga else visible,
+                stock=1 if manga else stock,
+                sku=request.data["sku"],
+                product_type=product_type,
+                user=current_user,
+            )
 
-        product.save()
+            if manga:
+                manga = Manga.objects.create(
+                    author=current_user,
+                    title=request.data["title"],
+                    pdf=request.data["manga"],
+                    release_date=request.data["release_date"],
+                    age_rating=request.data["age_rating"],
+                    page_count=request.data["page_count"],
+                    japanese_reading=request.data["japanese_reading"] == "japanese",
+                )
 
-        serializer = ProductSerializer(product)
-        return Response(serializer.data)
+            product.manga.add(manga)
+            product.save()
+
+            if create_stripe_price:
+                stripe_product = stripe.Product.retrieve(stripe_price.product)
+                stripe.Product.modify(
+                    stripe_product.id,
+                    images=[product.image.name],
+                )
+
+            if create_stripe_price:
+                product.stripe_prices.add(new_stripe_price)
+            else:
+                product.stripe_prices.set(stripe_prices)
+
+            product.save()
+
+            serializer = ProductSerializer(product)
+            return Response(serializer.data)
+        except KeyError as e:
+            return Response(
+                {"error": "Missing {} field".format(e)},
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+            )
 
     def list(self, request, *args, **kwargs):
-        queryset = Product.objects.all().order_by('-id')
-        price_filter = request.query_params.get('price')
+        queryset = Product.objects.all().order_by("-id")
+        price_filter = request.query_params.get("price")
         user = None
+
+        user_id = request.query_params.get("stall")
 
         try:
             user = User.objects.get(email=self.request.user)
 
-            if user.privileges.filter(name="super").exists() or \
-                    user.privileges.filter(name="shop_tester").exists():
+            if (
+                user.privileges.filter(name="super").exists()
+                or user.privileges.filter(name="shop_tester").exists()
+            ):
                 serializer = ProductSerializer(queryset, many=True)
                 return Response(serializer.data)
 
@@ -131,7 +189,11 @@ class ProductViewSet(viewsets.ModelViewSet):
 
             for product in queryset:
                 if product.purchased:
-                    if product.product_type in [DIGITAL, DIG_SUBSCRIPTION, MAG_SUBSCRIPTION]:
+                    if product.product_type in [
+                        DIGITAL,
+                        DIG_SUBSCRIPTION,
+                        MAG_SUBSCRIPTION,
+                    ]:
                         visible_products.append(product)
                 elif product.active_price > 0:
                     pass
@@ -144,6 +206,12 @@ class ProductViewSet(viewsets.ModelViewSet):
         else:
             queryset = queryset.filter(visible=True)
 
+        if user_id:
+            user = User.objects.get(pk=user_id)
+            queryset = queryset.filter(user=user.id)
+        else:
+            pass
+
         serializer = ProductSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -152,7 +220,7 @@ class ProductSimpleListView(APIView):
     permission_classes = [AdminOnly]
 
     def get(self, request, format=None):
-        queryset = Product.objects.all().order_by('-id')
+        queryset = Product.objects.all().order_by("-id")
         queryset = queryset.filter(product_type=DIGITAL)
         serializer = ProductSimpleSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -163,23 +231,29 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         user = None
-        product_type = request.data['product_type']
-        month_interval = request.data.get('month_interval')
+        product_type = request.data["product_type"]
+        month_interval = request.data.get("month_interval")
 
         if str(self.request.user) != "AnonymousUser":
             user = User.objects.get(email=self.request.user)
 
-        if not user.is_staff and (product_type == MAG_SUBSCRIPTION or product_type == DIG_SUBSCRIPTION):
+        if not user.is_staff and (
+            product_type == MAG_SUBSCRIPTION or product_type == DIG_SUBSCRIPTION
+        ):
             return Response(
-                {'error': 'Unauthorised to create this product'},
-                status=status.HTTP_401_UNAUTHORIZED
+                {"error": "Unauthorised to create this product"},
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         queryset = Product.objects.all()
         product = queryset.get(pk=kwargs.get("pk"))
 
-        free = request.data['active_price'] == 0 or request.data['active_price'] == "" or None
-        use_existing_price = len(request.data['stripe_prices']) > 0
+        free = (
+            request.data["active_price"] == 0
+            or request.data["active_price"] == ""
+            or None
+        )
+        use_existing_price = len(request.data["stripe_prices"]) > 0
         create_stripe_price = not free and not use_existing_price
 
         if create_stripe_price:
@@ -193,30 +267,38 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
                 month_interval = 1
 
             stripe_price = stripe.Price.create(
-                unit_amount=int(float(request.data['active_price'])*100),
+                unit_amount=int(float(request.data["active_price"]) * 100),
                 currency="aud",
                 recurring={
                     "interval": "month",
                     "interval_count": month_interval if month_interval else 1,
-                } if recurring else None,
+                }
+                if recurring
+                else None,
                 product_data={
-                    "name": request.data['title'],
-                })
+                    "name": request.data["title"],
+                },
+            )
 
             stripe_product = stripe.Product.retrieve(stripe_price.product)
-            stripe.Product.modify(stripe_product.id, images=[
-                "https://gdaypunch-static.s3.us-west-2.amazonaws.com/" + request.data['image']])
+            stripe.Product.modify(
+                stripe_product.id,
+                images=[
+                    "https://gdaypunch-static.s3.us-west-2.amazonaws.com/"
+                    + request.data["image"]
+                ],
+            )
 
             new_stripe_price = StripePrice(
                 price_amount=(stripe_price.unit_amount / 100),
                 price_id=stripe_price.id,
-                price_title=request.data['title'],
+                price_title=request.data["title"],
                 price_type=RECURRING if recurring else ONE_TIME,
-                month_interval=month_interval
+                month_interval=month_interval,
             )
             new_stripe_price.save()
 
-            request.data['stripe_prices'] = [new_stripe_price.id]
+            request.data["stripe_prices"] = [new_stripe_price.id]
 
         for price in product.stripe_prices.all():
             if price.month_interval != month_interval:
@@ -224,8 +306,7 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
                 current_price.month_interval = month_interval
                 current_price.save()
 
-        serializer = ProductSerializer(
-            product, data=request.data, partial=True)
+        serializer = ProductSerializer(product, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)

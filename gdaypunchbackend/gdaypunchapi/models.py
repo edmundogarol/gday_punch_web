@@ -301,9 +301,8 @@ class Follow(models.Model):
 class Manga(models.Model):
     title = models.TextField(max_length=50, blank=False)
     author = models.ForeignKey(User, on_delete=models.PROTECT)
-    pdf = models.TextField(max_length=100, blank=True)
-    cover = models.TextField(max_length=100, blank=True)
-    release_date = models.DateTimeField(null=True, blank=True)
+    pdf = models.ImageField(upload_to="manga_pdf", null=True)
+    release_date = models.DateTimeField(default=timezone.now)
     page_count = models.IntegerField(blank=True, default=0)
     japanese_reading = models.BooleanField(default=True)
 
@@ -364,14 +363,14 @@ class Manga(models.Model):
 
         # Staff access
         if user and user.is_staff:
-            return self.pdf
+            return self.pdf.name
         else:
             # Temporary fix to keep pdf's live in gdaypunch.com
             if product.sku in ["GPMMD1", "GPMMD4"]:
-                return self.pdf
+                return self.pdf.name
 
             if product.active_price == 0:
-                return self.pdf
+                return self.pdf.name
 
             try:
                 if user:
@@ -381,9 +380,9 @@ class Manga(models.Model):
                     )
 
                     if customer.dig_subscribed and "GPMMD" in product.sku:
-                        return self.pdf
+                        return self.pdf.name
                     if purchase:
-                        return self.pdf
+                        return self.pdf.name
                 else:
                     return None
 
@@ -474,10 +473,10 @@ class StripePrice(models.Model):
 class Product(models.Model):
     description = models.TextField(max_length=1000, blank=True)
     title = models.TextField(max_length=70, blank=True, unique=True)
-    image = models.TextField(max_length=100, blank=True)
-    sale_price = models.FloatField(blank=True)
+    image = models.ImageField(upload_to="product_image", null=True)
+    sale_price = models.FloatField(blank=True, null=False, default=0)
     visible = models.BooleanField(default=False)
-    stock = models.IntegerField(blank=True)
+    stock = models.IntegerField(blank=True, default=1)
     product_type = models.TextField(
         max_length=30, choices=PRODUCT_TYPES, default=PHYSICAL
     )

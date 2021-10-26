@@ -43,7 +43,9 @@ import {
   selectUser,
   selectUserById,
   selectUserProducts,
+  selectUserStallView,
 } from "selectors/app";
+import { selectStallState } from "selectors/stall";
 import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
 import { normaliseAuthorData } from "utils/users";
 import { useScrollTop } from "utils/hooks/useScrollTop";
@@ -55,6 +57,7 @@ import {
   EmptySection,
   MangaUploaderModal,
 } from "./styles";
+import { uploadManga } from "actions/manga";
 
 const initialUserStall = {
   id: undefined,
@@ -66,50 +69,54 @@ const initialUserStall = {
   friends: 0,
 };
 
+const initialUploadState = {
+  title: undefined,
+  description: undefined,
+  pages: undefined,
+  orientation: "japanese", // or "english"
+  age_rating: "teens", // all_ages, young_adults, adults
+  release_date: undefined,
+  product_type: "digital",
+  cover: undefined,
+  agreeTerms: false,
+  sku: undefined,
+};
+
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 function Stall() {
   const { userId } = useParams();
-  const currentUser = useSelector(selectUser);
+  const currentUser = useSelector(selectUserStallView);
   const user = useSelector(selectUserById(userId));
   const buyableProducts = useSelector(selectBuyableProducts);
   const productsState = useSelector(selectProductsState);
   const { fetchingProducts, finishedFetchingProducts } = productsState;
+  const { uploading, uploadingFinished } = useSelector(selectStallState);
   const dispatch = useDispatch();
 
   const myStallView = !userId;
   const viewingUser = myStallView
     ? normaliseAuthorData(currentUser)
     : normaliseAuthorData(user) || initialUserStall;
-  const userProducts = viewingUser
-    ? useSelector(selectUserProducts(viewingUser.id))
-    : [];
+  const userProducts =
+    viewingUser && currentUser
+      ? useSelector(selectUserProducts(viewingUser.id))
+      : [];
 
   const [uploadingManga, updateUploadingManga] = useState(false);
   const [uploadingMangaData, updateUploadingMangaData] = useState(undefined);
   const [coverPageNumber, updateCoverPageNumber] = useState(1);
-  const [uploadingDetails, updateUploadingDetails] = useState({
-    title: undefined,
-    description: undefined,
-    pages: undefined,
-    orientation: "japanese", // or "english"
-    age_rating: "teens", // all_ages, young_adults, adults
-    release_date: undefined,
-    cover: undefined,
-    agreeTerms: false,
-  });
+  const [uploadingDetails, updateUploadingDetails] =
+    useState(initialUploadState);
 
   useScrollTop();
 
   useEffect(() => {
-    if (
-      isEmpty(buyableProducts) &&
-      !fetchingProducts &&
-      !finishedFetchingProducts
-    ) {
-      dispatch(fetchProducts());
+    if (!uploading && uploadingFinished) {
+      updateUploadingManga(false);
+      updateUploadingDetails(initialUploadState);
     }
-  }, [buyableProducts, fetchingProducts, finishedFetchingProducts]);
+  }, [uploading, uploadingFinished]);
 
   useEffect(() => {
     if (!myStallView && viewingUser?.name) {
@@ -117,6 +124,17 @@ function Stall() {
       document.title = title;
     }
   }, [viewingUser]);
+
+  useEffect(() => {
+    if (
+      isEmpty(buyableProducts) &&
+      !fetchingProducts &&
+      !finishedFetchingProducts
+    ) {
+      // dispatch(fetchProducts());
+      dispatch(fetchProducts(userId));
+    }
+  }, [buyableProducts, fetchingProducts, finishedFetchingProducts]);
 
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -143,7 +161,6 @@ function Stall() {
     });
   };
 
-  console.log({ uploadingDetails, uploadingManga });
   return (
     <StallContainer className="App">
       <Header
@@ -280,10 +297,28 @@ function Stall() {
             type="primary"
             key="save"
             onClick={() => {
-              console.log(uploadingDetails);
-              console.log(
-                uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
-                  .currentSrc
+              dispatch(
+                uploadManga(
+                  {
+                    title: uploadingDetails.title,
+                    description: uploadingDetails.description,
+                    sku: uploadingDetails.sku,
+                    release_date: uploadingDetails.release_date
+                      ? moment(uploadingDetails.release_date).format(
+                          "YYYY-MM-DDThh:mm"
+                        )
+                      : moment(new Date()).format("YYYY-MM-DDThh:mm"),
+                    age_rating: uploadingDetails.age_rating,
+                    page_count: uploadingDetails.pages,
+                    japanese_reading: uploadingDetails.orientation,
+                    product_type: uploadingDetails.product_type,
+                    manga: uploadingMangaData,
+                    image:
+                      uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`]
+                        .data.currentSrc,
+                  },
+                  history
+                )
               );
             }}
           >
@@ -344,9 +379,11 @@ function Stall() {
               })
             }
           >
-            <Option value="japanese">Japanese (Left to Right)</Option>
-            <Option value="english">English (Right to Left)</Option>
+            <Option value="japanese">Japanese (Right to Left)</Option>
+            <Option value="english">English (Left to Right)</Option>
           </Select>
+          <h4>Page Count</h4>
+          <Input value={uploadingDetails.pages} disabled />
         </div>
         <div className="right-container">
           <div className="cover-preview">
@@ -397,6 +434,18 @@ function Stall() {
             value={uploadingDetails.release_date}
             onChange={(val) =>
               updateUploadingDetails({ ...uploadingDetails, release_date: val })
+            }
+          />
+          <h4>SKU/Code</h4>
+          <Input
+            className="sku-input"
+            placeholder="Enter Manga SKU/Code"
+            value={uploadingDetails.sku}
+            onChange={(e) =>
+              updateUploadingDetails({
+                ...uploadingDetails,
+                sku: e.target.value.toUppecase(),
+              })
             }
           />
           <h4>Upload Terms and Conditions</h4>

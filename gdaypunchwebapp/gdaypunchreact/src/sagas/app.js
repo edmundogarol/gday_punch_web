@@ -96,6 +96,7 @@ export function* patchUser(action) {
     const blobFetch = yield call(fetch, action.payload.user.image);
     const blob = yield blobFetch.blob();
 
+    console.log({ blob });
     form_data = new FormData();
     form_data.append(
       "image",
