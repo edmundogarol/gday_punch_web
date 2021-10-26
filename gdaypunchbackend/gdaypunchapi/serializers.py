@@ -127,12 +127,9 @@ class CommentSerializer(serializers.ModelSerializer):
             "id",
             "content",
             "manga",
-            "user",
-            "user_avatar",
-            "user_username",
             "likes",
             "user_likes",
-            "user_manga_likes",
+            "author"
         )
 
 

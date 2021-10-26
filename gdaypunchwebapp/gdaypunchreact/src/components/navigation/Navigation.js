@@ -15,7 +15,7 @@ import {
 } from "selectors/app";
 import { closeRegistration, doLogout, openRegistration } from "actions/user";
 import { toggleSideCart } from "actions/cart";
-import UserAvatar from "components/userAvatar";
+import UserAvatar from "components/UserAvatar";
 
 import {
   NavigationContainer,
@@ -96,23 +96,22 @@ function Navigation(props) {
   useEffect(() => {
     if (location === "/downloads" || location === "/daily-prompt") {
       updateParentNavs({ ...initialParentNavsState, resources: true });
-    }
-    if (
+    } else if (
       location === "/one-shots" ||
       location === "/illustrations" ||
       location === "/vote"
     ) {
       updateParentNavs({ ...initialParentNavsState, submissions: true });
-    }
-    if (location === "/about" || location === "/events") {
+    } else if (location === "/about" || location === "/events") {
       updateParentNavs({ ...initialParentNavsState, about: true });
-    }
-    if (
+    } else if (
       location === "/my-stall" ||
       location === "/account" ||
       location.includes("/admin/")
     ) {
       updateParentNavs({ ...initialParentNavsState, account: true });
+    } else {
+      updateParentNavs({ ...initialParentNavsState });
     }
   }, [location]);
 

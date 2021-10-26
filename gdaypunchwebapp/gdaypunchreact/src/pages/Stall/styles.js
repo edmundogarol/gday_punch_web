@@ -3,7 +3,7 @@ import { Button } from "antd";
 import { device } from "utils/styles";
 import { SectionTitle } from "components/sectionTitle";
 
-export const MyStallContainer = styled.div`
+export const StallContainer = styled.div`
   .stats {
     display: flex;
   }
@@ -70,6 +70,14 @@ export const MyStallContainer = styled.div`
       width: 50em;
       margin: 1em;
     }
+  }
+
+  .manga-uploader {
+    margin: 20pt;
+    width: unset;
+    display: flex;
+    align-items: center;
+    height: 20em;
   }
 `;
 

@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink, withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Popover, Tooltip, Button } from "antd";
@@ -83,6 +84,14 @@ const PreviewContainer = styled.div`
 
   .author {
     margin-bottom: 0.5em;
+
+    a {
+      color: #2a2a2a;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   .active-social-icon {
@@ -122,15 +131,19 @@ export const SocialButton = styled(Button)`
   margin: 0.5em;
 `;
 
-export default function UserAvatar({ author, noPreview }) {
-  const { id, name, image, likes, followers, friends, following } = author || {
-    id: undefined,
-    image: undefined,
-    likes: 0,
-    followers: 0,
-    friends: 0,
-    following: undefined,
-  };
+export const initialAuthor = {
+  id: "",
+  name: "No Author",
+  cover: "",
+  image: "",
+  likes: 0,
+  followers: 0,
+  friends: 0,
+  following: false,
+};
+
+function UserAvatar({ author = initialAuthor, noPreview, history }) {
+  const { id, name, image, likes, followers, friends, following } = author;
 
   const user = useSelector(selectUser);
   const loggedIn = useSelector(selectLoggedIn);
@@ -159,9 +172,11 @@ export default function UserAvatar({ author, noPreview }) {
     if (!loggedIn) {
       scrollToTop();
       dispatch(openRegistration());
-      return dispatch(
+      dispatch(
         doSuggestRegister("Info: Sign up or Log in to follow this account!")
       );
+      history.push("/");
+      return;
     }
 
     if (following) {
@@ -175,7 +190,11 @@ export default function UserAvatar({ author, noPreview }) {
     <PreviewContainer>
       {avatarRenderer(preview)}
       <div>
-        <p className="author">{name}</p>
+        <p className="author">
+          <NavLink to={selfProfilePreview ? "/my-stall" : `/stall/${id}/`}>
+            {name}
+          </NavLink>
+        </p>
         <div className="stats-socials-container">
           <div className="stats">
             <Tooltip title="Friends (Coming Soon)">
@@ -230,3 +249,5 @@ export default function UserAvatar({ author, noPreview }) {
   }
   return <Popover content={content(true)}>{avatarRenderer(false)}</Popover>;
 }
+
+export default withRouter(UserAvatar);

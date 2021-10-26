@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { EditOutlined } from "@ant-design/icons";
 
 import { selectLoginViewToggle, selectNavMinified } from "selectors/app";
-import { UserAvatarComponent } from "./userAvatar";
+import { UserAvatarComponent } from "./UserAvatar";
 import { device } from "utils/styles";
 import { getResourceImage } from "utils/utils";
 

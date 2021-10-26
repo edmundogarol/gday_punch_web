@@ -119,6 +119,14 @@ export const selectSavedProducts = createSelector(
   }
 );
 
+export const selectUserProducts = (userId) =>
+  createSelector(selectDomain, ({ products: { productList } }) => {
+    const list = Object.values(productList).filter(
+      (product) => product.user === userId
+    );
+    return orderBy(list, "id", "desc");
+  });
+
 export const selectContactState = createSelector(
   selectDomain,
   ({ contact }) => contact

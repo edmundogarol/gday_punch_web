@@ -406,16 +406,16 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
 
     @property
-    def user_username(self):
-        return self.user.username if self.user.username else self.user.email
-
-    @property
-    def user_avatar(self):
-        return self.user.image.name
-
-    @property
-    def user_manga_likes(self):
-        return self.user.total_manga_likes
+    def author(self):
+        return {
+            "id": self.user.id,
+            "name": self.user.author_name,
+            "image": self.user.image.name,
+            "likes": self.user.total_manga_likes,
+            "friends": self.user.friends,
+            "followers": self.user.followers,
+            "following": self.user.following,
+        }
 
     @property
     def likes(self):

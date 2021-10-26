@@ -97,7 +97,7 @@ const INITIAL_STATE = {
     list: {},
   },
 
-  navMinified: false,
+  navMinified: true,
 
   emailVerification: {
     verifying: false,

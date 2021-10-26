@@ -18,7 +18,7 @@ import LoadingSpinner from "components/loadingSpinner";
 import { ReaderContainer, LikeButton } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 import { getGdayPunchStaticUrl } from "utils/utils";
-import UserAvatar from "components/userAvatar";
+import UserAvatar from "components/UserAvatar";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -232,12 +232,8 @@ function Ui(props) {
           <div className="comments-container">
             {comments.map((comment) => (
               <div className="comment" key={comment.id}>
-                <UserAvatar
-                  image={comment.user_avatar}
-                  author={comment.user_username}
-                  author_likes={comment.user_manga_likes}
-                />
-                <div className="author">{comment.user_username}</div>
+                <UserAvatar author={comment.author} />
+                <div className="author">{comment.author.name}</div>
                 <div className="content">{comment.content}</div>
                 <LikeButton
                   onClick={() =>

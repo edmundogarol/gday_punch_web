@@ -24,3 +24,16 @@ export function extractProductUsers(products) {
   );
   return arrayIdsMapToObject(productAuthorsArray);
 }
+
+export function normaliseUserStallData(user) {
+  if (!user) return;
+  // Loggedin User
+  if (user.author_details) {
+    return {
+      ...user.author_details,
+      cover: user.cover,
+    };
+  }
+  // Fetched User public data
+  return user;
+}

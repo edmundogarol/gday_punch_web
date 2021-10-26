@@ -53,7 +53,7 @@ import OrderConfirmation from "pages/OrderConfirmation";
 import ProductDetail from "pages/ProductDetail";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
-import MyStall from "pages/MyStall/MyStall";
+import Stall from "pages/Stall/Stall";
 
 import Navigation from "components/Navigation/Navigation";
 import RoutePage from "components/routePage";
@@ -96,7 +96,7 @@ const store = createStore(
 sagaMiddleware.run(rootSaga);
 
 function Root(props) {
-  const { user } = props;
+  const { user, loginCheckFinished } = props;
 
   useEffect(() => {
     props.checkLogin();
@@ -164,14 +164,19 @@ function Root(props) {
             <RoutePage exact path="/downloads" component={Downloads} />
             <RoutePage exact path="/cart" component={Cart} />
             <RoutePage exact path="/checkout" component={Checkout} />
-            <RoutePage
+            <ProtectedRoute
               exact
               path="/my-stall"
-              component={MyStall}
+              component={Stall}
               title="My Stall"
               condition={user.logged_in}
             />
-            <RoutePage exact path="/stall/:user" component={MyStall} />
+            <RoutePage
+              exact
+              path="/stall/:userId"
+              titleSetInside
+              component={Stall}
+            />
             <RoutePage
               exact
               path="/forgot-password"

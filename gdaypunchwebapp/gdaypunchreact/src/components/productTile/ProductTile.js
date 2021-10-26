@@ -6,7 +6,7 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import { CommentOutlined, BookOutlined } from "@ant-design/icons";
 import { Badge, Tooltip } from "antd";
 
-import UserAvatar from "components/userAvatar";
+import UserAvatar, { initialAuthor } from "components/UserAvatar";
 import { doLikeManga, unlikeManga } from "actions/manga";
 import { doSuggestRegister, openRegistration } from "actions/user";
 import { updateCartItemQuantity } from "actions/cart";
@@ -37,8 +37,28 @@ import {
   ArtistActionsContainer,
 } from "./styles";
 
+const initialProduct = {
+  id: "",
+  title: "",
+  image: "",
+  active_price: 0,
+  product_type: "",
+  quantity: 0,
+  purchased: false,
+  saved: false,
+  saves: 0,
+  visible: true,
+  manga_details: {
+    id: "",
+    author_id: "",
+    comments: 0,
+    likes: 0,
+    user_likes: false,
+  },
+};
+
 function ProductTile(props) {
-  const { history, product } = props;
+  const { history, product = initialProduct } = props;
   const { manga_details } = product;
   const {
     id,
@@ -52,22 +72,10 @@ function ProductTile(props) {
     saves,
     visible,
   } = product;
-  const {
-    id: mangaId,
-    author_id,
-    comments,
-    likes,
-    user_likes,
-  } = manga_details || {
-    id: undefined,
-    author_id: undefined,
-    comments: undefined,
-    likes: undefined,
-    user_likes: undefined,
-  };
+  const { id: mangaId, author_id, comments, likes, user_likes } = manga_details;
 
   const loggedIn = useSelector(selectLoggedIn);
-  const author = useSelector(selectUserById(author_id));
+  const author = useSelector(selectUserById(author_id)) || initialAuthor;
   const dispatch = useDispatch();
 
   const perma_link = generatePermaLink(product);
@@ -91,7 +99,6 @@ function ProductTile(props) {
       dispatch(doLikeManga(mangaId, false));
     } else {
       dispatch(unlikeManga(user_likes));
-      // Implement Unlike Manga
     }
   };
 
