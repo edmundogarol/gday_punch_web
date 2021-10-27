@@ -14,7 +14,17 @@ from ..constants import *
 from ..utils import AdminOnly
 from ..model_utils import create_default_sku
 from ..api_permissions import ProductPermissions, SavePermissions
-from ..models import Settings, User, Product, StripePrice, Save, Manga
+from ..models import (
+    Settings,
+    User,
+    Product,
+    StripePrice,
+    Save,
+    Manga,
+    Like,
+    Comment,
+    CommentLike,
+)
 from ..serializers import (
     ProductSerializer,
     StripePriceSerializer,
@@ -189,6 +199,40 @@ class ProductViewSet(viewsets.ModelViewSet):
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            product = Product.objects.get(pk=kwargs.get("pk"))
+        except Product.DoesNotExist:
+            return Response(
+                {"error": "Product does not exist."}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        for manga in product.manga.all():
+            manga = Manga.objects.get(id=manga.id)
+
+            likes = Like.objects.all().filter(manga=manga.id)
+            for like in likes:
+                like.delete()
+
+            comments = Comment.objects.all().filter(manga=manga.id)
+            for comment in comments:
+
+                commentLikes = CommentLike.objects.all().filter(comment=comment.id)
+                for comLike in commentLikes:
+                    comLike.delete()
+
+                comment.delete()
+
+            manga.pdf.delete()
+            manga.delete()
+
+        product.image_store.delete()
+        product.delete()
+
+        return Response(
+            {"success": "Product deleted."}, status=status.HTTP_202_ACCEPTED
+        )
 
     def list(self, request, *args, **kwargs):
         queryset = Product.objects.all().order_by("-id")

@@ -34,6 +34,7 @@ import {
   UPDATE_CONTACT_FORM_SUBMITTED,
   TOGGLE_NAV_MINIFIED,
   UPDATE_USERS,
+  FETCHED_ALL_PRODUCTS,
 } from "actions/app";
 import {
   FETCHING_CART_ITEMS,
@@ -126,6 +127,7 @@ const INITIAL_STATE = {
 
   products: {
     productList: {},
+    fetchedAll: false,
     fetchingProducts: false,
     finishedFetchingProducts: false,
     viewingProduct: undefined,
@@ -346,6 +348,14 @@ const appReducer = (state = INITIAL_STATE, action) => {
             ...state.users.list,
             ...arrayIdsMapToObject(payload.users),
           },
+        },
+      };
+    case FETCHED_ALL_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchedAll: true,
         },
       };
     case FETCHING_PRODUCTS:

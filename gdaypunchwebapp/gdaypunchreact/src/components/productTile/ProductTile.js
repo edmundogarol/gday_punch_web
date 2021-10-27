@@ -1,10 +1,10 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
+import { withRouter, NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { CommentOutlined, BookOutlined } from "@ant-design/icons";
-import { Badge, Tooltip } from "antd";
+import { CommentOutlined, BookOutlined, MoreOutlined } from "@ant-design/icons";
+import { Badge, Tooltip, Popover } from "antd";
 
 import UserAvatar, { initialAuthor } from "components/UserAvatar";
 import { doLikeManga, unlikeManga } from "actions/manga";
@@ -15,7 +15,7 @@ import {
   setViewingProduct,
   unsaveProduct,
 } from "actions/products";
-import { selectLoggedIn, selectUserById } from "selectors/app";
+import { selectLoggedIn, selectUser, selectUserById } from "selectors/app";
 import {
   generatePermaLink,
   getGdayPunchStaticUrl,
@@ -35,6 +35,7 @@ import {
   LikeCommentConainer,
   LowStock,
   ArtistActionsContainer,
+  TilePopover,
 } from "./styles";
 
 const initialProduct = {
@@ -58,7 +59,13 @@ const initialProduct = {
 };
 
 function ProductTile(props) {
-  const { history, product = initialProduct } = props;
+  const {
+    history,
+    product = initialProduct,
+    editable,
+    editCallback,
+    deleteCallback,
+  } = props;
   const { manga_details } = product;
   const {
     id,
@@ -75,6 +82,7 @@ function ProductTile(props) {
   const { id: mangaId, author_id, comments, likes, user_likes } = manga_details;
 
   const loggedIn = useSelector(selectLoggedIn);
+  const user = useSelector(selectUser);
   const author = useSelector(selectUserById(author_id)) || initialAuthor;
   const dispatch = useDispatch();
 
@@ -82,6 +90,8 @@ function ProductTile(props) {
   const buyableProduct = active_price && active_price > 0;
   const digitalProduct = product_type !== "physical";
   const purchasedDigital = purchased && digitalProduct;
+
+  const selfProfilePreview = product.user === user.id;
 
   const handleAddToCart = () => {
     dispatch(updateCartItemQuantity(id, 1, true));
@@ -190,10 +200,56 @@ function ProductTile(props) {
         </a>
       </BadgeWrapper>
       {renderActionButton()}
+      {editable && (
+        <Popover
+          placement="rightTop"
+          title={product.name}
+          content={
+            <TilePopover>
+              <Tooltip title="Not yet available.">
+                <button
+                  disabled
+                  className="pop-over-button coming-soon"
+                  onClick={() =>
+                    editCallback({
+                      ...product,
+                      ...manga_details,
+                      id: product.id,
+                    })
+                  }
+                >
+                  Edit
+                </button>
+              </Tooltip>
+              <button
+                className="pop-over-button"
+                onClick={() =>
+                  deleteCallback({
+                    ...product,
+                    ...manga_details,
+                    id: product.id,
+                  })
+                }
+              >
+                Delete
+              </button>
+            </TilePopover>
+          }
+          trigger="click"
+        >
+          <MoreOutlined />
+        </Popover>
+      )}
       <ProductDetails>
         <UserAvatar author={author} />
         <ArtistActionsContainer>
-          <ProductAuthor>{author.name}</ProductAuthor>
+          <ProductAuthor>
+            <NavLink
+              to={selfProfilePreview ? "/my-stall" : `/stall/${product.user}/`}
+            >
+              {author.name}
+            </NavLink>
+          </ProductAuthor>
           <PriceLikeCommentConainer>
             {buyableProduct ? (
               purchasedDigital ? (

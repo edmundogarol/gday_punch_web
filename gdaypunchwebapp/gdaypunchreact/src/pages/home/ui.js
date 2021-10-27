@@ -1,5 +1,8 @@
 import React, { useEffect } from "react";
 import { isEmpty } from "lodash";
+import { NavLink } from "react-router-dom";
+
+import { ReadOutlined } from "@ant-design/icons";
 
 import Header from "components/header";
 import Login from "components/login";
@@ -9,12 +12,12 @@ import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
 
-import { App } from "./styles";
+import { App, BrowseMore } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 function Ui(props) {
   const {
-    products: { fetchingProducts, finishedFetchingProducts },
+    products: { fetchingProducts, finishedFetchingProducts, fetchedAll },
     buyableProducts,
     freeProducts,
     fetchProducts,
@@ -24,13 +27,14 @@ function Ui(props) {
 
   useEffect(() => {
     if (
-      isEmpty(buyableProducts) &&
-      !fetchingProducts &&
-      !finishedFetchingProducts
+      (isEmpty(buyableProducts) &&
+        !fetchingProducts &&
+        !finishedFetchingProducts) ||
+      (!fetchedAll && !fetchingProducts)
     ) {
       fetchProducts();
     }
-  }, [buyableProducts, fetchingProducts, finishedFetchingProducts]);
+  }, [fetchedAll, buyableProducts, fetchingProducts, finishedFetchingProducts]);
 
   return (
     <App id="top" className="App">
@@ -54,13 +58,19 @@ function Ui(props) {
       )}
       {!isEmpty(freeProducts) && (
         <FeaturedSection id="manga" idx={2}>
-          <SectionTitle>Free Manga</SectionTitle>
+          <SectionTitle>Latest Free Manga</SectionTitle>
           <FeaturedList>
             {freeProducts.map((manga) => {
               return manga ? (
                 <ProductTile key={manga.id} product={manga} />
               ) : null;
             })}
+            <BrowseMore>
+              <NavLink to="/shop">
+                <h4>Browse More</h4>
+                <ReadOutlined />
+              </NavLink>
+            </BrowseMore>
           </FeaturedList>
         </FeaturedSection>
       )}

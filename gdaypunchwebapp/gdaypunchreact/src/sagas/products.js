@@ -5,7 +5,9 @@ import {
   FETCH_PRODUCTS,
   updateProducts,
   fetchingProducts,
+  fetchedAllProducts,
   finishedFetchingProducts,
+  fetchProducts,
 } from "actions/app";
 import {
   FETCH_VIEWING_PRODUCT,
@@ -13,6 +15,7 @@ import {
   finishedFetchingViewingProduct,
   SAVE_PRODUCT,
   UNSAVE_PRODUCT,
+  DELETE_PRODUCT,
 } from "actions/products";
 import { api } from "utils/api";
 import { arrayIdsMapToObject } from "utils/utils";
@@ -73,6 +76,9 @@ export function* fetchAllProductsCall(action) {
 
     yield put(updateProducts(arrayIdsMapToObject(data)));
     yield put(finishedFetchingProducts());
+    if (!action?.payload?.userId) {
+      yield put(fetchedAllProducts());
+    }
   } else {
     console.log("All Products fetch error", JSON.stringify(response));
     yield put(finishedFetchingProducts());
@@ -115,11 +121,27 @@ export function* unsaveProductCall(action) {
   }
 }
 
+export function* deleteProductCall(action) {
+  const response = yield call(api, `products/${action.payload.product.id}/`, {
+    method: "DELETE",
+  });
+
+  if (response && response.ok) {
+    yield put(fetchProducts(action.payload.product.user));
+  } else {
+    console.log("Product delete error", JSON.stringify(response));
+    message.error(
+      "There was a problem with trying to delete this manga. Try again later."
+    );
+  }
+}
+
 export default function* productSaga() {
   yield all([
     takeLatest(FETCH_PRODUCTS, fetchAllProductsCall),
     takeLatest(FETCH_VIEWING_PRODUCT, fetchViewingProductCall),
     takeLatest(SAVE_PRODUCT, saveProductCall),
     takeLatest(UNSAVE_PRODUCT, unsaveProductCall),
+    takeLatest(DELETE_PRODUCT, deleteProductCall),
   ]);
 }

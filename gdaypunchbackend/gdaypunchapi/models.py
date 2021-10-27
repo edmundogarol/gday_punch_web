@@ -524,6 +524,8 @@ class Product(models.Model):
                     "release_date": manga.release_date,
                     "following_author": manga.author.following,
                     "age_rating": manga.age_rating,
+                    "page_count": manga.page_count,
+                    "orientation": "japanese" if manga.japanese_reading else "english",
                     "likes": manga.likes,
                     "comments": manga.comments,
                     "user_likes": manga.user_likes,

@@ -6,6 +6,7 @@ export const FETCH_PRODUCTS = "app/FETCH_PRODUCTS";
 export const FETCHING_PRODUCTS = "app/FETCHING_PRODUCTS";
 export const FINISHED_FETCHING_PRODUCTS = "app/FINISHED_FETCHING_PRODUCTS";
 export const UPDATE_PRODUCTS = "app/UPDATE_PRODUCTS";
+export const FETCHED_ALL_PRODUCTS = "app/FETCHED_ALL_PRODUCTS";
 
 export const SUBMIT_CONTACT_FORM = "app/SUBMIT_CONTACT_FORM";
 export const UPDATE_CONTACT_FORM_ERRORS = "app/UPDATE_CONTACT_FORM_ERRORS";
@@ -26,11 +27,16 @@ export const updateUsers = (users) => ({
   },
 });
 
-export const fetchProducts = (userId) => ({
+export const fetchProducts = (userId, all) => ({
   type: FETCH_PRODUCTS,
   payload: {
     userId,
+    all,
   },
+});
+
+export const fetchedAllProducts = () => ({
+  type: FETCHED_ALL_PRODUCTS,
 });
 
 export const fetchingProducts = () => ({

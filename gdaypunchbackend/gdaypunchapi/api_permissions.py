@@ -233,7 +233,7 @@ class ProductPermissions(BasePermission):
                 return product.visible
             except Product.DoesNotExist:
                 return True
-        elif view.action in ["update", "partial_update"]:
+        elif view.action in ["update", "partial_update", "destroy"]:
             if request.user.is_authenticated:
                 try:
                     product = Product.objects.get(id=product_id)

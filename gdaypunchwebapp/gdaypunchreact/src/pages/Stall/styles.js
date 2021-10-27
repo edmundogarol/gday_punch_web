@@ -157,6 +157,29 @@ export const ConfirmUploadSummary = styled.div`
   .capitalize {
     text-transform: capitalize;
   }
+
+  position: relative;
+
+  .ant-spin {
+    position: absolute;
+    display: flex;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    align-items: center;
+    width: 100%;
+    justify-content: center;
+    height: 100%;
+    z-index: 2;
+    background: #ffffff87;
+
+    .ant-icon,
+    .ant-spin-dot,
+    .anticon-spin {
+      height: 4em;
+      width: 4em;
+    }
+  }
 `;
 
 export const StallContainer = styled.div`
@@ -234,6 +257,12 @@ export const StallContainer = styled.div`
     display: flex;
     align-items: center;
     height: 20em;
+  }
+
+  .ant-skeleton-for-tiles {
+    width: 10em;
+    height: 10em;
+    margin: 2em;
   }
 `;
 

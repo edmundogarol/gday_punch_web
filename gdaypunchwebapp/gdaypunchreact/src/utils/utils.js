@@ -13,10 +13,6 @@ export function getResourceImage(resource) {
 }
 
 export function getGdayPunchStaticUrl(asset) {
-  if (asset.includes("http://") || asset.includes("https://")) {
-    return asset;
-  }
-
   let staticURL =
     process.env.NODE_ENV === "development"
       ? "/static"
@@ -26,10 +22,6 @@ export function getGdayPunchStaticUrl(asset) {
 }
 
 export function getGdayPunchResourceUrl(asset) {
-  if (asset.includes("http://") || asset.includes("https://")) {
-    return asset;
-  }
-
   let staticURL =
     process.env.NODE_ENV === "development"
       ? "/static"

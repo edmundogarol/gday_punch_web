@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import Image from "components/image";
+import { Popover } from "antd";
 
 export const ProductTileContainer = styled.div`
   margin: 20pt;
@@ -8,6 +9,7 @@ export const ProductTileContainer = styled.div`
   align-items: center;
   text-align: start;
   min-width: 19em;
+  position: relative;
 
   a {
     width: 100%;
@@ -47,6 +49,57 @@ export const ProductTileContainer = styled.div`
       margin: unset;
     }
   }
+
+  .anticon-more {
+    position: absolute;
+    right: 0;
+    padding: 0.2em;
+
+    svg {
+      height: 1.5em;
+      width: 1.5em;
+    }
+
+    &:hover {
+      cursor: pointer;
+      transform: scale(1.2);
+    }
+  }
+`;
+
+export const TilePopover = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 10em;
+
+  .coming-soon {
+    color: #adadad;
+  }
+
+  .pop-over-button,
+  button {
+    padding: 0.5em;
+    width: 100%;
+    background: transparent;
+    border: none;
+
+    &:hover {
+      cursor: pointer;
+      background: #e5e5e5;
+    }
+
+    &:active {
+      cursor: pointer;
+      background: #a4a4a4;
+    }
+  }
+  button {
+    padding: unset;
+  }
+
+  .pop-over-button:nth-of-type(1) {
+    border-bottom: 1px solid #c3c3c3;
+  }
 `;
 
 export const ProductImage = styled(Image)`
@@ -65,6 +118,14 @@ export const ProductAuthor = styled.h4`
   margin: unset;
   max-width: 12em;
   white-space: nowrap;
+
+  a {
+    font-size: 1.1em;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 export const ProductDetails = styled.div`

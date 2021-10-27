@@ -9,7 +9,7 @@ import { fetchProducts as fetchProductsAction } from "actions/app";
 import {
   selectLoggedIn,
   selectBuyableProducts,
-  selectFreeProducts,
+  selectLatestFreeProducts,
   selectProductsState,
 } from "selectors/app";
 
@@ -17,7 +17,7 @@ const mapState = createStructuredSelector({
   loggedIn: selectLoggedIn,
   products: selectProductsState,
   buyableProducts: selectBuyableProducts,
-  freeProducts: selectFreeProducts,
+  freeProducts: selectLatestFreeProducts,
 });
 
 const mapDispatch = {

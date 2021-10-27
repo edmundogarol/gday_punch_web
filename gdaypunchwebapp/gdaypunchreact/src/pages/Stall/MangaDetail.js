@@ -1,0 +1,398 @@
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { NavLink } from "react-router-dom";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
+import { Document } from "react-pdf/dist/entry.webpack";
+import { Page, pdfjs } from "react-pdf";
+import moment from "moment";
+import {
+  message,
+  Input,
+  Button,
+  Slider,
+  Select,
+  DatePicker,
+  Checkbox,
+  Alert,
+  Modal,
+} from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
+const { Option } = Select;
+const { confirm } = Modal;
+
+import LoadingSpinner from "components/loadingSpinner";
+import { selectStallState } from "selectors/stall";
+import {
+  skuValidator,
+  descriptionValidator,
+  titleValidator,
+  removeHtml,
+} from "utils/utils";
+
+import { MangaUploaderModal, ConfirmUploadSummary } from "./styles";
+import { uploadManga, uploadingMangaError } from "actions/manga";
+
+const initialUploadState = {
+  title: undefined,
+  description: undefined,
+  pages: undefined,
+  orientation: "japanese", // or "english"
+  age_rating: "teens", // all_ages, young_adults, adults
+  release_date: moment().format(),
+  product_type: "digital",
+  cover: undefined,
+  agreeTerms: false,
+  sku: undefined,
+};
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+
+function MangaDetail({
+  editingManga,
+  uploadingManga,
+  updateUploadingManga,
+  uploadingMangaData,
+  coverPageNumber,
+  updateCoverPageNumber,
+  uploadingDetails,
+  updateUploadingDetails,
+}) {
+  const { uploading, uploadingFinished, uploadingErrors } =
+    useSelector(selectStallState);
+  // const [editingMangaDetails, updateEditingMangaDetails] = useState(
+  //   updateUploadingDetails
+  // );
+  const dispatch = useDispatch();
+
+  // const usingProduct = editingManga
+  //   ? editingMangaDetails
+  //   : updateUploadingDetails;
+
+  useEffect(() => {
+    if (!uploading && uploadingFinished) {
+      updateUploadingDetails(initialUploadState);
+      updateUploadingManga(false);
+    }
+  }, [uploading, uploadingFinished]);
+
+  const confirmBeforeUpload = () => {
+    confirm({
+      title: `Confirm Manga Upload`,
+      icon: <ExclamationCircleOutlined />,
+      okText: "Confirm",
+      content: (
+        <ConfirmUploadSummary>
+          <h4>{uploadingDetails.title}</h4>
+          <img
+            src={
+              uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
+                .currentSrc
+            }
+          />
+          <div className="summary-item">
+            <h4>{"Description"}</h4>
+            <p>
+              {removeHtml(
+                uploadingDetails.description.substring(0, 100)
+              ).substring(0, 90) + "..."}
+            </p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Reading Direction"}</h4>
+            <p className="capitalize">{uploadingDetails.orientation}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Age Rating"}</h4>
+            <p className="capitalize">{uploadingDetails.age_rating}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"SKU"}</h4>
+            <p>{uploadingDetails.sku}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Release Date"}</h4>
+            <p>{moment(uploadingDetails.release_date).format("LLL")}</p>
+          </div>
+        </ConfirmUploadSummary>
+      ),
+      onOk() {
+        dispatch(
+          uploadManga(
+            {
+              title: uploadingDetails.title,
+              description: uploadingDetails.description,
+              sku: uploadingDetails.sku,
+              release_date: uploadingDetails.release_date
+                ? moment(uploadingDetails.release_date).format(
+                    "YYYY-MM-DDThh:mm"
+                  )
+                : moment(new Date()).format("YYYY-MM-DDThh:mm"),
+              age_rating: uploadingDetails.age_rating,
+              page_count: uploadingDetails.pages,
+              japanese_reading: uploadingDetails.orientation,
+              product_type: uploadingDetails.product_type,
+              manga: uploadingMangaData,
+              image:
+                uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
+                  .currentSrc,
+            },
+            history
+          )
+        );
+      },
+      onCancel() {},
+    });
+  };
+
+  const handleUpload = () => {
+    const skuValid = skuValidator(uploadingDetails.sku);
+    const descriptionValid = descriptionValidator(uploadingDetails.description);
+    const titleValid = titleValidator(uploadingDetails.title);
+
+    // Client validators
+    if (!skuValid) {
+      message.error("Invalid SKU format.");
+      dispatch(
+        uploadingMangaError({
+          sku: "Invalid SKU format. Must be letters, numbers and underscores only.",
+        })
+      );
+    } else {
+      dispatch(
+        uploadingMangaError({
+          sku: undefined,
+        })
+      );
+    }
+
+    if (!descriptionValid) {
+      message.error("Description too short");
+      dispatch(
+        uploadingMangaError({
+          description: "Please provide a longer description.",
+        })
+      );
+    } else {
+      dispatch(
+        uploadingMangaError({
+          description: undefined,
+        })
+      );
+    }
+
+    if (!titleValid) {
+      message.error("Title must not be empty.");
+      dispatch(
+        uploadingMangaError({
+          title: "Title must not be empty",
+        })
+      );
+    } else {
+      dispatch(
+        uploadingMangaError({
+          title: undefined,
+        })
+      );
+    }
+
+    if (titleValid && descriptionValid && skuValid) {
+      confirmBeforeUpload();
+    }
+  };
+
+  return (
+    <MangaUploaderModal
+      width="80%"
+      title="Manga Uploader"
+      visible={uploadingManga || editingManga}
+      closeable={false}
+      closeIcon={<div style={{ display: "none" }} />}
+      footer={[
+        <Button
+          key="cancel"
+          onClick={() => {
+            updateUploadingManga(false);
+          }}
+        >
+          Cancel
+        </Button>,
+        <Button
+          loading={uploading}
+          disabled={
+            !uploadingDetails.title ||
+            !uploadingDetails.description ||
+            !uploadingDetails.agreeTerms
+          }
+          type="primary"
+          key="save"
+          onClick={() => handleUpload()}
+        >
+          Upload
+        </Button>,
+      ]}
+    >
+      {uploading && <LoadingSpinner />}
+      <div className="details">
+        <h4>Manga Title</h4>
+        <Input
+          placeholder="Enter Manga Title"
+          value={uploadingDetails.title}
+          onChange={(e) =>
+            updateUploadingDetails({
+              ...uploadingDetails,
+              title: e.target.value,
+            })
+          }
+        />
+        {uploadingErrors?.title && (
+          <Alert
+            className="invalid-message"
+            message={uploadingErrors?.title}
+            type="error"
+          />
+        )}
+        <h4>Description</h4>
+        <ReactQuill
+          theme="snow"
+          placeholder="Enter Manga description"
+          defaultValue={uploadingDetails.description}
+          onChange={(val) => {
+            updateUploadingDetails({
+              ...uploadingDetails,
+              description: val,
+            });
+          }}
+          style={{ minHeight: "300px" }}
+        />
+        {uploadingErrors?.description && (
+          <Alert
+            className="invalid-message"
+            message={uploadingErrors?.description}
+            type="error"
+          />
+        )}
+        <h4>Age Rating</h4>
+        <Select
+          defaultValue={"all_ages"}
+          value={uploadingDetails.age_rating}
+          onSelect={(val) =>
+            updateUploadingDetails({
+              ...uploadingDetails,
+              age_rating: val,
+            })
+          }
+        >
+          <Option value="all_ages">All Ages</Option>
+          <Option value="teens">Teens</Option>
+          <Option value="young_adults">Young Adults</Option>
+          <Option value="adults">Adults</Option>
+        </Select>
+        <h4>Reading Direction</h4>
+        <Select
+          defaultValue={"english"}
+          value={uploadingDetails.orientation}
+          onSelect={(val) =>
+            updateUploadingDetails({
+              ...uploadingDetails,
+              orientation: val,
+            })
+          }
+        >
+          <Option value="japanese">Japanese (Right to Left)</Option>
+          <Option value="english">English (Left to Right)</Option>
+        </Select>
+        <h4>Page Count</h4>
+        <Input value={uploadingDetails.pages} disabled />
+      </div>
+      <div className="right-container">
+        <div className="cover-preview">
+          <h4 className="cover-title">Cover Preview</h4>
+          <Document
+            style={{ width: "30em" }}
+            file={uploadingMangaData}
+            width={150}
+            options={{
+              rangeChunkSize: 2000000,
+            }}
+            onLoadSuccess={(success) => {
+              if (!uploadingDetails.pages) {
+                updateUploadingDetails({
+                  ...uploadingDetails,
+                  pages: success._pdfInfo.numPages,
+                });
+              }
+            }}
+          >
+            <Page
+              style={{ width: "10em" }}
+              loading={"Hang on! Loading page..."}
+              pageNumber={coverPageNumber}
+              width={150}
+              object-fit="fill"
+              onRenderSuccess={null}
+              size="A4"
+              onLoadSuccess={(success) => {
+                updateUploadingDetails({
+                  ...uploadingDetails,
+                  cover: success.objs._objs,
+                });
+              }}
+            />
+          </Document>
+          <Slider
+            min={1}
+            value={coverPageNumber}
+            defaultValue={1}
+            onChange={(val) => updateCoverPageNumber(val)}
+            max={uploadingDetails.pages}
+          />
+        </div>
+        <h4>Release Date</h4>
+        <DatePicker
+          defaultValue={moment(uploadingDetails.release_date)}
+          selected={moment(uploadingDetails.release_date)}
+          onChange={(val) =>
+            updateUploadingDetails({ ...uploadingDetails, release_date: val })
+          }
+        />
+        <h4>SKU/Code</h4>
+        <Input
+          className="sku-input"
+          placeholder="Enter Manga SKU/Code"
+          value={uploadingDetails.sku}
+          onChange={(e) =>
+            updateUploadingDetails({
+              ...uploadingDetails,
+              sku: e.target.value.toUpperCase(),
+            })
+          }
+        />
+        {uploadingErrors?.sku && (
+          <Alert
+            className="invalid-message"
+            message={uploadingErrors?.sku}
+            type="error"
+          />
+        )}
+        <h4>Upload Terms and Conditions</h4>
+        <Checkbox
+          onChange={(e) =>
+            updateUploadingDetails({
+              ...uploadingDetails,
+              agreeTerms: e.target.checked,
+            })
+          }
+        >
+          By checking and uploading, you are agreeing to our{" "}
+          <NavLink to="/upload-conditions" target="_blank">
+            Manga Upload Terms and Conditions
+          </NavLink>{" "}
+          to use our platform to share your manga.
+        </Checkbox>
+      </div>
+    </MangaUploaderModal>
+  );
+}
+
+export default MangaDetail;

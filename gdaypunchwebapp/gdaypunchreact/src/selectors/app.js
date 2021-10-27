@@ -106,6 +106,16 @@ export const selectFreeProducts = createSelector(
   }
 );
 
+export const selectLatestFreeProducts = createSelector(
+  selectDomain,
+  ({ products: { productList } }) => {
+    const list = Object.values(productList).filter(
+      (product) => product.active_price === 0
+    );
+    return orderBy(list, "id", "desc").slice(0, 5);
+  }
+);
+
 export const selectPurchasedDigitalProducts = createSelector(
   selectDomain,
   ({ products: { productList } }) => {
