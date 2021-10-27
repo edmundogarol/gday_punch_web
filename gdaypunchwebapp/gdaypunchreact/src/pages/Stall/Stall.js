@@ -451,7 +451,6 @@ function Stall() {
             placeholder="Enter Manga description"
             // value={uploadingDetails.description}
             onChange={(val) => {
-              console.log(val);
               updateUploadingDetails({
                 ...uploadingDetails,
                 description: val,
@@ -510,7 +509,6 @@ function Stall() {
                 rangeChunkSize: 2000000,
               }}
               onLoadSuccess={(success) => {
-                console.log({ success });
                 if (!uploadingDetails.pages) {
                   updateUploadingDetails({
                     ...uploadingDetails,
