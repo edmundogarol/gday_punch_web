@@ -225,7 +225,7 @@ class ProductPermissions(BasePermission):
 
         if staff(request):
             return True
-        elif view.action in ["list"]:
+        elif view.action in ["create", "list"]:
             return True
         elif view.action in ["retrieve"]:
             try:

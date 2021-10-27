@@ -3,6 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { NavLink, useParams } from "react-router-dom";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import { isEmpty } from "lodash";
+import classNames from "classnames";
+import { Document } from "react-pdf/dist/entry.webpack";
+import { Page, pdfjs } from "react-pdf";
 import moment from "moment";
 import {
   Tooltip,
@@ -15,20 +19,19 @@ import {
   Select,
   DatePicker,
   Checkbox,
+  Alert,
+  Modal,
 } from "antd";
-import { isEmpty } from "lodash";
-import classNames from "classnames";
-import { Document } from "react-pdf/dist/entry.webpack";
-import { Page, pdfjs } from "react-pdf";
-const { Option } = Select;
-
 import {
   TeamOutlined,
   UserAddOutlined,
   LikeOutlined,
   FileAddOutlined,
   PlusOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
+const { Option } = Select;
+const { confirm } = Modal;
 
 import Header from "components/header";
 import ProductTile from "components/ProductTile/ProductTile";
@@ -36,17 +39,24 @@ import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
 import UserAvatar from "components/UserAvatar";
+import LoadingSpinner from "components/loadingSpinner";
 import { fetchProducts } from "actions/app";
 import {
   selectBuyableProducts,
   selectProductsState,
-  selectUser,
   selectUserById,
   selectUserProducts,
   selectUserStallView,
 } from "selectors/app";
 import { selectStallState } from "selectors/stall";
-import { getGdayPunchResourceUrl, getGdayPunchStaticUrl } from "utils/utils";
+import {
+  getGdayPunchResourceUrl,
+  getGdayPunchStaticUrl,
+  skuValidator,
+  descriptionValidator,
+  titleValidator,
+  removeHtml,
+} from "utils/utils";
 import { normaliseAuthorData } from "utils/users";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
@@ -54,10 +64,10 @@ import {
   StallContainer,
   ProfileDetails,
   SocialButton,
-  EmptySection,
   MangaUploaderModal,
+  ConfirmUploadSummary,
 } from "./styles";
-import { uploadManga } from "actions/manga";
+import { uploadManga, uploadingMangaError } from "actions/manga";
 
 const initialUserStall = {
   id: undefined,
@@ -75,7 +85,7 @@ const initialUploadState = {
   pages: undefined,
   orientation: "japanese", // or "english"
   age_rating: "teens", // all_ages, young_adults, adults
-  release_date: undefined,
+  release_date: moment().format(),
   product_type: "digital",
   cover: undefined,
   agreeTerms: false,
@@ -91,7 +101,8 @@ function Stall() {
   const buyableProducts = useSelector(selectBuyableProducts);
   const productsState = useSelector(selectProductsState);
   const { fetchingProducts, finishedFetchingProducts } = productsState;
-  const { uploading, uploadingFinished } = useSelector(selectStallState);
+  const { uploading, uploadingFinished, uploadingErrors } =
+    useSelector(selectStallState);
   const dispatch = useDispatch();
 
   const myStallView = !userId;
@@ -99,9 +110,9 @@ function Stall() {
     ? normaliseAuthorData(currentUser)
     : normaliseAuthorData(user) || initialUserStall;
 
-  const userProducts = viewingUser
-    ? useSelector(selectUserProducts(viewingUser.id))
-    : [];
+  const userProducts = myStallView
+    ? useSelector(selectUserProducts(currentUser.id))
+    : useSelector(selectUserProducts(userId));
 
   const [uploadingManga, updateUploadingManga] = useState(false);
   const [uploadingMangaData, updateUploadingMangaData] = useState(undefined);
@@ -113,8 +124,8 @@ function Stall() {
 
   useEffect(() => {
     if (!uploading && uploadingFinished) {
-      updateUploadingManga(false);
       updateUploadingDetails(initialUploadState);
+      updateUploadingManga(false);
     }
   }, [uploading, uploadingFinished]);
 
@@ -159,6 +170,130 @@ function Stall() {
       updateUploadingMangaData(mangaUrl);
       updateUploadingManga(true);
     });
+  };
+
+  const confirmBeforeUpload = () => {
+    confirm({
+      title: `Confirm Manga Upload`,
+      icon: <ExclamationCircleOutlined />,
+      content: (
+        <ConfirmUploadSummary>
+          <h4>{uploadingDetails.title}</h4>
+          <img
+            src={
+              uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
+                .currentSrc
+            }
+          />
+          <div className="summary-item">
+            <h4>{"Description"}</h4>
+            <p>
+              {removeHtml(
+                uploadingDetails.description.substring(0, 100)
+              ).substring(0, 90) + "..."}
+            </p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Reading Direction"}</h4>
+            <p className="capitalize">{uploadingDetails.orientation}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Age Rating"}</h4>
+            <p className="capitalize">{uploadingDetails.age_rating}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"SKU"}</h4>
+            <p>{uploadingDetails.sku}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Release Date"}</h4>
+            <p>{moment(uploadingDetails.release_date).format("LLL")}</p>
+          </div>
+        </ConfirmUploadSummary>
+      ),
+      onOk() {
+        dispatch(
+          uploadManga(
+            {
+              title: uploadingDetails.title,
+              description: uploadingDetails.description,
+              sku: uploadingDetails.sku,
+              release_date: uploadingDetails.release_date
+                ? moment(uploadingDetails.release_date).format(
+                    "YYYY-MM-DDThh:mm"
+                  )
+                : moment(new Date()).format("YYYY-MM-DDThh:mm"),
+              age_rating: uploadingDetails.age_rating,
+              page_count: uploadingDetails.pages,
+              japanese_reading: uploadingDetails.orientation,
+              product_type: uploadingDetails.product_type,
+              manga: uploadingMangaData,
+              image:
+                uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
+                  .currentSrc,
+            },
+            history
+          )
+        );
+      },
+      onCancel() {},
+    });
+  };
+
+  const handleUpload = () => {
+    const skuValid = skuValidator(uploadingDetails.sku);
+    const descriptionValid = descriptionValidator(uploadingDetails.description);
+    const titleValid = titleValidator(uploadingDetails.title);
+
+    // Client validators
+    if (!skuValid) {
+      message.error("Invalid SKU format.");
+      dispatch(
+        uploadingMangaError({
+          sku: "Invalid SKU format. Must be letters, numbers and underscores only.",
+        })
+      );
+    } else {
+      dispatch(
+        uploadingMangaError({
+          sku: undefined,
+        })
+      );
+    }
+
+    if (!descriptionValid) {
+      message.error("Description too short");
+      dispatch(
+        uploadingMangaError({
+          description: "Please provide a longer description.",
+        })
+      );
+    } else {
+      dispatch(
+        uploadingMangaError({
+          description: undefined,
+        })
+      );
+    }
+
+    if (!titleValid) {
+      message.error("Title must not be empty.");
+      dispatch(
+        uploadingMangaError({
+          title: "Title must not be empty",
+        })
+      );
+    } else {
+      dispatch(
+        uploadingMangaError({
+          title: undefined,
+        })
+      );
+    }
+
+    if (titleValid && descriptionValid && skuValid) {
+      confirmBeforeUpload();
+    }
   };
 
   return (
@@ -226,20 +361,7 @@ function Stall() {
               />
             ) : null;
           })}
-          {userProducts.length ? null : (
-            <div className="empty-section">
-              <EmptySection>
-                <h4>No Manga</h4>
-                {myStallView ? (
-                  <div>
-                    <h2 onClick={() => alert("Upload Manga")}>Upload Now</h2>
-                    <FileAddOutlined className="site-form-item-icon" />
-                  </div>
-                ) : null}
-              </EmptySection>
-            </div>
-          )}
-          {myStallView && userProducts.length ? (
+          {myStallView ? (
             <div
               onClick={() =>
                 uploadingMangaData ? updateUploadingManga(true) : null
@@ -289,6 +411,7 @@ function Stall() {
             Cancel
           </Button>,
           <Button
+            loading={uploading}
             disabled={
               !uploadingDetails.title ||
               !uploadingDetails.description ||
@@ -296,36 +419,13 @@ function Stall() {
             }
             type="primary"
             key="save"
-            onClick={() => {
-              dispatch(
-                uploadManga(
-                  {
-                    title: uploadingDetails.title,
-                    description: uploadingDetails.description,
-                    sku: uploadingDetails.sku,
-                    release_date: uploadingDetails.release_date
-                      ? moment(uploadingDetails.release_date).format(
-                          "YYYY-MM-DDThh:mm"
-                        )
-                      : moment(new Date()).format("YYYY-MM-DDThh:mm"),
-                    age_rating: uploadingDetails.age_rating,
-                    page_count: uploadingDetails.pages,
-                    japanese_reading: uploadingDetails.orientation,
-                    product_type: uploadingDetails.product_type,
-                    manga: uploadingMangaData,
-                    image:
-                      uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`]
-                        .data.currentSrc,
-                  },
-                  history
-                )
-              );
-            }}
+            onClick={() => handleUpload()}
           >
             Upload
           </Button>,
         ]}
       >
+        {uploading && <LoadingSpinner />}
         <div className="details">
           <h4>Manga Title</h4>
           <Input
@@ -338,6 +438,13 @@ function Stall() {
               })
             }
           />
+          {uploadingErrors?.title && (
+            <Alert
+              className="invalid-message"
+              message={uploadingErrors?.title}
+              type="error"
+            />
+          )}
           <h4>Description</h4>
           <ReactQuill
             theme="snow"
@@ -352,6 +459,13 @@ function Stall() {
             }}
             style={{ minHeight: "300px" }}
           />
+          {uploadingErrors?.description && (
+            <Alert
+              className="invalid-message"
+              message={uploadingErrors?.description}
+              type="error"
+            />
+          )}
           <h4>Age Rating</h4>
           <Select
             defaultValue={"all_ages"}
@@ -431,7 +545,8 @@ function Stall() {
           </div>
           <h4>Release Date</h4>
           <DatePicker
-            value={uploadingDetails.release_date}
+            defaultValue={moment(uploadingDetails.release_date)}
+            selected={moment(uploadingDetails.release_date)}
             onChange={(val) =>
               updateUploadingDetails({ ...uploadingDetails, release_date: val })
             }
@@ -444,10 +559,17 @@ function Stall() {
             onChange={(e) =>
               updateUploadingDetails({
                 ...uploadingDetails,
-                sku: e.target.value.toUppecase(),
+                sku: e.target.value.toUpperCase(),
               })
             }
           />
+          {uploadingErrors?.sku && (
+            <Alert
+              className="invalid-message"
+              message={uploadingErrors?.sku}
+              type="error"
+            />
+          )}
           <h4>Upload Terms and Conditions</h4>
           <Checkbox
             onChange={(e) =>

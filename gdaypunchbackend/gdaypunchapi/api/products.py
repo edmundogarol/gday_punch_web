@@ -1,6 +1,8 @@
 import os
 import stripe
 
+from django.db.utils import IntegrityError
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
@@ -10,6 +12,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 
 from ..constants import *
 from ..utils import AdminOnly
+from ..model_utils import create_default_sku
 from ..api_permissions import ProductPermissions, SavePermissions
 from ..models import Settings, User, Product, StripePrice, Save, Manga
 from ..serializers import (
@@ -37,7 +40,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             parser_classes = (MultiPartParser, FormParser)
 
         product_type = request.data.get("product_type", None)
-        sku = request.data.get("sku", NO_SKU)
+        sku = request.data.get("sku", None)
         active_price = request.data.get("active_price", 0)
         manga = request.data.get("manga", None)
         visible = request.data.get("visible", False)
@@ -58,7 +61,9 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         if sku and "GPMM" in sku and not user.is_staff:
             return Response(
-                {"error": "SKU contains reserved combination 'GPMM'."},
+                {
+                    "sku": "SKU contains a reserved combination 'GPMM'. Remove this and try again."
+                },
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
@@ -117,11 +122,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             product = Product.objects.create(
                 description=request.data["description"],
                 title=request.data["title"],
-                image=request.data["image"],
+                image_store=request.data["image"],
                 sale_price=sale_price,
                 visible=True if manga else visible,
                 stock=1 if manga else stock,
-                sku=request.data["sku"],
+                sku=sku if sku else create_default_sku(),
                 product_type=product_type,
                 user=current_user,
             )
@@ -156,10 +161,33 @@ class ProductViewSet(viewsets.ModelViewSet):
 
             serializer = ProductSerializer(product)
             return Response(serializer.data)
+
         except KeyError as e:
             return Response(
                 {"error": "Missing {} field".format(e)},
                 status=status.HTTP_406_NOT_ACCEPTABLE,
+            )
+        except IntegrityError as e:
+            if "(title)" in str(e):
+                return Response(
+                    {
+                        "title": "Manga or Product with this title already exists. Try a different title"
+                    },
+                    status=status.HTTP_406_NOT_ACCEPTABLE,
+                )
+            elif "(sku)" in str(e):
+                return Response(
+                    {
+                        "sku": "Manga or Product with this sku already exists. Try a different sku"
+                    },
+                    status=status.HTTP_406_NOT_ACCEPTABLE,
+                )
+        except:
+            return Response(
+                {
+                    "error": "Something went wrong. Please check your upload details and try again."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
 
     def list(self, request, *args, **kwargs):

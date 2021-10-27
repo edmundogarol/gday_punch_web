@@ -132,6 +132,7 @@ export function* patchUser(action) {
     yield put(updateUser(user));
     yield put(updatingUserFinished());
     message.success(`Successfully updated profile`);
+    yield put(updateUserError(undefined));
   } else {
     console.log("Update user details error", JSON.stringify(response));
     yield put(updatingUserFinished());

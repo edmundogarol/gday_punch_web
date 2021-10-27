@@ -26,6 +26,7 @@ from django_currentuser.db.models import CurrentUserField
 
 from .constants import *
 from .utils import get_readable_date_time
+from .model_utils import create_default_sku
 
 
 class Settings(models.Model):
@@ -473,7 +474,7 @@ class StripePrice(models.Model):
 class Product(models.Model):
     description = models.TextField(max_length=1000, blank=True)
     title = models.TextField(max_length=70, blank=True, unique=True)
-    image = models.ImageField(upload_to="product_image", null=True)
+    image_store = models.ImageField(upload_to="product_image", null=True)
     sale_price = models.FloatField(blank=True, null=False, default=0)
     visible = models.BooleanField(default=False)
     stock = models.IntegerField(blank=True, default=1)
@@ -482,9 +483,15 @@ class Product(models.Model):
     )
     stripe_prices = models.ManyToManyField(StripePrice, blank=True)
     created_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
-    sku = models.TextField(max_length=30, blank=True)
+    sku = models.TextField(
+        max_length=30, blank=True, unique=True, default=create_default_sku
+    )
     manga = models.ManyToManyField(Manga, blank=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
+
+    @property
+    def image(self):
+        return self.image_store.name
 
     @property
     def active_price(self):

@@ -13,6 +13,10 @@ export function getResourceImage(resource) {
 }
 
 export function getGdayPunchStaticUrl(asset) {
+  if (asset.includes("http://") || asset.includes("https://")) {
+    return asset;
+  }
+
   let staticURL =
     process.env.NODE_ENV === "development"
       ? "/static"
@@ -22,6 +26,10 @@ export function getGdayPunchStaticUrl(asset) {
 }
 
 export function getGdayPunchResourceUrl(asset) {
+  if (asset.includes("http://") || asset.includes("https://")) {
+    return asset;
+  }
+
   let staticURL =
     process.env.NODE_ENV === "development"
       ? "/static"
@@ -70,6 +78,19 @@ export function emailValidator(inputtxt) {
 
 export function removeHtml(inputtxt) {
   return inputtxt.replaceAll(/<[^>]*>/gi, "").trim();
+}
+
+export function skuValidator(inputtxt) {
+  var sku = /^[a-zA-Z0-9_]*$/;
+  return inputtxt && inputtxt.length ? inputtxt.match(sku) : true;
+}
+
+export function descriptionValidator(inputtxt) {
+  return inputtxt.length > 30;
+}
+
+export function titleValidator(inputtxt) {
+  return inputtxt.replaceAll(" ", "").length > 0;
 }
 
 export function generatePermaLink(product) {

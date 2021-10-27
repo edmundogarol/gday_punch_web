@@ -197,7 +197,8 @@ export function* uploadMangaCall(action) {
   }
 
   Object.keys(manga).map((key) => {
-    if (key !== "manga" && key !== "image") form_data.append(key, manga[key]);
+    if (key !== "manga" && key !== "image" && !!manga[key])
+      form_data.append(key, manga[key]);
   });
 
   const response = yield call(api, `products/`, {
@@ -212,7 +213,6 @@ export function* uploadMangaCall(action) {
     yield put(uploadingMangaFinished());
   } else {
     console.log("Upload Manga error", JSON.stringify(response));
-    yield put(uploadingMangaFinished());
     if (response.data) {
       yield put(uploadingMangaError(response.data));
       Object.values(response.data).map((error) =>

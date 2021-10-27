@@ -242,7 +242,7 @@ function UserAvatar({ author = initialAuthor, noPreview, history }) {
 
   if (noPreview) {
     return (
-      <Tooltip title="Profile" placement="bottom">
+      <Tooltip title={user.username || user.email} placement="bottom">
         {avatarRenderer(false)}
       </Tooltip>
     );

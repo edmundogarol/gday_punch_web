@@ -57,12 +57,12 @@ export function* fetchViewingProductCall(action) {
 }
 
 export function* fetchAllProductsCall(action) {
-  const { userId } = action.payload;
-
   yield put(fetchingProducts());
   const response = yield call(
     api,
-    `products/${userId ? `?stall=${userId}` : ""}`,
+    `products/${
+      action?.payload?.userId ? `?stall=${action.payload.userId}` : ""
+    }`,
     {
       method: "GET",
     }

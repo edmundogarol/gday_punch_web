@@ -39,7 +39,8 @@ export const stallReducer = (state = INITIAL_STATE, action) => {
     case UPLOADING_MANGA_ERROR:
       return {
         ...state,
-        uploadingErrors: payload.error,
+        uploading: false,
+        uploadingErrors: { ...state.uploadingErrors, ...payload.error },
       };
     case FETCHING_USER_MANGA:
       return {

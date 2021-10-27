@@ -57,6 +57,10 @@ export const MangaUploaderModal = styled(Modal)`
       margin-bottom: 1em;
       height: 4em;
     }
+
+    .ant-alert-error {
+      margin-bottom: 1em;
+    }
   }
 
   .ant-modal-body {
@@ -99,6 +103,59 @@ export const MangaUploaderModal = styled(Modal)`
     .ql-container {
       height: 19em;
     }
+  }
+
+  .ant-modal-body {
+    position: relative;
+
+    .ant-spin {
+      position: absolute;
+      display: flex;
+      margin-right: auto;
+      left: 0;
+      right: 0;
+      align-items: center;
+      width: 100%;
+      justify-content: center;
+      height: 100%;
+      z-index: 2;
+      background: #ffffff87;
+
+      .ant-icon,
+      .anticon-spin {
+        height: 4em;
+        width: 4em;
+      }
+    }
+  }
+`;
+
+export const ConfirmUploadSummary = styled.div`
+  padding: 1em;
+  border: 1px solid #bdbdbd;
+  margin-right: 2em;
+  margin-top: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    height: 10em;
+    width: max-content;
+  }
+
+  .summary-item {
+    display: grid;
+    width: 100%;
+    margin-top: 1em;
+    grid-template-columns: 1fr 1fr;
+
+    p {
+      word-break: break-all;
+    }
+  }
+  .capitalize {
+    text-transform: capitalize;
   }
 `;
 
