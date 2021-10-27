@@ -76,6 +76,7 @@ from .gdaypunchapi.api.gp_settings import (
     SettingsViewSet,
 )
 from .gdaypunchapi.api.socials import FollowViewSet
+from .gdaypunchapi.api.follows import FollowingViewSet
 
 router = routers.DefaultRouter()
 router.register(r"user", UserViewSet, basename="user")
@@ -102,6 +103,7 @@ router.register(
 )
 router.register(r"reset-password", ResetPasswordViewSet, basename="reset-password")
 router.register(r"follow", FollowViewSet, basename="follow")
+router.register(r"following", FollowingViewSet, basename="following")
 router.register(r"settings", SettingsViewSet, basename="settings")
 
 # Inactive endpoints

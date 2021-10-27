@@ -25,6 +25,7 @@ import {
   UPDATING_USER,
   UPDATING_USER_FINISHED,
   UPDATE_USER_ERROR,
+  UPDATE_FOLLOWINGS,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -607,6 +608,20 @@ const appReducer = (state = INITIAL_STATE, action) => {
         reader: {
           ...state.reader,
           comments: [...state.reader.comments, payload.comment],
+        },
+      };
+    case UPDATE_FOLLOWINGS:
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            [payload.userId]: {
+              ...state.users.list[payload.userId],
+              following_users: payload.followings,
+            },
+          },
         },
       };
     case FETCHING_VOTING_ITEMS:

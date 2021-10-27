@@ -149,6 +149,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             return 0
 
     @property
+    def following_count(self):
+        followings = Follow.objects.all().filter(follower=self.id)
+        return followings.count()
+
+    @property
     def following(self):
         try:
             current_user = User.objects.get(email=get_current_user())
@@ -177,6 +182,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             "friends": self.friends,
             "followers": self.followers,
             "following": self.following,
+            "followings": self.following_count,
         }
 
     @property
@@ -415,6 +421,7 @@ class Comment(models.Model):
             "friends": self.user.friends,
             "followers": self.user.followers,
             "following": self.user.following,
+            "followings": self.user.following_count,
         }
 
     @property
@@ -520,6 +527,7 @@ class Product(models.Model):
                     "author_avatar": manga.author.image.name,
                     "author_likes": manga.author.total_manga_likes,
                     "author_friends": manga.author.friends,
+                    "author_followings": manga.author.following_count,
                     "author_followers": manga.author.followers,
                     "release_date": manga.release_date,
                     "following_author": manga.author.following,
@@ -539,6 +547,7 @@ class Product(models.Model):
                 "author_likes": self.user.total_manga_likes,
                 "author_friends": self.user.friends,
                 "author_followers": self.user.followers,
+                "author_followings": self.user.following_count,
                 "following_author": self.user.following,
             }
 

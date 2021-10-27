@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { NavLink, withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
 import { Popover, Tooltip, Button } from "antd";
-import { TeamOutlined, UserAddOutlined, LikeOutlined } from "@ant-design/icons";
+import {
+  TeamOutlined,
+  UserAddOutlined,
+  LikeOutlined,
+  UserSwitchOutlined,
+} from "@ant-design/icons";
 import moment from "moment";
 
 import {
@@ -140,14 +145,18 @@ export const initialAuthor = {
   followers: 0,
   friends: 0,
   following: false,
+  followings: 0,
 };
 
 function UserAvatar({ author = initialAuthor, noPreview, history }) {
-  const { id, name, image, likes, followers, friends, following } = author;
+  const { id, name, image, likes, followers, friends, following, followings } =
+    author;
 
   const user = useSelector(selectUser);
   const loggedIn = useSelector(selectLoggedIn);
   const dispatch = useDispatch();
+
+  const [openFollowings, toggleOpenFollowings] = useState(false);
 
   // FIXME Temporary before Add Friend is created as the button will remain visible for a while
   const selfProfilePreview = user.id === id;
@@ -203,7 +212,13 @@ function UserAvatar({ author = initialAuthor, noPreview, history }) {
                 <span className="amount">{friends}</span>
               </div>
             </Tooltip>
-            <Tooltip title={following ? "Following" : "Followers"}>
+            <Tooltip title="Following">
+              <div className="icon-amount-container">
+                <UserSwitchOutlined className="site-form-item-icon" />
+                <span className="amount">{followings}</span>
+              </div>
+            </Tooltip>
+            <Tooltip title={"Followers"}>
               <div
                 className={`icon-amount-container ${
                   following ? "active-social-icon" : ""

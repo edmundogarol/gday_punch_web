@@ -41,6 +41,8 @@ export const FOLLOW_USER = "user/FOLLOW_USER";
 export const UNFOLLOW_USER = "user/UNFOLLOW_USER";
 export const REQUEST_TO_ADD_FRIEND = "user/REQUEST_TO_ADD_FRIEND";
 export const UNFRIEND = "user/UNFRIEND";
+export const FETCH_FOLLOWINGS = "user/FETCH_FOLLOWINGS";
+export const UPDATE_FOLLOWINGS = "user/UPDATE_FOLLOWINGS";
 
 export const updateUser = (user) => ({
   type: UPDATE_USER,
@@ -251,5 +253,20 @@ export const unfriend = (userId) => ({
   type: UNFRIEND,
   payload: {
     userId,
+  },
+});
+
+export const fetchFollowings = (userId) => ({
+  type: FETCH_FOLLOWINGS,
+  payload: {
+    userId,
+  },
+});
+
+export const updateFollowings = (userId, followings) => ({
+  type: UPDATE_FOLLOWINGS,
+  payload: {
+    userId,
+    followings,
   },
 });

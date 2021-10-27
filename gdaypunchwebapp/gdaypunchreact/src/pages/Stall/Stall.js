@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, NavLink } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
@@ -14,6 +14,7 @@ import {
   FileAddOutlined,
   PlusOutlined,
   ExclamationCircleOutlined,
+  UserSwitchOutlined,
 } from "@ant-design/icons";
 const { confirm } = Modal;
 
@@ -46,8 +47,10 @@ import {
   ProfileDetails,
   SocialButton,
   ConfirmUploadSummary,
+  FollowingModal,
 } from "./styles";
 import { deleteProduct } from "actions/products";
+import { fetchFollowings } from "actions/user";
 
 const initialUploadState = {
   title: undefined,
@@ -82,6 +85,7 @@ function Stall() {
     ? useSelector(selectUserProducts(currentUser.id))
     : useSelector(selectUserProducts(parseInt(userId)));
 
+  const [followingModalOpen, updateFollowingModalOpen] = useState(false);
   const [uploadingManga, updateUploadingManga] = useState(false);
   const [uploadingMangaData, updateUploadingMangaData] = useState(undefined);
   const [coverPageNumber, updateCoverPageNumber] = useState(1);
@@ -112,7 +116,6 @@ function Stall() {
       !fetchingProducts &&
       !finishedFetchingProducts
     ) {
-      console.log(currentUser, userId);
       dispatch(fetchProducts(myStallView ? currentUser.id : userId));
     }
   }, [userProducts, fetchingProducts, userId, currentUser]);
@@ -143,7 +146,6 @@ function Stall() {
   };
 
   const confirmBeforeDelete = (product) => {
-    console.log(product);
     confirm({
       title: `Confirm Deleting Manga`,
       icon: <ExclamationCircleOutlined />,
@@ -196,6 +198,28 @@ function Stall() {
           uploadingDetails={editingManga}
         />
       ) : null} */}
+      {viewingUser?.following_users?.length ? (
+        <FollowingModal
+          visible={viewingUser.following_users.length && followingModalOpen}
+          title="Following"
+          cancelButtonProps={{ style: { display: "none" } }}
+          onCancel={() => updateFollowingModalOpen(false)}
+          onOk={() => updateFollowingModalOpen(false)}
+        >
+          <div>
+            {viewingUser.following_users.map((follow) => {
+              return (
+                <div className="following" key={follow.id}>
+                  <UserAvatar author={follow} />
+                  <h4>
+                    <NavLink to={`/stall/${follow.id}/`}>{follow.name}</NavLink>
+                  </h4>
+                </div>
+              );
+            })}
+          </div>
+        </FollowingModal>
+      ) : null}
       <Header
         editable={myStallView}
         background={
@@ -216,6 +240,18 @@ function Stall() {
                   <div className="icon-amount-container coming-soon">
                     <UserAddOutlined className="site-form-item-icon" />
                     <span className="amount">{viewingUser.friends}</span>
+                  </div>
+                </Tooltip>
+                <Tooltip title="Following">
+                  <div
+                    className="icon-amount-container"
+                    onClick={() => {
+                      dispatch(fetchFollowings(viewingUser.id));
+                      updateFollowingModalOpen(true);
+                    }}
+                  >
+                    <UserSwitchOutlined className="site-form-item-icon" />
+                    <span className="amount">{viewingUser.followings}</span>
                   </div>
                 </Tooltip>
                 <Tooltip title="Followers">

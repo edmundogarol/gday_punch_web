@@ -10,6 +10,7 @@ export function extractProductUsers(products) {
         author_likes,
         author_friends,
         author_followers,
+        author_followings,
         following_author,
       },
     }) => ({
@@ -20,6 +21,7 @@ export function extractProductUsers(products) {
       friends: author_friends,
       followers: author_followers,
       following: following_author,
+      followings: author_followings,
     })
   );
   return arrayIdsMapToObject(productAuthorsArray);

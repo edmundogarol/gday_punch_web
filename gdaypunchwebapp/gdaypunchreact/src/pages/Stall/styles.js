@@ -182,6 +182,38 @@ export const ConfirmUploadSummary = styled.div`
   }
 `;
 
+export const FollowingModal = styled(Modal)`
+  .ant-modal-body {
+    max-height: 20em;
+    overflow: scroll;
+  }
+
+  .ant-modal-content {
+    width: 24em;
+
+    .following {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      align-items: center;
+
+      display: grid;
+      grid-template-columns: 1fr 3fr;
+
+      h4 {
+        margin: unset;
+      }
+
+      a {
+        color: #3c3c3c;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+`;
+
 export const StallContainer = styled.div`
   .stats {
     display: flex;

@@ -30,6 +30,8 @@ import {
   updatingUser,
   updatingUserFinished,
   updateUserError,
+  FETCH_FOLLOWINGS,
+  updateFollowings,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -411,6 +413,27 @@ export function* castVoteCall(action) {
   }
 }
 
+export function* fetchFollowingsCall(action) {
+  const { payload } = action;
+
+  yield put(fetchingVotingItems());
+  const response = yield call(api, `following/${payload.userId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(updateFollowings(payload.userId, data));
+  } else {
+    message.error(
+      "Fetching account-follows problem. Please try again later.",
+      4
+    );
+    console.log("Account follows Fetch error", JSON.stringify(response));
+  }
+}
+
 export default function* appSaga() {
   yield all([
     takeLatest(UPDATE_USER_DETAILS, patchUser),
@@ -427,5 +450,6 @@ export default function* appSaga() {
     takeLatest(REQUEST_EMAIL_VERIFICATION, requestEmailVerificationCall),
     takeLatest(FETCH_VOTING_ITEMS, fetchVotingItemsCall),
     takeLatest(CAST_VOTE, castVoteCall),
+    takeLatest(FETCH_FOLLOWINGS, fetchFollowingsCall),
   ]);
 }

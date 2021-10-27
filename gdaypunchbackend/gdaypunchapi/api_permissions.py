@@ -244,6 +244,20 @@ class ProductPermissions(BasePermission):
             return False
 
 
+# Only allow authenticated users to get and edit their products (retrieve, update, partial_update)
+# Allow all users to get list of visible products (list)
+class FollowingPermissions(BasePermission):
+    def has_permission(self, request, view):
+        follower = view.kwargs.get("pk")
+
+        if staff(request):
+            return True
+        elif view.action in ["list", "retrieve"]:
+            return True
+        else:
+            return False
+
+
 # Clean non-useable retrieve endpoints
 class PromptsPermissions(BasePermission):
     def has_permission(self, request, view):
