@@ -32,7 +32,7 @@ from ..serializers import (
     ProductSimpleSerializer,
 )
 
-from gdaypunchbackend.settings import STRIPE_API_KEY
+from gdaypunchbackend.settings import STRIPE_API_KEY, LOCAL_DEV
 
 stripe.api_key = STRIPE_API_KEY
 
@@ -133,6 +133,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 description=request.data["description"],
                 title=request.data["title"],
                 image_store=request.data["image"],
+                image_store_public=request.data["image"] if LOCAL_DEV else None,
                 sale_price=sale_price,
                 visible=True if manga else visible,
                 stock=1 if manga else stock,

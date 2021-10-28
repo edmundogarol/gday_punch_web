@@ -130,6 +130,20 @@ export const MangaUploaderModal = styled(Modal)`
   }
 `;
 
+export const BioSave = styled.div`
+  position: absolute;
+  bottom: 0.3em;
+  right: 0;
+`;
+
+export const BioPreview = styled.div`
+  display: flex;
+  align-items: flex-start;
+  padding: 1em;
+  height: max-content;
+  padding-top: unset;
+`;
+
 export const ConfirmUploadSummary = styled.div`
   padding: 1em;
   border: 1px solid #bdbdbd;
@@ -344,6 +358,7 @@ export const ProfileDetails = styled.div`
   }
 
   ${SectionTitle} {
+    text-transform: none;
     text-shadow: 0.07em 0em white, -0.07em 0em white, 0em 0.07em white,
       0em -0.07em white, 0.07em 0.07em white, -0.07em 0.07em white,
       -0.07em -0.07em white, 0.07em -0.07em white;

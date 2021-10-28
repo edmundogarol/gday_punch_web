@@ -94,3 +94,8 @@ export function generatePermaLink(product) {
     prefix + product.title.toLowerCase().split(" ").join("-").replace("#", "")
   );
 }
+
+export function makeSafeUrl(text) {
+  if (!text) return;
+  return encodeURIComponent(text.toLowerCase().replaceAll(" ", "-"));
+}

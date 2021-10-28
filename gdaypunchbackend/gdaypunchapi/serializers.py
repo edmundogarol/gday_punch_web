@@ -65,6 +65,7 @@ class UserSerializer(serializers.ModelSerializer):
             "customer_payment_details",
             "last_ip",
             "image",
+            "image_public",
             "cover",
             "last_login",
             "author_details",

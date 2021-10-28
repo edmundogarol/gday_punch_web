@@ -19,6 +19,7 @@ import { selectLoggedIn, selectUserById } from "selectors/app";
 import {
   generatePermaLink,
   getGdayPunchStaticUrl,
+  makeSafeUrl,
   scrollToTop,
 } from "utils/utils";
 
@@ -241,7 +242,9 @@ function ProductTile(props) {
         <UserAvatar author={author} />
         <ArtistActionsContainer>
           <ProductAuthor>
-            <NavLink to={`/stall/${product.user}/`}>{author.name}</NavLink>
+            <NavLink to={`/stall/${product.user}/${makeSafeUrl(author.name)}`}>
+              {author.name}
+            </NavLink>
           </ProductAuthor>
           <PriceLikeCommentConainer>
             {buyableProduct ? (

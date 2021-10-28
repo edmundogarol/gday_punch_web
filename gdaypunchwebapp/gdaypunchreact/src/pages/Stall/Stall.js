@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { withRouter, useParams, NavLink } from "react-router-dom";
+import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import classNames from "classnames";
 import { pdfjs } from "react-pdf";
 import moment from "moment";
-import { Tooltip, Skeleton, Upload, message, Modal } from "antd";
+import { Tooltip, Skeleton, Upload, message, Modal, Button } from "antd";
 import {
   TeamOutlined,
   UserAddOutlined,
@@ -14,6 +15,7 @@ import {
   PlusOutlined,
   ExclamationCircleOutlined,
   UserSwitchOutlined,
+  EditOutlined,
 } from "@ant-design/icons";
 const { confirm } = Modal;
 
@@ -35,10 +37,10 @@ import { selectStallState } from "selectors/stall";
 import {
   getGdayPunchResourceUrl,
   getGdayPunchStaticUrl,
+  makeSafeUrl,
   removeHtml,
 } from "utils/utils";
 import { normaliseProductData } from "utils/manga";
-import { normaliseAuthorData } from "utils/users";
 import { useScrollTop } from "utils/hooks/useScrollTop";
 
 import {
@@ -47,12 +49,17 @@ import {
   SocialButton,
   ConfirmUploadSummary,
   FollowingModal,
+  BioSave,
+  BioPreview,
 } from "./styles";
 import { deleteProduct } from "actions/products";
 import {
   fetchFollowings,
   fetchStallData,
   resetStallChecks,
+  followUser,
+  unfollowUser,
+  doUpdateUserDetails,
 } from "actions/user";
 
 const initialUploadState = {
@@ -81,8 +88,13 @@ function Stall({ history }) {
   );
   const productsState = useSelector(selectProductsState);
   const { fetchingProducts } = productsState;
-  const { uploading, uploadingFinished, fetching, fetchingFinished } =
-    useSelector(selectStallState);
+  const {
+    uploading,
+    uploadingFinished,
+    fetching,
+    fetchingFinished,
+    fetchingErrors,
+  } = useSelector(selectStallState);
   const dispatch = useDispatch();
 
   const [followingModalOpen, updateFollowingModalOpen] = useState(false);
@@ -91,6 +103,8 @@ function Stall({ history }) {
   const [coverPageNumber, updateCoverPageNumber] = useState(1);
   const [uploadingDetails, updateUploadingDetails] =
     useState(initialUploadState);
+  const [editingBio, toggleEditingBio] = useState(undefined);
+  const [newBio, updateNewBio] = useState(undefined);
   // const [editingManga, updateEditingManga] = useState(undefined);
 
   useScrollTop();
@@ -116,19 +130,32 @@ function Stall({ history }) {
   }, [userId, currentUser]);
 
   useEffect(() => {
-    if (userId && !fetching && !fetchingProducts && !fetchingFinished) {
+    if (
+      userId &&
+      !fetching &&
+      !fetchingProducts &&
+      !fetchingFinished &&
+      !fetchingErrors
+    ) {
       dispatch(fetchProducts(userId));
       dispatch(fetchStallData(userId));
     } else if (
       currentUser.id &&
       !fetching &&
       !fetchingFinished &&
-      !fetchingProducts
+      !fetchingProducts &&
+      !fetchingErrors
     ) {
       dispatch(fetchProducts(currentUser.id));
       dispatch(fetchStallData(currentUser.id));
     }
-  }, [fetching, fetchingFinished, fetchingProducts, myStallView]);
+  }, [
+    fetching,
+    fetchingFinished,
+    fetchingProducts,
+    fetchingErrors,
+    myStallView,
+  ]);
 
   useEffect(() => {
     return () => {
@@ -159,6 +186,12 @@ function Stall({ history }) {
       updateUploadingMangaData(mangaUrl);
       updateUploadingManga(true);
     });
+  };
+
+  const updateBio = (bio) => {
+    return {
+      __html: bio,
+    };
   };
 
   const confirmBeforeDelete = (product) => {
@@ -228,7 +261,11 @@ function Stall({ history }) {
                 <div className="following" key={follow.id}>
                   <UserAvatar author={follow} />
                   <h4>
-                    <NavLink to={`/stall/${follow.id}/`}>{follow.name}</NavLink>
+                    <NavLink
+                      to={`/stall/${follow.id}/${makeSafeUrl(follow.name)}`}
+                    >
+                      {follow.name}
+                    </NavLink>
                   </h4>
                 </div>
               );
@@ -287,7 +324,18 @@ function Stall({ history }) {
               </div>
               {!myStallView && user.id ? (
                 <div className="socials">
-                  <SocialButton type="primary">Follow</SocialButton>
+                  <SocialButton
+                    type="primary"
+                    onClick={() =>
+                      dispatch(
+                        user.following
+                          ? unfollowUser(user.following)
+                          : followUser(user.id)
+                      )
+                    }
+                  >
+                    {!user.following ? "Follow" : "Unfollow"}
+                  </SocialButton>
                   <Tooltip title="Coming Soon">
                     <SocialButton type="primary" disabled>
                       Add Friend
@@ -296,7 +344,51 @@ function Stall({ history }) {
                 </div>
               ) : null}
             </ProfileDetails>
-            <p className="bio">&ldquo;{user.bio || "No bio."}&rdquo;</p>
+            {editingBio ? (
+              <ReactQuill
+                theme="snow"
+                placeholder="Enter Bio"
+                defaultValue={user.bio}
+                onChange={(val) => {
+                  updateNewBio(val);
+                }}
+                style={{ maxWidth: "41em", paddingBottom: "3em" }}
+              />
+            ) : null}
+            {!editingBio ? (
+              <BioPreview>
+                <p
+                  className="bio"
+                  dangerouslySetInnerHTML={updateBio(user.bio || `No bio.`)}
+                ></p>
+                <Tooltip title="Edit Bio">
+                  <EditOutlined onClick={() => toggleEditingBio(true)} />
+                </Tooltip>
+              </BioPreview>
+            ) : null}
+            {editingBio ? (
+              <BioSave>
+                <Button onClick={() => toggleEditingBio(false)}>Cancel</Button>
+                <Button
+                  disabled={!newBio}
+                  onClick={() => {
+                    if (newBio.length > 500) {
+                      message.error(
+                        "Bio is too long. Please reduce it and try again."
+                      );
+                    } else if (newBio.includes(`<a href="http`)) {
+                      message.error(
+                        "Bio links are only available to seller accounts. Please remove the link and try again."
+                      );
+                    } else {
+                      dispatch(doUpdateUserDetails({ bio: newBio }));
+                    }
+                  }}
+                >
+                  Save
+                </Button>
+              </BioSave>
+            ) : null}
           </>
         ) : (
           <Skeleton active avatar paragraph={{ rows: 3 }} />

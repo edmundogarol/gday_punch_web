@@ -236,6 +236,16 @@ const appReducer = (state = INITIAL_STATE, action) => {
         loginView: false,
         user: { ...state.user, ...payload.user },
         loginCheckFinished: true,
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            [payload.user.id]: {
+              ...state.users.list[payload.user.id],
+              ...payload.user,
+            },
+          },
+        },
       };
     case UPDATING_USER:
       return {

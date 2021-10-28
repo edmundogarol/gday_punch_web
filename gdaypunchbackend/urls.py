@@ -75,8 +75,7 @@ from .gdaypunchapi.api.voting import (
 from .gdaypunchapi.api.gp_settings import (
     SettingsViewSet,
 )
-from .gdaypunchapi.api.socials import FollowViewSet
-from .gdaypunchapi.api.follows import FollowingViewSet
+from .gdaypunchapi.api.follows import FollowViewSet, FollowingViewSet
 from .gdaypunchapi.api.stall import StallViewSet
 
 router = routers.DefaultRouter()

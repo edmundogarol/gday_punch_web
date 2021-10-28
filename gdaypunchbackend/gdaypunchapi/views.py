@@ -6,6 +6,7 @@ from next_prev import next_in_order
 from secrets import token_urlsafe
 from threading import Thread
 from dateutil.parser import parse
+from botocore.exceptions import ClientError
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -68,7 +69,7 @@ from .serializers import (
     CommentLikeSerializer,
     ResetPasswordSerializer,
 )
-from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE
+from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE, LOCAL_DEV
 
 
 class SwaggerSchemaView(APIView):
@@ -196,6 +197,9 @@ class UserViewSet(ModelViewSet):
         user = queryset.get(pk=kwargs.get("pk"))
 
         if request.data.get("image", None) and user.image:
+            if not LOCAL_DEV:
+                request.data["image_public"] = request.data["image"]
+
             if S3_STORAGE:
                 user.image.delete()
             else:
@@ -207,19 +211,23 @@ class UserViewSet(ModelViewSet):
             else:
                 os.remove(os.path.join(MEDIA_ROOT, user.cover.name))
 
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        try:
+            serializer = UserSerializer(user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
-        if email is not None:
-            user = User.objects.get(id=user.id)
-            user.verified = None
-            user.save()
+            if email is not None:
+                user = User.objects.get(id=user.id)
+                user.verified = None
+                user.save()
 
-            serializer = UserSerializer(user)
+                serializer = UserSerializer(user)
+                return Response(serializer.data)
+
             return Response(serializer.data)
 
-        return Response(serializer.data)
+        except ClientError as e:
+            return Response({"error": str(e)})
 
 
 class AdminCreateUserViewSet(APIView):

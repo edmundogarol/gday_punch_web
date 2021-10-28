@@ -180,7 +180,7 @@ function Root(props) {
             />
             <RoutePage
               exact
-              path="/stall/:userId"
+              path="/stall/:userId/:uri"
               titleSetInside
               component={Stall}
             />

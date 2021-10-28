@@ -14,6 +14,7 @@ import moment from "moment";
 import {
   getGdayPunchResourceUrl,
   getGdayPunchStaticUrl,
+  makeSafeUrl,
   scrollToTop,
 } from "utils/utils";
 import {
@@ -198,7 +199,7 @@ function UserAvatar({ author = initialAuthor, noPreview, history }) {
       {avatarRenderer(preview)}
       <div>
         <p className="author">
-          <NavLink to={`/stall/${id}/`}>{name}</NavLink>
+          <NavLink to={`/stall/${id}/${makeSafeUrl(name)}`}>{name}</NavLink>
         </p>
         <div className="stats-socials-container">
           <div className="stats">

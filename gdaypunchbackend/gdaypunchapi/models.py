@@ -2,6 +2,7 @@ import json
 import random
 import pytz
 from datetime import datetime
+from storages.backends.s3boto3 import S3Boto3Storage
 
 from rest_framework import exceptions
 
@@ -111,6 +112,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     verified = models.TextField(max_length=50, blank=False, null=True)
     last_ip = models.TextField(max_length=30, blank=False, null=True)
     image = models.ImageField(upload_to="user_profile", null=True)
+    image_public = models.ImageField(
+        storage=S3Boto3Storage(bucket_name="gdaypunch-resources"),
+        upload_to="user_profile_public",
+        null=True,
+    )
     cover = models.ImageField(upload_to="user_cover", null=True)
 
     objects = UserManager()
@@ -482,6 +488,11 @@ class Product(models.Model):
     description = models.TextField(max_length=1000, blank=True)
     title = models.TextField(max_length=70, blank=True, unique=True)
     image_store = models.ImageField(upload_to="product_image", null=True)
+    image_store_public = models.ImageField(
+        storage=S3Boto3Storage(bucket_name="gdaypunch-resources"),
+        upload_to="product_image_public",
+        null=True,
+    )
     sale_price = models.FloatField(blank=True, null=False, default=0)
     visible = models.BooleanField(default=False)
     stock = models.IntegerField(blank=True, default=1)
