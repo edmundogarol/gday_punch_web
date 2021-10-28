@@ -1,23 +1,24 @@
 import {
-  FETCHING_USER_MANGA,
-  FETCHING_USER_MANGA_ERROR,
-  FETCHING_USER_MANGA_FINISHED,
   UPLOADING_MANGA,
   UPLOADING_MANGA_ERROR,
   UPLOADING_MANGA_FINISHED,
 } from "actions/manga";
+
+import {
+  FETCHING_STALL_DATA,
+  FETCHING_STALL_DATA_FINISHED,
+  FETCHING_STALL_DATA_ERROR,
+  RESET_STALL_CHECKS,
+} from "actions/user";
 
 const INITIAL_STATE = {
   uploading: false,
   uploadingFinished: false,
   uploadingErrors: undefined,
 
-  user: {
-    manga: {},
-    fetching: false,
-    fetchingFinished: false,
-    fetchingErrors: undefined,
-  },
+  fetching: false,
+  fetchingFinished: false,
+  fetchingErrors: undefined,
 };
 
 export const stallReducer = (state = INITIAL_STATE, action) => {
@@ -42,31 +43,27 @@ export const stallReducer = (state = INITIAL_STATE, action) => {
         uploading: false,
         uploadingErrors: { ...state.uploadingErrors, ...payload.error },
       };
-    case FETCHING_USER_MANGA:
+    case FETCHING_STALL_DATA:
       return {
         ...state,
-        user: {
-          ...state.user,
-          fetching: true,
-          fetchingFinished: false,
-        },
+        fetching: true,
+        fetchingFinished: false,
       };
-    case FETCHING_USER_MANGA_FINISHED:
+    case FETCHING_STALL_DATA_FINISHED:
       return {
         ...state,
-        user: {
-          ...state.user,
-          fetching: false,
-          fetchingFinished: true,
-        },
+        fetching: false,
+        fetchingFinished: true,
       };
-    case FETCHING_USER_MANGA_ERROR:
+    case FETCHING_STALL_DATA_ERROR:
       return {
         ...state,
-        user: {
-          ...state.user,
-          fetchingErrors: payload.error,
-        },
+        fetching: false,
+        fetchingErrors: payload.error,
+      };
+    case RESET_STALL_CHECKS:
+      return {
+        INITIAL_STATE,
       };
     default:
       return state;

@@ -26,6 +26,7 @@ import {
   UPDATING_USER_FINISHED,
   UPDATE_USER_ERROR,
   UPDATE_FOLLOWINGS,
+  UPDATE_STALL_DATA,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -262,6 +263,21 @@ const appReducer = (state = INITIAL_STATE, action) => {
           errors: payload.error,
         },
       };
+    case UPDATE_STALL_DATA:
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            ...arrayIdsMapToObject(payload.user.following_users),
+            [payload.user.id]: {
+              ...state.users.list[payload.user.id],
+              ...payload.user,
+            },
+          },
+        },
+      };
     case LOGOUT_SUCESS:
       return {
         ...state,
@@ -326,6 +342,16 @@ const appReducer = (state = INITIAL_STATE, action) => {
           set(newProductList, product.id, product)
         );
       }
+
+      const mergedUserData = Object.values(
+        extractProductUsers(adding ? newProductList : payload.products)
+      ).map((user) => {
+        return {
+          ...user,
+          ...state.users.list[user.id],
+        };
+      });
+
       return {
         ...state,
         products: {
@@ -335,8 +361,8 @@ const appReducer = (state = INITIAL_STATE, action) => {
         users: {
           ...state.users,
           list: {
-            ...state.list,
-            ...extractProductUsers(adding ? newProductList : payload.products),
+            ...state.users.list,
+            ...arrayIdsMapToObject(mergedUserData),
           },
         },
       };

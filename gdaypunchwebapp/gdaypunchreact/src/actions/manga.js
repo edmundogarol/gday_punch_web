@@ -14,12 +14,6 @@ export const UPLOADING_MANGA = "manga/UPLOADING_MANGA";
 export const UPLOADING_MANGA_FINISHED = "manga/UPLOADING_MANGA_FINISHED";
 export const UPLOADING_MANGA_ERROR = "manga/UPLOADING_MANGA_ERROR";
 
-export const FETCH_USER_MANGA = "manga/FETCH_USER_MANGA";
-export const FETCHING_USER_MANGA = "manga/FETCHING_USER_MANGA";
-export const FETCHING_USER_MANGA_FINISHED =
-  "manga/FETCHING_USER_MANGA_FINISHED";
-export const FETCHING_USER_MANGA_ERROR = "manga/FETCHING_USER_MANGA_ERROR";
-
 export const doGetManga = (mangaId) => ({
   type: DO_GET_MANGA,
   payload: {
@@ -45,29 +39,6 @@ export const uploadingMangaFinished = () => ({
 
 export const uploadingMangaError = (error) => ({
   type: UPLOADING_MANGA_ERROR,
-  payload: {
-    error,
-  },
-});
-
-export const fetchUserManga = (manga, history) => ({
-  type: FETCH_USER_MANGA,
-  payload: {
-    manga,
-    history,
-  },
-});
-
-export const fetchingUserManga = () => ({
-  type: FETCHING_USER_MANGA,
-});
-
-export const fetchingUserMangaFinished = () => ({
-  type: FETCHING_USER_MANGA_FINISHED,
-});
-
-export const fetchingUserMangaError = (error) => ({
-  type: FETCHING_USER_MANGA_ERROR,
   payload: {
     error,
   },

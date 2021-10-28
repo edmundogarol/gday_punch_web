@@ -32,6 +32,11 @@ import {
   updateUserError,
   FETCH_FOLLOWINGS,
   updateFollowings,
+  FETCH_STALL_DATA,
+  fetchingStallData,
+  updateStallData,
+  fetchingStallDataFinished,
+  fetchingStallDataError,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -434,6 +439,28 @@ export function* fetchFollowingsCall(action) {
   }
 }
 
+export function* fetchStallDataCall(action) {
+  const { payload } = action;
+
+  yield put(fetchingStallData());
+  const response = yield call(api, `stall/${payload.userId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(fetchingStallDataFinished());
+    yield put(updateStallData(data));
+  } else {
+    message.error(
+      "Fetching user stall encountered a problem. Please try again later.",
+      4
+    );
+    console.log("Stall fetch error", JSON.stringify(response));
+    yield put(fetchingStallDataError(response.data));
+  }
+}
+
 export default function* appSaga() {
   yield all([
     takeLatest(UPDATE_USER_DETAILS, patchUser),
@@ -451,5 +478,6 @@ export default function* appSaga() {
     takeLatest(FETCH_VOTING_ITEMS, fetchVotingItemsCall),
     takeLatest(CAST_VOTE, castVoteCall),
     takeLatest(FETCH_FOLLOWINGS, fetchFollowingsCall),
+    takeLatest(FETCH_STALL_DATA, fetchStallDataCall),
   ]);
 }

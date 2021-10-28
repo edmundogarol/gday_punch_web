@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useParams, NavLink } from "react-router-dom";
+import { withRouter, useParams, NavLink } from "react-router-dom";
 import "react-quill/dist/quill.snow.css";
-import { isEmpty } from "lodash";
 import classNames from "classnames";
 import { pdfjs } from "react-pdf";
 import moment from "moment";
@@ -28,7 +27,7 @@ import MangaDetail from "./MangaDetail";
 import { fetchProducts } from "actions/app";
 import {
   selectProductsState,
-  selectUserById,
+  selectUserByIdOrCurrentUser,
   selectUserProducts,
   selectUserStallView,
 } from "selectors/app";
@@ -50,7 +49,11 @@ import {
   FollowingModal,
 } from "./styles";
 import { deleteProduct } from "actions/products";
-import { fetchFollowings } from "actions/user";
+import {
+  fetchFollowings,
+  fetchStallData,
+  resetStallChecks,
+} from "actions/user";
 
 const initialUploadState = {
   title: undefined,
@@ -67,23 +70,20 @@ const initialUploadState = {
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-function Stall() {
+function Stall({ history }) {
   const { userId } = useParams();
   const currentUser = useSelector(selectUserStallView);
-  const user = useSelector(selectUserById(userId));
+  const myStallView = !userId;
+
+  const user = useSelector(selectUserByIdOrCurrentUser(userId));
+  const userProducts = useSelector(
+    selectUserProducts(myStallView ? currentUser.id : user?.id)
+  );
   const productsState = useSelector(selectProductsState);
-  const { fetchingProducts, finishedFetchingProducts } = productsState;
-  const { uploading, uploadingFinished } = useSelector(selectStallState);
+  const { fetchingProducts } = productsState;
+  const { uploading, uploadingFinished, fetching, fetchingFinished } =
+    useSelector(selectStallState);
   const dispatch = useDispatch();
-
-  const myStallView = !userId && currentUser.id;
-  const viewingUser = myStallView
-    ? normaliseAuthorData(currentUser)
-    : normaliseAuthorData(user);
-
-  const userProducts = myStallView
-    ? useSelector(selectUserProducts(currentUser.id))
-    : useSelector(selectUserProducts(parseInt(userId)));
 
   const [followingModalOpen, updateFollowingModalOpen] = useState(false);
   const [uploadingManga, updateUploadingManga] = useState(false);
@@ -103,22 +103,38 @@ function Stall() {
   }, [uploading, uploadingFinished]);
 
   useEffect(() => {
-    if (!myStallView && viewingUser?.name) {
-      const title = `${viewingUser.name} | Gday Punch`;
+    if (!myStallView && user?.name) {
+      const title = `${user.name} | Gday Punch`;
       document.title = title;
     }
-  }, [viewingUser]);
+  }, [user]);
 
   useEffect(() => {
-    if (
-      (currentUser.id || userId) &&
-      isEmpty(userProducts) &&
-      !fetchingProducts &&
-      !finishedFetchingProducts
-    ) {
-      dispatch(fetchProducts(myStallView ? currentUser.id : userId));
+    if (parseInt(userId) === currentUser.id) {
+      history.replace("/my-stall");
     }
-  }, [userProducts, fetchingProducts, userId, currentUser]);
+  }, [userId, currentUser]);
+
+  useEffect(() => {
+    if (userId && !fetching && !fetchingProducts && !fetchingFinished) {
+      dispatch(fetchProducts(userId));
+      dispatch(fetchStallData(userId));
+    } else if (
+      currentUser.id &&
+      !fetching &&
+      !fetchingFinished &&
+      !fetchingProducts
+    ) {
+      dispatch(fetchProducts(currentUser.id));
+      dispatch(fetchStallData(currentUser.id));
+    }
+  }, [fetching, fetchingFinished, fetchingProducts, myStallView]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(resetStallChecks());
+    };
+  }, []);
 
   const getBase64 = (img, callback) => {
     const reader = new FileReader();
@@ -198,16 +214,16 @@ function Stall() {
           uploadingDetails={editingManga}
         />
       ) : null} */}
-      {viewingUser?.following_users?.length ? (
+      {user?.following_users?.length ? (
         <FollowingModal
-          visible={viewingUser.following_users.length && followingModalOpen}
+          visible={user.following_users.length && followingModalOpen}
           title="Following"
           cancelButtonProps={{ style: { display: "none" } }}
           onCancel={() => updateFollowingModalOpen(false)}
           onOk={() => updateFollowingModalOpen(false)}
         >
           <div>
-            {viewingUser.following_users.map((follow) => {
+            {user.following_users.map((follow) => {
               return (
                 <div className="following" key={follow.id}>
                   <UserAvatar author={follow} />
@@ -223,51 +239,53 @@ function Stall() {
       <Header
         editable={myStallView}
         background={
-          viewingUser?.cover
-            ? getGdayPunchStaticUrl(viewingUser.cover)
+          user?.cover
+            ? getGdayPunchStaticUrl(user.cover)
             : getGdayPunchResourceUrl("launch-background.png")
         }
       >
-        <UserAvatar author={viewingUser} />
+        <UserAvatar author={user} />
       </Header>
       <FeaturedSection idx={1}>
-        {viewingUser ? (
+        {user ? (
           <>
             <ProfileDetails>
-              <SectionTitle>{viewingUser.name}</SectionTitle>
+              <SectionTitle>{user.name}</SectionTitle>
               <div className="stats">
                 <Tooltip title="Friends (Coming Soon)">
                   <div className="icon-amount-container coming-soon">
                     <UserAddOutlined className="site-form-item-icon" />
-                    <span className="amount">{viewingUser.friends}</span>
+                    <span className="amount">{user.friends}</span>
                   </div>
                 </Tooltip>
                 <Tooltip title="Following">
                   <div
                     className="icon-amount-container"
                     onClick={() => {
-                      dispatch(fetchFollowings(viewingUser.id));
+                      if (!user.following_users.length) {
+                        dispatch(fetchFollowings(user.id));
+                      }
                       updateFollowingModalOpen(true);
                     }}
                   >
                     <UserSwitchOutlined className="site-form-item-icon" />
-                    <span className="amount">{viewingUser.followings}</span>
+                    <span className="amount">{user.followings}</span>
                   </div>
                 </Tooltip>
                 <Tooltip title="Followers">
                   <div className="icon-amount-container">
                     <TeamOutlined className="site-form-item-icon" />
-                    <span className="amount">{viewingUser.followers}</span>
+                    <span className="amount">{user.followers}</span>
                   </div>
                 </Tooltip>
                 <Tooltip title="Manga Likes">
                   <div className="icon-amount-container">
                     <LikeOutlined className="site-form-item-icon" />
-                    <span className="amount">{viewingUser.likes}</span>
+                    <span className="amount">{user.likes}</span>
                   </div>
                 </Tooltip>
               </div>
-              {!myStallView && viewingUser.id ? (
+              {!myStallView && user.id ? (
                 <div className="socials">
                   <SocialButton type="primary">Follow</SocialButton>
                   <Tooltip title="Coming Soon">
@@ -278,7 +296,7 @@ function Stall() {
                 </div>
               ) : null}
             </ProfileDetails>
-            <p className="bio">&ldquo;{viewingUser.bio || "No bio."}&rdquo;</p>
+            <p className="bio">&ldquo;{user.bio || "No bio."}&rdquo;</p>
           </>
         ) : (
           <Skeleton active avatar paragraph={{ rows: 3 }} />
@@ -370,4 +388,4 @@ function Stall() {
   );
 }
 
-export default Stall;
+export default withRouter(Stall);

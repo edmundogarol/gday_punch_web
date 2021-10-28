@@ -16,6 +16,12 @@ export const selectUserStallView = createSelector(
   ({ user, users: { list } }) => list[user.id] || user
 );
 
+export const selectUserByIdOrCurrentUser = (id) =>
+  createSelector(
+    selectDomain,
+    ({ user, users: { list } }) => list[id || user.id]
+  );
+
 export const selectUserById = (id) =>
   createSelector(selectDomain, ({ users: { list } }) => list[id]);
 

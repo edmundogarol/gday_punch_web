@@ -156,8 +156,6 @@ function UserAvatar({ author = initialAuthor, noPreview, history }) {
   const loggedIn = useSelector(selectLoggedIn);
   const dispatch = useDispatch();
 
-  const [openFollowings, toggleOpenFollowings] = useState(false);
-
   // FIXME Temporary before Add Friend is created as the button will remain visible for a while
   const selfProfilePreview = user.id === id;
 
@@ -200,9 +198,7 @@ function UserAvatar({ author = initialAuthor, noPreview, history }) {
       {avatarRenderer(preview)}
       <div>
         <p className="author">
-          <NavLink to={selfProfilePreview ? "/my-stall" : `/stall/${id}/`}>
-            {name}
-          </NavLink>
+          <NavLink to={`/stall/${id}/`}>{name}</NavLink>
         </p>
         <div className="stats-socials-container">
           <div className="stats">

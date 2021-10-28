@@ -15,7 +15,7 @@ import {
   setViewingProduct,
   unsaveProduct,
 } from "actions/products";
-import { selectLoggedIn, selectUser, selectUserById } from "selectors/app";
+import { selectLoggedIn, selectUserById } from "selectors/app";
 import {
   generatePermaLink,
   getGdayPunchStaticUrl,
@@ -82,7 +82,6 @@ function ProductTile(props) {
   const { id: mangaId, author_id, comments, likes, user_likes } = manga_details;
 
   const loggedIn = useSelector(selectLoggedIn);
-  const user = useSelector(selectUser);
   const author = useSelector(selectUserById(author_id)) || initialAuthor;
   const dispatch = useDispatch();
 
@@ -90,8 +89,6 @@ function ProductTile(props) {
   const buyableProduct = active_price && active_price > 0;
   const digitalProduct = product_type !== "physical";
   const purchasedDigital = purchased && digitalProduct;
-
-  const selfProfilePreview = product.user === user.id;
 
   const handleAddToCart = () => {
     dispatch(updateCartItemQuantity(id, 1, true));
@@ -244,11 +241,7 @@ function ProductTile(props) {
         <UserAvatar author={author} />
         <ArtistActionsContainer>
           <ProductAuthor>
-            <NavLink
-              to={selfProfilePreview ? "/my-stall" : `/stall/${product.user}/`}
-            >
-              {author.name}
-            </NavLink>
+            <NavLink to={`/stall/${product.user}/`}>{author.name}</NavLink>
           </ProductAuthor>
           <PriceLikeCommentConainer>
             {buyableProduct ? (
