@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { withRouter, useParams, NavLink } from "react-router-dom";
+import ImgCrop from "antd-img-crop";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import classNames from "classnames";
 import { pdfjs } from "react-pdf";
 import moment from "moment";
-import { Tooltip, Skeleton, Upload, message, Modal, Button } from "antd";
+import { Tooltip, Skeleton, Upload, message, Modal, Button, Input } from "antd";
 import {
   TeamOutlined,
   UserAddOutlined,
@@ -16,8 +17,10 @@ import {
   ExclamationCircleOutlined,
   UserSwitchOutlined,
   EditOutlined,
+  SaveOutlined,
 } from "@ant-design/icons";
 const { confirm } = Modal;
+const { TextArea } = Input;
 
 import Header from "components/header";
 import ProductTile from "components/ProductTile/ProductTile";
@@ -26,17 +29,18 @@ import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
 import UserAvatar from "components/UserAvatar";
 import MangaDetail from "./MangaDetail";
-import { fetchProducts } from "actions/app";
+import { fetchProducts, submitContactForm } from "actions/app";
 import {
   selectProductsState,
+  selectUser,
   selectUserByIdOrCurrentUser,
   selectUserProducts,
-  selectUserStallView,
 } from "selectors/app";
 import { selectStallState } from "selectors/stall";
 import {
   getGdayPunchResourceUrl,
   getGdayPunchStaticUrl,
+  hasPrivilege,
   makeSafeUrl,
   removeHtml,
 } from "utils/utils";
@@ -79,7 +83,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 function Stall({ history }) {
   const { userId } = useParams();
-  const currentUser = useSelector(selectUserStallView);
+  const currentUser = useSelector(selectUser);
   const myStallView = !userId;
 
   const user = useSelector(selectUserByIdOrCurrentUser(userId));
@@ -100,11 +104,15 @@ function Stall({ history }) {
   const [followingModalOpen, updateFollowingModalOpen] = useState(false);
   const [uploadingManga, updateUploadingManga] = useState(false);
   const [uploadingMangaData, updateUploadingMangaData] = useState(undefined);
+  const [newCover, updateNewCover] = useState(undefined);
+  const [coverLoading, toggleCoverLoading] = useState(false);
   const [coverPageNumber, updateCoverPageNumber] = useState(1);
   const [uploadingDetails, updateUploadingDetails] =
     useState(initialUploadState);
   const [editingBio, toggleEditingBio] = useState(undefined);
   const [newBio, updateNewBio] = useState(undefined);
+  // const [reportDetails, updateReportDetails] = useState(undefined);
+  // const reportRef = useRef(reportDetails);
   // const [editingManga, updateEditingManga] = useState(undefined);
 
   useScrollTop();
@@ -128,6 +136,10 @@ function Stall({ history }) {
       history.replace("/my-stall");
     }
   }, [userId, currentUser]);
+
+  // useEffect(() => {
+  //   reportRef.current = reportDetails;
+  // }, [reportDetails]);
 
   useEffect(() => {
     if (
@@ -188,6 +200,30 @@ function Stall({ history }) {
     });
   };
 
+  const beforeCoverUpload = (file) => {
+    const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
+    if (!isJpgOrPng) {
+      message.error("You can only upload an image (PNG or JPG) file!");
+    }
+    const isLt40M = file.size / 1024 / 1024 < 4;
+    if (!isLt40M) {
+      message.error("Image must smaller than 4MB!");
+    }
+    return isJpgOrPng && isLt40M;
+  };
+
+  const handleCoverChange = (info) => {
+    toggleCoverLoading(true);
+    getBase64(info.file.originFileObj, (coverUrl) => {
+      updateNewCover(coverUrl);
+      toggleCoverLoading(false);
+      message.alert(
+        "Like your NEW cover? Save now (bottom right) before you forget!",
+        4
+      );
+    });
+  };
+
   const updateBio = (bio) => {
     return {
       __html: bio,
@@ -237,6 +273,62 @@ function Stall({ history }) {
     });
   };
 
+  const reportUser = () => {
+    let reportDetails = undefined;
+
+    const handleReport = () => {
+      if (!reportDetails?.length) {
+        message.error(
+          "Please add details to your report to help us better deal with the problem."
+        );
+      } else {
+        dispatch(
+          submitContactForm({
+            name: currentUser.author_details.name,
+            email: currentUser.email,
+            reason: "report",
+            content: JSON.stringify({
+              id: user.id,
+              name: user.name,
+              content: reportDetails,
+            }),
+          })
+        );
+        message.success(
+          "Report submitted! We will get back to you as soon as possible."
+        );
+      }
+    };
+
+    confirm({
+      title: `Reporting user: ${user.name}`,
+      icon: <ExclamationCircleOutlined />,
+      okText: "Submit",
+      content: (
+        <ConfirmUploadSummary>
+          <div className="summary-item">
+            <h4>{"User"}</h4>
+            <p>{user.name}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Report Date"}</h4>
+            <p>{moment(moment.now()).format("LLL")}</p>
+          </div>
+          <TextArea
+            rows={5}
+            value={reportDetails}
+            placeholder="Report details"
+            onChange={(e) => (reportDetails = e.target.value)}
+          />
+        </ConfirmUploadSummary>
+      ),
+      onOk() {
+        handleReport();
+      },
+      onCancel() {},
+    });
+  };
+
   return (
     <StallContainer className="App">
       {/* {editingManga ? (
@@ -274,9 +366,44 @@ function Stall({ history }) {
         </FollowingModal>
       ) : null}
       <Header
-        editable={myStallView}
+        loading={coverLoading}
+        editable={
+          myStallView ? (
+            <ImgCrop aspect={3 / 1} rotate shape="rect" quality={0.2}>
+              <Upload
+                disabled={!!uploadingMangaData}
+                name="cover-uploader"
+                listType="picture-card"
+                className={classNames("cover-uploader", { editing: false })}
+                showUploadList={false}
+                openFileDialogOnClick={true}
+                customRequest={() => null}
+                beforeUpload={beforeCoverUpload}
+                onChange={handleCoverChange}
+                // onPreview={onPreview}
+              >
+                {newCover ? (
+                  <Tooltip title="Save Changes">
+                    <SaveOutlined
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        alert("saving");
+                        dispatch(doUpdateUserDetails({ cover: newCover }));
+                      }}
+                    />
+                  </Tooltip>
+                ) : null}
+                <Tooltip title="Change Cover">
+                  <EditOutlined />
+                </Tooltip>
+              </Upload>
+            </ImgCrop>
+          ) : null
+        }
         background={
-          user?.cover
+          newCover
+            ? newCover
+            : user?.cover
             ? getGdayPunchStaticUrl(user.cover)
             : getGdayPunchResourceUrl("launch-background.png")
         }
@@ -299,7 +426,7 @@ function Stall({ history }) {
                   <div
                     className="icon-amount-container"
                     onClick={() => {
-                      if (!user.following_users.length) {
+                      if (!user?.following_users?.length) {
                         dispatch(fetchFollowings(user.id));
                       }
                       updateFollowingModalOpen(true);
@@ -336,11 +463,22 @@ function Stall({ history }) {
                   >
                     {!user.following ? "Follow" : "Unfollow"}
                   </SocialButton>
-                  <Tooltip title="Coming Soon">
+                  {/* <Tooltip title="Coming Soon">
                     <SocialButton type="primary" disabled>
                       Add Friend
                     </SocialButton>
-                  </Tooltip>
+                  </Tooltip> */}
+                  {!myStallView && (
+                    <Tooltip title="Report User">
+                      <SocialButton
+                        type="default"
+                        icon={<ExclamationCircleOutlined />}
+                        onClick={() => reportUser()}
+                      >
+                        Report
+                      </SocialButton>
+                    </Tooltip>
+                  )}
                 </div>
               ) : null}
             </ProfileDetails>
@@ -361,9 +499,11 @@ function Stall({ history }) {
                   className="bio"
                   dangerouslySetInnerHTML={updateBio(user.bio || `No bio.`)}
                 ></p>
-                <Tooltip title="Edit Bio">
-                  <EditOutlined onClick={() => toggleEditingBio(true)} />
-                </Tooltip>
+                {myStallView ? (
+                  <Tooltip title="Edit Bio">
+                    <EditOutlined onClick={() => toggleEditingBio(true)} />
+                  </Tooltip>
+                ) : null}
               </BioPreview>
             ) : null}
             {editingBio ? (
@@ -421,7 +561,7 @@ function Stall({ history }) {
           {userProducts.map((product) => {
             return product ? (
               <ProductTile
-                editable={myStallView}
+                editable={myStallView || hasPrivilege(currentUser, "admin")}
                 key={`${product.id}_${product.quantity || 0}`}
                 // editCallback={(manga) =>
                 //   updateEditingManga(normaliseProductData(manga))

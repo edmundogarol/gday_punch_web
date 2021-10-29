@@ -131,7 +131,9 @@ export function* deleteProductCall(action) {
   } else {
     console.log("Product delete error", JSON.stringify(response));
     message.error(
-      "There was a problem with trying to delete this manga. Try again later."
+      response.data.error ||
+        "There was a problem with trying to delete this manga. Try again later.",
+      7
     );
   }
 }

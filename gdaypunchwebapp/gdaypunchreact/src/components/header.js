@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { useSelector } from "react-redux";
 import { EditOutlined } from "@ant-design/icons";
 
+import LoadingSpinner from "components/loadingSpinner";
 import { selectLoginViewToggle, selectNavMinified } from "selectors/app";
 import { UserAvatarComponent } from "./UserAvatar";
 import { device } from "utils/styles";
@@ -80,6 +81,15 @@ export const HeaderContainer = styled.div`
       : ""}
 
   ${(props) =>
+    props.currloading
+      ? `
+        ${Overlay} {
+          display: initial;
+        }
+        `
+      : ""}
+
+  ${(props) =>
     props.overlay
       ? `
         &:hover {
@@ -87,9 +97,14 @@ export const HeaderContainer = styled.div`
           //   display: initial;
           // }
 
-          .anticon {
-            svg {
-              color: white;
+          .cover-uploader {
+            .anticon-edit, .anticon-save {
+              path {
+                fill: white;
+                stroke: dimgrey;
+                stroke-width: 2em;
+                stroke-linejoin: round;
+              }
             }
           }
         }
@@ -113,6 +128,22 @@ export const HeaderContainer = styled.div`
       cursor: pointer;
     }
   }
+
+  .anticon-save {
+    right: 4em;
+  }
+
+  .ant-spin-dot {
+    z-index: 2;
+    position: absolute;
+    right: unset;
+    top: 50%;
+
+    svg {
+      height: 3em;
+      width: 3em;
+    }
+  }
 `;
 export const HomeHeroLogo = styled.div`
   align-items: center;
@@ -125,18 +156,20 @@ export const HomeHeroLogo = styled.div`
 `;
 
 export default function Header(props) {
-  const { children, background, editable } = props;
+  const { children, background, editable, loading } = props;
   const navMinified = useSelector(selectNavMinified);
   const loginView = useSelector(selectLoginViewToggle);
 
   return (
     <HeaderContainer
+      currloading={loading}
       background={background}
       navMinified={navMinified}
       overlay={editable}
     >
       {editable && <Overlay />}
-      {editable && <EditOutlined />}
+      {loading && <LoadingSpinner />}
+      {editable}
       {background ? (
         children
       ) : (

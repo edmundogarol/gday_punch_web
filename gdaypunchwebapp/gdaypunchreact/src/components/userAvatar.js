@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink, withRouter } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import styled from "styled-components";
@@ -9,7 +9,6 @@ import {
   LikeOutlined,
   UserSwitchOutlined,
 } from "@ant-design/icons";
-import moment from "moment";
 
 import {
   getGdayPunchResourceUrl,
@@ -168,9 +167,8 @@ function UserAvatar({ author = initialAuthor, noPreview, history }) {
       src={
         useImage
           ? useImage.includes("gdaypunch-static.s3.amazonaws")
-            ? useImage + `?${moment(moment.now()).format("YYMMDDhhmm")}`
-            : getGdayPunchStaticUrl(useImage) +
-              `?${moment(moment.now()).format("YYMMDDhhmm")}`
+            ? useImage
+            : getGdayPunchStaticUrl(useImage)
           : getGdayPunchResourceUrl("default-avatar.png")
       }
     />

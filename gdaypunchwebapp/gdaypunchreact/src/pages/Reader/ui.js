@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
+import moment from "moment";
+import { useDispatch } from "react-redux";
 import { Page, pdfjs } from "react-pdf";
-import { useParams } from "react-router-dom";
-import { Modal, Input, Slider } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { useParams, NavLink } from "react-router-dom";
+import { Modal, Input, Slider, Tooltip, message } from "antd";
+import { UserOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Document } from "react-pdf/dist/entry.webpack";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+const { TextArea } = Input;
+const { confirm } = Modal;
 import {
   faChevronCircleRight,
   faChevronCircleLeft,
@@ -17,8 +21,10 @@ import {
 import LoadingSpinner from "components/loadingSpinner";
 import { ReaderContainer, LikeButton } from "./styles";
 import { useScrollTop } from "utils/hooks/useScrollTop";
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchStaticUrl, makeSafeUrl } from "utils/utils";
 import UserAvatar from "components/UserAvatar";
+import { submitContactForm } from "actions/app";
+import { ConfirmUploadSummary } from "pages/Stall/styles";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
@@ -48,6 +54,8 @@ function Ui(props) {
     defaultManga ? (defaultManga === 1 ? 3 : defaultManga) : id
   );
   const styles = getStyles();
+
+  const dispatch = useDispatch();
 
   const pageCount = manga?.page_count;
   const japaneseReading = manga?.japanese_reading;
@@ -130,6 +138,130 @@ function Ui(props) {
     rightNavigatorDisabled
       ? props.history.push("/")
       : setPageNumber(japaneseReading ? pageNumber - 1 : pageNumber + 1);
+
+  const reportComment = (comment) => {
+    let reportDetails = undefined;
+
+    const handleReport = () => {
+      if (!reportDetails?.length) {
+        message.error(
+          "Please add details to your report to help us better deal with the problem."
+        );
+      } else {
+        dispatch(
+          submitContactForm({
+            name: user.author_details.name,
+            email: user.email,
+            reason: "report",
+            content: JSON.stringify({
+              id: comment.author.id,
+              name: comment.author.name,
+              ref: manga.title,
+              refId: manga.product_id,
+              content: `${reportDetails} [comment]: ${comment.content}`,
+            }),
+          })
+        );
+        message.success(
+          "Report submitted! We will get back to you as soon as possible."
+        );
+      }
+    };
+
+    confirm({
+      title: `Reporting comment from user: ${comment.author.name}`,
+      icon: <ExclamationCircleOutlined />,
+      okText: "Submit",
+      content: (
+        <ConfirmUploadSummary>
+          <div className="summary-item">
+            <h4>{"User"}</h4>
+            <p>{comment.author.name}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Comment"}</h4>
+            <p>{comment.content}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Report Date"}</h4>
+            <p>{moment(moment.now()).format("LLL")}</p>
+          </div>
+          <TextArea
+            rows={5}
+            value={reportDetails}
+            placeholder="Report details"
+            onChange={(e) => (reportDetails = e.target.value)}
+          />
+        </ConfirmUploadSummary>
+      ),
+      onOk() {
+        handleReport();
+      },
+      onCancel() {},
+    });
+  };
+
+  const reportManga = () => {
+    let reportDetails = undefined;
+
+    const handleReport = () => {
+      if (!reportDetails?.length) {
+        message.error(
+          "Please add details to your report to help us better deal with the problem."
+        );
+      } else {
+        dispatch(
+          submitContactForm({
+            name: user.author_details.name,
+            email: user.email,
+            reason: "report",
+            content: JSON.stringify({
+              id: manga.author_id,
+              name: manga.author,
+              ref: manga.title,
+              refId: manga.product_id,
+              content: `${reportDetails} [page no.]: ${pageNumber}`,
+            }),
+          })
+        );
+        message.success(
+          "Report submitted! We will get back to you as soon as possible."
+        );
+      }
+    };
+
+    confirm({
+      title: `Reporting user manga: ${manga.author} - ${manga.title}`,
+      icon: <ExclamationCircleOutlined />,
+      okText: "Submit",
+      content: (
+        <ConfirmUploadSummary>
+          <div className="summary-item">
+            <h4>{"Manga"}</h4>
+            <p>{manga.title}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"User"}</h4>
+            <p>{manga.author}</p>
+          </div>
+          <div className="summary-item">
+            <h4>{"Report Date"}</h4>
+            <p>{moment(moment.now()).format("LLL")}</p>
+          </div>
+          <TextArea
+            rows={5}
+            value={reportDetails}
+            placeholder="Report details"
+            onChange={(e) => (reportDetails = e.target.value)}
+          />
+        </ConfirmUploadSummary>
+      ),
+      onOk() {
+        handleReport();
+      },
+      onCancel() {},
+    });
+  };
 
   return (
     <ReaderContainer
@@ -223,6 +355,11 @@ function Ui(props) {
             />
             {`${manga ? manga.likes : 0}`}
           </LikeButton>
+          <Tooltip title="Report Manga">
+            <LikeButton onClick={() => reportManga()}>
+              <ExclamationCircleOutlined />
+            </LikeButton>
+          </Tooltip>
         </div>
       )}
 
@@ -233,7 +370,15 @@ function Ui(props) {
             {comments.map((comment) => (
               <div className="comment" key={comment.id}>
                 <UserAvatar author={comment.author} />
-                <div className="author">{comment.author.name}</div>
+                <div className="author">
+                  <NavLink
+                    to={`/stall/${comment.author.id}/${makeSafeUrl(
+                      comment.author.name
+                    )}`}
+                  >
+                    {comment.author.name}
+                  </NavLink>
+                </div>
                 <div className="content">{comment.content}</div>
                 <LikeButton
                   onClick={() =>
@@ -248,6 +393,11 @@ function Ui(props) {
                   />
                   {`${comment.likes}`}
                 </LikeButton>
+                <Tooltip title="Report comment">
+                  <LikeButton onClick={() => reportComment(comment)}>
+                    <ExclamationCircleOutlined />
+                  </LikeButton>
+                </Tooltip>
               </div>
             ))}
           </div>

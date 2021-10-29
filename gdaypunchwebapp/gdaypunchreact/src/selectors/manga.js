@@ -22,6 +22,8 @@ export const selectReadingManga = createSelector(
     const product = Object.values(productList).find(
       (product) => product.manga_details.id === mangaId
     );
-    return product ? product.manga_details : undefined;
+    return product
+      ? { ...product.manga_details, product_id: product.id }
+      : undefined;
   }
 );

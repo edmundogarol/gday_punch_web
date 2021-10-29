@@ -1,5 +1,6 @@
 import { call, all, takeLatest, select, put } from "redux-saga/effects";
 import { message } from "antd";
+import moment from "moment";
 
 import {
   DO_LOGIN,
@@ -95,33 +96,43 @@ export function* register() {
 }
 
 export function* patchUser(action) {
+  const { user } = action.payload;
+
   yield put(updatingUser());
   const currentUser = yield select(selectUser);
   let form_data;
 
-  if (action.payload.user.image) {
-    const blobFetch = yield call(fetch, action.payload.user.image);
+  form_data = new FormData();
+
+  if (user.image) {
+    const blobFetch = yield call(fetch, user.image);
     const blob = yield blobFetch.blob();
 
-    console.log({ blob });
-    form_data = new FormData();
     form_data.append(
       "image",
       blob,
       `${currentUser.id}_${(
         currentUser.username || currentUser.email
-      ).toLowerCase()}.png`
+      ).toLowerCase()}_${moment(moment.now()).format("YYMMDDhhmmss")}.png`
     );
-
-    Object.keys(action.payload.user).map((key) => {
-      form_data.append(key, action.payload.user[key]);
-    });
-  } else {
-    form_data = new FormData();
-    Object.keys(action.payload.user).map((key) => {
-      form_data.append(key, action.payload.user[key]);
-    });
   }
+  if (user.cover) {
+    const blobFetch = yield call(fetch, user.cover);
+    const blob = yield blobFetch.blob();
+
+    form_data.append(
+      "cover",
+      blob,
+      `${currentUser.id}_${(
+        currentUser.username || currentUser.email
+      ).toLowerCase()}_${moment(moment.now()).format("YYMMDDhhmmss")}.png`
+    );
+  }
+
+  Object.keys(action.payload.user).map((key) => {
+    if (key === "image" || key === "cover") return;
+    form_data.append(key, action.payload.user[key]);
+  });
 
   const response = yield call(api, `user/${currentUser.id}/`, {
     method: "PATCH",

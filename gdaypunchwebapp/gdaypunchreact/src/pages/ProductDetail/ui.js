@@ -40,6 +40,7 @@ import {
 import {
   getGdayPunchResourceUrl,
   getGdayPunchStaticUrl,
+  makeSafeUrl,
   scrollToTop,
 } from "utils/utils";
 import { useScrollTop } from "utils/hooks/useScrollTop";
@@ -319,7 +320,15 @@ function Ui(props) {
                   <MoreDetailsColumn>
                     <LabelFieldContainer>
                       <label>Author</label>
-                      <p>{product.manga_details.author}</p>
+                      <p>
+                        <NavLink
+                          to={`/stall/${
+                            product.manga_details.author_id
+                          }/${makeSafeUrl(product.manga_details.author)}`}
+                        >
+                          {product.manga_details.author}
+                        </NavLink>
+                      </p>
                     </LabelFieldContainer>
                     <LabelFieldContainer>
                       <label>Release Date</label>

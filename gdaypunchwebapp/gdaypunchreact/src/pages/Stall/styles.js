@@ -310,6 +310,24 @@ export const StallContainer = styled.div`
     height: 10em;
     margin: 2em;
   }
+
+  .cover-uploader {
+    .ant-upload {
+      background: transparent;
+      border: none;
+      cursor: initial;
+    }
+
+    .anticon-edit,
+    .anticon-save {
+      path {
+        fill: dimgrey;
+        stroke: white;
+        stroke-width: 3em;
+        stroke-linejoin: round;
+      }
+    }
+  }
 `;
 
 export const ProfileDetails = styled.div`

@@ -2,6 +2,7 @@ import os
 import stripe
 
 from django.db.utils import IntegrityError
+from django.db.models.deletion import ProtectedError
 
 from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
@@ -24,6 +25,7 @@ from ..models import (
     Like,
     Comment,
     CommentLike,
+    Purchase,
 )
 from ..serializers import (
     ProductSerializer,
@@ -133,7 +135,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 description=request.data["description"],
                 title=request.data["title"],
                 image_store=request.data["image"],
-                image_store_public=request.data["image"] if LOCAL_DEV else None,
+                image_store_public=request.data["image"] if not LOCAL_DEV else None,
                 sale_price=sale_price,
                 visible=True if manga else visible,
                 stock=1 if manga else stock,
@@ -209,6 +211,15 @@ class ProductViewSet(viewsets.ModelViewSet):
                 {"error": "Product does not exist."}, status=status.HTTP_404_NOT_FOUND
             )
 
+        purchases = Purchase.objects.all().filter(product=product.id)
+        if purchases:
+            return Response(
+                {
+                    "error": "This product cannot be deleted as it has been purchased or has another user granted access to it."
+                },
+                status=status.HTTP_409_CONFLICT,
+            )
+
         for manga in product.manga.all():
             manga = Manga.objects.get(id=manga.id)
 
@@ -227,6 +238,10 @@ class ProductViewSet(viewsets.ModelViewSet):
 
             manga.pdf.delete()
             manga.delete()
+
+        saves = Save.objects.all().filter(product=product.id)
+        for save in saves:
+            save.delete()
 
         product.image_store.delete()
         product.delete()
