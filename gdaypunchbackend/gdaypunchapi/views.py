@@ -167,6 +167,22 @@ class UserViewSet(ModelViewSet):
         password = request.data.get("password", None)
         email = request.data.get("email", None)
         username = request.data.get("username", None)
+        user_id = request.data.get("user_id", None)
+        cover = request.data.get("cover", None)
+        image_avatar = request.data.get("avatar", None)
+
+        if str(cover) == "remove":
+            user = User.objects.get(id=user_id)
+            user.cover.delete()
+
+            return Response({"success": "Removed user cover."})
+
+        if str(image_avatar) == "remove":
+            user = User.objects.get(id=user_id)
+            user.image.delete()
+
+            serializer = UserSerializer(user)
+            return Response({"success": "Removed user avatar."})
 
         if request.data.get("image", None):
             parser_classes = (MultiPartParser, FormParser)
@@ -205,7 +221,7 @@ class UserViewSet(ModelViewSet):
             else:
                 os.remove(os.path.join(MEDIA_ROOT, user.image.name))
 
-        if request.data.get("cover", None) and user.cover:
+        if cover and user.cover:
             if S3_STORAGE:
                 user.cover.delete()
             else:

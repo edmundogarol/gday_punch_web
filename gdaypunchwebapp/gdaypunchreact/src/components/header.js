@@ -98,7 +98,7 @@ export const HeaderContainer = styled.div`
           // }
 
           .cover-uploader {
-            .anticon-edit, .anticon-save {
+            .anticon-edit, .anticon-save, .anticon-delete, .anticon-close  {
               path {
                 fill: white;
                 stroke: dimgrey;
@@ -129,9 +129,19 @@ export const HeaderContainer = styled.div`
     }
   }
 
-  .anticon-save {
+  .anticon-save,
+  .anticon-delete {
     right: 4em;
   }
+
+  ${(props) =>
+    props.editing
+      ? `
+      .anticon-delete {
+        right: 7em;
+      }
+    `
+      : ""}
 
   .ant-spin-dot {
     z-index: 2;
@@ -156,12 +166,13 @@ export const HomeHeroLogo = styled.div`
 `;
 
 export default function Header(props) {
-  const { children, background, editable, loading } = props;
+  const { children, background, editable, loading, editing } = props;
   const navMinified = useSelector(selectNavMinified);
   const loginView = useSelector(selectLoginViewToggle);
 
   return (
     <HeaderContainer
+      editing={editing}
       currloading={loading}
       background={background}
       navMinified={navMinified}

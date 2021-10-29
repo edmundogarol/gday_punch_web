@@ -38,6 +38,7 @@ import {
   updateStallData,
   fetchingStallDataFinished,
   fetchingStallDataError,
+  fetchStallData,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -116,7 +117,7 @@ export function* patchUser(action) {
       ).toLowerCase()}_${moment(moment.now()).format("YYMMDDhhmmss")}.png`
     );
   }
-  if (user.cover) {
+  if (user.cover && user.cover !== "remove") {
     const blobFetch = yield call(fetch, user.cover);
     const blob = yield blobFetch.blob();
 
@@ -130,27 +131,35 @@ export function* patchUser(action) {
   }
 
   Object.keys(action.payload.user).map((key) => {
-    if (key === "image" || key === "cover") return;
+    if (key === "image" || (key === "cover" && user.cover !== "remove")) return;
     form_data.append(key, action.payload.user[key]);
   });
 
-  const response = yield call(api, `user/${currentUser.id}/`, {
-    method: "PATCH",
-    body: form_data || { ...action.payload.user },
-    // Use null here so gtfetch knows to remove contentType setting
-    contentType: null,
-  });
+  const response = yield call(
+    api,
+    `user/${user.user_id ? user.user_id : currentUser.id}/`,
+    {
+      method: "PATCH",
+      body: form_data || { ...action.payload.user },
+      // Use null here so gtfetch knows to remove contentType setting
+      contentType: null,
+    }
+  );
 
   if (response && response.ok) {
     const data = response.data;
-    const user = {
+    const incoming_user = {
       ...data,
     };
 
-    yield put(updateUser(user));
-    yield put(updatingUserFinished());
+    if (user.user_id) {
+      yield put(fetchStallData(user.user_id));
+    } else {
+      yield put(updateUser(incoming_user));
+      yield put(updatingUserFinished());
+      yield put(updateUserError(undefined));
+    }
     message.success(`Successfully updated profile`);
-    yield put(updateUserError(undefined));
   } else {
     console.log("Update user details error", JSON.stringify(response));
     yield put(updatingUserFinished());

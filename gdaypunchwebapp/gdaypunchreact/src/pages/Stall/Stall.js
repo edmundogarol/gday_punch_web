@@ -18,6 +18,8 @@ import {
   UserSwitchOutlined,
   EditOutlined,
   SaveOutlined,
+  DeleteOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -31,6 +33,7 @@ import UserAvatar from "components/UserAvatar";
 import MangaDetail from "./MangaDetail";
 import { fetchProducts, submitContactForm } from "actions/app";
 import {
+  selectLoggedIn,
   selectProductsState,
   selectUser,
   selectUserByIdOrCurrentUser,
@@ -43,6 +46,7 @@ import {
   hasPrivilege,
   makeSafeUrl,
   removeHtml,
+  scrollToTop,
 } from "utils/utils";
 import { normaliseProductData } from "utils/manga";
 import { useScrollTop } from "utils/hooks/useScrollTop";
@@ -64,6 +68,8 @@ import {
   followUser,
   unfollowUser,
   doUpdateUserDetails,
+  openRegistration,
+  doSuggestRegister,
 } from "actions/user";
 
 const initialUploadState = {
@@ -83,6 +89,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 function Stall({ history }) {
   const { userId } = useParams();
+  const loggedIn = useSelector(selectLoggedIn);
   const currentUser = useSelector(selectUser);
   const myStallView = !userId;
 
@@ -215,12 +222,12 @@ function Stall({ history }) {
   const handleCoverChange = (info) => {
     toggleCoverLoading(true);
     getBase64(info.file.originFileObj, (coverUrl) => {
+      message.warn(
+        "Like your NEW cover? Save now (bottom right) before you forget!",
+        7
+      );
       updateNewCover(coverUrl);
       toggleCoverLoading(false);
-      message.alert(
-        "Like your NEW cover? Save now (bottom right) before you forget!",
-        4
-      );
     });
   };
 
@@ -329,6 +336,46 @@ function Stall({ history }) {
     });
   };
 
+  const removeCover = () => {
+    confirm({
+      title: `Remove cover of [${user.name}]?`,
+      icon: <ExclamationCircleOutlined />,
+      okText: "Remove",
+      onOk() {
+        dispatch(doUpdateUserDetails({ cover: "remove", user_id: user.id }));
+      },
+      onCancel() {},
+    });
+  };
+
+  const removeAvatar = () => {
+    confirm({
+      title: `Remove avatar of [${user.name}]?`,
+      icon: <ExclamationCircleOutlined />,
+      okText: "Remove",
+      onOk() {
+        dispatch(doUpdateUserDetails({ avatar: "remove", user_id: user.id }));
+      },
+      onCancel() {},
+    });
+  };
+
+  const handleFollow = () => {
+    if (!loggedIn) {
+      scrollToTop();
+      dispatch(openRegistration());
+      dispatch(
+        doSuggestRegister("Info: Sign up or Log in to follow this account!")
+      );
+      history.push("/");
+      return;
+    } else {
+      dispatch(
+        user.following ? unfollowUser(user.following) : followUser(user.id)
+      );
+    }
+  };
+
   return (
     <StallContainer className="App">
       {/* {editingManga ? (
@@ -366,9 +413,10 @@ function Stall({ history }) {
         </FollowingModal>
       ) : null}
       <Header
+        editing={newCover}
         loading={coverLoading}
         editable={
-          myStallView ? (
+          myStallView || hasPrivilege(currentUser, "admin") ? (
             <ImgCrop aspect={3 / 1} rotate shape="rect" quality={0.2}>
               <Upload
                 disabled={!!uploadingMangaData}
@@ -382,19 +430,37 @@ function Stall({ history }) {
                 onChange={handleCoverChange}
                 // onPreview={onPreview}
               >
+                {hasPrivilege(currentUser, "admin") ? (
+                  <Tooltip title="Remove Cover">
+                    <DeleteOutlined
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeCover();
+                      }}
+                    />
+                  </Tooltip>
+                ) : null}
                 {newCover ? (
                   <Tooltip title="Save Changes">
                     <SaveOutlined
                       onClick={(e) => {
                         e.stopPropagation();
-                        alert("saving");
                         dispatch(doUpdateUserDetails({ cover: newCover }));
                       }}
                     />
                   </Tooltip>
                 ) : null}
-                <Tooltip title="Change Cover">
-                  <EditOutlined />
+                <Tooltip title={newCover ? "Cancel" : "Change Cover"}>
+                  {newCover ? (
+                    <CloseOutlined
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        newCover ? updateNewCover(undefined) : null;
+                      }}
+                    />
+                  ) : (
+                    <EditOutlined />
+                  )}
                 </Tooltip>
               </Upload>
             </ImgCrop>
@@ -409,6 +475,17 @@ function Stall({ history }) {
         }
       >
         <UserAvatar author={user} />
+        {hasPrivilege(currentUser, "admin") ? (
+          <Tooltip title="Remove Avatar">
+            <DeleteOutlined
+              className="avatar-delete"
+              onClick={(e) => {
+                e.stopPropagation();
+                removeAvatar();
+              }}
+            />
+          </Tooltip>
+        ) : null}
       </Header>
       <FeaturedSection idx={1}>
         {user ? (
@@ -451,16 +528,7 @@ function Stall({ history }) {
               </div>
               {!myStallView && user.id ? (
                 <div className="socials">
-                  <SocialButton
-                    type="primary"
-                    onClick={() =>
-                      dispatch(
-                        user.following
-                          ? unfollowUser(user.following)
-                          : followUser(user.id)
-                      )
-                    }
-                  >
+                  <SocialButton type="primary" onClick={() => handleFollow()}>
                     {!user.following ? "Follow" : "Unfollow"}
                   </SocialButton>
                   {/* <Tooltip title="Coming Soon">
@@ -468,7 +536,7 @@ function Stall({ history }) {
                       Add Friend
                     </SocialButton>
                   </Tooltip> */}
-                  {!myStallView && (
+                  {!myStallView && loggedIn && (
                     <Tooltip title="Report User">
                       <SocialButton
                         type="default"

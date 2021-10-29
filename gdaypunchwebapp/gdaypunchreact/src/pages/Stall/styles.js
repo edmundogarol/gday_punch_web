@@ -319,12 +319,38 @@ export const StallContainer = styled.div`
     }
 
     .anticon-edit,
-    .anticon-save {
+    .anticon-save,
+    .anticon-delete,
+    .anticon-close {
       path {
         fill: dimgrey;
         stroke: white;
         stroke-width: 3em;
         stroke-linejoin: round;
+      }
+    }
+  }
+
+  .avatar-delete {
+    position: absolute;
+    border-radius: 5em;
+    width: 9em;
+    height: 9em;
+    left: 5em;
+    top: 16em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      height: 4em;
+      width: 4em;
+      color: transparent;
+    }
+
+    &:hover {
+      svg {
+        color: white;
       }
     }
   }
