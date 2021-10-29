@@ -108,6 +108,7 @@ function Stall({ history }) {
   } = useSelector(selectStallState);
   const dispatch = useDispatch();
 
+  const [idMonitor, updateIdMonitor] = useState(undefined);
   const [followingModalOpen, updateFollowingModalOpen] = useState(false);
   const [uploadingManga, updateUploadingManga] = useState(false);
   const [uploadingMangaData, updateUploadingMangaData] = useState(undefined);
@@ -116,11 +117,8 @@ function Stall({ history }) {
   const [coverPageNumber, updateCoverPageNumber] = useState(1);
   const [uploadingDetails, updateUploadingDetails] =
     useState(initialUploadState);
-  const [editingBio, toggleEditingBio] = useState(undefined);
+  const [editingBio, toggleEditingBio] = useState(false);
   const [newBio, updateNewBio] = useState(undefined);
-  // const [reportDetails, updateReportDetails] = useState(undefined);
-  // const reportRef = useRef(reportDetails);
-  // const [editingManga, updateEditingManga] = useState(undefined);
 
   useScrollTop();
 
@@ -144,9 +142,12 @@ function Stall({ history }) {
     }
   }, [userId, currentUser]);
 
-  // useEffect(() => {
-  //   reportRef.current = reportDetails;
-  // }, [reportDetails]);
+  useEffect(() => {
+    if (user?.bio || user?.bio === "") {
+      updateNewBio(undefined);
+      toggleEditingBio(false);
+    }
+  }, [user?.bio]);
 
   useEffect(() => {
     if (
@@ -158,6 +159,7 @@ function Stall({ history }) {
     ) {
       dispatch(fetchProducts(userId));
       dispatch(fetchStallData(userId));
+      updateIdMonitor(userId);
     } else if (
       currentUser.id &&
       !fetching &&
@@ -167,6 +169,7 @@ function Stall({ history }) {
     ) {
       dispatch(fetchProducts(currentUser.id));
       dispatch(fetchStallData(currentUser.id));
+      updateIdMonitor(currentUser.id);
     }
   }, [
     fetching,
@@ -175,6 +178,15 @@ function Stall({ history }) {
     fetchingErrors,
     myStallView,
   ]);
+
+  useEffect(() => {
+    if (fetchingFinished) {
+      if (parseInt(userId) !== parseInt(idMonitor)) {
+        dispatch(resetStallChecks());
+        updateFollowingModalOpen(false);
+      }
+    }
+  }, [fetchingFinished, userId]);
 
   useEffect(() => {
     return () => {
@@ -360,6 +372,18 @@ function Stall({ history }) {
     });
   };
 
+  const removeUsername = () => {
+    confirm({
+      title: `Remove username of [${user.name}]?`,
+      icon: <ExclamationCircleOutlined />,
+      okText: "Remove",
+      onOk() {
+        dispatch(doUpdateUserDetails({ username: "", user_id: user.id }));
+      },
+      onCancel() {},
+    });
+  };
+
   const handleFollow = () => {
     if (!loggedIn) {
       scrollToTop();
@@ -491,7 +515,19 @@ function Stall({ history }) {
         {user ? (
           <>
             <ProfileDetails>
-              <SectionTitle>{user.name}</SectionTitle>
+              <SectionTitle>
+                {user.name}
+                {hasPrivilege(currentUser, "admin") ? (
+                  <Tooltip title="Remove Username">
+                    <DeleteOutlined
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeUsername();
+                      }}
+                    />
+                  </Tooltip>
+                ) : null}
+              </SectionTitle>
               <div className="stats">
                 <Tooltip title="Friends (Coming Soon)">
                   <div className="icon-amount-container coming-soon">
@@ -567,7 +603,7 @@ function Stall({ history }) {
                   className="bio"
                   dangerouslySetInnerHTML={updateBio(user.bio || `No bio.`)}
                 ></p>
-                {myStallView ? (
+                {myStallView || hasPrivilege(currentUser, "admin") ? (
                   <Tooltip title="Edit Bio">
                     <EditOutlined onClick={() => toggleEditingBio(true)} />
                   </Tooltip>
@@ -589,7 +625,19 @@ function Stall({ history }) {
                         "Bio links are only available to seller accounts. Please remove the link and try again."
                       );
                     } else {
-                      dispatch(doUpdateUserDetails({ bio: newBio }));
+                      if (
+                        user.id !== currentUser.id &&
+                        hasPrivilege(currentUser, "admin")
+                      ) {
+                        dispatch(
+                          doUpdateUserDetails({
+                            bio: removeHtml(newBio),
+                            user_id: user.id,
+                          })
+                        );
+                      } else {
+                        dispatch(doUpdateUserDetails({ bio: newBio }));
+                      }
                     }
                   }}
                 >

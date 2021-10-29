@@ -167,9 +167,10 @@ class UserViewSet(ModelViewSet):
         password = request.data.get("password", None)
         email = request.data.get("email", None)
         username = request.data.get("username", None)
-        user_id = request.data.get("user_id", None)
         cover = request.data.get("cover", None)
         image_avatar = request.data.get("avatar", None)
+
+        user_id = request.data.get("user_id", None)
 
         if str(cover) == "remove":
             user = User.objects.get(id=user_id)
@@ -201,7 +202,7 @@ class UserViewSet(ModelViewSet):
                 content = {"error": e}
                 return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        if username is not None:
+        if username is not None and username != "":
             try:
                 user = User.objects.get(username=username)
                 content = {"Error": "User with this username already exists."}
@@ -210,7 +211,7 @@ class UserViewSet(ModelViewSet):
                 pass
 
         queryset = User.objects.all()
-        user = queryset.get(pk=kwargs.get("pk"))
+        user = queryset.get(pk=user_id if user_id else kwargs.get("pk"))
 
         if request.data.get("image", None) and user.image:
             if not LOCAL_DEV:

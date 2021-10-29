@@ -154,6 +154,7 @@ export function* patchUser(action) {
 
     if (user.user_id) {
       yield put(fetchStallData(user.user_id));
+      yield put(updatingUserFinished());
     } else {
       yield put(updateUser(incoming_user));
       yield put(updatingUserFinished());

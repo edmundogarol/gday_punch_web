@@ -62,9 +62,7 @@ export const stallReducer = (state = INITIAL_STATE, action) => {
         fetchingErrors: payload.error,
       };
     case RESET_STALL_CHECKS:
-      return {
-        INITIAL_STATE,
-      };
+      return INITIAL_STATE;
     default:
       return state;
   }
