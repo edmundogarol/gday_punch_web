@@ -6,7 +6,7 @@ import { LoadingOutlined, PlusOutlined, EditOutlined } from "@ant-design/icons";
 import { getGdayPunchResourceUrl } from "utils/utils";
 import Image from "components/image";
 
-function Ui(props) {
+function ProfilePicture(props) {
   const { editing, imageUrl, updateImageUrl, loading, toggleLoading } = props;
 
   const getBase64 = (img, callback) => {
@@ -111,4 +111,4 @@ function Ui(props) {
   );
 }
 
-export default Ui;
+export default ProfilePicture;

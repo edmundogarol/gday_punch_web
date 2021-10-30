@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReadOutlined } from "@ant-design/icons";
 
 import Header from "components/header";
-import Login from "components/login";
+import Login from "components/Login";
 import ProductTile from "components/ProductTile";
 import About from "components/about";
 import FeaturedSection from "components/featuredSection";
