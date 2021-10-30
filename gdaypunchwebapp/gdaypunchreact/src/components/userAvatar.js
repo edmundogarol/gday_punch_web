@@ -156,8 +156,7 @@ function UserAvatar({ author = initialAuthor, noPreview, history }) {
   const loggedIn = useSelector(selectLoggedIn);
   const dispatch = useDispatch();
 
-  // FIXME Temporary before Add Friend is created as the button will remain visible for a while
-  const selfProfilePreview = user.id === id;
+  const selfProfilePreview = user?.id === id;
 
   const useImage = author ? image : user.image;
   const avatarRenderer = (preview) => (

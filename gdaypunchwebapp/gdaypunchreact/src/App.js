@@ -54,11 +54,11 @@ import OrderConfirmation from "pages/OrderConfirmation";
 import ProductDetail from "pages/ProductDetail";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
-import Stall from "pages/Stall/Stall";
+import Stall from "pages/Stall";
 
-import Navigation from "components/Navigation/Navigation";
+import Navigation from "components/Navigation";
 import RoutePage from "components/routePage";
-import SideCart from "components/sideCart";
+import SideCart from "components/SideCart";
 import Footer from "components/footer";
 
 import "antd/dist/antd.css";
@@ -97,7 +97,7 @@ const store = createStore(
 sagaMiddleware.run(rootSaga);
 
 function Root(props) {
-  const { user, loginCheckFinished } = props;
+  const { user } = props;
 
   useEffect(() => {
     props.checkLogin();
@@ -176,7 +176,7 @@ function Root(props) {
               path="/my-stall"
               component={Stall}
               title="My Stall"
-              condition={user.logged_in}
+              condition={user?.logged_in}
             />
             <RoutePage
               exact
@@ -222,25 +222,25 @@ function Root(props) {
               titleSetInside
             />
             <ProtectedRoute
-              condition={user.logged_in}
+              condition={user?.logged_in}
               exact
               path="/account"
               component={Account}
             />
             <ProtectedRoute
-              condition={user.logged_in}
+              condition={user?.logged_in}
               exact
               path="/account/:tab"
               component={Account}
             />
             <ProtectedRoute
-              condition={user.logged_in}
+              condition={user?.logged_in}
               exact
               path="/bookshelf"
               component={Bookshelf}
             />
             <ProtectedRoute
-              condition={user.logged_in && user.verified === "verified"}
+              condition={user?.logged_in && user?.verified === "verified"}
               titleSetInside
               exact
               path="/manga/:id"
@@ -248,19 +248,19 @@ function Root(props) {
             />
             <ProtectedRoute
               exact
-              condition={user.is_staff}
+              condition={user?.is_staff}
               path="/admin"
               component={Admin}
             />
             <ProtectedRoute
               exact
-              condition={user.is_staff}
+              condition={user?.is_staff}
               path="/admin/:app"
               component={Admin}
             />
             <ProtectedRoute
               exact
-              condition={user.is_staff}
+              condition={user?.is_staff}
               path="/admin/:app/:productId"
               component={Admin}
             />

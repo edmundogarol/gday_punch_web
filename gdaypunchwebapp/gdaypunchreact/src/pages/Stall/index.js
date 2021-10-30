@@ -25,7 +25,7 @@ const { confirm } = Modal;
 const { TextArea } = Input;
 
 import Header from "components/header";
-import ProductTile from "components/ProductTile/ProductTile";
+import ProductTile from "components/ProductTile";
 import FeaturedSection from "components/featuredSection";
 import { FeaturedList } from "components/featuredList";
 import { SectionTitle } from "components/sectionTitle";
@@ -180,7 +180,7 @@ function Stall({ history }) {
   ]);
 
   useEffect(() => {
-    if (fetchingFinished) {
+    if (fetchingFinished && !myStallView) {
       if (parseInt(userId) !== parseInt(idMonitor)) {
         dispatch(resetStallChecks());
         updateFollowingModalOpen(false);
@@ -374,11 +374,16 @@ function Stall({ history }) {
 
   const removeUsername = () => {
     confirm({
-      title: `Remove username of [${user.name}]?`,
+      title: `Assign default username to [${user.name}]?`,
       icon: <ExclamationCircleOutlined />,
-      okText: "Remove",
+      okText: "Assign",
       onOk() {
-        dispatch(doUpdateUserDetails({ username: "", user_id: user.id }));
+        dispatch(
+          doUpdateUserDetails({
+            username: "user_" + moment(moment.now()).format("YYMMDDhhmmss"),
+            user_id: user.id,
+          })
+        );
       },
       onCancel() {},
     });
@@ -518,7 +523,7 @@ function Stall({ history }) {
               <SectionTitle>
                 {user.name}
                 {hasPrivilege(currentUser, "admin") ? (
-                  <Tooltip title="Remove Username">
+                  <Tooltip title="Assign Default Username">
                     <DeleteOutlined
                       onClick={(e) => {
                         e.stopPropagation();

@@ -12,6 +12,7 @@ export const SUBMIT_CONTACT_FORM = "app/SUBMIT_CONTACT_FORM";
 export const UPDATE_CONTACT_FORM_ERRORS = "app/UPDATE_CONTACT_FORM_ERRORS";
 export const UPDATE_CONTACT_FORM_SUBMITTED =
   "app/UPDATE_CONTACT_FORM_SUBMITTED";
+export const RESET_FETCHING_PRODUCTS = "app/RESET_FETCHING_PRODUCTS";
 
 export const toggleNavMinified = (minified) => ({
   type: TOGGLE_NAV_MINIFIED,
@@ -53,6 +54,10 @@ export const updateProducts = (products, adding) => ({
     products,
     adding,
   },
+});
+
+export const resetFetchingProducts = () => ({
+  type: RESET_FETCHING_PRODUCTS,
 });
 
 export const submitContactForm = (form, subscriptionType) => ({

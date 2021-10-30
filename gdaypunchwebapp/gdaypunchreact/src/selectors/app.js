@@ -9,21 +9,24 @@ export const selectNavMinified = createSelector(
   ({ navMinified }) => navMinified
 );
 
-export const selectUser = createSelector(selectDomain, ({ user }) => user);
+export const selectUser = createSelector(
+  selectDomain,
+  ({ user }) => user || {}
+);
 
 export const selectUserStallView = createSelector(
   selectDomain,
-  ({ user, users: { list } }) => list[user.id] || user
+  ({ user, users }) => users?.list[user?.id] || user
 );
 
 export const selectUserByIdOrCurrentUser = (id) =>
   createSelector(
     selectDomain,
-    ({ user, users: { list } }) => list[id || user.id]
+    ({ user, users }) => users?.list[id || user?.id]
   );
 
 export const selectUserById = (id) =>
-  createSelector(selectDomain, ({ users: { list } }) => list[id]);
+  createSelector(selectDomain, ({ users }) => users?.list[id]);
 
 export const selectLoginViewToggle = createSelector(
   selectDomain,
@@ -32,7 +35,7 @@ export const selectLoginViewToggle = createSelector(
 
 export const selectLoggedIn = createSelector(
   selectDomain,
-  ({ user }) => user.logged_in || false
+  ({ user }) => user?.logged_in || false
 );
 
 export const selectLoginError = createSelector(
@@ -158,7 +161,10 @@ export const selectResetPasswordState = createSelector(
   ({ resetPassword }) => resetPassword
 );
 
-export const selectCartState = createSelector(selectDomain, ({ cart }) => cart);
+export const selectCartState = createSelector(
+  selectDomain,
+  ({ cart }) => cart || {}
+);
 
 export const selectSideCartOpen = createSelector(
   selectDomain,

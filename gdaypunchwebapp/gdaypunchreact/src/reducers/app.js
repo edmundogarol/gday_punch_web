@@ -37,6 +37,7 @@ import {
   TOGGLE_NAV_MINIFIED,
   UPDATE_USERS,
   FETCHED_ALL_PRODUCTS,
+  RESET_FETCHING_PRODUCTS,
 } from "actions/app";
 import {
   FETCHING_CART_ITEMS,
@@ -411,6 +412,14 @@ const appReducer = (state = INITIAL_STATE, action) => {
           ...state.products,
           fetchingProducts: false,
           finishedFetchingProducts: true,
+        },
+      };
+    case RESET_FETCHING_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          finishedFetchingProducts: false,
         },
       };
     case UPDATE_CONTACT_FORM_ERRORS:

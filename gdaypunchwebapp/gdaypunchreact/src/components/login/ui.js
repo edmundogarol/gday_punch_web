@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { isEmpty } from "lodash";
 
 import { ErrorField } from "components/errorField";
@@ -15,7 +14,6 @@ import {
   SignUpButton,
   ForgotPassword,
 } from "./styles";
-import { NavLink } from "react-router-dom";
 
 function Ui(props) {
   const {

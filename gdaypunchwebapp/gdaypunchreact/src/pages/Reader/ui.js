@@ -30,7 +30,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 function Ui(props) {
   const {
-    defaultManga,
     readerOnly,
     manga,
     getManga,
@@ -42,17 +41,15 @@ function Ui(props) {
     likeManga,
     user,
   } = props;
+
   const [pageNumber, setPageNumber] = useState(1);
   const [sizeLevel, setSizeLevel] = useState(0);
   const [newUsername, setNewUsername] = useState();
   const [comment, setComment] = useState("");
   const [submittingUsername, setSubmittingUsername] = useState(false);
   const [modal, contextHolder] = Modal.useModal();
-  const { id } = useParams();
-  const mangaId = parseInt(
-    // Temporary Fix for deploying new site and still give access to current gdaypunch.com manga
-    defaultManga ? (defaultManga === 1 ? 3 : defaultManga) : id
-  );
+  const { id: mangaId } = useParams();
+
   const styles = getStyles();
 
   const dispatch = useDispatch();
@@ -118,11 +115,7 @@ function Ui(props) {
     const { setReadingManga, manga } = props;
     const newManga = manga?.id !== mangaId;
 
-    if (defaultManga && (manga === undefined || newManga)) {
-      setReadingManga(defaultManga === 1 ? 3 : defaultManga);
-      getManga(defaultManga === 1 ? 3 : defaultManga);
-      getComments(defaultManga === 1 ? 3 : defaultManga);
-    } else if (manga === undefined || newManga) {
+    if (manga === undefined || newManga) {
       setReadingManga(mangaId);
       getManga(mangaId);
       getComments(mangaId);

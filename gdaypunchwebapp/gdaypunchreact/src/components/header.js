@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { useSelector } from "react-redux";
-import { EditOutlined } from "@ant-design/icons";
 
 import LoadingSpinner from "components/loadingSpinner";
 import { selectLoginViewToggle, selectNavMinified } from "selectors/app";
