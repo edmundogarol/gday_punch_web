@@ -21,7 +21,7 @@ import { contactFormSubmitted, submitContactForm } from "actions/app";
 const { TextArea } = Input;
 const { Option } = Select;
 
-function Ui() {
+function Contact() {
   const { errors: contactErrors, submitted } = useSelector(selectContactState);
 
   const dispatch = useDispatch();
@@ -168,4 +168,4 @@ function Ui() {
   );
 }
 
-export default Ui;
+export default Contact;
