@@ -373,13 +373,19 @@ const appReducer = (state = INITIAL_STATE, action) => {
         },
       };
     case UPDATE_USERS:
+      const incomingUsersObjectMapped = arrayIdsMapToObject(payload.users);
+      const mergedUsersData = Object.values(state.users.list).map((user) => ({
+        ...user,
+        ...incomingUsersObjectMapped[user.id],
+      }));
+
       return {
         ...state,
         users: {
           ...state.users,
           list: {
             ...state.users.list,
-            ...arrayIdsMapToObject(payload.users),
+            ...arrayIdsMapToObject(mergedUsersData),
           },
         },
       };

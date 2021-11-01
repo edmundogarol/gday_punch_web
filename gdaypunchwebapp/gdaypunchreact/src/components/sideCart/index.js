@@ -122,7 +122,7 @@ function SideCart({ history }) {
             <p className="spacer">QTY:</p>
             <Select
               value={quantity}
-              onSelect={(value) => updateCartItemQuantity(id, value)}
+              onSelect={(value) => dispatch(updateCartItemQuantity(id, value))}
               defaultValue={1}
             >
               {[...Array(qtyRange)].map((x, i) => (
@@ -142,7 +142,7 @@ function SideCart({ history }) {
             <p>Subtotal</p>
           </ItemSubtotal>
           <Tooltip title="Remove Item from Cart">
-            <Button onClick={() => removeCartItem(id)}>
+            <Button onClick={() => dispatch(removeCartItem(id))}>
               <DeleteOutlined className="site-form-item-icon" />
             </Button>
           </Tooltip>
