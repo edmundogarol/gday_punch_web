@@ -81,6 +81,17 @@ export function descriptionValidator(inputtxt) {
   return inputtxt.length > 30;
 }
 
+export function noLinkValidator(inputtxt) {
+  return !inputtxt.includes("<a href=");
+}
+
+export function sanitiseTooManyNewLines(inputtxt, noEnters) {
+  return inputtxt.replaceAll(
+    /(<p><br><\/p>){2,}/gi,
+    noEnters ? "" : "<p><br></p>"
+  );
+}
+
 export function titleValidator(inputtxt) {
   return inputtxt.replaceAll(" ", "").length > 0;
 }

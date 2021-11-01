@@ -16,6 +16,7 @@ import {
   SAVE_PRODUCT,
   UNSAVE_PRODUCT,
   DELETE_PRODUCT,
+  deleteProductFromList,
 } from "actions/products";
 import { api } from "utils/api";
 import { arrayIdsMapToObject } from "utils/utils";
@@ -127,6 +128,7 @@ export function* deleteProductCall(action) {
   });
 
   if (response && response.ok) {
+    yield put(deleteProductFromList(action.payload.product.id));
     yield put(fetchProducts(action.payload.product.user));
   } else {
     console.log("Product delete error", JSON.stringify(response));

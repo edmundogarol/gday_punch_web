@@ -308,15 +308,21 @@ function ProductDetail({ history }) {
                 dangerouslySetInnerHTML={updateDescription(product.description)}
               ></p>
               <SocialContainer>
-                <a className="fb-hover" onClick={() => fbShare()}>
-                  <FontAwesomeIcon icon={faFacebook} />
-                </a>
-                <a className="tw-hover" onClick={() => twShare()}>
-                  <FontAwesomeIcon icon={faTwitter} />
-                </a>
-                <a className="yt-hover" onClick={() => pnShare()}>
-                  <FontAwesomeIcon icon={faPinterest} />
-                </a>
+                <Tooltip title="Share on Facebook">
+                  <a className="fb-hover" onClick={() => fbShare()}>
+                    <FontAwesomeIcon icon={faFacebook} />
+                  </a>
+                </Tooltip>
+                <Tooltip title="Share on Twitter">
+                  <a className="tw-hover" onClick={() => twShare()}>
+                    <FontAwesomeIcon icon={faTwitter} />
+                  </a>
+                </Tooltip>
+                <Tooltip title="Share on Pinterest">
+                  <a className="yt-hover" onClick={() => pnShare()}>
+                    <FontAwesomeIcon icon={faPinterest} />
+                  </a>
+                </Tooltip>
               </SocialContainer>
               {product.manga_details && product.manga_details.author && (
                 <MoreDetailsContainer>

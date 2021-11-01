@@ -46,6 +46,7 @@ import {
   hasPrivilege,
   makeSafeUrl,
   removeHtml,
+  sanitiseTooManyNewLines,
   scrollToTop,
 } from "utils/utils";
 import { normaliseProductData } from "utils/manga";
@@ -602,7 +603,7 @@ function Stall({ history }) {
                       message.error(
                         "Bio is too long. Please reduce it and try again."
                       );
-                    } else if (newBio.includes(`<a href="http`)) {
+                    } else if (newBio.includes(`<a href=`)) {
                       message.error(
                         "Bio links are only available to seller accounts. Please remove the link and try again."
                       );
@@ -618,7 +619,11 @@ function Stall({ history }) {
                           })
                         );
                       } else {
-                        dispatch(doUpdateUserDetails({ bio: newBio }));
+                        dispatch(
+                          doUpdateUserDetails({
+                            bio: sanitiseTooManyNewLines(newBio, true),
+                          })
+                        );
                       }
                     }
                   }}

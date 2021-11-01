@@ -124,7 +124,7 @@ class CommentLikeSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ("id", "content", "manga", "likes", "user_likes", "author")
+        fields = ("id", "user", "content", "manga", "likes", "user_likes", "author")
 
 
 class PromptSerializer(serializers.ModelSerializer):

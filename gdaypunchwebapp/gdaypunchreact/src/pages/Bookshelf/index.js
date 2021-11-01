@@ -22,24 +22,15 @@ import { App, EmptyBookshelfMessage } from "./styles";
 function Bookshelf(props) {
   const savedProducts = useSelector(selectSavedProducts);
   const purchasedProducts = useSelector(selectPurchasedDigitalProducts);
-  const { fetchingProducts, finishedFetchingProducts } =
-    useSelector(selectProductsState);
+  const { fetchingProducts } = useSelector(selectProductsState);
 
   const dispatch = useDispatch();
 
   useScrollTop();
 
   useEffect(() => {
-    if (
-      isEmpty(purchasedProducts) &&
-      !fetchingProducts &&
-      !finishedFetchingProducts
-    ) {
-      dispatch(fetchProducts());
-    }
-  }, [purchasedProducts, fetchingProducts, finishedFetchingProducts]);
+    dispatch(fetchProducts());
 
-  useEffect(() => {
     return () => {
       dispatch(resetFetchingProducts());
     };

@@ -50,6 +50,7 @@ import {
   SET_VIEWING_PRODUCT,
   FETCHING_VIEWING_PRODUCT,
   FINISHED_FETCHING_VIEWING_PRODUCT,
+  DELETE_PRODUCT_FROM_LIST,
 } from "actions/products";
 import {
   UPDATE_MANGA,
@@ -414,6 +415,17 @@ const appReducer = (state = INITIAL_STATE, action) => {
         products: {
           ...state.products,
           finishedFetchingProducts: false,
+        },
+      };
+    case DELETE_PRODUCT_FROM_LIST:
+      const currentProducts = state.products.productList;
+      unset(currentProducts, payload.productId);
+
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          productList: currentProducts,
         },
       };
     case UPDATE_CONTACT_FORM_ERRORS:

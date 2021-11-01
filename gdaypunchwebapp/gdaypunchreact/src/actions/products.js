@@ -7,6 +7,7 @@ export const SET_VIEWING_PRODUCT = "products/SET_VIEWING_PRODUCT";
 export const SAVE_PRODUCT = "products/SAVE_PRODUCT";
 export const UNSAVE_PRODUCT = "products/UNSAVE_PRODUCT";
 export const DELETE_PRODUCT = "products/DELETE_PRODUCT";
+export const DELETE_PRODUCT_FROM_LIST = "products/DELETE_PRODUCT_FROM_LIST";
 
 export const fetchViewingProduct = (productId) => ({
   type: FETCH_VIEWING_PRODUCT,
@@ -48,5 +49,12 @@ export const deleteProduct = (product) => ({
   type: DELETE_PRODUCT,
   payload: {
     product,
+  },
+});
+
+export const deleteProductFromList = (productId) => ({
+  type: DELETE_PRODUCT_FROM_LIST,
+  payload: {
+    productId,
   },
 });

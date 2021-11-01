@@ -30,6 +30,7 @@ import {
   doGetComments,
   doLikeComment,
   doLikeManga,
+  unlikeManga,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { selectReadingManga, selectComments } from "selectors/manga";
@@ -340,7 +341,9 @@ function Reader({ history }) {
           <h4 style={styles.mangaArtist}>{manga.author}</h4>
           <LikeButton
             onClick={() =>
-              !manga.user_likes ? dispatch(doLikeManga(manga.id)) : null
+              !manga.user_likes
+                ? dispatch(doLikeManga(manga.id))
+                : dispatch(unlikeManga(manga.user_likes))
             }
           >
             <FontAwesomeIcon

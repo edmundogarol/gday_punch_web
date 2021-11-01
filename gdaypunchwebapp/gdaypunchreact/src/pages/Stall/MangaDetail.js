@@ -28,6 +28,8 @@ import {
   descriptionValidator,
   titleValidator,
   removeHtml,
+  noLinkValidator,
+  sanitiseTooManyNewLines,
 } from "utils/utils";
 
 import { MangaUploaderModal, ConfirmUploadSummary } from "./styles";
@@ -70,13 +72,29 @@ function MangaDetail({
   //   : updateUploadingDetails;
 
   useEffect(() => {
-    if (!uploading && uploadingFinished) {
+    if (!uploading && uploadingFinished && !uploadingErrors) {
       updateUploadingDetails(initialUploadState);
       updateUploadingManga(false);
     }
   }, [uploading, uploadingFinished]);
 
+  const updateDescription = (description) => {
+    return {
+      __html: description,
+    };
+  };
+
   const confirmBeforeUpload = () => {
+    if (
+      !uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`]?.data?.currentSrc
+    ) {
+      message.warn(
+        "Something seems to have gone wrong. Try changing the cover page or re-uploading.",
+        4
+      );
+      return;
+    }
+
     confirm({
       title: `Confirm Manga Upload`,
       icon: <ExclamationCircleOutlined />,
@@ -92,11 +110,15 @@ function MangaDetail({
           />
           <div className="summary-item">
             <h4>{"Description"}</h4>
-            <p>
-              {removeHtml(
-                uploadingDetails.description.substring(0, 100)
-              ).substring(0, 90) + "..."}
-            </p>
+            <p
+              className="bio"
+              dangerouslySetInnerHTML={updateDescription(
+                sanitiseTooManyNewLines(uploadingDetails.description).substring(
+                  0,
+                  100
+                ) + "..." || `No bio.`
+              )}
+            ></p>
           </div>
           <div className="summary-item">
             <h4>{"Reading Direction"}</h4>
@@ -121,7 +143,9 @@ function MangaDetail({
           uploadManga(
             {
               title: uploadingDetails.title,
-              description: uploadingDetails.description,
+              description: sanitiseTooManyNewLines(
+                uploadingDetails.description
+              ),
               sku: uploadingDetails.sku,
               release_date: uploadingDetails.release_date
                 ? moment(uploadingDetails.release_date).format(
@@ -148,6 +172,9 @@ function MangaDetail({
   const handleUpload = () => {
     const skuValid = skuValidator(uploadingDetails.sku);
     const descriptionValid = descriptionValidator(uploadingDetails.description);
+    const descriptionValidNoLinks = noLinkValidator(
+      uploadingDetails.description
+    );
     const titleValid = titleValidator(uploadingDetails.title);
 
     // Client validators
@@ -181,6 +208,25 @@ function MangaDetail({
       );
     }
 
+    if (!descriptionValidNoLinks) {
+      message.error(
+        "Description cannot contain links. This feature is available to Seller accounts only.",
+        7
+      );
+      dispatch(
+        uploadingMangaError({
+          description:
+            "Please remove link. This feature is available to Seller accounts only.",
+        })
+      );
+    } else {
+      dispatch(
+        uploadingMangaError({
+          description: undefined,
+        })
+      );
+    }
+
     if (!titleValid) {
       message.error("Title must not be empty.");
       dispatch(
@@ -196,7 +242,7 @@ function MangaDetail({
       );
     }
 
-    if (titleValid && descriptionValid && skuValid) {
+    if (titleValid && descriptionValid && descriptionValidNoLinks && skuValid) {
       confirmBeforeUpload();
     }
   };
