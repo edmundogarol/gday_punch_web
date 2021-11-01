@@ -18,8 +18,7 @@ import { useScrollTop } from "utils/hooks/useScrollTop";
 import { App } from "./styles";
 
 function Shop() {
-  const { fetchingProducts, finishedFetchingProducts } =
-    useSelector(selectProductsState);
+  const { fetchingProducts } = useSelector(selectProductsState);
   const buyableProducts = useSelector(selectBuyableProducts);
   const freeProducts = useSelector(selectLatestFreeProducts);
 
@@ -28,16 +27,8 @@ function Shop() {
   useScrollTop();
 
   useEffect(() => {
-    if (
-      isEmpty(buyableProducts) &&
-      !fetchingProducts &&
-      !finishedFetchingProducts
-    ) {
-      dispatch(fetchProducts());
-    }
-  }, [buyableProducts, fetchingProducts, finishedFetchingProducts]);
+    dispatch(fetchProducts());
 
-  useEffect(() => {
     return () => {
       dispatch(resetFetchingProducts());
     };

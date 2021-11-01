@@ -358,6 +358,10 @@ class Manga(models.Model):
             return False
 
     @property
+    def author_details(self):
+        return self.author.author_details
+
+    @property
     def author_name(self):
         return self.author.author_name
 

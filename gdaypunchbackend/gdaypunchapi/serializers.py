@@ -105,6 +105,7 @@ class MangaSerializer(serializers.ModelSerializer):
             "author_name",
             "page_count",
             "japanese_reading",
+            "author_details",
         )
 
 

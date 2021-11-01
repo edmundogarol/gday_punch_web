@@ -345,21 +345,12 @@ const appReducer = (state = INITIAL_STATE, action) => {
         },
       };
     case UPDATE_PRODUCTS:
-      const { adding } = payload;
-      let newProductList = [];
-      if (adding) {
-        newProductList = state.products.productList;
-        payload.products.map((product) =>
-          set(newProductList, product.id, product)
-        );
-      }
-
       const mergedUserData = Object.values(
-        extractProductUsers(adding ? newProductList : payload.products)
+        extractProductUsers(payload.products)
       ).map((user) => {
         return {
-          ...user,
           ...state.users.list[user.id],
+          ...user,
         };
       });
 
@@ -367,7 +358,10 @@ const appReducer = (state = INITIAL_STATE, action) => {
         ...state,
         products: {
           ...state.products,
-          productList: adding ? newProductList : payload.products,
+          productList: {
+            ...state.products.productList,
+            ...payload.products,
+          },
         },
         users: {
           ...state.users,
@@ -625,6 +619,16 @@ const appReducer = (state = INITIAL_STATE, action) => {
                 page_count: manga.page_count,
                 japanese_reading: manga.japanese_reading,
               },
+            },
+          },
+        },
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            [manga.author_details.id]: {
+              ...state.users.list[manga.author_details.id],
+              ...manga.author_details,
             },
           },
         },

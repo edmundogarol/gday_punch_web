@@ -27,19 +27,6 @@ import { api } from "utils/api";
 import { message } from "antd";
 import { fetchProducts } from "actions/app";
 
-export function* getGPManga() {
-  // const loadingPDF = yield call(pdfjs.getDocument, {
-  //   url:
-  //     "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf",
-  //   length: 2000000,
-  //   rangeChunkSize: 2000000
-  // });
-  // loadingPDF.onProgress((pdf) => {
-  //   console.log("pdf", pdf);
-  //   put(updateGPManga(pdf));
-  // })
-}
-
 export function* getFeaturedManga() {
   const featuredMangaIds = [1, 2];
   const featuredManga = yield call(getMangaCollection, featuredMangaIds);
@@ -81,7 +68,6 @@ export function* likeManga(action) {
   if (response && response.ok) {
     const data = response.data;
     yield put(updateManga(data));
-    yield put(fetchProducts(data.author));
   } else {
     console.log("Like error", JSON.stringify(response));
   }
@@ -97,7 +83,6 @@ export function* unlikeManga(action) {
   if (response && response.ok) {
     const data = response.data;
     yield put(updateManga(data));
-    yield put(fetchProducts(data.author));
   } else {
     console.log("Like error", JSON.stringify(response));
   }

@@ -99,13 +99,8 @@ function Stall({ history }) {
   );
   const productsState = useSelector(selectProductsState);
   const { fetchingProducts } = productsState;
-  const {
-    uploading,
-    uploadingFinished,
-    fetching,
-    fetchingFinished,
-    fetchingErrors,
-  } = useSelector(selectStallState);
+  const { uploading, uploadingFinished, fetchingFinished } =
+    useSelector(selectStallState);
   const dispatch = useDispatch();
 
   const [idMonitor, updateIdMonitor] = useState(undefined);
@@ -123,18 +118,23 @@ function Stall({ history }) {
   useScrollTop();
 
   useEffect(() => {
-    if (!uploading && uploadingFinished) {
-      updateUploadingDetails(initialUploadState);
-      updateUploadingManga(false);
-    }
-  }, [uploading, uploadingFinished]);
-
-  useEffect(() => {
     if (!myStallView && user?.name) {
       const title = `${user.name} | Gday Punch`;
       document.title = title;
     }
   }, [user]);
+
+  useEffect(() => {
+    if (userId) {
+      dispatch(fetchProducts(userId));
+      dispatch(fetchStallData(userId));
+      updateIdMonitor(userId);
+    } else if (currentUser.id) {
+      dispatch(fetchProducts(currentUser.id));
+      dispatch(fetchStallData(currentUser.id));
+      updateIdMonitor(currentUser.id);
+    }
+  }, [userId, currentUser]);
 
   useEffect(() => {
     if (parseInt(userId) === currentUser.id) {
@@ -143,41 +143,18 @@ function Stall({ history }) {
   }, [userId, currentUser]);
 
   useEffect(() => {
+    if (!uploading && uploadingFinished) {
+      updateUploadingDetails(initialUploadState);
+      updateUploadingManga(false);
+    }
+  }, [uploading, uploadingFinished]);
+
+  useEffect(() => {
     if (user?.bio || user?.bio === "") {
       updateNewBio(undefined);
       toggleEditingBio(false);
     }
   }, [user?.bio]);
-
-  useEffect(() => {
-    if (
-      userId &&
-      !fetching &&
-      !fetchingProducts &&
-      !fetchingFinished &&
-      !fetchingErrors
-    ) {
-      dispatch(fetchProducts(userId));
-      dispatch(fetchStallData(userId));
-      updateIdMonitor(userId);
-    } else if (
-      currentUser.id &&
-      !fetching &&
-      !fetchingFinished &&
-      !fetchingProducts &&
-      !fetchingErrors
-    ) {
-      dispatch(fetchProducts(currentUser.id));
-      dispatch(fetchStallData(currentUser.id));
-      updateIdMonitor(currentUser.id);
-    }
-  }, [
-    fetching,
-    fetchingFinished,
-    fetchingProducts,
-    fetchingErrors,
-    myStallView,
-  ]);
 
   useEffect(() => {
     if (fetchingFinished && !myStallView) {

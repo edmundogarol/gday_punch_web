@@ -12,6 +12,7 @@ export function extractProductUsers(products) {
         author_followers,
         author_followings,
         following_author,
+        orientation,
       },
     }) => ({
       id: author_id,
@@ -22,8 +23,10 @@ export function extractProductUsers(products) {
       followers: author_followers,
       following: following_author,
       followings: author_followings,
+      japanese_reading: orientation === "japanese",
     })
   );
+
   return arrayIdsMapToObject(productAuthorsArray);
 }
 

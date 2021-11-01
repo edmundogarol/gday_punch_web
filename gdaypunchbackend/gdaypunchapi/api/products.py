@@ -257,6 +257,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         user_id = request.query_params.get("stall")
 
+        # Show ALL items if super user or shop_tester
         try:
             user = User.objects.get(email=self.request.user)
 
@@ -264,6 +265,13 @@ class ProductViewSet(viewsets.ModelViewSet):
                 user.privileges.filter(name="super").exists()
                 or user.privileges.filter(name="shop_tester").exists()
             ):
+                # Stall filter
+                if user_id:
+                    user = User.objects.get(pk=user_id)
+                    queryset = queryset.filter(user=user.id)
+                else:
+                    pass
+
                 serializer = ProductSerializer(queryset, many=True)
                 return Response(serializer.data)
 
@@ -272,9 +280,11 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         settings = Settings.objects.first()
 
+        # Shop is turned off
         if not settings.shop_visible:
             visible_products = []
 
+            # Show digital product if user owns or is free
             for product in queryset:
                 if product.purchased:
                     if product.product_type in [
@@ -288,12 +298,24 @@ class ProductViewSet(viewsets.ModelViewSet):
                 else:
                     visible_products.append(product)
 
-            serializer = ProductSerializer(visible_products, many=True)
-            return Response(serializer.data)
+            # Stall filter
+            if user_id:
+                new_visible_products = []
+                for v_prod in visible_products:
+                    if v_prod.user.id == user_id:
+                        new_visible_products.append(v_prod)
 
+                serializer = ProductSerializer(new_visible_products, many=True)
+                return Response(serializer.data)
+            else:
+                serializer = ProductSerializer(visible_products, many=True)
+                return Response(serializer.data)
+
+        # Shop is turned on
         else:
             queryset = queryset.filter(visible=True)
 
+        # Stall filter
         if user_id:
             user = User.objects.get(pk=user_id)
             queryset = queryset.filter(user=user.id)

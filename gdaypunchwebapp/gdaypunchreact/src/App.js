@@ -115,20 +115,6 @@ function Root(props) {
   return (
     <Router history={history}>
       <Switch>
-        <Route
-          exact
-          path="/gpmm/1"
-          component={() => (
-            <Reader defaultManga={1} pageCount={104} readerOnly />
-          )}
-        />
-        <Route
-          exact
-          path="/gpmm/4"
-          component={() => (
-            <Reader defaultManga={4} pageCount={104} readerOnly />
-          )}
-        />
         <Route path="/">
           <Navigation />
           <SideCart />
