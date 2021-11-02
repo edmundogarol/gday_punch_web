@@ -29,7 +29,6 @@ RUN mkdir -p /opt/app/gdaypunchwebapp
 COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
-COPY django.log /opt/python/log/
 
 # WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
 # RUN	yarn && yarn run build
@@ -38,13 +37,13 @@ COPY django.log /opt/python/log/
 WORKDIR /opt/app
 
 #Static files debug
-RUN ls gdaypunchbackend/public/static
+# RUN ls gdaypunchbackend/public/static
 
 #Install requirements and migrate - Cachebust db-config download to always pick up latest config
 RUN pip install -r requirements.txt
 ARG CACHEBUST=1
 RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
-RUN cat gday-db-config.json
+# RUN cat gday-db-config.json
 RUN python manage.py migrate --noinput
 
 #Collect Static
