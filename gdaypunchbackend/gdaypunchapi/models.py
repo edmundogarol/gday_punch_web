@@ -505,9 +505,7 @@ class Product(models.Model):
     )
     stripe_prices = models.ManyToManyField(StripePrice, blank=True)
     created_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
-    sku = models.TextField(
-        max_length=30, blank=True, unique=True, default=create_default_sku
-    )
+    sku = models.TextField(max_length=30, blank=True, null=True)
     manga = models.ManyToManyField(Manga, blank=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
 
