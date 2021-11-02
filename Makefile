@@ -55,3 +55,5 @@ ebdeploy:
 	eb deploy
 
 deploy: prodgui static	ebdeploy
+
+deploybeupdates: prodgui build static ebdeploy
