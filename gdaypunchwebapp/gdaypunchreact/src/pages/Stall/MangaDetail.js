@@ -27,7 +27,6 @@ import {
   skuValidator,
   descriptionValidator,
   titleValidator,
-  removeHtml,
   noLinkValidator,
   sanitiseTooManyNewLines,
 } from "utils/utils";

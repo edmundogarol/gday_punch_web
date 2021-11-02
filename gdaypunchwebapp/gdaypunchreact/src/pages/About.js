@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import AboutSection from "components/about";
 
@@ -8,7 +8,7 @@ export const App = styled.div`
   }
 `;
 
-function About(props) {
+function About() {
   return (
     <App id="top" className="App">
       <AboutSection top />

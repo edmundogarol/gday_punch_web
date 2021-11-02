@@ -95,13 +95,10 @@ class DailyPrompt extends React.Component {
       stylePanelPrompt,
       stylePanelPromptStatuses,
     } = this.props;
-    const { fetchingPrompts, fetchingPromptsSucess } = promptStatuses;
-    const { fetchingPanelStylePrompt, fetchingPanelStylePromptSucess } =
-      stylePanelPromptStatuses;
+    const { fetchingPrompts } = promptStatuses;
+    const { fetchingPanelStylePrompt } = stylePanelPromptStatuses;
     const prompt = prompts[0];
     const stylePrompt = stylePanelPrompt ? stylePanelPrompt[0] : {};
-
-    const styles = getStyles();
 
     return (
       <DailyPromptContainer id="top" className="App">
@@ -180,10 +177,6 @@ class DailyPrompt extends React.Component {
       </DailyPromptContainer>
     );
   }
-}
-
-function getStyles() {
-  return {};
 }
 
 const mapStateToProps = createStructuredSelector({

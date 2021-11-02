@@ -32,6 +32,17 @@ import { SectionTitle } from "components/sectionTitle";
 import UserAvatar from "components/UserAvatar";
 import MangaDetail from "./MangaDetail";
 import { fetchProducts, submitContactForm } from "actions/app";
+import { deleteProduct } from "actions/products";
+import {
+  fetchFollowings,
+  fetchStallData,
+  resetStallChecks,
+  followUser,
+  unfollowUser,
+  doUpdateUserDetails,
+  openRegistration,
+  doSuggestRegister,
+} from "actions/user";
 import {
   selectLoggedIn,
   selectProductsState,
@@ -61,17 +72,6 @@ import {
   BioSave,
   BioPreview,
 } from "./styles";
-import { deleteProduct } from "actions/products";
-import {
-  fetchFollowings,
-  fetchStallData,
-  resetStallChecks,
-  followUser,
-  unfollowUser,
-  doUpdateUserDetails,
-  openRegistration,
-  doSuggestRegister,
-} from "actions/user";
 
 const initialUploadState = {
   title: undefined,
