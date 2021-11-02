@@ -61,7 +61,7 @@ if "DEVENV" not in os.environ:
             "file": {
                 "level": "DEBUG",
                 "class": "logging.FileHandler",
-                "filename": "/opt/python/log/django.log",
+                "filename": LOGFILE,
             },
         },
         "loggers": {
