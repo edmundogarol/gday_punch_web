@@ -423,7 +423,7 @@ function Stall({ history }) {
         editing={newCover}
         loading={coverLoading}
         editable={
-          myStallView || hasPrivilege(currentUser, "admin") ? (
+          myStallView && hasPrivilege(currentUser, "admin") ? (
             <ImgCrop aspect={3 / 1} rotate shape="rect" quality={0.2}>
               <Upload
                 disabled={!!uploadingMangaData}
@@ -676,7 +676,7 @@ function Stall({ history }) {
               />
             ) : null;
           })}
-          {myStallView ? (
+          {myStallView && hasPrivilege(currentUser, "admin") ? (
             <div
               onClick={() =>
                 uploadingMangaData ? updateUploadingManga(true) : null
