@@ -2,9 +2,9 @@ import os
 import pytz
 import socket
 
-from rest_framework.permissions import (BasePermission)
+from rest_framework.permissions import BasePermission
 
-if 'DEVENV' in os.environ:
+if "DEVENV" in os.environ:
     log = True
 else:
     log = False
@@ -16,23 +16,23 @@ def devprint(message):
 
 
 def get_readable_date_time(date):
-    local_tz = pytz.timezone('Australia/Sydney')
+    local_tz = pytz.timezone("Australia/Sydney")
     local_dt = date.replace(tzinfo=pytz.utc).astimezone(local_tz)
 
     return {
-        'date': local_dt.strftime("%d/%m/%y"),
-        'time': local_dt.strftime("%I:%M %p")
+        "date": local_dt.strftime("%d/%m/%y"),
+        "time": local_dt.strftime("%I:%M %p"),
     }
 
 
 def visitor_ip_address(request):
 
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
 
     if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
+        ip = x_forwarded_for.split(",")[0]
     else:
-        ip = request.META.get('REMOTE_ADDR')
+        ip = request.META.get("REMOTE_ADDR")
 
     try:
         socket.inet_aton(ip)
@@ -40,10 +40,7 @@ def visitor_ip_address(request):
     except socket.error:
         ip_valid = False
 
-    return {
-        'ip': ip,
-        'valid': ip_valid
-    }
+    return {"ip": ip, "valid": ip_valid}
 
 
 def staff(request):
@@ -52,14 +49,18 @@ def staff(request):
 
 class PostOnly(BasePermission):
     def has_permission(self, request, view):
-        WRITE_METHODS = ["POST", ]
+        WRITE_METHODS = [
+            "POST",
+        ]
 
         return request.method in WRITE_METHODS or staff(request)
 
 
 class AdminOrReadOnly(BasePermission):
     def has_permission(self, request, view):
-        READ_METHODS = ["GET", ]
+        READ_METHODS = [
+            "GET",
+        ]
 
         if request.method in READ_METHODS or staff(request):
             return True
@@ -69,11 +70,20 @@ class AdminOrReadOnly(BasePermission):
 
 class AuthenticatedOrPostOnly(BasePermission):
     def has_permission(self, request, view):
-        WRITE_METHODS = ["POST", ]
+        WRITE_METHODS = [
+            "POST",
+        ]
 
         if request.method in WRITE_METHODS or staff(request):
             return True
-        elif view.action in ['create', 'update', 'partial_update', 'destroy', 'list', 'retrieve']:
+        elif view.action in [
+            "create",
+            "update",
+            "partial_update",
+            "destroy",
+            "list",
+            "retrieve",
+        ]:
             return request.user.is_authenticated
         else:
             return False
@@ -88,9 +98,9 @@ class AuthenticatedCreateOnly(BasePermission):
     def has_permission(self, request, view):
         if staff(request):
             return True
-        elif view.action in ['create']:
+        elif view.action in ["create"]:
             return request.user.is_authenticated
-        elif view.action in ['list', 'retrieve', 'update', 'partial_update', 'destroy']:
+        elif view.action in ["list", "retrieve", "update", "partial_update", "destroy"]:
             return False
         else:
             return False
@@ -100,9 +110,9 @@ class AuthenticatedCreateAndEditOnly(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_authenticated and request.user.is_staff:
             return True
-        elif view.action in ['create', 'update', 'partial_update', 'destroy']:
+        elif view.action in ["create", "update", "partial_update", "destroy"]:
             return request.user.is_authenticated
-        elif view.action in ['list', 'retrieve']:
+        elif view.action in ["list", "retrieve"]:
             return False
         else:
             return False

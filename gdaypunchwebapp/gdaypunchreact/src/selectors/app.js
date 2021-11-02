@@ -4,7 +4,29 @@ import { selectPaymentState } from "./payment";
 
 const selectDomain = (state) => state.app;
 
-export const selectUser = createSelector(selectDomain, ({ user }) => user);
+export const selectNavMinified = createSelector(
+  selectDomain,
+  ({ navMinified }) => navMinified
+);
+
+export const selectUser = createSelector(
+  selectDomain,
+  ({ user }) => user || {}
+);
+
+export const selectUserStallView = createSelector(
+  selectDomain,
+  ({ user, users }) => users?.list[user?.id] || user
+);
+
+export const selectUserByIdOrCurrentUser = (id) =>
+  createSelector(
+    selectDomain,
+    ({ user, users }) => users?.list[id || user?.id]
+  );
+
+export const selectUserById = (id) =>
+  createSelector(selectDomain, ({ users }) => users?.list[id]);
 
 export const selectLoginViewToggle = createSelector(
   selectDomain,
@@ -13,7 +35,7 @@ export const selectLoginViewToggle = createSelector(
 
 export const selectLoggedIn = createSelector(
   selectDomain,
-  ({ user }) => user.logged_in || false
+  ({ user }) => user?.logged_in || false
 );
 
 export const selectLoginError = createSelector(
@@ -93,6 +115,16 @@ export const selectFreeProducts = createSelector(
   }
 );
 
+export const selectLatestFreeProducts = createSelector(
+  selectDomain,
+  ({ products: { productList } }) => {
+    const list = Object.values(productList).filter(
+      (product) => product.active_price === 0
+    );
+    return orderBy(list, "id", "desc").slice(0, 5);
+  }
+);
+
 export const selectPurchasedDigitalProducts = createSelector(
   selectDomain,
   ({ products: { productList } }) => {
@@ -111,6 +143,14 @@ export const selectSavedProducts = createSelector(
   }
 );
 
+export const selectUserProducts = (userId) =>
+  createSelector(selectDomain, ({ products: { productList } }) => {
+    const list = Object.values(productList).filter(
+      (product) => product.user === userId
+    );
+    return orderBy(list, "id", "desc");
+  });
+
 export const selectContactState = createSelector(
   selectDomain,
   ({ contact }) => contact
@@ -121,7 +161,10 @@ export const selectResetPasswordState = createSelector(
   ({ resetPassword }) => resetPassword
 );
 
-export const selectCartState = createSelector(selectDomain, ({ cart }) => cart);
+export const selectCartState = createSelector(
+  selectDomain,
+  ({ cart }) => cart || {}
+);
 
 export const selectSideCartOpen = createSelector(
   selectDomain,

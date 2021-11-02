@@ -26,7 +26,6 @@ import {
 
 import { getGdayPunchStaticUrl } from "utils/utils";
 
-const { TextArea } = Input;
 const { Title } = Typography;
 
 function Ui(props) {

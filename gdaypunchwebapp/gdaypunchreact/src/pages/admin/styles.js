@@ -73,6 +73,7 @@ export const AdminNav = styled.div`
   }
 
   @media ${device.laptop} {
+    padding-top: 14vh;
     width: 30vh;
     flex-direction: column;
   }
@@ -84,6 +85,6 @@ export const AdminContentContainer = styled.div`
   padding-top: unset;
 
   @media ${device.laptop} {
-    padding-top: 12vh;
+    padding-top: 15vh;
   }
 `;

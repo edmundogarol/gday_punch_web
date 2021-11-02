@@ -41,6 +41,7 @@ import Events from "pages/Events";
 import Vote from "pages/Vote";
 import OneShotSubmissions from "pages/OneShotSubmissions";
 import IllustrationSubmissions from "pages/IllustrationSubmissions";
+import UploadConditions from "pages/UploadConditions";
 import Downloads from "pages/ResourceDownloads";
 import ResetPassword from "pages/ResetPassword";
 import ResetPasswordNewPassword from "pages/ResetPassword/newPassword";
@@ -53,11 +54,12 @@ import OrderConfirmation from "pages/OrderConfirmation";
 import ProductDetail from "pages/ProductDetail";
 import Reader from "pages/Reader";
 import PageNotFound from "pages/PageNotFound";
+import Stall from "pages/Stall";
 
+import Navigation from "components/Navigation";
 import RoutePage from "components/routePage";
-import SideCart from "components/sideCart";
+import SideCart from "components/SideCart";
 import Footer from "components/footer";
-import Navigation from "components/navigation";
 
 import "antd/dist/antd.css";
 import "./App.scss";
@@ -80,6 +82,7 @@ function* rootSaga() {
 }
 
 const stripePromise = loadStripe(
+  // eslint-disable-next-line no-undef
   process.env.NODE_ENV === "development"
     ? "pk_test_QgTiwo4w3EXdQS9hOywypRAF"
     : "pk_live_mTfZz6d7N3Lm44Wgqbzn24Tf"
@@ -94,7 +97,7 @@ const store = createStore(
 sagaMiddleware.run(rootSaga);
 
 function Root(props) {
-  const { user, loginCheckFinished } = props;
+  const { user } = props;
 
   useEffect(() => {
     props.checkLogin();
@@ -112,20 +115,6 @@ function Root(props) {
   return (
     <Router history={history}>
       <Switch>
-        <Route
-          exact
-          path="/gpmm/1"
-          component={() => (
-            <Reader defaultManga={1} pageCount={104} readerOnly />
-          )}
-        />
-        <Route
-          exact
-          path="/gpmm/4"
-          component={() => (
-            <Reader defaultManga={4} pageCount={104} readerOnly />
-          )}
-        />
         <Route path="/">
           <Navigation />
           <SideCart />
@@ -147,6 +136,12 @@ function Root(props) {
             <RoutePage exact path="/daily-prompt" component={DailyPrompt} />
             <RoutePage
               exact
+              path="/upload-conditions"
+              component={UploadConditions}
+              title="Upload Conditions"
+            />
+            <RoutePage
+              exact
               path="/one-shots"
               component={OneShotSubmissions}
               title="One Shot Submissions"
@@ -162,6 +157,19 @@ function Root(props) {
             <RoutePage exact path="/downloads" component={Downloads} />
             <RoutePage exact path="/cart" component={Cart} />
             <RoutePage exact path="/checkout" component={Checkout} />
+            <ProtectedRoute
+              exact
+              path="/my-stall"
+              component={Stall}
+              title="My Stall"
+              condition={user?.logged_in}
+            />
+            <RoutePage
+              exact
+              path="/stall/:userId/:uri"
+              titleSetInside
+              component={Stall}
+            />
             <RoutePage
               exact
               path="/forgot-password"
@@ -200,25 +208,25 @@ function Root(props) {
               titleSetInside
             />
             <ProtectedRoute
-              condition={user.logged_in}
+              condition={user?.logged_in}
               exact
               path="/account"
               component={Account}
             />
             <ProtectedRoute
-              condition={user.logged_in}
+              condition={user?.logged_in}
               exact
               path="/account/:tab"
               component={Account}
             />
             <ProtectedRoute
-              condition={user.logged_in}
+              condition={user?.logged_in}
               exact
               path="/bookshelf"
               component={Bookshelf}
             />
             <ProtectedRoute
-              condition={user.logged_in && user.verified === "verified"}
+              condition={user?.logged_in && user?.verified === "verified"}
               titleSetInside
               exact
               path="/manga/:id"
@@ -226,19 +234,19 @@ function Root(props) {
             />
             <ProtectedRoute
               exact
-              condition={user.is_staff}
+              condition={user?.is_staff}
               path="/admin"
               component={Admin}
             />
             <ProtectedRoute
               exact
-              condition={user.is_staff}
+              condition={user?.is_staff}
               path="/admin/:app"
               component={Admin}
             />
             <ProtectedRoute
               exact
-              condition={user.is_staff}
+              condition={user?.is_staff}
               path="/admin/:app/:productId"
               component={Admin}
             />

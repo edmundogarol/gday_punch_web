@@ -58,7 +58,7 @@ function Ui(props) {
 
   return (
     <AdminContainer className="admin">
-      <AdminNav>
+      <AdminNav id="admin-nav">
         {hasPrivilege("admin") && (
           <NavLink className="desktop-mobile" exact to="/admin/">
             <HomeOutlined className="site-form-item-icon mobile-only" />

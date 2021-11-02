@@ -1,15 +1,43 @@
+export const TOGGLE_NAV_MINIFIED = "app/TOGGLE_NAV_MINIFIED";
+
+export const UPDATE_USERS = "app/UPDATE_USERS";
+
 export const FETCH_PRODUCTS = "app/FETCH_PRODUCTS";
 export const FETCHING_PRODUCTS = "app/FETCHING_PRODUCTS";
 export const FINISHED_FETCHING_PRODUCTS = "app/FINISHED_FETCHING_PRODUCTS";
 export const UPDATE_PRODUCTS = "app/UPDATE_PRODUCTS";
+export const FETCHED_ALL_PRODUCTS = "app/FETCHED_ALL_PRODUCTS";
 
 export const SUBMIT_CONTACT_FORM = "app/SUBMIT_CONTACT_FORM";
 export const UPDATE_CONTACT_FORM_ERRORS = "app/UPDATE_CONTACT_FORM_ERRORS";
 export const UPDATE_CONTACT_FORM_SUBMITTED =
   "app/UPDATE_CONTACT_FORM_SUBMITTED";
+export const RESET_FETCHING_PRODUCTS = "app/RESET_FETCHING_PRODUCTS";
 
-export const fetchProducts = () => ({
+export const toggleNavMinified = (minified) => ({
+  type: TOGGLE_NAV_MINIFIED,
+  payload: {
+    minified,
+  },
+});
+
+export const updateUsers = (users) => ({
+  type: UPDATE_USERS,
+  payload: {
+    users,
+  },
+});
+
+export const fetchProducts = (userId, all) => ({
   type: FETCH_PRODUCTS,
+  payload: {
+    userId,
+    all,
+  },
+});
+
+export const fetchedAllProducts = () => ({
+  type: FETCHED_ALL_PRODUCTS,
 });
 
 export const fetchingProducts = () => ({
@@ -26,6 +54,10 @@ export const updateProducts = (products, adding) => ({
     products,
     adding,
   },
+});
+
+export const resetFetchingProducts = () => ({
+  type: RESET_FETCHING_PRODUCTS,
 });
 
 export const submitContactForm = (form, subscriptionType) => ({

@@ -1,3 +1,6 @@
+/* eslint-disable no-useless-escape */
+/* eslint-disable no-undef */
+
 import { set } from "lodash";
 
 /**
@@ -46,8 +49,7 @@ export function arrayIdsMapToObject(list) {
 }
 
 export function scrollToTop() {
-  document.body.scrollTop = 0;
-  document.documentElement.scrollTop = 0;
+  window.scrollTo(0, 0);
 }
 
 export function phoneValidator(inputtxt) {
@@ -70,6 +72,30 @@ export function removeHtml(inputtxt) {
   return inputtxt.replaceAll(/<[^>]*>/gi, "").trim();
 }
 
+export function skuValidator(inputtxt) {
+  var sku = /^[a-zA-Z0-9_]*$/;
+  return inputtxt && inputtxt.length ? inputtxt.match(sku) : true;
+}
+
+export function descriptionValidator(inputtxt) {
+  return inputtxt.length > 30;
+}
+
+export function noLinkValidator(inputtxt) {
+  return !inputtxt.includes("<a href=");
+}
+
+export function sanitiseTooManyNewLines(inputtxt, noEnters) {
+  return inputtxt.replaceAll(
+    /(<p><br><\/p>){2,}/gi,
+    noEnters ? "" : "<p><br></p>"
+  );
+}
+
+export function titleValidator(inputtxt) {
+  return inputtxt.replaceAll(" ", "").length > 0;
+}
+
 export function generatePermaLink(product) {
   let prefix = "";
   if (product.user === 1) {
@@ -78,4 +104,9 @@ export function generatePermaLink(product) {
   return (
     prefix + product.title.toLowerCase().split(" ").join("-").replace("#", "")
   );
+}
+
+export function makeSafeUrl(text) {
+  if (!text) return;
+  return encodeURIComponent(text.toLowerCase().replaceAll(" ", "-"));
 }

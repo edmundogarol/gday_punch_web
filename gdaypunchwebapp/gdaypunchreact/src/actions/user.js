@@ -37,6 +37,20 @@ export const REQUESTING_EMAIL_VERIFICATION =
 export const REQUEST_EMAIL_VERIFICATION_FINISHED =
   "user/REQUEST_EMAIL_VERIFICATION_FINISHED";
 
+export const FOLLOW_USER = "user/FOLLOW_USER";
+export const UNFOLLOW_USER = "user/UNFOLLOW_USER";
+export const REQUEST_TO_ADD_FRIEND = "user/REQUEST_TO_ADD_FRIEND";
+export const UNFRIEND = "user/UNFRIEND";
+export const FETCH_FOLLOWINGS = "user/FETCH_FOLLOWINGS";
+export const UPDATE_FOLLOWINGS = "user/UPDATE_FOLLOWINGS";
+
+export const FETCH_STALL_DATA = "user/FETCH_STALL_DATA";
+export const UPDATE_STALL_DATA = "user/UPDATE_STALL_DATA";
+export const FETCHING_STALL_DATA = "user/FETCHING_STALL_DATA";
+export const FETCHING_STALL_DATA_FINISHED = "user/FETCHING_STALL_DATA_FINISHED";
+export const FETCHING_STALL_DATA_ERROR = "user/FETCHING_STALL_DATA_ERROR";
+export const RESET_STALL_CHECKS = "user/RESET_STALL_CHECKS";
+
 export const updateUser = (user) => ({
   type: UPDATE_USER,
   payload: {
@@ -219,4 +233,80 @@ export const requestEmailVerificationFinished = (errors) => ({
   payload: {
     errors,
   },
+});
+
+export const followUser = (userId) => ({
+  type: FOLLOW_USER,
+  payload: {
+    userId,
+  },
+});
+
+export const unfollowUser = (followId) => ({
+  type: UNFOLLOW_USER,
+  payload: {
+    followId,
+  },
+});
+
+export const requestToAddFriend = (userId) => ({
+  type: REQUEST_TO_ADD_FRIEND,
+  payload: {
+    userId,
+  },
+});
+
+export const unfriend = (userId) => ({
+  type: UNFRIEND,
+  payload: {
+    userId,
+  },
+});
+
+export const fetchFollowings = (userId) => ({
+  type: FETCH_FOLLOWINGS,
+  payload: {
+    userId,
+  },
+});
+
+export const updateFollowings = (userId, followings) => ({
+  type: UPDATE_FOLLOWINGS,
+  payload: {
+    userId,
+    followings,
+  },
+});
+
+export const fetchStallData = (userId) => ({
+  type: FETCH_STALL_DATA,
+  payload: {
+    userId,
+  },
+});
+
+export const updateStallData = (user) => ({
+  type: UPDATE_STALL_DATA,
+  payload: {
+    user,
+  },
+});
+
+export const fetchingStallData = () => ({
+  type: FETCHING_STALL_DATA,
+});
+
+export const fetchingStallDataFinished = () => ({
+  type: FETCHING_STALL_DATA_FINISHED,
+});
+
+export const fetchingStallDataError = (error) => ({
+  type: FETCHING_STALL_DATA_ERROR,
+  payload: {
+    error,
+  },
+});
+
+export const resetStallChecks = () => ({
+  type: RESET_STALL_CHECKS,
 });

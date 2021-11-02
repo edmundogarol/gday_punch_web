@@ -4,8 +4,8 @@ import { LoadingOutlined } from "@ant-design/icons";
 
 const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-function Ui() {
+function LoadingSpinner() {
   return <Spin className="spinner" indicator={antIcon} />;
 }
 
-export default Ui;
+export default LoadingSpinner;

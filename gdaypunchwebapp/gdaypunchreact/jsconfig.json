@@ -1,11 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es6",
+    "jsx": "react",
     "allowSyntheticDefaultImports": false,
     "baseUrl": "./",
     "paths": {
-      "utils/*": ["src/utils/*"],
       "pages/*": ["src/pages/*"],
+      "components/*": ["src/components/*"],
+      "actions/*": ["src/actions/*"],
+      "sagas/*": ["src/sagas/*"],
+      "selectors/*": ["src/selectors/*"],
+      "reducers/*": ["src/reducers/*"],
+      "utils/*": ["src/utils/*"],
       "static/*": ["public/static/*"]
     }
   },

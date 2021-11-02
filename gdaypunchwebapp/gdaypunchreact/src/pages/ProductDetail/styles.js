@@ -162,6 +162,14 @@ export const LabelFieldContainer = styled.div`
   p {
     margin-bottom: unset;
   }
+
+  a {
+    color: #464646;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 export const SocialContainer = styled.div`

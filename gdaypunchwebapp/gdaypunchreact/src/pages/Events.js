@@ -1,6 +1,5 @@
 import React from "react";
 import styled from "styled-components";
-import { NavLink } from "react-router-dom";
 import FeaturedSection from "components/featuredSection";
 import { SectionTitle } from "components/sectionTitle";
 import { useScrollTop } from "utils/hooks/useScrollTop";
@@ -92,7 +91,7 @@ export const InstructionsContainer = styled.div`
   }
 `;
 
-function Events(props) {
+function Events() {
   useScrollTop();
 
   return (
@@ -107,9 +106,9 @@ function Events(props) {
                 height="402"
                 src="https://www.youtube.com/embed/0uHyHxY4SFo"
                 title="Gday Punch Animaga 2019"
-                frameborder="0"
+                frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
+                allowFullScreen
               ></iframe>
             </LeftSummaryContainer>
             <RightImageContainer>

@@ -25,6 +25,8 @@ import {
   UPDATING_USER,
   UPDATING_USER_FINISHED,
   UPDATE_USER_ERROR,
+  UPDATE_FOLLOWINGS,
+  UPDATE_STALL_DATA,
 } from "actions/user";
 import {
   FETCHING_PRODUCTS,
@@ -32,6 +34,10 @@ import {
   UPDATE_PRODUCTS,
   UPDATE_CONTACT_FORM_ERRORS,
   UPDATE_CONTACT_FORM_SUBMITTED,
+  TOGGLE_NAV_MINIFIED,
+  UPDATE_USERS,
+  FETCHED_ALL_PRODUCTS,
+  RESET_FETCHING_PRODUCTS,
 } from "actions/app";
 import {
   FETCHING_CART_ITEMS,
@@ -44,6 +50,7 @@ import {
   SET_VIEWING_PRODUCT,
   FETCHING_VIEWING_PRODUCT,
   FINISHED_FETCHING_VIEWING_PRODUCT,
+  DELETE_PRODUCT_FROM_LIST,
 } from "actions/products";
 import {
   UPDATE_MANGA,
@@ -69,6 +76,9 @@ import { paymentReducer } from "./payment";
 import { ordersReducer } from "./orders";
 import { accountReducer } from "./account";
 import { resourcesReducer } from "./resources";
+import { extractCommentUsers, extractProductUsers } from "utils/users";
+import { arrayIdsMapToObject } from "utils/utils";
+import { stallReducer } from "./stall";
 
 const INITIAL_STATE = {
   user: {
@@ -88,6 +98,12 @@ const INITIAL_STATE = {
     updating: false,
     finished: false,
   },
+
+  users: {
+    list: {},
+  },
+
+  navMinified: true,
 
   emailVerification: {
     verifying: false,
@@ -115,6 +131,7 @@ const INITIAL_STATE = {
 
   products: {
     productList: {},
+    fetchedAll: false,
     fetchingProducts: false,
     finishedFetchingProducts: false,
     viewingProduct: undefined,
@@ -155,6 +172,11 @@ const INITIAL_STATE = {
 const appReducer = (state = INITIAL_STATE, action) => {
   const { payload } = action;
   switch (action.type) {
+    case TOGGLE_NAV_MINIFIED:
+      return {
+        ...state,
+        navMinified: payload.minified,
+      };
     case DO_LOGIN:
       return {
         ...state,
@@ -216,6 +238,16 @@ const appReducer = (state = INITIAL_STATE, action) => {
         loginView: false,
         user: { ...state.user, ...payload.user },
         loginCheckFinished: true,
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            [payload.user.id]: {
+              ...state.users.list[payload.user.id],
+              ...payload.user,
+            },
+          },
+        },
       };
     case UPDATING_USER:
       return {
@@ -241,6 +273,21 @@ const appReducer = (state = INITIAL_STATE, action) => {
         user: {
           ...state.user,
           errors: payload.error,
+        },
+      };
+    case UPDATE_STALL_DATA:
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            ...arrayIdsMapToObject(payload.user.following_users),
+            [payload.user.id]: {
+              ...state.users.list[payload.user.id],
+              ...payload.user,
+            },
+          },
         },
       };
     case LOGOUT_SUCESS:
@@ -299,19 +346,55 @@ const appReducer = (state = INITIAL_STATE, action) => {
         },
       };
     case UPDATE_PRODUCTS:
-      const { adding } = payload;
-      let newProductList = [];
-      if (adding) {
-        newProductList = state.products.productList;
-        payload.products.map((product) =>
-          set(newProductList, product.id, product)
-        );
-      }
+      const mergedUserData = Object.values(
+        extractProductUsers(payload.products)
+      ).map((user) => {
+        return {
+          ...state.users.list[user.id],
+          ...user,
+        };
+      });
+
       return {
         ...state,
         products: {
           ...state.products,
-          productList: adding ? newProductList : payload.products,
+          productList: {
+            ...state.products.productList,
+            ...payload.products,
+          },
+        },
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            ...arrayIdsMapToObject(mergedUserData),
+          },
+        },
+      };
+    case UPDATE_USERS:
+      const incomingUsersObjectMapped = arrayIdsMapToObject(payload.users);
+      const mergedUsersData = Object.values(state.users.list).map((user) => ({
+        ...user,
+        ...incomingUsersObjectMapped[user.id],
+      }));
+
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            ...arrayIdsMapToObject(mergedUsersData),
+          },
+        },
+      };
+    case FETCHED_ALL_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          fetchedAll: true,
         },
       };
     case FETCHING_PRODUCTS:
@@ -330,6 +413,25 @@ const appReducer = (state = INITIAL_STATE, action) => {
           ...state.products,
           fetchingProducts: false,
           finishedFetchingProducts: true,
+        },
+      };
+    case RESET_FETCHING_PRODUCTS:
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          finishedFetchingProducts: false,
+        },
+      };
+    case DELETE_PRODUCT_FROM_LIST:
+      const currentProducts = state.products.productList;
+      unset(currentProducts, payload.productId);
+
+      return {
+        ...state,
+        products: {
+          ...state.products,
+          productList: currentProducts,
         },
       };
     case UPDATE_CONTACT_FORM_ERRORS:
@@ -538,6 +640,16 @@ const appReducer = (state = INITIAL_STATE, action) => {
             },
           },
         },
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            [manga.author_details.id]: {
+              ...state.users.list[manga.author_details.id],
+              ...manga.author_details,
+            },
+          },
+        },
       };
     case UPDATE_COMMENTS:
       return {
@@ -545,6 +657,13 @@ const appReducer = (state = INITIAL_STATE, action) => {
         reader: {
           ...state.reader,
           comments: payload.comments,
+        },
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            ...extractCommentUsers(payload.comments),
+          },
         },
       };
     case UPDATE_COMMENT:
@@ -556,6 +675,20 @@ const appReducer = (state = INITIAL_STATE, action) => {
         reader: {
           ...state.reader,
           comments: [...state.reader.comments, payload.comment],
+        },
+      };
+    case UPDATE_FOLLOWINGS:
+      return {
+        ...state,
+        users: {
+          ...state.users,
+          list: {
+            ...state.users.list,
+            [payload.userId]: {
+              ...state.users.list[payload.userId],
+              following_users: payload.followings,
+            },
+          },
         },
       };
     case FETCHING_VOTING_ITEMS:
@@ -631,4 +764,5 @@ export default combineReducers({
   orders: ordersReducer,
   account: accountReducer,
   resources: resourcesReducer,
+  stall: stallReducer,
 });

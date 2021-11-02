@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Tooltip, Typography, Table, Button, Popconfirm, Modal } from "antd";
+import { Typography, Table, Button, Popconfirm, Modal } from "antd";
 import { DeleteOutlined } from "@ant-design/icons";
+import { NavLink } from "react-router-dom";
 import moment from "moment";
 
 import { ContactsContainer, ActionsContainer } from "./styles";
@@ -15,6 +16,8 @@ const contactReasons = {
   subscription: "Subscription Enquiry",
   subscription_cancellation: "Cancel Subscription",
   unsubscribe: "Email Unsubscribe",
+  bug_report: "Bug Report",
+  report: "Report",
 };
 
 function Ui(props) {
@@ -45,7 +48,17 @@ function Ui(props) {
       title: "Content",
       dataIndex: "content",
       key: "content",
-      render: (value) => (value ? `${value.substring(0, 50)}...` : "-"),
+      render: (value) => {
+        if (value) {
+          try {
+            const reportDetails = JSON.parse(value);
+            return `${reportDetails.content.substring(0, 50)}...`;
+          } catch (e) {
+            return `${value.substring(0, 50)}...`;
+          }
+        }
+        return "-";
+      },
     },
     {
       title: "Reason",
@@ -78,6 +91,27 @@ function Ui(props) {
     },
   ];
 
+  const renderReportDetails = (entry) => {
+    const reportDetails = JSON.parse(entry);
+    return (
+      <div>
+        <p>
+          <NavLink to={`/stall/${reportDetails.id}/report-view`}>
+            {reportDetails.name}
+          </NavLink>
+        </p>
+        {reportDetails.ref ? (
+          <p>
+            <NavLink to={`/product/${reportDetails.refId}/report-view`}>
+              {reportDetails.ref}
+            </NavLink>
+          </p>
+        ) : null}
+        <p>{reportDetails.content}</p>
+      </div>
+    );
+  };
+
   const contactEnquiryModal = (entry) => {
     return (
       <Modal
@@ -91,14 +125,18 @@ function Ui(props) {
         <p>{entry.email}</p>
         <p>{moment(entry.date_created).format("LL")}</p>
         <br />
-        <p>{entry.content}</p>
+        {entry.reason === "report" ? (
+          renderReportDetails(entry.content)
+        ) : (
+          <p>{entry.content}</p>
+        )}
       </Modal>
     );
   };
 
-  const handleContactEntryOpen = (entry, rowIndex) => {
+  const handleContactEntryOpen = (entry) => {
     return {
-      onClick: (event) => {
+      onClick: () => {
         updateShowingEntry(entry);
       },
     };

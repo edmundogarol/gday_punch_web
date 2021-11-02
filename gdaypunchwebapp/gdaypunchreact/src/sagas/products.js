@@ -1,18 +1,13 @@
-import {
-  call,
-  all,
-  takeLatest,
-  takeEvery,
-  select,
-  put,
-} from "redux-saga/effects";
+import { call, all, takeLatest, select, put } from "redux-saga/effects";
 import { message } from "antd";
 
 import {
   FETCH_PRODUCTS,
   updateProducts,
   fetchingProducts,
+  fetchedAllProducts,
   finishedFetchingProducts,
+  fetchProducts,
 } from "actions/app";
 import {
   FETCH_VIEWING_PRODUCT,
@@ -20,11 +15,12 @@ import {
   finishedFetchingViewingProduct,
   SAVE_PRODUCT,
   UNSAVE_PRODUCT,
+  DELETE_PRODUCT,
+  deleteProductFromList,
 } from "actions/products";
 import { api } from "utils/api";
 import { arrayIdsMapToObject } from "utils/utils";
 import { selectUser } from "src/selectors/app";
-import { ca } from "date-fns/locale";
 
 export function* fetchProductsCall(action) {
   const fetchedProducts = yield all(
@@ -64,17 +60,26 @@ export function* fetchViewingProductCall(action) {
   yield put(finishedFetchingViewingProduct());
 }
 
-export function* fetchAllProductsCall(addItems = false) {
+export function* fetchAllProductsCall(action) {
   yield put(fetchingProducts());
-  const response = yield call(api, `products/`, {
-    method: "GET",
-  });
+  const response = yield call(
+    api,
+    `products/${
+      action?.payload?.userId ? `?stall=${action.payload.userId}` : ""
+    }`,
+    {
+      method: "GET",
+    }
+  );
 
   if (response && response.ok) {
     const data = response.data;
 
     yield put(updateProducts(arrayIdsMapToObject(data)));
     yield put(finishedFetchingProducts());
+    if (!action?.payload?.userId) {
+      yield put(fetchedAllProducts());
+    }
   } else {
     console.log("All Products fetch error", JSON.stringify(response));
     yield put(finishedFetchingProducts());
@@ -93,7 +98,6 @@ export function* saveProductCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
     yield call(fetchAllProductsCall);
   } else {
     console.log("Product save error", JSON.stringify(response));
@@ -109,12 +113,29 @@ export function* unsaveProductCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
     yield call(fetchAllProductsCall);
   } else {
     console.log("Product save error", JSON.stringify(response));
     message.error(
       "There was a problem with trying to unsave this manga. Try again later."
+    );
+  }
+}
+
+export function* deleteProductCall(action) {
+  const response = yield call(api, `products/${action.payload.product.id}/`, {
+    method: "DELETE",
+  });
+
+  if (response && response.ok) {
+    yield put(deleteProductFromList(action.payload.product.id));
+    yield put(fetchProducts(action.payload.product.user));
+  } else {
+    console.log("Product delete error", JSON.stringify(response));
+    message.error(
+      response.data.error ||
+        "There was a problem with trying to delete this manga. Try again later.",
+      7
     );
   }
 }
@@ -125,5 +146,6 @@ export default function* productSaga() {
     takeLatest(FETCH_VIEWING_PRODUCT, fetchViewingProductCall),
     takeLatest(SAVE_PRODUCT, saveProductCall),
     takeLatest(UNSAVE_PRODUCT, unsaveProductCall),
+    takeLatest(DELETE_PRODUCT, deleteProductCall),
   ]);
 }

@@ -21,17 +21,17 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&'
+SECRET_KEY = "4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&"
 
 
-if 'DEPLOYENV' not in os.environ:
-    LOGFILE = '/opt/python/log/django.log'
+if "DEPLOYENV" not in os.environ:
+    LOGFILE = "/opt/python/log/django.log"
 else:
-    LOGFILE = './django.log'
+    LOGFILE = "./django.log"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if 'DEVENV' in os.environ:
-    LOGFILE = './django.log'
+if "DEVENV" in os.environ:
+    LOGFILE = "./django.log"
     DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -75,7 +75,7 @@ ALLOWED_HOSTS = [
 
 def is_ec2_linux():
     """Detect if we are running on an EC2 Linux Instance
-       See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
+    See http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html
     """
     if os.path.isfile("/sys/hypervisor/uuid"):
         with open("/sys/hypervisor/uuid") as f:
@@ -87,11 +87,11 @@ def is_ec2_linux():
 def get_linux_ec2_private_ip():
     """Get the private IP Address of the machine if running on an EC2 linux server"""
     from urllib.request import urlopen
+
     if not is_ec2_linux():
         return None
     try:
-        response = urlopen(
-            'http://169.254.169.254/latest/meta-data/local-ipv4')
+        response = urlopen("http://169.254.169.254/latest/meta-data/local-ipv4")
         return response.read()
     except:
         return None
@@ -105,84 +105,83 @@ def get_linux_ec2_private_ip():
 # and add the instances private ip address
 private_ip = get_linux_ec2_private_ip()
 if private_ip:
-    ALLOWED_HOSTS.append(private_ip.decode('UTF-8'))
+    ALLOWED_HOSTS.append(private_ip.decode("UTF-8"))
 
 # Application definition
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'gdaypunchbackend.gdaypunchapi',
-    'gdaypunchbackend',
-    'gdaypunchwebapp',
-    'gdaypunchwebapp.templatetags',
-    'gdaypunchbackend.gdaypunchapi.templates',
-    'rest_framework_swagger',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "gdaypunchbackend.gdaypunchapi",
+    "gdaypunchbackend",
+    "gdaypunchwebapp",
+    "gdaypunchwebapp.templatetags",
+    "gdaypunchbackend.gdaypunchapi.templates",
+    "rest_framework_swagger",
+    "storages",
 ]
 
-AUTH_USER_MODEL = 'gdaypunchapi.User'
+AUTH_USER_MODEL = "gdaypunchapi.User"
 
 REST_FRAMEWORK = {
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.AnonRateThrottle",
+        "rest_framework.throttling.UserRateThrottle",
     ],
-    'DEFAULT_THROTTLE_RATES': {
-        'post_user': '5/minute',
-        'post_anon': '3/minute',
-        'get_anon': '100/minute',
-        'post_user': '5/minute',
-        'get_user': '150/minute',
-        'anon': '100/day',
-        'user': '1000/day',
+    "DEFAULT_THROTTLE_RATES": {
+        "post_user": "5/minute",
+        "post_anon": "3/minute",
+        "get_anon": "100/minute",
+        "post_user": "5/minute",
+        "get_user": "150/minute",
+        "anon": "100/day",
+        "user": "1000/day",
     },
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
-    ),
-    'PAGE_SIZE': 20
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_SCHEMA_CLASS": "rest_framework.schemas.coreapi.AutoSchema",
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "PAGE_SIZE": 20,
 }
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_currentuser.middleware.ThreadLocalUserMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_currentuser.middleware.ThreadLocalUserMiddleware",
 ]
 
-ROOT_URLCONF = 'gdaypunchbackend.urls'
+ROOT_URLCONF = "gdaypunchbackend.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(
-                BASE_DIR, 'gdaypunchbackend/gdaypunchapi/templates'),
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [
+            os.path.join(BASE_DIR, "gdaypunchbackend/gdaypunchapi/templates"),
         ],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
             ],
         },
     },
 ]
 
-WSGI_APPLICATION = 'gdaypunchbackend.wsgi.application'
+WSGI_APPLICATION = "gdaypunchbackend.wsgi.application"
 
-if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
+if "DEVENV" in os.environ or "DEPLOYENV" in os.environ:
+    LOCAL_DEV = True
     DOMAIN = "http://localhost:8000"
     RESOURCE_URL = DOMAIN + "/static/"
     S3_STORAGE = False
@@ -190,66 +189,67 @@ if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
 else:
     DOMAIN = "https://www.gdaypunch.com.au"
     RESOURCE_URL = "https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com/"
-    dbconfig = '/opt/app/gday-db-config.json'
+    dbconfig = "/opt/app/gday-db-config.json"
     S3_STORAGE = True
+    LOCAL_DEV = False
 
 SETTINGS = None
 with open(dbconfig) as f:
     SETTINGS = json.load(f)
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': SETTINGS['RDS_DB_NAME'],
-        'USER': SETTINGS['RDS_USERNAME'],
-        'PASSWORD': SETTINGS['RDS_PASSWORD'],
-        'HOST': SETTINGS['RDS_HOSTNAME'],
-        'PORT': SETTINGS['RDS_PORT'],
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": SETTINGS["RDS_DB_NAME"],
+        "USER": SETTINGS["RDS_USERNAME"],
+        "PASSWORD": SETTINGS["RDS_PASSWORD"],
+        "HOST": SETTINGS["RDS_HOSTNAME"],
+        "PORT": SETTINGS["RDS_PORT"],
     }
 }
 
-STRIPE_API_KEY = SETTINGS['STRIPE_API_KEY']
-STRIPE_ENDPOINT_SECRET = SETTINGS['STRIPE_ENDPOINT_SECRET']
+STRIPE_API_KEY = SETTINGS["STRIPE_API_KEY"]
+STRIPE_ENDPOINT_SECRET = SETTINGS["STRIPE_ENDPOINT_SECRET"]
 
-EMAIL_PORT = SETTINGS['EMAIL_PORT']
-EMAIL_HOST_USER = SETTINGS['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = SETTINGS['EMAIL_HOST_PASSWORD']
+EMAIL_PORT = SETTINGS["EMAIL_PORT"]
+EMAIL_HOST_USER = SETTINGS["EMAIL_HOST_USER"]
+EMAIL_HOST_PASSWORD = SETTINGS["EMAIL_HOST_PASSWORD"]
 EMAIL_USE_TLS = False
 
-if 'DEVENV' in os.environ:
+if "DEVENV" in os.environ:
     # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = '0.0.0.0'
+    EMAIL_HOST = "0.0.0.0"
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "smtp.gmail.com"
     EMAIL_USE_SSL = True
 
-    AWS_ACCESS_KEY_ID = SETTINGS['AWS_ACCESS_KEY_ID']
-    AWS_SECRET_ACCESS_KEY = SETTINGS['AWS_SECRET_ACCESS_KEY']
-    AWS_STORAGE_BUCKET_NAME = SETTINGS['AWS_STORAGE_BUCKET_NAME']
-    AWS_S3_SIGNATURE_VERSION = SETTINGS['AWS_S3_SIGNATURE_VERSION']
-    AWS_S3_REGION_NAME = SETTINGS['AWS_S3_REGION_NAME']
+    AWS_ACCESS_KEY_ID = SETTINGS["AWS_ACCESS_KEY_ID"]
+    AWS_SECRET_ACCESS_KEY = SETTINGS["AWS_SECRET_ACCESS_KEY"]
+    AWS_STORAGE_BUCKET_NAME = SETTINGS["AWS_STORAGE_BUCKET_NAME"]
+    AWS_S3_SIGNATURE_VERSION = SETTINGS["AWS_S3_SIGNATURE_VERSION"]
+    AWS_S3_REGION_NAME = SETTINGS["AWS_S3_REGION_NAME"]
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None
     AWS_S3_VERIFY = True
     AWS_QUERYSTRING_AUTH = False
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 
@@ -257,9 +257,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -272,27 +272,29 @@ USE_L10N = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 MEDIA_ROOT = os.path.join(
-    BASE_DIR, 'gdaypunchwebapp/gdaypunchreact/public/static/assets')
+    BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/assets"
+)
 
-if 'DEVENV' in os.environ or 'DEPLOYENV' in os.environ:
+if "DEVENV" in os.environ or "DEPLOYENV" in os.environ:
     STATIC_ROOT = os.path.join(BASE_DIR, "gdaypunchbackend/public/static/")
 else:
     STATIC_ROOT = "opt/app/gdaypunchbackend/public/static/"
 
-if 'DEPLOYENV' in os.environ:
+if "DEPLOYENV" in os.environ:
     STATICFILES_DIRS = [
         os.path.join(
-            BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/resources"),
+            BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/resources"
+        ),
         os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
     ]
 else:
     STATICFILES_DIRS = [
         os.path.join(
-            BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/resources"),
-        os.path.join(
-            BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/assets"),
+            BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/resources"
+        ),
+        os.path.join(BASE_DIR, "gdaypunchwebapp/gdaypunchreact/public/static/assets"),
         os.path.join(BASE_DIR, "gdaypunchbackend/build/"),
     ]
 
 # Static file directory in the React app
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"

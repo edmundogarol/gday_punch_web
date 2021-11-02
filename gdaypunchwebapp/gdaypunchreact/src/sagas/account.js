@@ -1,8 +1,6 @@
-import { call, all, takeLatest, put, delay } from "redux-saga/effects";
-import { message } from "antd";
+import { call, all, takeLatest, put } from "redux-saga/effects";
 
 import { api } from "utils/api";
-import { arrayIdsMapToObject } from "utils/utils";
 import {
   fetchingAccountOrders,
   FETCH_ACCOUNT_ORDERS,
@@ -10,6 +8,8 @@ import {
   updateAccountOrders,
   updateAccountOrdersError,
 } from "src/actions/account";
+import { FOLLOW_USER, UNFOLLOW_USER } from "actions/user";
+import { updateUsers } from "actions/app";
 
 export function* fetchingAccountOrdersCall(action) {
   yield put(fetchingAccountOrders());
@@ -29,6 +29,43 @@ export function* fetchingAccountOrdersCall(action) {
   }
 }
 
+export function* followUserCall(action) {
+  const { userId } = action.payload;
+
+  const response = yield call(api, `follow/`, {
+    method: "POST",
+    body: {
+      user: userId,
+    },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateUsers([data]));
+  } else {
+    console.log("Follow error", JSON.stringify(response));
+  }
+}
+
+export function* unfollowUserCall(action) {
+  const { followId } = action.payload;
+
+  const response = yield call(api, `follow/${followId}/`, {
+    method: "DELETE",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateUsers([data]));
+  } else {
+    console.log("Unfollow error", JSON.stringify(response));
+  }
+}
+
 export default function* accountSaga() {
-  yield all([takeLatest(FETCH_ACCOUNT_ORDERS, fetchingAccountOrdersCall)]);
+  yield all([
+    takeLatest(FETCH_ACCOUNT_ORDERS, fetchingAccountOrdersCall),
+    takeLatest(FOLLOW_USER, followUserCall),
+    takeLatest(UNFOLLOW_USER, unfollowUserCall),
+  ]);
 }

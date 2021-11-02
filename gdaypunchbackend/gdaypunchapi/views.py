@@ -1,4 +1,3 @@
-
 import os
 import pytz
 import datetime
@@ -7,6 +6,7 @@ from next_prev import next_in_order
 from secrets import token_urlsafe
 from threading import Thread
 from dateutil.parser import parse
+from botocore.exceptions import ClientError
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -16,12 +16,16 @@ from rest_framework.mixins import UpdateModelMixin
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.decorators import api_view
 
-from rest_framework.viewsets import (ViewSet, ModelViewSet)
+from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_swagger import renderers
 from rest_framework.schemas import SchemaGenerator
 from rest_framework.permissions import (
-    AllowAny, IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission)
+    AllowAny,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+    BasePermission,
+)
 from rest_framework.parsers import MultiPartParser, FormParser
 
 from django.db.models import Q, F
@@ -40,7 +44,7 @@ from .utils import (
     PostOnly,
     AdminOrReadOnly,
     AuthenticatedCreateOnly,
-    AuthenticatedCreateAndEditOnly
+    AuthenticatedCreateAndEditOnly,
 )
 
 from .api.verify_account import send_account_verification_email
@@ -52,11 +56,9 @@ from .api_permissions import (
     MangaDetailPermissions,
     PromptsPermissions,
     UserPermissions,
-    CommentLikePermissions
+    CommentLikePermissions,
 )
-from .models import (
-    User, Manga, Like, Comment, CommentLike, Prompt, Settings
-)
+from .models import User, Manga, Like, Comment, CommentLike, Prompt, Settings
 from .serializers import (
     UserSerializer,
     GroupSerializer,
@@ -67,16 +69,13 @@ from .serializers import (
     CommentLikeSerializer,
     ResetPasswordSerializer,
 )
-from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE
+from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE, LOCAL_DEV
 
 
 class SwaggerSchemaView(APIView):
     permission_classes = [AdminOnly]
     # permission_classes = [AllowAny] # User for testing to see what endpoints are available to regular users
-    renderer_classes = [
-        renderers.OpenAPIRenderer,
-        renderers.SwaggerUIRenderer
-    ]
+    renderer_classes = [renderers.OpenAPIRenderer, renderers.SwaggerUIRenderer]
 
     def get(self, request):
         generator = SchemaGenerator()
@@ -95,13 +94,13 @@ class PostUserRateThrottle(UserRateThrottle):
 
 
 class UserViewSet(ModelViewSet):
-    queryset = User.objects.all().order_by('-id')
+    queryset = User.objects.all().order_by("-id")
     serializer_class = UserSerializer
-    permission_classes = (UserPermissions, )
+    permission_classes = (UserPermissions,)
 
     def list(self, request, *args, **kwargs):
-        queryset = User.objects.all().order_by('-id')
-        search = request.GET.get('search', None)
+        queryset = User.objects.all().order_by("-id")
+        search = request.GET.get("search", None)
 
         settings = Settings.objects.first()
         if settings.user_list_order == BY_LAST_LOGIN:
@@ -124,8 +123,7 @@ class UserViewSet(ModelViewSet):
             return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         try:
-            password_validation.validate_password(
-                validated_data.data["password"])
+            password_validation.validate_password(validated_data.data["password"])
         except ValidationError as error:
             content = {"error": error}
             return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -139,13 +137,18 @@ class UserViewSet(ModelViewSet):
             content = {"error": "Duplicate email. User already exists."}
             return Response(content, status=status.HTTP_409_CONFLICT)
 
-        user.last_ip = ip_data['ip'] if ip_data['valid'] else None
+        user.last_ip = ip_data["ip"] if ip_data["valid"] else None
         user.verified = token_urlsafe(20)
         user.set_password(validated_data.data["password"])
         user.save()
 
-        Thread(target=send_account_verification_email,
-               args=(user, user.verified,)).start()
+        Thread(
+            target=send_account_verification_email,
+            args=(
+                user,
+                user.verified,
+            ),
+        ).start()
 
         content = {
             "user": str(user),
@@ -164,14 +167,30 @@ class UserViewSet(ModelViewSet):
         password = request.data.get("password", None)
         email = request.data.get("email", None)
         username = request.data.get("username", None)
+        cover = request.data.get("cover", None)
+        image_avatar = request.data.get("avatar", None)
+
+        user_id = request.data.get("user_id", None)
+
+        if str(cover) == "remove":
+            user = User.objects.get(id=user_id)
+            user.cover.delete()
+
+            return Response({"success": "Removed user cover."})
+
+        if str(image_avatar) == "remove":
+            user = User.objects.get(id=user_id)
+            user.image.delete()
+
+            serializer = UserSerializer(user)
+            return Response({"success": "Removed user avatar."})
 
         if request.data.get("image", None):
             parser_classes = (MultiPartParser, FormParser)
 
         if password is not None:
             try:
-                password_validation.validate_password(
-                    request.data["password"])
+                password_validation.validate_password(request.data["password"])
             except ValidationError as error:
                 content = {"error": error}
                 return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -183,7 +202,7 @@ class UserViewSet(ModelViewSet):
                 content = {"error": e}
                 return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        if username is not None:
+        if username is not None and username != "":
             try:
                 user = User.objects.get(username=username)
                 content = {"Error": "User with this username already exists."}
@@ -192,36 +211,49 @@ class UserViewSet(ModelViewSet):
                 pass
 
         queryset = User.objects.all()
-        user = queryset.get(pk=kwargs.get("pk"))
+        user = queryset.get(pk=user_id if user_id else kwargs.get("pk"))
 
         if request.data.get("image", None) and user.image:
+            if not LOCAL_DEV:
+                request.data["image_public"] = request.data["image"]
+
             if S3_STORAGE:
                 user.image.delete()
             else:
                 os.remove(os.path.join(MEDIA_ROOT, user.image.name))
 
-        serializer = UserSerializer(user, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+        if cover and user.cover:
+            if S3_STORAGE:
+                user.cover.delete()
+            else:
+                os.remove(os.path.join(MEDIA_ROOT, user.cover.name))
 
-        if email is not None:
-            user = User.objects.get(id=user.id)
-            user.verified = None
-            user.save()
+        try:
+            serializer = UserSerializer(user, data=request.data, partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
-            serializer = UserSerializer(user)
+            if email is not None:
+                user = User.objects.get(id=user.id)
+                user.verified = None
+                user.save()
+
+                serializer = UserSerializer(user)
+                return Response(serializer.data)
+
             return Response(serializer.data)
 
-        return Response(serializer.data)
+        except ClientError as e:
+            return Response({"error": str(e)})
 
 
 class AdminCreateUserViewSet(APIView):
     permission_classes = [AdminOnly]
 
     def post(self, request, format=None):
-        email = request.data.get('email', None)
-        first_name = request.data.get('first_name', None)
-        last_name = request.data.get('last_name', None)
+        email = request.data.get("email", None)
+        first_name = request.data.get("first_name", None)
+        last_name = request.data.get("last_name", None)
         temp_password = token_urlsafe(6)
 
         print(temp_password)
@@ -244,8 +276,8 @@ class UpdateUserPrivilegeViewSet(APIView):
     permission_classes = [AdminOnly]
 
     def post(self, request, format=None):
-        user_id = request.data.get('user', None)
-        privileges = request.data.get('privileges', None)
+        user_id = request.data.get("user", None)
+        privileges = request.data.get("privileges", None)
 
         try:
             user = User.objects.get(id=user_id)
@@ -286,7 +318,7 @@ class LoginView(APIView):
 
         if str(self.request.user) != "AnonymousUser":
             user = User.objects.get(email=self.request.user)
-            user.last_ip = ip_data['ip'] if ip_data['valid'] else None
+            user.last_ip = ip_data["ip"] if ip_data["valid"] else None
             user.save()
 
             serializer = UserSerializer(user)
@@ -325,7 +357,7 @@ class LoginView(APIView):
             raise AuthenticationFailed("User inactive or deleted.")
 
         user = User.objects.get(email=self.request.user)
-        user.last_ip = ip_data['ip'] if ip_data['valid'] else None
+        user.last_ip = ip_data["ip"] if ip_data["valid"] else None
         user.save()
 
         serializer = UserSerializer(user)
@@ -337,16 +369,16 @@ class LoginView(APIView):
 
 
 class LikeViewSet(ModelViewSet):
-    queryset = Like.objects.none()
+    queryset = Like.objects.all()
     serializer_class = LikeSerializer
     permission_classes = [LikePermissions]
 
     def create(self, request, *args, **kwargs):
         user = User.objects.get(email=self.request.user)
-        manga_id = request.data.get('manga', None)
+        manga_id = request.data.get("manga", None)
 
         if manga_id is None:
-            return Response({'error': 'No manga.'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"error": "No manga."}, status=status.HTTP_204_NO_CONTENT)
 
         manga = Manga.objects.get(id=manga_id)
 
@@ -360,8 +392,19 @@ class LikeViewSet(ModelViewSet):
         serializer = MangaSerializer(manga)
         return Response(serializer.data)
 
-    # TODO Implement Unlike
-    # def destroy(self, request, *args, **kwargs):
+    def destroy(self, request, *args, **kwargs):
+        try:
+            like = Like.objects.get(pk=kwargs.get("pk"))
+        except Like.DoesNotExist:
+            return Response(
+                {"error": "Like does not exist."}, status=status.HTTP_204_NO_CONTENT
+            )
+
+        manga = Manga.objects.get(id=like.manga.id)
+        like.delete()
+
+        serializer = MangaSerializer(manga)
+        return Response(serializer.data)
 
 
 class CommentLikeViewSet(ModelViewSet):
@@ -378,7 +421,7 @@ class PromptViewSet(ModelViewSet):
     permission_classes = [AdminOnly]
 
     def list(self, request, *args, **kwargs):
-        queryset = Prompt.objects.all().order_by('-id')
+        queryset = Prompt.objects.all().order_by("-id")
         serializer = PromptSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -402,8 +445,8 @@ class PromptRandomStylePanelViewSet(ModelViewSet):
     permission_classes = [PromptsPermissions]
 
     def list(self, request, *args, **kwargs):
-        style = Prompt.objects.filter(promptType=2).order_by('?')[:1].get()
-        framing = Prompt.objects.filter(promptType=3).order_by('?')[:1].get()
+        style = Prompt.objects.filter(promptType=2).order_by("?")[:1].get()
+        framing = Prompt.objects.filter(promptType=3).order_by("?")[:1].get()
         style_and_framing = " ".join([framing.prompt, style.prompt])
 
         contributors = style.meta
@@ -411,8 +454,8 @@ class PromptRandomStylePanelViewSet(ModelViewSet):
             contributors = " and ".join([framing.meta, style.meta])
 
         response = {}
-        response['prompt'] = style_and_framing
-        response['meta'] = contributors
+        response["prompt"] = style_and_framing
+        response["meta"] = contributors
         return Response(response)
 
 
@@ -450,7 +493,7 @@ class PromptSelectedViewSet(ModelViewSet):
             if next_prompt is None:
                 next_prompt = Prompt.objects.first()
 
-            if (str(next_prompt.promptType) != "subject"):
+            if str(next_prompt.promptType) != "subject":
                 while str(next_prompt.promptType) != "subject":
                     next_prompt = next_in_order(next_prompt)
 
@@ -487,7 +530,7 @@ class MangaCommentsViewSet(ModelViewSet):
         """
         Retrieve all comments for Manga [id]
         """
-        if pk == 'null' or pk == 'NaN':
+        if pk == "null" or pk == "NaN":
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         queryset = Comment.objects.all()
@@ -505,7 +548,7 @@ class AllMangaViewSet(ModelViewSet):
         return self.request.user
 
     def list(self, request, *args, **kwargs):
-        queryset = Manga.objects.all().order_by('-id')
+        queryset = Manga.objects.all().order_by("-id")
         serializer = MangaSerializer(queryset, many=True)
         return Response(serializer.data)
 
@@ -516,7 +559,7 @@ class MangaDetailView(UpdateModelMixin, ViewSet):
     def retrieve(self, request, pk=None):
         queryset = Manga.objects.all()
 
-        if pk == 'null' or pk == 'NaN':
+        if pk == "null" or pk == "NaN":
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         manga = get_object_or_404(queryset, pk=pk)

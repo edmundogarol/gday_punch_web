@@ -1,4 +1,3 @@
-import { pdfjs } from "react-pdf";
 import {
   call,
   all,
@@ -17,23 +16,16 @@ import {
   updateManga,
   updateComments,
   updateComment,
+  UNLIKE_MANGA,
+  UPLOAD_MANGA,
+  uploadingManga,
+  uploadingMangaFinished,
+  uploadingMangaError,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { api } from "utils/api";
 import { message } from "antd";
-
-export function* getGPManga() {
-  // const loadingPDF = yield call(pdfjs.getDocument, {
-  //   url:
-  //     "https://gdaypunch-static.s3-us-west-2.amazonaws.com/compressed_gpmm-1-digital-compressed-s.pdf",
-  //   length: 2000000,
-  //   rangeChunkSize: 2000000
-  // });
-  // loadingPDF.onProgress((pdf) => {
-  //   console.log("pdf", pdf);
-  //   put(updateGPManga(pdf));
-  // })
-}
+import { fetchProducts } from "actions/app";
 
 export function* getFeaturedManga() {
   const featuredMangaIds = [1, 2];
@@ -71,6 +63,21 @@ export function* likeManga(action) {
     body: {
       manga: mangaId,
     },
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateManga(data));
+  } else {
+    console.log("Like error", JSON.stringify(response));
+  }
+}
+
+export function* unlikeManga(action) {
+  const { likeId } = action.payload;
+
+  const response = yield call(api, `like/${likeId}/`, {
+    method: "DELETE",
   });
 
   if (response && response.ok) {
@@ -139,10 +146,72 @@ export function* likeComment(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
     yield call(getComment, action.payload.comment);
   } else {
     console.log("Manga Like Comment error", JSON.stringify(response));
+  }
+}
+
+export function* uploadMangaCall(action) {
+  yield put(uploadingManga());
+  const { id: userId } = yield select(selectUser);
+  const { manga } = action.payload;
+
+  let form_data;
+  form_data = new FormData();
+
+  if (manga.manga) {
+    const blobFetch = yield call(fetch, manga.manga);
+    const blob = yield blobFetch.blob();
+
+    form_data.append(
+      "manga",
+      blob,
+      `${userId}_${manga.title.toLowerCase()}_manga.pdf`
+    );
+  }
+  if (manga.image) {
+    const blobFetch = yield call(fetch, manga.image);
+    const blob = yield blobFetch.blob();
+
+    form_data.append(
+      "image",
+      blob,
+      `${userId}_${manga.title.toLowerCase()}_image.png`
+    );
+  }
+
+  Object.keys(manga).map((key) => {
+    if (key !== "manga" && key !== "image" && !!manga[key])
+      form_data.append(key, manga[key]);
+  });
+
+  const response = yield call(api, `products/`, {
+    method: "POST",
+    body: form_data,
+    contentType: null,
+  });
+
+  if (response && response.ok) {
+    message.success("Successfully Uploaded Manga");
+    yield put(fetchProducts(userId));
+    yield put(uploadingMangaFinished());
+  } else {
+    console.log("Upload Manga error", JSON.stringify(response));
+    if (response.data) {
+      yield put(uploadingMangaError(response.data));
+      Object.values(response.data).map((error) =>
+        message.warn({
+          content: error,
+          className: "antd-message-capitalize",
+          style: {
+            textTransform: "capitalize",
+          },
+        })
+      );
+    } else {
+      message.error(`Upload Manga Error: ${response.status}`);
+    }
   }
 }
 
@@ -150,8 +219,10 @@ export default function* mangaSaga() {
   yield all([
     takeLatest(DO_GET_MANGA, getManga),
     takeEvery(DO_LIKE_MANGA, likeManga),
+    takeEvery(UNLIKE_MANGA, unlikeManga),
     takeEvery(DO_COMMENT_MANGA, commentManga),
     takeEvery(DO_GET_COMMENTS, getComments),
     takeEvery(DO_LIKE_COMMENT, likeComment),
+    takeEvery(UPLOAD_MANGA, uploadMangaCall),
   ]);
 }

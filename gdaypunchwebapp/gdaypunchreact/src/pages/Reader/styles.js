@@ -22,6 +22,15 @@ export const ReaderContainer = styled.div`
       flex-wrap: unset;
     }
   }
+
+  a {
+    font-size: 0.9em;
+    color: #484848;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 `;
 
 export const LikeButton = styled.span`

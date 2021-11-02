@@ -1,5 +1,6 @@
 import { call, all, takeLatest, select, put } from "redux-saga/effects";
 import { message } from "antd";
+import moment from "moment";
 
 import {
   DO_LOGIN,
@@ -30,6 +31,14 @@ import {
   updatingUser,
   updatingUserFinished,
   updateUserError,
+  FETCH_FOLLOWINGS,
+  updateFollowings,
+  FETCH_STALL_DATA,
+  fetchingStallData,
+  updateStallData,
+  fetchingStallDataFinished,
+  fetchingStallDataError,
+  fetchStallData,
 } from "actions/user";
 import {
   SUBMIT_CONTACT_FORM,
@@ -88,48 +97,69 @@ export function* register() {
 }
 
 export function* patchUser(action) {
+  const { user } = action.payload;
+
   yield put(updatingUser());
   const currentUser = yield select(selectUser);
   let form_data;
 
-  if (action.payload.user.image) {
-    const blobFetch = yield call(fetch, action.payload.user.image);
+  form_data = new FormData();
+
+  if (user.image) {
+    const blobFetch = yield call(fetch, user.image);
     const blob = yield blobFetch.blob();
 
-    form_data = new FormData();
     form_data.append(
       "image",
       blob,
       `${currentUser.id}_${(
         currentUser.username || currentUser.email
-      ).toLowerCase()}.png`
+      ).toLowerCase()}_${moment(moment.now()).format("YYMMDDhhmmss")}.png`
     );
+  }
+  if (user.cover && user.cover !== "remove") {
+    const blobFetch = yield call(fetch, user.cover);
+    const blob = yield blobFetch.blob();
 
-    Object.keys(action.payload.user).map((key) => {
-      form_data.append(key, action.payload.user[key]);
-    });
-  } else {
-    form_data = new FormData();
-    Object.keys(action.payload.user).map((key) => {
-      form_data.append(key, action.payload.user[key]);
-    });
+    form_data.append(
+      "cover",
+      blob,
+      `${currentUser.id}_${(
+        currentUser.username || currentUser.email
+      ).toLowerCase()}_${moment(moment.now()).format("YYMMDDhhmmss")}.png`
+    );
   }
 
-  const response = yield call(api, `user/${currentUser.id}/`, {
-    method: "PATCH",
-    body: form_data || { ...action.payload.user },
-    // Use null here so gtfetch knows to remove contentType setting
-    contentType: null,
+  Object.keys(action.payload.user).map((key) => {
+    if (key === "image" || (key === "cover" && user.cover !== "remove")) return;
+    form_data.append(key, action.payload.user[key]);
   });
+
+  const response = yield call(
+    api,
+    `user/${user.user_id ? user.user_id : currentUser.id}/`,
+    {
+      method: "PATCH",
+      body: form_data || { ...action.payload.user },
+      // Use null here so gtfetch knows to remove contentType setting
+      contentType: null,
+    }
+  );
 
   if (response && response.ok) {
     const data = response.data;
-    const user = {
+    const incoming_user = {
       ...data,
     };
 
-    yield put(updateUser(user));
-    yield put(updatingUserFinished());
+    if (user.user_id) {
+      yield put(fetchStallData(user.user_id));
+      yield put(updatingUserFinished());
+    } else {
+      yield put(updateUser(incoming_user));
+      yield put(updatingUserFinished());
+      yield put(updateUserError(undefined));
+    }
     message.success(`Successfully updated profile`);
   } else {
     console.log("Update user details error", JSON.stringify(response));
@@ -191,7 +221,7 @@ export function* logout() {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     yield put(logoutSuccess());
     yield put(doCheckLogin());
     yield put(fetchProducts());
@@ -207,7 +237,7 @@ export function* submitContactFormCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     message.success(`Contact Form Submitted.`);
     yield put(contactFormSubmitted(true));
   } else {
@@ -227,7 +257,7 @@ export function* resetPasswordCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     message.success(`Reset Password Submitted.`);
     yield put(resetPasswordSubmitted(true));
   } else {
@@ -270,7 +300,7 @@ export function* resetPasswordSubmitNewCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     yield put(resetPasswordSubmitted(true));
     yield put(updateResetPasswordErrors({}));
   } else {
@@ -292,7 +322,7 @@ export function* verifyEmailCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
 
     yield put(emailVerified());
     yield put(verifyingEmailFinished());
@@ -316,7 +346,7 @@ export function* requestEmailVerificationCall() {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
 
     yield put(requestEmailVerificationFinished());
     yield put(doCheckLogin());
@@ -341,7 +371,7 @@ export function* fetchCartItemsCall() {
   });
 
   if (response && response.ok) {
-    const data = response.data;
+    // const data = response.data;
     yield put(finishedFetchingCartItems());
   } else {
     yield put(finishedFetchingCartItems());
@@ -394,8 +424,7 @@ export function* castVoteCall(action) {
   });
 
   if (response && response.ok) {
-    const data = response.data;
-
+    // const data = response.data;
     yield put(fetchVotingItems());
     yield put(castingVoteFinished());
   } else {
@@ -407,6 +436,49 @@ export function* castVoteCall(action) {
       )
     );
     console.log("Cast vote error", JSON.stringify(response));
+  }
+}
+
+export function* fetchFollowingsCall(action) {
+  const { payload } = action;
+
+  yield put(fetchingVotingItems());
+  const response = yield call(api, `following/${payload.userId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+
+    yield put(updateFollowings(payload.userId, data));
+  } else {
+    message.error(
+      "Fetching account-follows problem. Please try again later.",
+      4
+    );
+    console.log("Account follows Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* fetchStallDataCall(action) {
+  const { payload } = action;
+
+  yield put(fetchingStallData());
+  const response = yield call(api, `stall/${payload.userId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(fetchingStallDataFinished());
+    yield put(updateStallData(data));
+  } else {
+    message.error(
+      "Fetching user stall encountered a problem. Please try again later.",
+      4
+    );
+    console.log("Stall fetch error", JSON.stringify(response));
+    yield put(fetchingStallDataError(response.data));
   }
 }
 
@@ -426,5 +498,7 @@ export default function* appSaga() {
     takeLatest(REQUEST_EMAIL_VERIFICATION, requestEmailVerificationCall),
     takeLatest(FETCH_VOTING_ITEMS, fetchVotingItemsCall),
     takeLatest(CAST_VOTE, castVoteCall),
+    takeLatest(FETCH_FOLLOWINGS, fetchFollowingsCall),
+    takeLatest(FETCH_STALL_DATA, fetchStallDataCall),
   ]);
 }

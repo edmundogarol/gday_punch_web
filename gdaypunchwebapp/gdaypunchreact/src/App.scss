@@ -21,10 +21,6 @@ code {
   }
 }
 
-.App-header-container {
-  height: 100%;
-}
-
 .App-logo {
   height: 25vmin;
   pointer-events: none;
@@ -45,19 +41,6 @@ code {
   }
 }
 
-.app-temp-background {
-  background-image: url("/static/launch-background.png");
-  background-position: center;
-  background-size: 136%;
-  background-blend-mode: color-burn;
-}
-
-@media (min-width: 1024px) {
-  .app-temp-background {
-    background-size: 88%;
-  }
-}
-
 @keyframes shine {
   0% {
     background-position: -500%;
@@ -65,16 +48,6 @@ code {
   100% {
     background-position: 500%;
   }
-}
-
-.header {
-  align-items: center;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  animation: 0.6s ease-in 0s 1 slideInFromLeft;
-  padding-top: 3em;
 }
 
 .side-cart {
@@ -89,7 +62,6 @@ code {
   transform: translateX(0);
 }
 
-.App-header-container,
 .pdf-container {
   background-color: #f1f1f1;
   min-height: 75vh;
