@@ -122,7 +122,6 @@ INSTALLED_APPS = [
     "gdaypunchwebapp.templatetags",
     "gdaypunchbackend.gdaypunchapi.templates",
     "rest_framework_swagger",
-    "storages",
 ]
 
 AUTH_USER_MODEL = "gdaypunchapi.User"
