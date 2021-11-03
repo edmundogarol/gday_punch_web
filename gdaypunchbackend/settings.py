@@ -68,7 +68,7 @@ if "DEVENV" not in os.environ:
             "*": {
                 "handlers": ["console"],
                 "level": "DEBUG",
-                "propagate": True,
+                "propagate": False,
             }
         },
     }

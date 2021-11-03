@@ -7,6 +7,7 @@ from secrets import token_urlsafe
 from threading import Thread
 from dateutil.parser import parse
 from botocore.exceptions import ClientError
+import logging
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -71,6 +72,8 @@ from .serializers import (
 )
 from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE, LOCAL_DEV
 
+logger = logging.getLogger(__name__)
+
 
 class SwaggerSchemaView(APIView):
     permission_classes = [AdminOnly]
@@ -104,7 +107,9 @@ class UserViewSet(ModelViewSet):
 
         settings = Settings.objects.first()
         if settings.user_list_order == BY_LAST_LOGIN:
-            queryset = User.objects.all().order_by(F('last_login').desc(nulls_last=True))
+            queryset = User.objects.all().order_by(
+                F("last_login").desc(nulls_last=True)
+            )
 
         if search:
             queryset = queryset.filter(email__icontains=search)
@@ -214,8 +219,14 @@ class UserViewSet(ModelViewSet):
         user = queryset.get(pk=user_id if user_id else kwargs.get("pk"))
 
         if request.data.get("image", None) and user.image:
+            logger.info("Incoming user image.")
+
             if not LOCAL_DEV:
+                logger.info("Production image patch - set image_public")
                 request.data["image_public"] = request.data["image"]
+                logger.info(
+                    'request.data["image_public"]', request.data["image_public"]
+                )
 
             if S3_STORAGE:
                 user.image.delete()
