@@ -227,6 +227,9 @@ class UserViewSet(ModelViewSet):
             else:
                 os.remove(os.path.join(MEDIA_ROOT, user.cover.name))
 
+        if LOCAL_DEV:
+            request.data["image_public"] = None
+
         serializer = UserSerializer(user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()

@@ -423,7 +423,7 @@ function Stall({ history }) {
         editing={newCover}
         loading={coverLoading}
         editable={
-          myStallView && hasPrivilege(currentUser, "admin") ? (
+          myStallView ? (
             <ImgCrop aspect={3 / 1} rotate shape="rect" quality={0.2}>
               <Upload
                 disabled={!!uploadingMangaData}
