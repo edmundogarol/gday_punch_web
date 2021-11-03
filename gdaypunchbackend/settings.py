@@ -24,11 +24,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&"
 
 
-if "DEVENV" not in os.environ and "DEPLOYENV" not in os.environ:
-    LOGFILE = "/var/log/django/django.log"
-else:
-    LOGFILE = BASE_DIR + "/djangolog/django.log"
-
 # SECURITY WARNING: don't run with debug turned on in production!
 if "DEVENV" in os.environ:
     DEBUG = True
@@ -52,49 +47,52 @@ ALLOWED_HOSTS = [
     "172.31.6.161",
 ]
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "[%(asctime)s] %(levelname)s %(module)s %(process)d %(thread)d %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
+if "DEVENV" not in os.environ and "DEPLOYENV" not in os.environ:
+    LOGFILE = "/var/log/django/django.log"
+
+    LOGGING = {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "verbose": {
+                "format": "[%(asctime)s] %(levelname)s %(module)s %(process)d %(thread)d %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            },
+            "simple": {
+                "format": "[%(asctime)s] %(levelname)s %(message)s",
+                "datefmt": "%Y-%m-%d %H:%M:%S",
+            },
         },
-        "simple": {
-            "format": "[%(asctime)s] %(levelname)s %(message)s",
-            "datefmt": "%Y-%m-%d %H:%M:%S",
+        "handlers": {
+            "file": {
+                "level": "DEBUG",
+                "class": "logging.handlers.RotatingFileHandler",
+                "filename": LOGFILE,
+                "backupCount": 5,
+                "maxBytes": 5242880,
+                "formatter": "simple",
+            },
+            "console": {
+                "level": "DEBUG",
+                "class": "logging.StreamHandler",
+                "formatter": "simple",
+            },
         },
-    },
-    "handlers": {
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOGFILE,
-            "backupCount": 5,
-            "maxBytes": 5242880,
-            "formatter": "simple",
+        "loggers": {
+            "django": {
+                "handlers": ["file", "console"],
+                "propagate": True,
+            },
+            "django.db.backends": {
+                "handlers": ["file"],
+                "level": "INFO",  # DEBUG will log all queries, so change it to WARNING.
+                "propagate": False,  # Don't propagate to other handlers
+            },
+            "django.utils.autoreload": {
+                "level": "INFO",
+            },
         },
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            "formatter": "simple",
-        },
-    },
-    "loggers": {
-        "django": {
-            "handlers": ["file", "console"],
-            "propagate": True,
-        },
-        "django.db.backends": {
-            "handlers": ["file"],
-            "level": "INFO",  # DEBUG will log all queries, so change it to WARNING.
-            "propagate": False,  # Don't propagate to other handlers
-        },
-        "django.utils.autoreload": {
-            "level": "INFO",
-        },
-    },
-}
+    }
 
 
 def is_ec2_linux():
