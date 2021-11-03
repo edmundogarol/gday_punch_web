@@ -7,7 +7,6 @@ from secrets import token_urlsafe
 from threading import Thread
 from dateutil.parser import parse
 from botocore.exceptions import ClientError
-import logging
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -71,8 +70,6 @@ from .serializers import (
     ResetPasswordSerializer,
 )
 from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE, LOCAL_DEV
-
-logger = logging.getLogger(__name__)
 
 
 class SwaggerSchemaView(APIView):
@@ -219,14 +216,8 @@ class UserViewSet(ModelViewSet):
         user = queryset.get(pk=user_id if user_id else kwargs.get("pk"))
 
         if request.data.get("image", None) and user.image:
-            logger.info("Incoming user image.")
-
-            if not LOCAL_DEV:
-                logger.info("Production image patch - set image_public")
+            if LOCAL_DEV:
                 request.data["image_public"] = request.data["image"]
-                logger.info(
-                    'request.data["image_public"]', request.data["image_public"]
-                )
 
             if S3_STORAGE:
                 user.image.delete()
@@ -239,23 +230,23 @@ class UserViewSet(ModelViewSet):
             else:
                 os.remove(os.path.join(MEDIA_ROOT, user.cover.name))
 
-        try:
-            serializer = UserSerializer(user, data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+            # try:
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-            if email is not None:
-                user = User.objects.get(id=user.id)
-                user.verified = None
-                user.save()
+        if email is not None:
+            user = User.objects.get(id=user.id)
+            user.verified = None
+            user.save()
 
-                serializer = UserSerializer(user)
-                return Response(serializer.data)
-
+            serializer = UserSerializer(user)
             return Response(serializer.data)
 
-        except ClientError as e:
-            return Response({"error": str(e)})
+        return Response(serializer.data)
+
+        # except ClientError as e:
+        #     return Response({"error": str(e)})
 
 
 class AdminCreateUserViewSet(APIView):
