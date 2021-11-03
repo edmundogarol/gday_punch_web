@@ -29,7 +29,7 @@ RUN mkdir -p /opt/app/gdaypunchwebapp
 COPY requirements.txt start-server.sh Makefile manage.py /opt/app/
 COPY gdaypunchbackend /opt/app/gdaypunchbackend/
 COPY gdaypunchwebapp /opt/app/gdaypunchwebapp/
-COPY djangolog/django.log /var/log/django/
+RUN touch /var/log/django/django.log
 
 # WORKDIR /opt/app/gdaypunchwebapp/gdaypunchreact
 # RUN	yarn && yarn run build

@@ -216,9 +216,6 @@ class UserViewSet(ModelViewSet):
         user = queryset.get(pk=user_id if user_id else kwargs.get("pk"))
 
         if request.data.get("image", None) and user.image:
-            # if not LOCAL_DEV:
-            #     request.data["image_public"] = request.data["image"]
-
             if S3_STORAGE:
                 user.image.delete()
             else:
@@ -230,23 +227,19 @@ class UserViewSet(ModelViewSet):
             else:
                 os.remove(os.path.join(MEDIA_ROOT, user.cover.name))
 
-        try:
-            serializer = UserSerializer(user, data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-            if email is not None:
-                user = User.objects.get(id=user.id)
-                user.verified = None
-                user.save()
+        if email is not None:
+            user = User.objects.get(id=user.id)
+            user.verified = None
+            user.save()
 
-                serializer = UserSerializer(user)
-                return Response(serializer.data)
-
+            serializer = UserSerializer(user)
             return Response(serializer.data)
 
-        except ClientError as e:
-            return Response({"error": str(e)})
+        return Response(serializer.data)
 
 
 class AdminCreateUserViewSet(APIView):

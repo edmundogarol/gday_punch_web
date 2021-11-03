@@ -75,7 +75,7 @@ LOGGING = {
             "formatter": "simple",
         },
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
