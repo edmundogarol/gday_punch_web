@@ -216,8 +216,8 @@ class UserViewSet(ModelViewSet):
         user = queryset.get(pk=user_id if user_id else kwargs.get("pk"))
 
         if request.data.get("image", None) and user.image:
-            if not LOCAL_DEV:
-                request.data["image_public"] = request.data["image"]
+            # if not LOCAL_DEV:
+            #     request.data["image_public"] = request.data["image"]
 
             if S3_STORAGE:
                 user.image.delete()

@@ -116,6 +116,13 @@ export function* patchUser(action) {
         currentUser.username || currentUser.email
       ).toLowerCase()}_${moment(moment.now()).format("YYMMDDhhmmss")}.png`
     );
+    form_data.append(
+      "image_public",
+      blob,
+      `${currentUser.id}_${(
+        currentUser.username || currentUser.email
+      ).toLowerCase()}_${moment(moment.now()).format("YYMMDDhhmmss")}.png`
+    );
   }
   if (user.cover && user.cover !== "remove") {
     const blobFetch = yield call(fetch, user.cover);
