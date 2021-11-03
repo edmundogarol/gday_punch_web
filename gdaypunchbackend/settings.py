@@ -24,14 +24,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&"
 
 
-if "DEPLOYENV" not in os.environ:
-    LOGFILE = "/var/log/django/django.log"
-else:
-    LOGFILE = "./django.log"
-
 # SECURITY WARNING: don't run with debug turned on in production!
 if "DEVENV" in os.environ:
-    LOGFILE = "./django.log"
     DEBUG = True
 
 ALLOWED_HOSTS = [
@@ -57,19 +51,25 @@ if "DEVENV" not in os.environ:
     LOGGING = {
         "version": 1,
         "disable_existing_loggers": False,
-        "handlers": {
-            "file": {
-                "level": "DEBUG",
-                "class": "logging.FileHandler",
-                "filename": LOGFILE,
+        "formatters": {
+            "default": {
+                "format": "[DJANGO] %(levelname)s %(asctime)s %(module)s "
+                "%(name)s.%(funcName)s:%(lineno)s: %(message)s"
             },
         },
+        "handlers": {
+            "console": {
+                "level": "DEBUG",
+                "class": "logging.StreamHandler",
+                "formatter": "default",
+            }
+        },
         "loggers": {
-            "django": {
-                "handlers": ["file"],
+            "*": {
+                "handlers": ["console"],
                 "level": "DEBUG",
                 "propagate": True,
-            },
+            }
         },
     }
 
