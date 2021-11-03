@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = "4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&"
 
 
-if "DEVENV" not in os.environ:
+if "DEVENV" not in os.environ and "DEPLOYENV" not in os.environ:
     LOGFILE = "/var/log/django/django.log"
 else:
     LOGFILE = BASE_DIR + "/djangolog/django.log"
