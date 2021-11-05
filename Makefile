@@ -52,7 +52,7 @@ app: gui	dev build migrate	server
 dockerapp: gui build migrate	server
 
 ebdeploy: 
-	eb deploy --verbose
+	eb deploy
 
 deploy: prodgui static	ebdeploy
 
