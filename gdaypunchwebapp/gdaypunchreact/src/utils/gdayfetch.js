@@ -3,6 +3,7 @@ import { buildSearchParams } from "./urls";
 import oauthSignature from "oauth-signature";
 import uuid from "uuid";
 import moment from "moment";
+import axios from "axios";
 
 export const APPLICATION_JSON = "application/json";
 
@@ -90,6 +91,13 @@ export async function gdayfetch(url, params = {}) {
 }
 
 export default gdayfetch;
+
+export const axioshttp = axios.create({
+  baseURL: window.location.origin,
+  headers: {
+    "X-CSRFToken": Cookies.get("csrftoken"),
+  },
+});
 
 export async function twitterFetch(url, params = {}) {
   const {

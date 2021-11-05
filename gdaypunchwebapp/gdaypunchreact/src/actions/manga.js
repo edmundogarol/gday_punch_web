@@ -13,6 +13,7 @@ export const UPLOAD_MANGA = "manga/UPLOAD_MANGA";
 export const UPLOADING_MANGA = "manga/UPLOADING_MANGA";
 export const UPLOADING_MANGA_FINISHED = "manga/UPLOADING_MANGA_FINISHED";
 export const UPLOADING_MANGA_ERROR = "manga/UPLOADING_MANGA_ERROR";
+export const UPLOAD_MANGA_PROGRESS = "manga/UPLOAD_MANGA_PROGRESS";
 
 export const doGetManga = (mangaId) => ({
   type: DO_GET_MANGA,
@@ -41,6 +42,13 @@ export const uploadingMangaError = (error) => ({
   type: UPLOADING_MANGA_ERROR,
   payload: {
     error,
+  },
+});
+
+export const setUploadProgress = (progress) => ({
+  type: UPLOAD_MANGA_PROGRESS,
+  payload: {
+    progress,
   },
 });
 

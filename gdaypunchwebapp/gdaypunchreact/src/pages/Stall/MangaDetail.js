@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { NavLink } from "react-router-dom";
 import ReactQuill from "react-quill";
@@ -6,6 +6,7 @@ import "react-quill/dist/quill.snow.css";
 import { Document } from "react-pdf/dist/entry.webpack";
 import { Page, pdfjs } from "react-pdf";
 import moment from "moment";
+import { getImgFromArr } from "array-to-image";
 import {
   message,
   Input,
@@ -16,12 +17,11 @@ import {
   Checkbox,
   Alert,
   Modal,
+  Progress,
 } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 const { Option } = Select;
-const { confirm } = Modal;
 
-import LoadingSpinner from "components/loadingSpinner";
 import { selectStallState } from "selectors/stall";
 import {
   skuValidator,
@@ -59,12 +59,14 @@ function MangaDetail({
   uploadingDetails,
   updateUploadingDetails,
 }) {
-  const { uploading, uploadingFinished, uploadingErrors } =
+  const { uploading, uploadingFinished, uploadingErrors, uploadProgress } =
     useSelector(selectStallState);
   // const [editingMangaDetails, updateEditingMangaDetails] = useState(
   //   updateUploadingDetails
   // );
   const dispatch = useDispatch();
+
+  const [confirmUpload, toggleConfirmUpload] = useState(false);
 
   // const usingProduct = editingManga
   //   ? editingMangaDetails
@@ -84,7 +86,44 @@ function MangaDetail({
   };
 
   const confirmBeforeUpload = () => {
-    if (
+    let imageArray;
+    const isArray =
+      !!uploadingDetails?.cover?.[`img_p${coverPageNumber - 1}_1`]?.data?.data;
+
+    if (isArray) {
+      imageArray =
+        uploadingDetails?.cover?.[`img_p${coverPageNumber - 1}_1`]?.data?.data;
+
+      const imagedata_to_image = (imagedata) => {
+        var canvas = document.createElement("canvas");
+        var ctx = canvas.getContext("2d");
+        canvas.width = imagedata.width;
+        canvas.height = imagedata.height;
+        ctx.putImageData(imagedata, 0, 0);
+
+        var image = new Image();
+        image.src = canvas.toDataURL();
+        return image.src;
+      };
+
+      updateUploadingDetails({
+        ...uploadingDetails,
+        cover: {
+          [`img_p${coverPageNumber - 1}_1`]: {
+            data: {
+              currentSrc: imagedata_to_image(
+                new ImageData(
+                  imageArray,
+                  uploadingDetails.cover[
+                    `img_p${coverPageNumber - 1}_1`
+                  ].data.width
+                )
+              ),
+            },
+          },
+        },
+      });
+    } else if (
       !uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`]?.data?.currentSrc
     ) {
       message.warn(
@@ -93,79 +132,31 @@ function MangaDetail({
       );
       return;
     }
+    toggleConfirmUpload(true);
+  };
 
-    confirm({
-      title: `Confirm Manga Upload`,
-      icon: <ExclamationCircleOutlined />,
-      okText: "Confirm",
-      content: (
-        <ConfirmUploadSummary>
-          <h4>{uploadingDetails.title}</h4>
-          <img
-            src={
-              uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
-                .currentSrc
-            }
-          />
-          <div className="summary-item">
-            <h4>{"Description"}</h4>
-            <p
-              className="bio"
-              dangerouslySetInnerHTML={updateDescription(
-                sanitiseTooManyNewLines(uploadingDetails.description).substring(
-                  0,
-                  100
-                ) + "..." || `No bio.`
-              )}
-            ></p>
-          </div>
-          <div className="summary-item">
-            <h4>{"Reading Direction"}</h4>
-            <p className="capitalize">{uploadingDetails.orientation}</p>
-          </div>
-          <div className="summary-item">
-            <h4>{"Age Rating"}</h4>
-            <p className="capitalize">{uploadingDetails.age_rating}</p>
-          </div>
-          <div className="summary-item">
-            <h4>{"SKU"}</h4>
-            <p>{uploadingDetails.sku}</p>
-          </div>
-          <div className="summary-item">
-            <h4>{"Release Date"}</h4>
-            <p>{moment(uploadingDetails.release_date).format("LLL")}</p>
-          </div>
-        </ConfirmUploadSummary>
-      ),
-      onOk() {
-        dispatch(
-          uploadManga(
-            {
-              title: uploadingDetails.title,
-              description: sanitiseTooManyNewLines(
-                uploadingDetails.description
-              ),
-              sku: uploadingDetails.sku,
-              release_date: uploadingDetails.release_date
-                ? moment(uploadingDetails.release_date).format(
-                    "YYYY-MM-DDThh:mm"
-                  )
-                : moment(new Date()).format("YYYY-MM-DDThh:mm"),
-              age_rating: uploadingDetails.age_rating,
-              page_count: uploadingDetails.pages,
-              japanese_reading: uploadingDetails.orientation,
-              product_type: uploadingDetails.product_type,
-              manga: uploadingMangaData,
-              image:
-                uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
-                  .currentSrc,
-            },
-            history
-          )
-        );
-      },
-      onCancel() {},
-    });
+  const handleUploadConfirmed = () => {
+    dispatch(
+      uploadManga(
+        {
+          title: uploadingDetails.title,
+          description: sanitiseTooManyNewLines(uploadingDetails.description),
+          sku: uploadingDetails.sku,
+          release_date: uploadingDetails.release_date
+            ? moment(uploadingDetails.release_date).format("YYYY-MM-DDThh:mm")
+            : moment(new Date()).format("YYYY-MM-DDThh:mm"),
+          age_rating: uploadingDetails.age_rating,
+          page_count: uploadingDetails.pages,
+          japanese_reading: uploadingDetails.orientation,
+          product_type: uploadingDetails.product_type,
+          manga: uploadingMangaData,
+          image:
+            uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
+              .currentSrc,
+        },
+        history
+      )
+    );
   };
 
   const handleUpload = () => {
@@ -277,7 +268,57 @@ function MangaDetail({
         </Button>,
       ]}
     >
-      {uploading && <LoadingSpinner />}
+      {confirmUpload && (
+        <Modal
+          title="Confirm Manga Upload"
+          visible={confirmUpload}
+          icon={<ExclamationCircleOutlined />}
+          okText="Confirm"
+          onOk={() => {
+            handleUploadConfirmed();
+            toggleConfirmUpload(false);
+          }}
+          onCancel={() => toggleConfirmUpload(false)}
+        >
+          <ConfirmUploadSummary>
+            <h4>{uploadingDetails.title}</h4>
+            <img
+              src={
+                uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`]?.data
+                  ?.currentSrc
+              }
+            />
+            <div className="summary-item">
+              <h4>{"Description"}</h4>
+              <p
+                className="bio"
+                dangerouslySetInnerHTML={updateDescription(
+                  sanitiseTooManyNewLines(
+                    uploadingDetails.description
+                  ).substring(0, 100) + "..." || `No bio.`
+                )}
+              ></p>
+            </div>
+            <div className="summary-item">
+              <h4>{"Reading Direction"}</h4>
+              <p className="capitalize">{uploadingDetails.orientation}</p>
+            </div>
+            <div className="summary-item">
+              <h4>{"Age Rating"}</h4>
+              <p className="capitalize">{uploadingDetails.age_rating}</p>
+            </div>
+            <div className="summary-item">
+              <h4>{"SKU"}</h4>
+              <p>{uploadingDetails.sku}</p>
+            </div>
+            <div className="summary-item">
+              <h4>{"Release Date"}</h4>
+              <p>{moment(uploadingDetails.release_date).format("LLL")}</p>
+            </div>
+          </ConfirmUploadSummary>
+        </Modal>
+      )}
+      {uploading && <Progress percent={uploadProgress} status="active" />}
       <div className="details">
         <h4>Manga Title</h4>
         <Input

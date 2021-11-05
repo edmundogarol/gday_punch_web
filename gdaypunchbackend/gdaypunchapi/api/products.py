@@ -48,6 +48,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         user = None
 
+        print(request.data)
+
         if request.data.get("image", None):
             parser_classes = (MultiPartParser, FormParser)
 
@@ -130,12 +132,15 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         current_user = User.objects.get(email=self.request.user)
 
+        if LOCAL_DEV:
+            request.data["image_public"] = None
+
         try:
             product = Product.objects.create(
                 description=request.data["description"],
                 title=request.data["title"],
                 image_store=request.data["image"],
-                image_store_public=request.data["image"] if not LOCAL_DEV else None,
+                image_store_public=request.data["image_public"],
                 sale_price=sale_price,
                 visible=True if manga else visible,
                 stock=1 if manga else stock,
@@ -176,6 +181,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
         except KeyError as e:
+            print(e)
             return Response(
                 {"error": "Missing {} field".format(e)},
                 status=status.HTTP_406_NOT_ACCEPTABLE,
@@ -195,13 +201,6 @@ class ProductViewSet(viewsets.ModelViewSet):
                     },
                     status=status.HTTP_406_NOT_ACCEPTABLE,
                 )
-        except:
-            return Response(
-                {
-                    "error": "Something went wrong. Please check your upload details and try again."
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
 
     def destroy(self, request, *args, **kwargs):
         try:

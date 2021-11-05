@@ -108,7 +108,7 @@ export const MangaUploaderModal = styled(Modal)`
   .ant-modal-body {
     position: relative;
 
-    .ant-spin {
+    .ant-progress {
       position: absolute;
       display: flex;
       margin-right: auto;
@@ -121,10 +121,8 @@ export const MangaUploaderModal = styled(Modal)`
       z-index: 2;
       background: #ffffff87;
 
-      .ant-icon,
-      .anticon-spin {
-        height: 4em;
-        width: 4em;
+      .ant-progress-outer {
+        width: 50%;
       }
     }
   }

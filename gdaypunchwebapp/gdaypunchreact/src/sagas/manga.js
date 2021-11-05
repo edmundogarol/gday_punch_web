@@ -1,11 +1,14 @@
 import {
   call,
   all,
+  take,
   takeLatest,
   takeEvery,
   select,
   put,
+  fork,
 } from "redux-saga/effects";
+import { eventChannel, END } from "redux-saga";
 import {
   DO_GET_MANGA,
   DO_LIKE_MANGA,
@@ -21,11 +24,13 @@ import {
   uploadingManga,
   uploadingMangaFinished,
   uploadingMangaError,
+  setUploadProgress,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { api } from "utils/api";
 import { message } from "antd";
 import { fetchProducts } from "actions/app";
+import { axioshttp } from "utils/gdayfetch";
 
 export function* getFeaturedManga() {
   const featuredMangaIds = [1, 2];
@@ -152,6 +157,13 @@ export function* likeComment(action) {
   }
 }
 
+function* watchOnProgress(chan) {
+  while (true) {
+    const data = yield take(chan);
+    yield put(setUploadProgress(data));
+  }
+}
+
 export function* uploadMangaCall(action) {
   yield put(uploadingManga());
   const { id: userId } = yield select(selectUser);
@@ -179,6 +191,11 @@ export function* uploadMangaCall(action) {
       blob,
       `${userId}_${manga.title.toLowerCase()}_image.png`
     );
+    form_data.append(
+      "image_public",
+      blob,
+      `${userId}_${manga.title.toLowerCase()}_image.png`
+    );
   }
 
   Object.keys(manga).map((key) => {
@@ -186,20 +203,44 @@ export function* uploadMangaCall(action) {
       form_data.append(key, manga[key]);
   });
 
-  const response = yield call(api, `products/`, {
-    method: "POST",
-    body: form_data,
-    contentType: null,
+  function uploadAgreement(onProgress) {
+    const config = {
+      onUploadProgress: onProgress,
+    };
+
+    return axioshttp
+      .post("/api/products/", form_data, config)
+      .then((response) => response)
+      .catch((error) => error);
+  }
+
+  let emit;
+  const chan = eventChannel((emitter) => {
+    emit = emitter;
+    return () => {};
   });
 
-  if (response && response.ok) {
+  const uploadPromise = uploadAgreement((progressEvent) => {
+    let percentCompleted = Math.round(
+      (progressEvent.loaded * 100) / progressEvent.total
+    );
+    emit(percentCompleted);
+    if (percentCompleted == 100) emit(END);
+    else emit(percentCompleted);
+  });
+
+  yield fork(watchOnProgress, chan);
+
+  const response = yield call(() => uploadPromise);
+
+  if (response && response.statusText === "OK") {
     message.success("Successfully Uploaded Manga");
     yield put(fetchProducts(userId));
     yield put(uploadingMangaFinished());
   } else {
     console.log("Upload Manga error", JSON.stringify(response));
     if (response.data) {
-      yield put(uploadingMangaError(response.data));
+      yield put(uploadingMangaError(response.message));
       Object.values(response.data).map((error) =>
         message.warn({
           content: error,

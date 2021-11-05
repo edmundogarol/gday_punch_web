@@ -2,6 +2,7 @@ import {
   UPLOADING_MANGA,
   UPLOADING_MANGA_ERROR,
   UPLOADING_MANGA_FINISHED,
+  UPLOAD_MANGA_PROGRESS,
 } from "actions/manga";
 
 import {
@@ -15,6 +16,7 @@ const INITIAL_STATE = {
   uploading: false,
   uploadingFinished: false,
   uploadingErrors: undefined,
+  uploadProgress: 0,
 
   fetching: false,
   fetchingFinished: false,
@@ -42,6 +44,11 @@ export const stallReducer = (state = INITIAL_STATE, action) => {
         ...state,
         uploading: false,
         uploadingErrors: { ...state.uploadingErrors, ...payload.error },
+      };
+    case UPLOAD_MANGA_PROGRESS:
+      return {
+        ...state,
+        uploadProgress: payload.progress,
       };
     case FETCHING_STALL_DATA:
       return {

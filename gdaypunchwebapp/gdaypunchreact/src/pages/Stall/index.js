@@ -421,7 +421,7 @@ function Stall({ history }) {
       ) : null}
       <Header
         editing={newCover}
-        loading={coverLoading}
+        loading={coverLoading || currentUser.updating}
         editable={
           myStallView ? (
             <ImgCrop aspect={3 / 1} rotate shape="rect" quality={0.2}>
