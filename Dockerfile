@@ -9,7 +9,7 @@ ENV PYTHONUNBUFFERED 1
 #Install nginx
 RUN apt-get update && apt-get install nginx vim -y --no-install-recommends
 # COPY .platform/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY .platform/nginx/gday.conf /etc/nginx/conf.d/gday.conf
+COPY nginx/gday.conf /etc/nginx/conf.d/gday.conf
 RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
 
 #Install yarn
