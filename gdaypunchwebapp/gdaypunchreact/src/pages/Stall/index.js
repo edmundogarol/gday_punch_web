@@ -115,6 +115,7 @@ function Stall({ history }) {
     useState(initialUploadState);
   const [editingBio, toggleEditingBio] = useState(false);
   const [newBio, updateNewBio] = useState(undefined);
+  const [deletingProduct, updateDeletingProduct] = useState(false);
 
   useScrollTop();
 
@@ -266,7 +267,9 @@ function Stall({ history }) {
       onOk() {
         dispatch(deleteProduct(product));
       },
-      onCancel() {},
+      onCancel() {
+        updateDeletingProduct(false);
+      },
     });
   };
 
@@ -669,9 +672,12 @@ function Stall({ history }) {
                 // editCallback={(manga) =>
                 //   updateEditingManga(normaliseProductData(manga))
                 // }
-                deleteCallback={(mangaProd) =>
-                  confirmBeforeDelete(normaliseProductData(mangaProd))
-                }
+                deleteCallback={(mangaProd) => {
+                  if (!deletingProduct) {
+                    confirmBeforeDelete(normaliseProductData(mangaProd));
+                    updateDeletingProduct(true);
+                  }
+                }}
                 product={product}
               />
             ) : null;
@@ -714,6 +720,7 @@ function Stall({ history }) {
         uploadingManga={uploadingManga}
         updateUploadingManga={updateUploadingManga}
         uploadingMangaData={uploadingMangaData}
+        updateUploadingMangaData={updateUploadingMangaData}
         coverPageNumber={coverPageNumber}
         updateCoverPageNumber={updateCoverPageNumber}
         uploadingDetails={uploadingDetails}

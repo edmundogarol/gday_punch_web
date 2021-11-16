@@ -54,6 +54,7 @@ function MangaDetail({
   uploadingManga,
   updateUploadingManga,
   uploadingMangaData,
+  updateUploadingMangaData,
   coverPageNumber,
   updateCoverPageNumber,
   uploadingDetails,
@@ -75,6 +76,7 @@ function MangaDetail({
   useEffect(() => {
     if (!uploading && uploadingFinished && !uploadingErrors) {
       updateUploadingDetails(initialUploadState);
+      updateUploadingMangaData(undefined);
       updateUploadingManga(false);
     }
   }, [uploading, uploadingFinished]);
