@@ -107,7 +107,9 @@ function OrderConfirmation({ history }) {
                   <span>
                     Your card may have been charged but the order did not go
                     through. Please contact us at{" "}
-                    <a href="mailto:info@gdaypunch.com">info@gdaypunch.com</a>
+                    <a href="mailto:info@gdaypunch.com.au">
+                      info@gdaypunch.com.au
+                    </a>
                     &nbsp; to fix this problem.
                   </span>
                 ) : null}
