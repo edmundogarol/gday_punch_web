@@ -233,8 +233,11 @@ export function* uploadMangaCall(action) {
 
   const response = yield call(() => uploadPromise);
 
-  console.log({ response });
-  if (response && response.statusText === "OK") {
+  if (
+    response &&
+    (response.statusText === "OK" ||
+      (response.status === 200 && response.data.id))
+  ) {
     message.success("Successfully Uploaded Manga");
     yield put(fetchProducts(userId));
     yield put(uploadingMangaFinished());
