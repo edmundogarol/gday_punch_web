@@ -93,11 +93,11 @@ function SubmissionConditions(props) {
               Entrants need to send their work in .jpg/.png/.zip(of the images)
               or link to a cloud drive directly to the Company email -&nbsp;
               <a
-                href="mailto:info@amaaustralia.com"
+                href="mailto:info@gdaypunch.com.au"
                 target="_blank"
                 rel="noopener"
               >
-                info@gdaypunch.com
+                info@gdaypunch.com.au
               </a>
               &nbsp;.
             </li>

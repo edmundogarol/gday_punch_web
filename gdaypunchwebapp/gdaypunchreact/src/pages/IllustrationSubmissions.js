@@ -235,8 +235,8 @@ function IllustrationSubmissions(props) {
           <br />
           <br />
           <span>All submissions must be sent to:&nbsp;</span>
-          <a href="mailto:info@gdaypunch.com" target="_blank" rel="noopener">
-            info@gdaypunch.com
+          <a href="mailto:info@gdaypunch.com.au" target="_blank" rel="noopener">
+            info@gdaypunch.com.au
           </a>
           <br />
           <br />

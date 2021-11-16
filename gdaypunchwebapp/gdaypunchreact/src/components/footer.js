@@ -14,7 +14,7 @@ function Footer() {
     <div className="footer" id="footer">
       <div className="contact-us">
         <p>+61 484 575 754</p>
-        <p>info@gdaypunch.com</p>
+        <p>info@gdaypunch.com.au</p>
         <NavLink to="/contact">
           <p className="website">Contact Us</p>
         </NavLink>

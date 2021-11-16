@@ -44,7 +44,7 @@ def send_password_reset_email(user, token):
         send_mail(
             'Reset Password Request',
             email,
-            'Gday Punch Manga Magazine<info@gdaypunch.com>',
+            'Gday Punch Manga Magazine<info@gdaypunch.com.au>',
             [user.email],
             fail_silently=False,
         )

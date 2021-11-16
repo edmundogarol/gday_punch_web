@@ -37,7 +37,7 @@ def send_account_verification_email(user, token):
         send_mail(
             'Verify Email for Gday Punch Account',
             email,
-            'Gday Punch Manga Magazine<info@gdaypunch.com>',
+            'Gday Punch Manga Magazine<info@gdaypunch.com.au>',
             [user.email],
             fail_silently=False,
         )

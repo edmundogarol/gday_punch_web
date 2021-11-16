@@ -565,7 +565,7 @@ function Account(props) {
                   <Tooltip
                     placement="top"
                     title={
-                      "Edit not available yet. Contact info@gdaypunch.com to update subscription details."
+                      "Edit not available yet. Contact info@gdaypunch.com.au to update subscription details."
                     }
                   >
                     <a href="#" className="disabled">

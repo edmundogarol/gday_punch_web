@@ -230,8 +230,8 @@ function OneShotSubmissions(props) {
           </span>
           <br />
           <span>Then send the link of your folder to:&nbsp;</span>
-          <a href="mailto:info@gdaypunch.com" target="_blank" rel="noopener">
-            info@gdaypunch.com
+          <a href="mailto:info@gdaypunch.com.au" target="_blank" rel="noopener">
+            info@gdaypunch.com.au
           </a>
           <br />
           <br />

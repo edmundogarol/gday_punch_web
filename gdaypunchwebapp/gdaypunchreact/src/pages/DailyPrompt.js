@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 import styled from "styled-components";
 
+import { device } from "utils/styles";
 import {
   fetchPrompts as fetchPromptsAction,
   resetPromptFetch as resetPromptFetchAction,
@@ -24,11 +25,7 @@ import {
 
 const { Meta } = Card;
 
-export const DailyPromptContainer = styled.div`
-  .App-header-container {
-    min-height: 84vh;
-  }
-`;
+export const DailyPromptContainer = styled.div``;
 
 export const DailyPromptCard = styled(Card)`
   width: 67%;
@@ -71,6 +68,34 @@ export const RedoOutlinedContainer = styled(RedoOutlined)`
   }
 `;
 
+export const HeaderContainer = styled.div`
+  background-color: #f1f1f1;
+  min-height: 84vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(5px + 2vmin);
+  color: rgb(179, 179, 179);
+  grid-column-start: 2;
+  grid-column-end: 2;
+  grid-row-start: 1;
+  grid-row-end: 1;
+  position: relative;
+
+  height: 100%;
+  background-image: ${(props) =>
+    `url(${props.background || "/static/launch-background.png"})`};
+  background-position: center;
+  background-size: 136%;
+  background-blend-mode: ${(props) =>
+    props.background ? "unset" : "color-burn"};
+
+  @media ${device.laptop} {
+    background-size: 88%;
+  }
+`;
+
 class DailyPrompt extends React.Component {
   constructor(props) {
     super(props);
@@ -102,7 +127,7 @@ class DailyPrompt extends React.Component {
 
     return (
       <DailyPromptContainer id="top" className="App">
-        <div className="App-header-container app-temp-background">
+        <HeaderContainer>
           {prompt && (
             <DailyPromptCard
               title="Daily Prompt"
@@ -173,7 +198,7 @@ class DailyPrompt extends React.Component {
               )}
             </DailyPromptCard>
           )}
-        </div>
+        </HeaderContainer>
       </DailyPromptContainer>
     );
   }

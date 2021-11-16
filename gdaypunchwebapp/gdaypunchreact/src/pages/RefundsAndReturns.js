@@ -382,7 +382,7 @@ function RefundsAndReturns(props) {
               repairs or replacements, you may contact us at:
             </span>
             <br />
-            <span>info@gdaypunch.com</span>
+            <span>info@gdaypunch.com.au</span>
           </p>
         </ContentContainer>
       </FeaturedSection>
