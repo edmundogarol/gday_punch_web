@@ -676,7 +676,7 @@ function Stall({ history }) {
               />
             ) : null;
           })}
-          {myStallView && hasPrivilege(currentUser, "admin") ? (
+          {myStallView ? (
             <div
               onClick={() =>
                 uploadingMangaData ? updateUploadingManga(true) : null
