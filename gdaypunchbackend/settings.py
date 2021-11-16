@@ -25,8 +25,8 @@ SECRET_KEY = "4^ym%_+o+)*m(l8-+6d(=+0uaayu9tea2n7q2g*_gl&nbpc*q&"
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if "DEVENV" in os.environ:
-    DEBUG = True
+# if "DEVENV" in os.environ:
+DEBUG = True
 
 ALLOWED_HOSTS = [
     "gdaypunch.com.au",
