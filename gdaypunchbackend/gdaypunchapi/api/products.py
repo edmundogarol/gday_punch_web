@@ -158,8 +158,8 @@ class ProductViewSet(viewsets.ModelViewSet):
                     japanese_reading=request.data["japanese_reading"] == "japanese",
                 )
 
-            product.manga.add(manga)
-            product.save()
+                product.manga.add(manga)
+                product.save()
 
             if create_stripe_price:
                 stripe_product = stripe.Product.retrieve(stripe_price.product)
@@ -200,7 +200,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 )
             else:
                 return Response(
-                    {"key": str(e)},
+                    {"detail": str(e)},
                     status=status.HTTP_406_NOT_ACCEPTABLE,
                 )
 
