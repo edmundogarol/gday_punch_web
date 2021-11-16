@@ -48,8 +48,6 @@ class ProductViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         user = None
 
-        print(request.data)
-
         if request.data.get("image", None):
             parser_classes = (MultiPartParser, FormParser)
 
@@ -181,7 +179,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
         except KeyError as e:
-            print(e)
             return Response(
                 {"error": "Missing {} field".format(e)},
                 status=status.HTTP_406_NOT_ACCEPTABLE,
@@ -199,6 +196,11 @@ class ProductViewSet(viewsets.ModelViewSet):
                     {
                         "sku": "Manga or Product with this sku already exists. Try a different sku"
                     },
+                    status=status.HTTP_406_NOT_ACCEPTABLE,
+                )
+            else:
+                return Response(
+                    {"key": str(e)},
                     status=status.HTTP_406_NOT_ACCEPTABLE,
                 )
 
