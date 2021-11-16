@@ -1,5 +1,6 @@
 import os
 import stripe
+import logging
 
 from django.db.utils import IntegrityError
 from django.db.models.deletion import ProtectedError
@@ -179,11 +180,16 @@ class ProductViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
 
         except KeyError as e:
+            logging.exception("ProductViewSet.create.KeyError", str(e))
+
             return Response(
                 {"error": "Missing {} field".format(e)},
                 status=status.HTTP_406_NOT_ACCEPTABLE,
             )
+
         except IntegrityError as e:
+            logging.exception("ProductViewSet.create.IntegrityError", str(e))
+
             if "(title)" in str(e):
                 return Response(
                     {
