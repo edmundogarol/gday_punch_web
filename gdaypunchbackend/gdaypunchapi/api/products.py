@@ -245,6 +245,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             save.delete()
 
         product.image_store.delete()
+        product.image_store_public.delete()
         product.delete()
 
         return Response(
