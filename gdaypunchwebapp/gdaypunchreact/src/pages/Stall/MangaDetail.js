@@ -29,6 +29,7 @@ import {
   titleValidator,
   noLinkValidator,
   sanitiseTooManyNewLines,
+  removeHtml,
 } from "utils/utils";
 
 import { MangaUploaderModal, ConfirmUploadSummary } from "./styles";
@@ -296,7 +297,7 @@ function MangaDetail({
                 className="bio"
                 dangerouslySetInnerHTML={updateDescription(
                   sanitiseTooManyNewLines(
-                    uploadingDetails.description
+                    removeHtml(uploadingDetails.description)
                   ).substring(0, 100) + "..." || `No bio.`
                 )}
               ></p>

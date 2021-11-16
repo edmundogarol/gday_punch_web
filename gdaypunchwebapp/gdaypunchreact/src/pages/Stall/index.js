@@ -266,8 +266,12 @@ function Stall({ history }) {
       ),
       onOk() {
         dispatch(deleteProduct(product));
+        updateDeletingProduct(false);
       },
       onCancel() {
+        updateDeletingProduct(false);
+      },
+      afterClose() {
         updateDeletingProduct(false);
       },
     });
