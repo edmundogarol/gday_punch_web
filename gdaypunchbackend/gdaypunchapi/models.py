@@ -127,10 +127,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def author_name(self):
         full_name = self.first_name + " " + self.last_name
 
-        if full_name is not " ":
-            return full_name
-        elif self.username is not "":
+        if self.username is not "":
             return self.username
+        elif full_name is not " ":
+            return full_name
         else:
             return self.email
 
