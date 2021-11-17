@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
 import { Table, Input, Button, Space, Typography, message, Select } from "antd";
 import Highlighter from "react-highlight-words";
 import {
@@ -153,7 +154,9 @@ function Ui(props) {
             <p>{instance.customer_id ? <ShoppingOutlined /> : null}</p>
           ) : null}
           <p className={!instance.username ? "unset" : ""}>
-            {instance.username || "Username unset"}
+            <NavLink to={`/stall/${instance.id}/admin-view`}>
+              {instance.username || "Username unset"}
+            </NavLink>
           </p>
           {highlighted ? (
             <Highlighter
@@ -219,7 +222,7 @@ function Ui(props) {
       title: "Type",
       dataIndex: "is_staff",
       key: "is_staff",
-      render: (is_staff, instance) => (is_staff ? "Staff" : "Normal"),
+      render: (is_staff) => (is_staff ? "Staff" : "Normal"),
     },
     {
       title: "Privileges",
@@ -287,9 +290,9 @@ function Ui(props) {
     },
   ];
 
-  const handleUserOpen = (user, rowIndex) => {
+  const handleUserOpen = (user) => {
     return {
-      onClick: (event) => {
+      onClick: () => {
         setSelectedUser(user.id);
         if (!user.customer_details) {
           fetchUserCustomerDetails(user.customer_id);
