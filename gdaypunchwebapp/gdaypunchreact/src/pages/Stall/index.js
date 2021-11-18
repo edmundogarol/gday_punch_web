@@ -430,7 +430,7 @@ function Stall({ history }) {
         editing={newCover}
         loading={coverLoading || currentUser.updating}
         editable={
-          myStallView ? (
+          myStallView || hasPrivilege(currentUser, "admin") ? (
             <ImgCrop aspect={3 / 1} rotate shape="rect" quality={0.2}>
               <Upload
                 disabled={!!uploadingMangaData}
@@ -464,18 +464,20 @@ function Stall({ history }) {
                     />
                   </Tooltip>
                 ) : null}
-                <Tooltip title={newCover ? "Cancel" : "Change Cover"}>
-                  {newCover ? (
-                    <CloseOutlined
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        newCover ? updateNewCover(undefined) : null;
-                      }}
-                    />
-                  ) : (
-                    <EditOutlined />
-                  )}
-                </Tooltip>
+                {myStallView ? (
+                  <Tooltip title={newCover ? "Cancel" : "Change Cover"}>
+                    {newCover ? (
+                      <CloseOutlined
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          newCover ? updateNewCover(undefined) : null;
+                        }}
+                      />
+                    ) : (
+                      <EditOutlined />
+                    )}
+                  </Tooltip>
+                ) : null}
               </Upload>
             </ImgCrop>
           ) : null
