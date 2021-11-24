@@ -222,8 +222,11 @@ class OrderStatusUpdatesPermissions(BasePermission):
 class ProductPermissions(BasePermission):
     def has_permission(self, request, view):
         product_id = view.kwargs.get("pk")
+        WRITE_METHODS = [
+            "POST",
+        ]
 
-        if staff(request):
+        if request.method in WRITE_METHODS or staff(request):
             return True
         elif view.action in ["create", "list"]:
             return True
