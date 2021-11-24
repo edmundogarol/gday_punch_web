@@ -90,12 +90,24 @@ function MangaDetail({
 
   const confirmBeforeUpload = () => {
     let imageArray;
-    const isArray =
-      !!uploadingDetails?.cover?.[`img_p${coverPageNumber - 1}_1`]?.data?.data;
+
+    let imageRef = `img_p${coverPageNumber - 1}_1`;
+    const nonErrorKind = uploadingDetails?.cover?.[imageRef]?.data?.kind === 3;
+    const isArray = !!uploadingDetails?.cover?.[imageRef]?.data?.data;
+
+    if (isArray && !nonErrorKind) {
+      imageRef = `img_p${coverPageNumber - 1}_2`;
+    }
 
     if (isArray) {
-      imageArray =
-        uploadingDetails?.cover?.[`img_p${coverPageNumber - 1}_1`]?.data?.data;
+      if (uploadingDetails?.cover?.[imageRef]?.data?.kind !== 3) {
+        message.warn(
+          "Something seems to have gone wrong. Try changing the cover page or re-uploading.",
+          4
+        );
+      }
+
+      imageArray = uploadingDetails?.cover?.[imageRef]?.data?.data;
 
       const imagedata_to_image = (imagedata) => {
         var canvas = document.createElement("canvas");
@@ -117,18 +129,14 @@ function MangaDetail({
               currentSrc: imagedata_to_image(
                 new ImageData(
                   imageArray,
-                  uploadingDetails.cover[
-                    `img_p${coverPageNumber - 1}_1`
-                  ].data.width
+                  uploadingDetails.cover[imageRef].data.width
                 )
               ),
             },
           },
         },
       });
-    } else if (
-      !uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`]?.data?.currentSrc
-    ) {
+    } else if (!uploadingDetails.cover[imageRef]?.data?.currentSrc) {
       message.warn(
         "Something seems to have gone wrong. Try changing the cover page or re-uploading.",
         4
