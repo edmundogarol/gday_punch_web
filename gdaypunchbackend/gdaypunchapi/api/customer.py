@@ -268,6 +268,7 @@ class UpdatedProductPurchasesViewSet(APIView):
                             "id": product.id,
                             "product": {
                                 "title": product.title,
+                                "author": product.user.author_name,
                                 "image": product.image,
                                 "sku": product.sku,
                                 "type": product.product_type,
@@ -280,6 +281,7 @@ class UpdatedProductPurchasesViewSet(APIView):
                             "id": product.id,
                             "product": {
                                 "title": product.title,
+                                "author": product.user.author_name,
                                 "image": product.image,
                                 "sku": product.sku,
                                 "type": product.product_type,

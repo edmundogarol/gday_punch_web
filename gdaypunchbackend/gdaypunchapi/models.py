@@ -873,6 +873,7 @@ class Order(models.Model):
                     "id": product.id,
                     "product": {
                         "title": product.title,
+                        "author": product.user.author_name,
                         "price": product.active_price,
                         "image": product.image,
                         "sku": product.sku,

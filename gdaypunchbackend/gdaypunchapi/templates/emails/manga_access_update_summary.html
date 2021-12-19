@@ -80,7 +80,18 @@
           {% for item in granting_items %}
             <tr>
               <td style="padding: 1em; font-weight: 600; color: #949494;">
-                {{ item.product.title }}
+                <table style="width: 100%;">
+                  <tr>
+                    <td>
+                      {{ item.product.title }}
+                    </td>
+                  </tr>
+                  <tr style="font-size: 0.7em">
+                    <td style="font-weight: 100;">
+                      (by {{ item.product.author }})
+                    </td>
+                  </tr>
+                </table>
               </td>
             </tr>
           {% endfor %}
@@ -103,7 +114,18 @@
           {% for item in removing_items %}
             <tr>
               <td style="padding: 1em; font-weight: 600; color: #949494;">
-                {{ item.product.title }}
+                <table style="width: 100%;">
+                  <tr>
+                    <td>
+                      {{ item.product.title }}
+                    </td>
+                  </tr>
+                  <tr style="font-size: 0.7em">
+                    <td style="font-weight: 100;">
+                      (by {{ item.product.author }})
+                    </td>
+                  </tr>
+                </table>
               </td>
             </tr>
           {% endfor %}

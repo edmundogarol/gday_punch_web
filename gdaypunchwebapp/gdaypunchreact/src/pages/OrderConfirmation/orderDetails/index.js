@@ -63,7 +63,10 @@ function OrderDetails(props) {
           <div>
             <div className="item-image-title">
               <img src={getGdayPunchStaticUrl(product.image)} />
-              <p>{product.title}</p>
+              <div className="title-author">
+                <p>{product.title}</p>
+                <p className="author">{product.author}</p>
+              </div>
               <span className={`status ${currentStatus}`}>
                 <StatusIcon /> {currentStatus}
               </span>
@@ -126,7 +129,10 @@ function OrderDetails(props) {
           <div className="item-image-title">
             <img src={getGdayPunchStaticUrl(product.image)} />
             <div className="title-status-qty">
-              <p>{product.title}</p>
+              <div className="title-author">
+                <p>{product.title}</p>
+                <p className="author">{product.author}</p>
+              </div>
               <span className={currentStatus + " status"}>
                 <StatusIcon /> {currentStatus} {`(${instance.qty})`}
               </span>

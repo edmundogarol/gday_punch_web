@@ -52,6 +52,19 @@ export const OrderConfirmationContainer = styled.div`
       margin-right: 1em;
       height: 3em;
     }
+
+    .title-author {
+      display: flex;
+      flex-direction: column;
+
+      p {
+        margin: unset;
+      }
+
+      .author {
+        font-size: 0.8em;
+      }
+    }
   }
 
   .title-status-qty {
