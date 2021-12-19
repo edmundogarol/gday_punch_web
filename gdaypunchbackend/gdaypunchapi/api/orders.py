@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import get_list_or_404
 
 from rest_framework import viewsets, permissions, status
-from rest_framework.permissions import (IsAuthenticated)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -25,16 +25,13 @@ from ..models import (
     Coupon,
     StripeCustomer,
     Customer,
-    Purchase
+    Purchase,
 )
-from ..serializers import (
-    OrderSerializer,
-    OrderStatusUpdateSerializer
-)
+from ..serializers import OrderSerializer, OrderStatusUpdateSerializer
 from ..api_permissions import (
     OrdersByUserPermissions,
     OrderStatusUpdatesPermissions,
-    OrderDetailsPermissions
+    OrderDetailsPermissions,
 )
 from ..utils import (
     AdminOrReadOnly,
@@ -47,12 +44,12 @@ stripe.api_key = STRIPE_API_KEY
 
 
 class OrderViewSet(viewsets.ModelViewSet):
-    queryset = Order.objects.all().order_by('-id')
+    queryset = Order.objects.all().order_by("-id")
     serializer_class = OrderSerializer
-    permission_classes = (OrdersByUserPermissions, )
+    permission_classes = (OrdersByUserPermissions,)
 
     def list(self, request, *args, **kwargs):
-        queryset = Order.objects.all().order_by('-id')
+        queryset = Order.objects.all().order_by("-id")
         page = self.paginate_queryset(queryset)
         serializer = OrderSerializer(page, many=True)
         return self.get_paginated_response(serializer.data)
@@ -61,10 +58,10 @@ class OrderViewSet(viewsets.ModelViewSet):
         """
         Retrieve all orders for Customer [id]
         """
-        if pk == 'null':
+        if pk == "null":
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        queryset = Order.objects.all().order_by('-id')
+        queryset = Order.objects.all().order_by("-id")
         orders = get_list_or_404(queryset, customer=pk)
         serializer = OrderSerializer(orders, many=True)
         return Response(serializer.data)
@@ -73,7 +70,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 class OrderDetailViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.none()
     serializer_class = OrderSerializer
-    permission_classes = (OrderDetailsPermissions, )
+    permission_classes = (OrderDetailsPermissions,)
 
     def retrieve(self, request, pk=None):
         order = Order.objects.get(id=pk)
@@ -89,26 +86,25 @@ class OrdersSalesGraph(APIView):
         # Fortnightly range
         how_many_days = 14
         orders = Order.objects.filter(
-            date_created__gte=datetime.now()-timedelta(days=how_many_days)).order_by('date_created')
+            date_created__gte=datetime.now() - timedelta(days=how_many_days)
+        ).order_by("date_created")
 
         order_sales = {}
 
-        local_tz = pytz.timezone('Australia/Sydney')
+        local_tz = pytz.timezone("Australia/Sydney")
         local_dt = datetime.now().replace(tzinfo=pytz.utc).astimezone(local_tz)
-        order_sales[local_dt.strftime("%m/%d/%y")] = {
-            'sale': 0
-        }
+        order_sales[local_dt.strftime("%m/%d/%y")] = {"sale": 0}
 
         for order in orders:
             try:
-                existing_key = order_sales[order.date_created.strftime(
-                    "%m/%d/%y")]
-                order_sales[order.date_created.strftime(
-                    "%m/%d/%y")]['sale'] = float(existing_key['sale']) + float(order.amount)
+                existing_key = order_sales[order.date_created.strftime("%m/%d/%y")]
+                order_sales[order.date_created.strftime("%m/%d/%y")]["sale"] = float(
+                    existing_key["sale"]
+                ) + float(order.amount)
 
             except KeyError:
                 order_sales[order.date_created.strftime("%m/%d/%y")] = {
-                    'sale': float(order.amount)
+                    "sale": float(order.amount)
                 }
 
         today = datetime.now().replace(tzinfo=pytz.utc).astimezone(local_tz)
@@ -118,9 +114,7 @@ class OrdersSalesGraph(APIView):
             try:
                 order_sales[ref.strftime("%m/%d/%y")]
             except KeyError:
-                order_sales[ref.strftime("%m/%d/%y")] = {
-                    'sale': 0
-                }
+                order_sales[ref.strftime("%m/%d/%y")] = {"sale": 0}
 
         sales_days = []
 
@@ -130,8 +124,13 @@ class OrdersSalesGraph(APIView):
             ref = today - timedelta(days=idx)
             last_week_ref = today - timedelta(days=idx + 7)
 
-            sales_days.append([ref.strftime("%a"), order_sales[ref.strftime(
-                "%m/%d/%y")]['sale'], order_sales[last_week_ref.strftime("%m/%d/%y")]['sale']])
+            sales_days.append(
+                [
+                    ref.strftime("%a"),
+                    order_sales[ref.strftime("%m/%d/%y")]["sale"],
+                    order_sales[last_week_ref.strftime("%m/%d/%y")]["sale"],
+                ]
+            )
 
         return Response(sales_days[::-1])
 
@@ -139,7 +138,7 @@ class OrdersSalesGraph(APIView):
 class OrderConfirmationViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.none()
     serializer_class = OrderSerializer
-    permission_classes = (AdminOrReadOnly, )
+    permission_classes = (AdminOrReadOnly,)
 
     def retrieve(self, request, pk=None):
         try:
@@ -147,7 +146,10 @@ class OrderConfirmationViewSet(viewsets.ModelViewSet):
             serializer = OrderSerializer(order)
             return Response(serializer.data)
         except Order.DoesNotExist:
-            return Response({'error': 'Order details cannot be found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"error": "Order details cannot be found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 def send_email_receipt(customer, order, items):
@@ -161,21 +163,23 @@ def send_email_receipt(customer, order, items):
         "order_total": "{:.2f}".format(order.amount),
         "all_digital": all_digital,
         "aus_shipping": order.country == "AU",
-        "coupon_desc": order.coupon_details['description'],
-        "coupon_amount": "{:.2f}".format(order.coupon_details['discount_amount']) if order.coupon else None,
+        "coupon_desc": order.coupon_details["description"],
+        "coupon_amount": "{:.2f}".format(order.coupon_details["discount_amount"])
+        if order.coupon
+        else None,
         "subtotal": "{:.2f}".format(order.products_total_price),
         "tax": "{:.2f}".format(order.tax),
-        "website": DOMAIN
+        "website": DOMAIN,
     }
 
     try:
         email = render_to_string(email_template_name, email_config)
 
         send_mail(
-            subject='Thank you for your order!',
+            subject="Thank you for your order!",
             message=email,
             html_message=email,
-            from_email='Gday Punch Manga Magazine<info@gdaypunch.com.au>',
+            from_email="Gday Punch Manga Magazine<info@gdaypunch.com.au>",
             recipient_list=[order.email],
             fail_silently=False,
         )
@@ -193,17 +197,17 @@ def send_email_purchase_requires_sign_up(customer, order, items):
         "order": order,
         "items": items,
         "all_digital": all_digital,
-        "website": DOMAIN
+        "website": DOMAIN,
     }
 
     try:
         email = render_to_string(email_template_name, email_config)
 
         send_mail(
-            subject='Sign up now - You have manga waiting!',
+            subject="Sign up now - You have manga waiting!",
             message=email,
             html_message=email,
-            from_email='Gday Punch Manga Magazine<info@gdaypunch.com.au>',
+            from_email="Gday Punch Manga Magazine<info@gdaypunch.com.au>",
             recipient_list=[order.email],
             fail_silently=False,
         )
@@ -212,7 +216,9 @@ def send_email_purchase_requires_sign_up(customer, order, items):
         print("Username and Password not accepted for smtp email config.")
 
 
-def send_email_update(customer, order, order_status, items, notes, update_date, partial_refund=None):
+def send_email_update(
+    customer, order, order_status, items, notes, update_date, partial_refund=None
+):
     email_template_name = "emails/update.html"
     subject = None
     subtitle = None
@@ -245,7 +251,7 @@ def send_email_update(customer, order, order_status, items, notes, update_date, 
         "all_digital": all_digital,
         "order_total": "{:.2f}".format(float(refund_amount)),
         "subtitle": subtitle,
-        "website": DOMAIN
+        "website": DOMAIN,
     }
 
     try:
@@ -255,7 +261,7 @@ def send_email_update(customer, order, order_status, items, notes, update_date, 
             subject=subject,
             message=email,
             html_message=email,
-            from_email='Gday Punch Manga Magazine<info@gdaypunch.com.au>',
+            from_email="Gday Punch Manga Magazine<info@gdaypunch.com.au>",
             recipient_list=[order.email],
             fail_silently=False,
         )
@@ -265,7 +271,7 @@ def send_email_update(customer, order, order_status, items, notes, update_date, 
 
 
 def generate_order_number():
-    order_number = ''
+    order_number = ""
     random_array = random.sample(range(10, 1000), 3)
     for elem in random_array:
         order_number = order_number + str(elem)
@@ -286,8 +292,19 @@ def get_order_number():
     return order_number
 
 
-def handle_create_order(order_secret, stripe_customer, customer, items, amount, coupon, subscriptions,
-                        shipping, billing, billing_same_as_shipping, card):
+def handle_create_order(
+    order_secret,
+    stripe_customer,
+    customer,
+    items,
+    amount,
+    coupon,
+    subscriptions,
+    shipping,
+    billing,
+    billing_same_as_shipping,
+    card,
+):
     order = None
     item_details = []
     shipping_address = shipping.address
@@ -355,10 +372,10 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
         order.save()
 
     # Handle subscriptions update
-    items = json.loads(items.replace("\'", "\""))
+    items = json.loads(items.replace("'", '"'))
 
     if subscriptions is not None:
-        subscriptions = json.loads(subscriptions.replace("\'", "\""))
+        subscriptions = json.loads(subscriptions.replace("'", '"'))
 
         if subscriptions:
             sub = stripe.Subscription.create(
@@ -372,13 +389,10 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
     # Update order status for digital purchases only // Calculate item prices and update product stock
     digital_purchase = 0
     for item in order.product_qty_details:
-        product = Product.objects.get(id=item['id'])
+        product = Product.objects.get(id=item["id"])
 
         # Record customer purchase
-        purchase = Purchase.objects.create(
-            customer=customer,
-            product=product
-        )
+        purchase = Purchase.objects.create(customer=customer, product=product)
         order.purchase = purchase
         order.save()
 
@@ -394,7 +408,7 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
         elif product.product_type == SUBSCRIPTION:
             digital_purchase = digital_purchase + 1
         else:
-            product.stock = product.stock - int(item['qty'])
+            product.stock = product.stock - int(item["qty"])
             product.save()
 
     if digital_purchase == len(items):
@@ -406,7 +420,8 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
             order=order,
             status=PURCHASED,
             description="Customer charged A${:.2f} on CC ending in {}".format(
-                order.amount, order.last_four)
+                order.amount, order.last_four
+            ),
         )
     else:
         # Create order pending status update for items needing shipping
@@ -414,7 +429,8 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
             order=order,
             status=PENDING,
             description="Customer charged A${} on CC ending in {}".format(
-                order.amount, order.last_four)
+                order.amount, order.last_four
+            ),
         )
 
     # Temporarily copy shipping details to billing for receipt email
@@ -432,32 +448,44 @@ def handle_create_order(order_secret, stripe_customer, customer, items, amount, 
 
     order.date_created = order.date_created.strftime("%d %b %Y")
 
-    Thread(target=send_email_receipt, args=(
-        customer, order, order.product_qty_details,)).start()
+    Thread(
+        target=send_email_receipt,
+        args=(
+            customer,
+            order,
+            order.product_qty_details,
+        ),
+    ).start()
 
-    if customer.user is None:
-        Thread(target=send_email_purchase_requires_sign_up, args=(
-            customer, order, order.product_qty_details,)).start()
+    if customer.user is None and digital_purchase > 0:
+        Thread(
+            target=send_email_purchase_requires_sign_up,
+            args=(
+                customer,
+                order,
+                order.product_qty_details,
+            ),
+        ).start()
 
 
 class OrderStatusUpdateViewset(viewsets.ModelViewSet):
     pagination_class = None
     queryset = OrderStatusUpdate.objects.all()
     serializer_class = OrderStatusUpdateSerializer
-    permission_classes = (OrderStatusUpdatesPermissions, )
+    permission_classes = (OrderStatusUpdatesPermissions,)
 
     def retrieve(self, request, pk=None):
         """
         Retrieve all status updates for Order [id]
         """
-        queryset = OrderStatusUpdate.objects.all().order_by('-id')
+        queryset = OrderStatusUpdate.objects.all().order_by("-id")
         status_updates = get_list_or_404(queryset, order=pk)
         serializer = OrderStatusUpdateSerializer(status_updates, many=True)
         return Response(serializer.data)
 
     def create(self, request, *args, **kwargs):
-        order = Order.objects.get(id=request.data['order'])
-        order_status = request.data['status']
+        order = Order.objects.get(id=request.data["order"])
+        order_status = request.data["status"]
         reasons = request.data.get("reasons", None)
         partial_refund = request.data.get("partial_refund", 0)
         description = None
@@ -466,37 +494,76 @@ class OrderStatusUpdateViewset(viewsets.ModelViewSet):
         gp_customer = Customer.objects.get(id=stripe_customer.gp_customer.id)
 
         if order_status == SHIPPED:
-            description = 'Order x{} shippable items have been shipped. Notes: {}'.format(
-                order.total_shippable_items, reasons)
-            Thread(target=send_email_update, args=(gp_customer, order, SHIPPED,
-                   order.product_qty_details, reasons, datetime.now().strftime("%d %b %Y"), )).start()
+            description = (
+                "Order x{} shippable items have been shipped. Notes: {}".format(
+                    order.total_shippable_items, reasons
+                )
+            )
+            Thread(
+                target=send_email_update,
+                args=(
+                    gp_customer,
+                    order,
+                    SHIPPED,
+                    order.product_qty_details,
+                    reasons,
+                    datetime.now().strftime("%d %b %Y"),
+                ),
+            ).start()
 
         elif order_status == DECLINED:
-            description = 'Order has been declined due to reasons: {}'.format(
-                reasons)
-            Thread(target=send_email_update, args=(gp_customer, order, DECLINED,
-                   order.product_qty_details, reasons, datetime.now().strftime("%d %b %Y"), )).start()
+            description = "Order has been declined due to reasons: {}".format(reasons)
+            Thread(
+                target=send_email_update,
+                args=(
+                    gp_customer,
+                    order,
+                    DECLINED,
+                    order.product_qty_details,
+                    reasons,
+                    datetime.now().strftime("%d %b %Y"),
+                ),
+            ).start()
 
         elif order_status == REFUNDED:
-            description = 'Order has been refunded due to reasons: {}'.format(
-                reasons)
-            Thread(target=send_email_update, args=(gp_customer, order, REFUNDED,
-                   order.product_qty_details, reasons, datetime.now().strftime("%d %b %Y"), )).start()
+            description = "Order has been refunded due to reasons: {}".format(reasons)
+            Thread(
+                target=send_email_update,
+                args=(
+                    gp_customer,
+                    order,
+                    REFUNDED,
+                    order.product_qty_details,
+                    reasons,
+                    datetime.now().strftime("%d %b %Y"),
+                ),
+            ).start()
 
         elif order_status == PARTIALLY_REFUNDED:
-            description = 'Order has been partially refunded [Amount: $A{:.2f}] due to reasons: {}'.format(float(partial_refund),
-                                                                                                           reasons)
-            Thread(target=send_email_update, args=(gp_customer, order, PARTIALLY_REFUNDED,
-                   order.product_qty_details, reasons, datetime.now().strftime("%d %b %Y"), partial_refund)).start()
+            description = "Order has been partially refunded [Amount: $A{:.2f}] due to reasons: {}".format(
+                float(partial_refund), reasons
+            )
+            Thread(
+                target=send_email_update,
+                args=(
+                    gp_customer,
+                    order,
+                    PARTIALLY_REFUNDED,
+                    order.product_qty_details,
+                    reasons,
+                    datetime.now().strftime("%d %b %Y"),
+                    partial_refund,
+                ),
+            ).start()
 
         like = OrderStatusUpdate.objects.create(
-            order=order,
-            status=order_status,
-            description=description
+            order=order, status=order_status, description=description
         )
         like.save()
 
         order.status = order_status
         order.save()
 
-        return Response({'details': 'Order status updated.'}, status=status.HTTP_201_CREATED)
+        return Response(
+            {"details": "Order status updated."}, status=status.HTTP_201_CREATED
+        )
