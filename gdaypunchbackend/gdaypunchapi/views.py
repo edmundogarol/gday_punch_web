@@ -5,8 +5,6 @@ from datetime import timezone
 from next_prev import next_in_order
 from secrets import token_urlsafe
 from threading import Thread
-from dateutil.parser import parse
-from botocore.exceptions import ClientError
 
 from rest_framework import status
 from rest_framework.views import APIView
@@ -14,7 +12,6 @@ from rest_framework.throttling import UserRateThrottle
 from rest_framework.response import Response
 from rest_framework.mixins import UpdateModelMixin
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.decorators import api_view
 
 from rest_framework.viewsets import ViewSet, ModelViewSet
 from rest_framework.exceptions import AuthenticationFailed
@@ -23,12 +20,10 @@ from rest_framework.schemas import SchemaGenerator
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
-    IsAuthenticatedOrReadOnly,
-    BasePermission,
 )
 from rest_framework.parsers import MultiPartParser, FormParser
 
-from django.db.models import Q, F
+from django.db.models import F
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
@@ -36,15 +31,11 @@ from django.contrib.auth import login, logout, password_validation
 from django.contrib.auth.hashers import check_password
 from django.contrib.auth.models import Group
 from django.shortcuts import get_object_or_404, get_list_or_404
-from django.http import HttpResponse
 
 from .utils import (
     visitor_ip_address,
     AdminOnly,
     PostOnly,
-    AdminOrReadOnly,
-    AuthenticatedCreateOnly,
-    AuthenticatedCreateAndEditOnly,
 )
 
 from .api.verify_account import send_account_verification_email
@@ -67,7 +58,6 @@ from .serializers import (
     PromptSerializer,
     CommentSerializer,
     CommentLikeSerializer,
-    ResetPasswordSerializer,
 )
 from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE, LOCAL_DEV
 
@@ -571,3 +561,43 @@ class MangaDetailView(UpdateModelMixin, ViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class MangaViewCounter(APIView):
+    permission_classes = [PostOnly]
+
+    def post(self, request, format=None):
+        loggedIn = str(self.request.user) != "AnonymousUser"
+
+        if not loggedIn:
+            return Response(
+                {"error": "User not logged in"}, status=status.HTTP_406_NOT_ACCEPTABLE
+            )
+
+        manga_id = request.data.get("manga", None)
+
+        try:
+            manga = Manga.objects.get(id=manga_id)
+
+            minutes_diff = (
+                datetime.datetime.now() - manga.last_viewed
+            ).total_seconds() / 60.0
+            view_buffer = 1  # minutes to allow recording of next view
+
+            if minutes_diff > view_buffer:
+                manga.views = manga.views + 1
+                manga.last_viewed = datetime.datetime.now()
+                manga.save()
+
+                return Response(status=status.HTTP_200_OK)
+
+            else:
+                return Response(
+                    {"detail": "Manga view cannot be spammed successively."},
+                    status=status.HTTP_208_ALREADY_REPORTED,
+                )
+
+        except Manga.DoesNotExist:
+            return Response(
+                {"error": "Manga does not exist"}, status=status.HTTP_406_NOT_ACCEPTABLE
+            )

@@ -318,6 +318,8 @@ class Manga(models.Model):
     release_date = models.DateTimeField(default=timezone.now)
     page_count = models.IntegerField(blank=True, default=0)
     japanese_reading = models.BooleanField(default=True)
+    views = models.IntegerField(blank=False, default=0)
+    last_viewed = models.DateTimeField(default=timezone.now)
 
     ALL_AGES = "all_ages"
     TEENS = "teens"
@@ -546,6 +548,7 @@ class Product(models.Model):
                     "following_author": manga.author.following,
                     "age_rating": manga.age_rating,
                     "page_count": manga.page_count,
+                    "views": manga.views,
                     "orientation": "japanese" if manga.japanese_reading else "english",
                     "likes": manga.likes,
                     "comments": manga.comments,

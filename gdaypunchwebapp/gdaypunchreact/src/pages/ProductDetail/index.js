@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, NavLink, withRouter } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CommentOutlined, BookOutlined } from "@ant-design/icons";
+import { CommentOutlined, BookOutlined, EyeOutlined } from "@ant-design/icons";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
 import {
   faFacebook,
@@ -45,7 +45,6 @@ import {
   TitleInteractionButtonsContainer,
   LikeCommentConainer,
   NumberLabel,
-  InteractionContainer,
   InteractionButton,
   ActionButton,
 } from "./styles";
@@ -251,6 +250,14 @@ function ProductDetail({ history }) {
                   product.manga_details &&
                   !product.product_type.includes("_subscription") && (
                     <LikeCommentConainer>
+                      <Tooltip title="Views">
+                        <InteractionButton>
+                          <EyeOutlined className="site-form-item-icon" />
+                          <NumberLabel>{`${
+                            product.manga_details.views || 0
+                          }`}</NumberLabel>
+                        </InteractionButton>
+                      </Tooltip>
                       <Tooltip title="Likes">
                         <InteractionButton>
                           <FontAwesomeIcon
@@ -266,28 +273,27 @@ function ProductDetail({ history }) {
                           }`}</NumberLabel>
                         </InteractionButton>
                       </Tooltip>
-                      <InteractionContainer>
-                        <Tooltip title="Comments">
-                          <InteractionButton>
-                            <CommentOutlined className="site-form-item-icon" />
-                          </InteractionButton>
+                      <Tooltip title="Comments">
+                        <InteractionButton>
+                          <CommentOutlined className="site-form-item-icon" />
                           <NumberLabel>{`${
                             product.manga_details.comments || 0
                           }`}</NumberLabel>
-                        </Tooltip>
-
-                        <Tooltip
-                          title={
-                            product.saved ? "Favourited" : "Not in Favourites"
-                          }
-                        >
+                        </InteractionButton>
+                      </Tooltip>
+                      <Tooltip
+                        title={
+                          product.saved ? "Favourited" : "Not in Favourites"
+                        }
+                      >
+                        <InteractionButton>
                           <BookOutlined
                             className={`site-form-item-icon ${
                               product.saved ? "saved" : ""
                             }`}
                           />
-                        </Tooltip>
-                      </InteractionContainer>
+                        </InteractionButton>
+                      </Tooltip>
                     </LikeCommentConainer>
                   )}
               </TitleInteractionButtonsContainer>
@@ -348,6 +354,10 @@ function ProductDetail({ history }) {
                             )
                           : null}
                       </p>
+                    </LabelFieldContainer>
+                    <LabelFieldContainer>
+                      <label>Page Count</label>
+                      <p>{product.manga_details.page_count}</p>
                     </LabelFieldContainer>
                   </MoreDetailsColumn>
                   <MoreDetailsColumn>

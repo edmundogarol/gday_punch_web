@@ -224,6 +224,8 @@ export const TitleInteractionButtonsContainer = styled.div`
 `;
 
 export const InteractionButton = styled.span`
+  margin-right: 0.6em;
+
   svg {
     margin-right: 0.3em;
     color: dimgrey;

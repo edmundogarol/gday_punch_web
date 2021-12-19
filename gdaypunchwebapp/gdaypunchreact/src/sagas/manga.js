@@ -25,6 +25,7 @@ import {
   uploadingMangaFinished,
   uploadingMangaError,
   setUploadProgress,
+  RECORD_VIEW,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { api } from "utils/api";
@@ -260,6 +261,21 @@ export function* uploadMangaCall(action) {
   }
 }
 
+export function* recordView(action) {
+  const response = yield call(api, `manga-view/`, {
+    method: "POST",
+    body: {
+      manga: action.payload.mangaId,
+    },
+  });
+
+  if (response && response.ok) {
+    console.log(response);
+  } else {
+    console.log("Manga view recording error", JSON.stringify(response));
+  }
+}
+
 export default function* mangaSaga() {
   yield all([
     takeLatest(DO_GET_MANGA, getManga),
@@ -269,5 +285,6 @@ export default function* mangaSaga() {
     takeEvery(DO_GET_COMMENTS, getComments),
     takeEvery(DO_LIKE_COMMENT, likeComment),
     takeEvery(UPLOAD_MANGA, uploadMangaCall),
+    takeLatest(RECORD_VIEW, recordView),
   ]);
 }

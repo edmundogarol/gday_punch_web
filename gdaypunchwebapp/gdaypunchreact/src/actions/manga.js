@@ -8,6 +8,7 @@ export const DO_LIKE_COMMENT = "manga/DO_LIKE_COMMENT";
 export const UPDATE_COMMENTS = "manga/UPDATE_COMMENTS";
 export const UPDATE_COMMENT = "manga/UPDATE_COMMENT";
 export const SET_READING_MANGA = "manga/SET_READING_MANGA";
+export const RECORD_VIEW = "manga/RECORD_VIEW";
 
 export const UPLOAD_MANGA = "manga/UPLOAD_MANGA";
 export const UPLOADING_MANGA = "manga/UPLOADING_MANGA";
@@ -115,5 +116,12 @@ export const updateComment = (comment) => ({
   type: UPDATE_COMMENT,
   payload: {
     comment,
+  },
+});
+
+export const recordView = (mangaId) => ({
+  type: RECORD_VIEW,
+  payload: {
+    mangaId,
   },
 });

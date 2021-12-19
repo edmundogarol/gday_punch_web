@@ -191,6 +191,10 @@ export const LikeCommentConainer = styled.div`
     }
   }
 
+  .right-space {
+    margin-right: 0.5em;
+  }
+
   .saved {
     svg {
       color: #e09200;

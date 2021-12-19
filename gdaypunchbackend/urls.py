@@ -37,6 +37,7 @@ from .gdaypunchapi.views import (
     SwaggerSchemaView,
     AdminCreateUserViewSet,
     UpdateUserPrivilegeViewSet,
+    MangaViewCounter,
 )
 from .gdaypunchapi.api.reset_password import ResetPasswordViewSet
 from .gdaypunchapi.api.verify_account import (
@@ -126,6 +127,8 @@ urlpatterns = [
     url(r"api/update-purchases/", UpdatedProductPurchasesViewSet.as_view()),
     # Orders [Sales Graph] OrdersSalesGraph
     url(r"api/orders-graph/", OrdersSalesGraph.as_view()),
+    # Manga
+    url(r"api/manga-view/", MangaViewCounter.as_view()),
     # Voting
     url(r"api/voting-details/", VotingSystemDetailsViewSet.as_view()),
     url(r"api/voting-cast/", VoteCastingViewSet.as_view()),

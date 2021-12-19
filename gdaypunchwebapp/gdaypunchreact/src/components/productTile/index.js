@@ -3,7 +3,12 @@ import { withRouter, NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeart } from "@fortawesome/free-solid-svg-icons";
-import { CommentOutlined, BookOutlined, MoreOutlined } from "@ant-design/icons";
+import {
+  CommentOutlined,
+  BookOutlined,
+  MoreOutlined,
+  EyeOutlined,
+} from "@ant-design/icons";
 import { Badge, Tooltip, Popover } from "antd";
 
 import UserAvatar, { initialAuthor } from "components/UserAvatar";
@@ -80,7 +85,14 @@ function ProductTile(props) {
     saves,
     visible,
   } = product;
-  const { id: mangaId, author_id, comments, likes, user_likes } = manga_details;
+  const {
+    id: mangaId,
+    author_id,
+    comments,
+    likes,
+    user_likes,
+    views,
+  } = manga_details;
 
   const loggedIn = useSelector(selectLoggedIn);
   const author = useSelector(selectUserById(author_id)) || initialAuthor;
@@ -271,7 +283,13 @@ function ProductTile(props) {
             )}
             {digitalProduct && !product_type.includes("_subscription") && (
               <LikeCommentConainer>
-                <Tooltip title="Like">
+                <Tooltip title="Views">
+                  <span className="right-space">
+                    <EyeOutlined className="site-form-item-icon" />
+                    <NumberLabel>{`${views || 0}`}</NumberLabel>
+                  </span>
+                </Tooltip>
+                <Tooltip title="Likes">
                   <a onClick={() => handleLikeClick()}>
                     <FontAwesomeIcon
                       icon={faHeart}

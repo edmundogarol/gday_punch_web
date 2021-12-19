@@ -31,6 +31,7 @@ import {
   doLikeComment,
   doLikeManga,
   unlikeManga,
+  recordView,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { selectReadingManga, selectComments } from "selectors/manga";
@@ -100,6 +101,15 @@ function Reader({ history }) {
       document.title = `Reading ${manga.title} | Gday Punch`;
     }
   }, [manga]);
+
+  useEffect(() => {
+    if (
+      (pageCount && pageNumber === pageCount - 3) ||
+      (pageCount && pageNumber === 3)
+    ) {
+      dispatch(recordView(mangaId));
+    }
+  }, [pageCount, pageNumber]);
 
   function handleCommentSubmit() {
     if (!user.username.length) {
