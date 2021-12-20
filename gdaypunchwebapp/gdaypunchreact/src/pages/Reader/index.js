@@ -103,10 +103,7 @@ function Reader({ history }) {
   }, [manga]);
 
   useEffect(() => {
-    if (
-      (pageCount && pageNumber === pageCount - 3) ||
-      (pageCount && pageNumber === 3)
-    ) {
+    if (pageCount && pageNumber === 3) {
       dispatch(recordView(mangaId));
     }
   }, [pageCount, pageNumber]);
