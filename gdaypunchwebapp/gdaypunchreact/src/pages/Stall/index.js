@@ -84,6 +84,7 @@ const initialUploadState = {
   cover: undefined,
   agreeTerms: false,
   sku: undefined,
+  active_price: undefined,
 };
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;

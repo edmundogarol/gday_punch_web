@@ -204,6 +204,8 @@ export function* uploadMangaCall(action) {
       form_data.append(key, manga[key]);
   });
 
+  let uploadError;
+
   function uploadAgreement(onProgress) {
     const config = {
       onUploadProgress: onProgress,
@@ -212,7 +214,10 @@ export function* uploadMangaCall(action) {
     return axioshttp
       .post("/api/products/", form_data, config)
       .then((response) => response)
-      .catch((error) => error);
+      .catch((error) => {
+        uploadError = error.response.data;
+        return error;
+      });
   }
 
   let emit;
@@ -244,9 +249,10 @@ export function* uploadMangaCall(action) {
     yield put(uploadingMangaFinished());
   } else {
     console.log("Upload Manga error", JSON.stringify(response));
-    if (response.data) {
-      yield put(uploadingMangaError(response.message));
-      Object.values(response.data).map((error) =>
+
+    if (uploadError) {
+      yield put(uploadingMangaError(uploadError));
+      Object.values(uploadError).map((error) =>
         message.warn({
           content: error,
           className: "antd-message-capitalize",
@@ -256,7 +262,7 @@ export function* uploadMangaCall(action) {
         })
       );
     } else {
-      message.error(`Upload Manga Error: ${response.status}`);
+      message.error(`Upload Manga Error: ${response.response.status}`);
     }
   }
 }

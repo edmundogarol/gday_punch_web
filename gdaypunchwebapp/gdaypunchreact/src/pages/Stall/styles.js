@@ -51,9 +51,11 @@ export const MangaUploaderModal = styled(Modal)`
       white-space: pre-wrap;
       padding-top: 1em;
       padding-bottom: 1em;
+      margin-bottom: 1em;
     }
 
-    .sku-input {
+    .sku-input,
+    .price-input {
       margin-bottom: 1em;
       height: 4em;
     }

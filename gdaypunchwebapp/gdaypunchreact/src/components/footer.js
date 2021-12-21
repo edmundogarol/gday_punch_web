@@ -22,7 +22,9 @@ function Footer() {
           <p className="website">Submission Conditions</p>
         </NavLink>
         <NavLink to="/upload-conditions">
-          <p className="website">Manga Upload Terms and Conditions </p>
+          <p className="website">
+            Manga Upload and Selling Terms and Conditions{" "}
+          </p>
         </NavLink>
         <NavLink target="_blank" to="/refunds-and-returns">
           <p className="website">Refunds & Returns Policy</p>

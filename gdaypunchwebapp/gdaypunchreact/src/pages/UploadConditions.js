@@ -26,7 +26,7 @@ function UploadConditions(props) {
   return (
     <App id="top" className="App">
       <FeaturedSection top>
-        <SectionTitle>Upload Conditions</SectionTitle>
+        <SectionTitle>Upload and Selling Conditions</SectionTitle>
         <ContentContainer>
           <div>
             <p>
@@ -197,6 +197,55 @@ function UploadConditions(props) {
                 <li>
                   Others that were considered to be interfering with the
                   operation.
+                </li>
+              </ul>
+            </dd>
+          </dl>
+          <dl>
+            <dt>■ Selling manga conditions and guidelines</dt>
+            <dd>
+              <p>
+                You can list your manga for sale within the Gday Punch Web App
+                and the balance you accrue will be paid out to your nominated
+                destination every week.
+              </p>
+              <ul>
+                <li>
+                  All manga listed for sale must be your original work and
+                  follow the guidelines outlined in these terms and conditions.
+                </li>
+                <li>
+                  You can visit the Seller portal within your account page and
+                  view all your sales, current balances and payment details
+                </li>
+                <li>
+                  Listing a manga up for sale is free, however Gday Punch Web
+                  App will take a 10% + 30c hosting fee for every sale to cover
+                  costs of Stripe (payment gateway) fees, website upkeep and
+                  traffic management.
+                  <br />※ For example: <br />
+                  If you sell Chapter 1 of your manga for $2, Gday Punch will
+                  take a fee of 20c (10%) + 30c, for a total of 50c. <br /> Your
+                  new sales balance will be added $1.50.
+                </li>
+                <li>
+                  You can nominate either an Australain Bank Account or Paypal
+                  account where your proceeds will be paid out to every week.
+                  <br />※ Proceeds will be paid out in Australian Dollars (AUD).
+                </li>
+                <li>
+                  If your account information is incorrect you will be unable to
+                  receive payments. Please make sure your information is entered
+                  correctly.
+                </li>
+                <li>
+                  After PayPal payments have been made they must be accepted
+                  within 30 days. Please make that sure you accept your payments
+                  within 30 days otherwise they will be withdrawn.
+                </li>
+                <li>
+                  If there is an error with your registered bank account or
+                  Paypal, a $10AUD penalty may be charged.
                 </li>
               </ul>
             </dd>

@@ -6,7 +6,7 @@ import "react-quill/dist/quill.snow.css";
 import { Document } from "react-pdf/dist/entry.webpack";
 import { Page, pdfjs } from "react-pdf";
 import moment from "moment";
-import { getImgFromArr } from "array-to-image";
+
 import {
   message,
   Input,
@@ -28,6 +28,7 @@ import {
   descriptionValidator,
   titleValidator,
   noLinkValidator,
+  priceValidator,
   sanitiseTooManyNewLines,
   removeHtml,
 } from "utils/utils";
@@ -63,16 +64,15 @@ function MangaDetail({
 }) {
   const { uploading, uploadingFinished, uploadingErrors, uploadProgress } =
     useSelector(selectStallState);
-  // const [editingMangaDetails, updateEditingMangaDetails] = useState(
-  //   updateUploadingDetails
-  // );
+
   const dispatch = useDispatch();
 
   const [confirmUpload, toggleConfirmUpload] = useState(false);
+  const [markForSale, toggleMarkForSale] = useState(false);
 
-  // const usingProduct = editingManga
-  //   ? editingMangaDetails
-  //   : updateUploadingDetails;
+  const sellingValid = markForSale
+    ? priceValidator(uploadingDetails.active_price)
+    : true;
 
   useEffect(() => {
     if (!uploading && uploadingFinished && !uploadingErrors) {
@@ -160,6 +160,7 @@ function MangaDetail({
           page_count: uploadingDetails.pages,
           japanese_reading: uploadingDetails.orientation,
           product_type: uploadingDetails.product_type,
+          active_price: uploadingDetails.active_price,
           manga: uploadingMangaData,
           image:
             uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
@@ -177,6 +178,8 @@ function MangaDetail({
       uploadingDetails.description
     );
     const titleValid = titleValidator(uploadingDetails.title);
+    const priceValid = priceValidator(uploadingDetails.active_price);
+    const sellingValid = markForSale ? priceValid : true;
 
     // Client validators
     if (!skuValid) {
@@ -243,7 +246,39 @@ function MangaDetail({
       );
     }
 
-    if (titleValid && descriptionValid && descriptionValidNoLinks && skuValid) {
+    if (
+      !priceValid &&
+      uploadingDetails.active_price &&
+      !uploadingDetails.active_price.length
+    ) {
+      message.error("Listing for sale must include a price.");
+      dispatch(
+        uploadingMangaError({
+          active_price: "Listing for sale must include a price.",
+        })
+      );
+    } else if (!priceValid) {
+      message.error("Price must be in numbers and decimals only.");
+      dispatch(
+        uploadingMangaError({
+          active_price: "Price must be in numbers and decimals only.",
+        })
+      );
+    } else {
+      dispatch(
+        uploadingMangaError({
+          active_price: undefined,
+        })
+      );
+    }
+
+    if (
+      titleValid &&
+      descriptionValid &&
+      descriptionValidNoLinks &&
+      skuValid &&
+      sellingValid
+    ) {
       confirmBeforeUpload();
     }
   };
@@ -269,7 +304,8 @@ function MangaDetail({
           disabled={
             !uploadingDetails.title ||
             !uploadingDetails.description ||
-            !uploadingDetails.agreeTerms
+            !uploadingDetails.agreeTerms ||
+            !sellingValid
           }
           type="primary"
           key="save"
@@ -453,24 +489,54 @@ function MangaDetail({
             updateUploadingDetails({ ...uploadingDetails, release_date: val })
           }
         />
-        <h4>SKU/Code</h4>
-        <Input
-          className="sku-input"
-          placeholder="Enter Manga SKU/Code"
-          value={uploadingDetails.sku}
-          onChange={(e) =>
-            updateUploadingDetails({
-              ...uploadingDetails,
-              sku: e.target.value.toUpperCase(),
-            })
-          }
-        />
-        {uploadingErrors?.sku && (
-          <Alert
-            className="invalid-message"
-            message={uploadingErrors?.sku}
-            type="error"
-          />
+        <h4>Sell</h4>
+        <Checkbox onChange={(e) => toggleMarkForSale(e.target.checked)}>
+          List this manga for work for sale.
+        </Checkbox>
+        {markForSale && (
+          <>
+            <h4>Price $AUD</h4>
+            <Input
+              className="price-input"
+              placeholder="Enter Manga Price ($AUD)"
+              value={uploadingDetails.active_price}
+              onChange={(e) => {
+                var validNumber = /^\d*\.?\d*$/;
+                if (e.target.value.match(validNumber)) {
+                  updateUploadingDetails({
+                    ...uploadingDetails,
+                    active_price: e.target.value,
+                  });
+                }
+              }}
+            />
+            {uploadingErrors?.active_price && (
+              <Alert
+                className="invalid-message"
+                message={uploadingErrors?.active_price}
+                type="error"
+              />
+            )}
+            <h4>SKU/Code</h4>
+            <Input
+              className="sku-input"
+              placeholder="Enter Manga SKU/Code"
+              value={uploadingDetails.sku}
+              onChange={(e) =>
+                updateUploadingDetails({
+                  ...uploadingDetails,
+                  sku: e.target.value.toUpperCase(),
+                })
+              }
+            />
+            {uploadingErrors?.sku && (
+              <Alert
+                className="invalid-message"
+                message={uploadingErrors?.sku}
+                type="error"
+              />
+            )}
+          </>
         )}
         <h4>Upload Terms and Conditions</h4>
         <Checkbox
@@ -483,7 +549,7 @@ function MangaDetail({
         >
           By checking and uploading, you are agreeing to our{" "}
           <NavLink to="/upload-conditions" target="_blank">
-            Manga Upload Terms and Conditions
+            Manga Upload and Selling Terms and Conditions
           </NavLink>{" "}
           to use our platform to share your manga.
         </Checkbox>

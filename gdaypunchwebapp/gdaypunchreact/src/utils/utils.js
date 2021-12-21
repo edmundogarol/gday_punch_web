@@ -77,6 +77,11 @@ export function skuValidator(inputtxt) {
   return inputtxt && inputtxt.length ? inputtxt.match(sku) : true;
 }
 
+export function priceValidator(inputtxt) {
+  var validNumber = /^\d*\.?\d*$/;
+  return inputtxt && inputtxt.length ? inputtxt.match(validNumber) : false;
+}
+
 export function descriptionValidator(inputtxt) {
   return inputtxt.length > 30;
 }
