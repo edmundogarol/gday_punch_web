@@ -31,10 +31,12 @@ import {
   priceValidator,
   sanitiseTooManyNewLines,
   removeHtml,
+  hasPrivilege,
 } from "utils/utils";
 
 import { MangaUploaderModal, ConfirmUploadSummary } from "./styles";
 import { uploadManga, uploadingMangaError } from "actions/manga";
+import { selectUser } from "selectors/app";
 
 const initialUploadState = {
   title: undefined,
@@ -62,6 +64,7 @@ function MangaDetail({
   uploadingDetails,
   updateUploadingDetails,
 }) {
+  const currentUser = useSelector(selectUser);
   const { uploading, uploadingFinished, uploadingErrors, uploadProgress } =
     useSelector(selectStallState);
 
@@ -246,30 +249,32 @@ function MangaDetail({
       );
     }
 
-    if (
-      !priceValid &&
-      uploadingDetails.active_price &&
-      !uploadingDetails.active_price.length
-    ) {
-      message.error("Listing for sale must include a price.");
-      dispatch(
-        uploadingMangaError({
-          active_price: "Listing for sale must include a price.",
-        })
-      );
-    } else if (!priceValid) {
-      message.error("Price must be in numbers and decimals only.");
-      dispatch(
-        uploadingMangaError({
-          active_price: "Price must be in numbers and decimals only.",
-        })
-      );
-    } else {
-      dispatch(
-        uploadingMangaError({
-          active_price: undefined,
-        })
-      );
+    if (markForSale) {
+      if (
+        !priceValid &&
+        uploadingDetails.active_price &&
+        !uploadingDetails.active_price.length
+      ) {
+        message.error("Listing for sale must include a price.");
+        dispatch(
+          uploadingMangaError({
+            active_price: "Listing for sale must include a price.",
+          })
+        );
+      } else if (!priceValid) {
+        message.error("Price must be in numbers and decimals only.");
+        dispatch(
+          uploadingMangaError({
+            active_price: "Price must be in numbers and decimals only.",
+          })
+        );
+      } else {
+        dispatch(
+          uploadingMangaError({
+            active_price: undefined,
+          })
+        );
+      }
     }
 
     if (
@@ -489,10 +494,14 @@ function MangaDetail({
             updateUploadingDetails({ ...uploadingDetails, release_date: val })
           }
         />
-        <h4>Sell</h4>
-        <Checkbox onChange={(e) => toggleMarkForSale(e.target.checked)}>
-          List this manga for work for sale.
-        </Checkbox>
+        {hasPrivilege(currentUser, "admin") && (
+          <>
+            <h4>Sell</h4>
+            <Checkbox onChange={(e) => toggleMarkForSale(e.target.checked)}>
+              List this manga for work for sale.
+            </Checkbox>
+          </>
+        )}
         {markForSale && (
           <>
             <h4>Price $AUD</h4>

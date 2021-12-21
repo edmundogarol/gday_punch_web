@@ -81,8 +81,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             )
 
         free = active_price is None or active_price == 0 or active_price == ""
-        use_existing_price = len(active_price) > 0 if active_price else False
+        use_existing_price = len(stripe_prices) > 0 if stripe_prices else False
         create_stripe_price = not free and not use_existing_price
+
+        print(active_price, create_stripe_price)
 
         if create_stripe_price:
             recurring = False
@@ -109,15 +111,6 @@ class ProductViewSet(viewsets.ModelViewSet):
                 product_data={
                     "name": request.data["title"],
                 },
-            )
-
-            stripe_product = stripe.Product.retrieve(stripe_price.product)
-            stripe.Product.modify(
-                stripe_product.id,
-                images=[
-                    "https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com/"
-                    + request.data["image"]
-                ],
             )
 
             new_stripe_price = StripePrice(
@@ -166,7 +159,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                 stripe_product = stripe.Product.retrieve(stripe_price.product)
                 stripe.Product.modify(
                     stripe_product.id,
-                    images=[product.image.name],
+                    images=[product.image_store_public.name],
                 )
 
             if create_stripe_price:
