@@ -12,8 +12,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.shortcuts import get_list_or_404
 
-from rest_framework import viewsets, permissions, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -22,7 +21,7 @@ from ..models import (
     Order,
     OrderStatusUpdate,
     Product,
-    Coupon,
+    SellerOrderRef,
     StripeCustomer,
     Customer,
     Purchase,
@@ -60,6 +59,20 @@ class OrderViewSet(viewsets.ModelViewSet):
         """
         if pk == "null":
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+        seller_id = request.GET.get("seller", None)
+
+        if seller_id:
+            queryset = SellerOrderRef.objects.all().order_by("-id")
+            seller_order_refs = get_list_or_404(queryset, seller=seller_id)
+
+            orders = []
+            for order_ref in seller_order_refs:
+                curr_order = Order.objects.get(id=order_ref.order.id)
+                serializer = OrderSerializer(curr_order)
+                orders.append(serializer.data)
+
+            return Response(orders)
 
         queryset = Order.objects.all().order_by("-id")
         orders = get_list_or_404(queryset, customer=pk)
@@ -410,6 +423,17 @@ def handle_create_order(
         else:
             product.stock = product.stock - int(item["qty"])
             product.save()
+
+        try:
+            seller_order_ref_exists = SellerOrderRef.objects.filter(
+                seller=product.user.id
+            ).filter(order=order.id)
+
+        except SellerOrderRef.DoesNotExist:
+            SellerOrderRef.objects.create(
+                seller=product.user,
+                order=order,
+            )
 
     if digital_purchase == len(items):
         order.status = PURCHASED

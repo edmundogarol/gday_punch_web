@@ -10,7 +10,7 @@ from .models import (
     Customer,
     Save,
     Follow,
-    Friend,
+    Seller,
 )
 
 
@@ -125,7 +125,7 @@ class FollowPermissions(BasePermission):
                 try:
                     follow = Follow.objects.get(id=follow_id)
                     return follow.follower.email.strip() == str(request.user).strip()
-                except Like.DoesNotExist:
+                except Follow.DoesNotExist:
                     return False
         else:
             return False
@@ -149,6 +149,7 @@ class MangaDetailPermissions(BasePermission):
 class OrdersByUserPermissions(BasePermission):
     def has_permission(self, request, view):
         customer_id = view.kwargs.get("pk")
+        seller_id = request.GET.get("seller")
 
         if staff(request):
             return True
@@ -156,6 +157,14 @@ class OrdersByUserPermissions(BasePermission):
             if request.user.is_authenticated:
                 if customer_id == "null":
                     return False
+
+                if seller_id:
+                    try:
+                        seller = User.objects.get(id=seller_id)
+                        return seller.email.strip() == str(request.user).strip()
+                    except User.DoesNotExist:
+                        return False
+
                 try:
                     stripe_customer = StripeCustomer.objects.get(id=customer_id)
                     return (
@@ -303,5 +312,27 @@ class SavePermissions(BasePermission):
                     return False
         elif view.action in ["update", "partial_update", "list", "retrieve"]:
             return False
+        else:
+            return False
+
+
+class SellerPermissions(BasePermission):
+    def has_permission(self, request, view):
+        seller_id = view.kwargs.get("pk")
+        WRITE_METHODS = [
+            "POST",
+        ]
+
+        if request.method in WRITE_METHODS or staff(request):
+            return True
+        elif view.action in ["create"]:
+            return True
+        elif view.action in ["retrieve", "update", "partial_update", "destroy"]:
+            if request.user.is_authenticated:
+                try:
+                    seller = Seller.objects.get(id=seller_id)
+                    return seller.user.email.strip() == str(request.user).strip()
+                except Seller.DoesNotExist:
+                    return False
         else:
             return False

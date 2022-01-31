@@ -584,6 +584,36 @@ function Account(props) {
               </Card>
             ) : null}
           </TabPane>
+          <TabPane tab="Seller" key="seller">
+            {user.customer_payment_details ? (
+              <Card
+                className="non-first-tab"
+                type="inner"
+                title="Payout Details"
+                extra={<a href="#">Edit</a>}
+              >
+                <DetailField $bankAccount>
+                  <label>Bank Account</label>
+                  <p>013664</p>
+                  <p>295117766</p>
+                </DetailField>
+              </Card>
+            ) : null}
+            {fetchingOrders ? (
+              <LoadingSpinner />
+            ) : (
+              <Card className="non-first-tab" type="inner" title="Stall Sales">
+                <Table
+                  dataSource={orderList.map((order) => ({
+                    ...order,
+                    key: order.id,
+                  }))}
+                  columns={ordersColumns}
+                  onRow={handleOrderOpen}
+                />
+              </Card>
+            )}
+          </TabPane>
         </Tabs>
       </FeaturedSection>
     </App>

@@ -181,7 +181,15 @@ export const DetailField = styled.div`
     props.noLabel
       ? `
       grid-template-columns: 50% auto 1fr;
-  `
+    `
+      : ""}
+
+  ${(props) =>
+    props.$bankAccount
+      ? `
+      // grid-template-columns: 9.1em 2.2em 7em 5em 8.2em;
+      grid-template-columns: repeat(auto-fill, 5em);
+      `
       : ""}
 
   .unset {

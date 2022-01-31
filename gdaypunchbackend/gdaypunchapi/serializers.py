@@ -26,6 +26,9 @@ from .models import (
     Settings,
     Follow,
     Friend,
+    Seller,
+    Payout,
+    PayoutUpdate,
 )
 
 
@@ -317,4 +320,22 @@ class VotingItemSerializer(serializers.ModelSerializer):
 class SettingsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Settings
+        fields = "__all__"
+
+
+class SellerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Seller
+        fields = "__all__"
+
+
+class PayoutSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Payout
+        fields = "__all__"
+
+
+class PayoutUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PayoutUpdate
         fields = "__all__"

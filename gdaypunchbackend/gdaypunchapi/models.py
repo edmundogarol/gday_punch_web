@@ -1183,3 +1183,50 @@ class Vote(models.Model):
     @property
     def readable_date(self):
         return get_readable_date_time(self.created_date)
+
+
+class Seller(models.Model):
+    user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
+    paypal_email = models.TextField(max_length=50, blank=True)
+    bank_bsb = models.TextField(max_length=10, blank=True)
+    bank_acc = models.TextField(max_length=20, blank=True)
+    use_paypal = models.BooleanField(default=False)
+
+    @property
+    def next_payout(self):
+        return 62  # Order ID's from within the last week of sales = total amount
+
+    @property
+    def total_sales(self):
+        return 450  # All seller orders = total amount
+
+    @property
+    def last_payout_date(self):
+        return "20-10-2022:10:40:2T3"  # Get latest SUCCESS Payout from seller
+
+
+class Payout(models.Model):
+    amount = models.FloatField(blank=False)
+    start_order_id = models.IntegerField(blank=True, null=True)
+    end_order_id = models.IntegerField(blank=True, null=True)
+
+
+class PayoutUpdate(models.Model):
+    payout = models.ForeignKey(
+        Payout, on_delete=models.PROTECT, blank=False, null=False
+    )
+    status = models.TextField(
+        max_length=30, choices=PAYOUT_STATUSES, default=PAYOUT_PROCESSING
+    )
+    update_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
+    description = models.TextField(max_length=300, blank=True)
+
+    @property
+    def readable_date(self):
+        return get_readable_date_time(self.update_date)
+
+
+class SellerOrderRef(models.Model):
+    seller = models.ForeignKey(User, on_delete=models.PROTECT, blank=False, null=False)
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, blank=False, null=False)
+    date_created = models.DateTimeField(null=False, blank=False, default=timezone.now)

@@ -64,7 +64,9 @@ from gdaypunchbackend.settings import MEDIA_ROOT, S3_STORAGE, LOCAL_DEV
 
 class SwaggerSchemaView(APIView):
     permission_classes = [AdminOnly]
-    # permission_classes = [AllowAny] # User for testing to see what endpoints are available to regular users
+    # permission_classes = [
+    #     AllowAny
+    # ]  # User for testing to see what endpoints are available to regular users
     renderer_classes = [renderers.OpenAPIRenderer, renderers.SwaggerUIRenderer]
 
     def get(self, request):
