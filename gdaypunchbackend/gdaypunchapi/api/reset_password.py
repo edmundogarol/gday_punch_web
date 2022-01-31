@@ -21,9 +21,7 @@ from django.contrib.sessions.models import Session
 from django.contrib.auth import password_validation
 
 from ..utils import PostOnly
-from ..models import (
-    User, ResetPasswordSession
-)
+from ..models import User, ResetPasswordSession
 from ..serializers import ResetPasswordSerializer
 from gdaypunchbackend.settings import DOMAIN
 
@@ -33,18 +31,18 @@ def send_password_reset_email(user, token):
 
     email_config = {
         "email": user.email,
-        'website': DOMAIN,
+        "website": DOMAIN,
         "user": user,
-        'token': token,
+        "token": token,
     }
 
     try:
         email = render_to_string(email_template_name, email_config)
 
         send_mail(
-            'Reset Password Request',
+            "Reset Password Request",
             email,
-            'Gday Punch Manga Magazine<info@gdaypunch.com.au>',
+            "Gday Punch Manga Magazine<info@gdaypunch.com.au>",
             [user.email],
             fail_silently=False,
         )
@@ -73,8 +71,13 @@ def reset_password(email):
             reset_session.created_date = datetime.now()
             reset_session.save()
 
-            Thread(target=send_password_reset_email,
-                   args=(user, reset_session.token,)).start()
+            Thread(
+                target=send_password_reset_email,
+                args=(
+                    user,
+                    reset_session.token,
+                ),
+            ).start()
 
         except ResetPasswordSession.DoesNotExist:
             token = token_urlsafe(20)
@@ -86,31 +89,32 @@ def reset_password(email):
             )
             reset_session.save()
 
-            Thread(target=send_password_reset_email,
-                   args=(user, token,)).start()
+            Thread(
+                target=send_password_reset_email,
+                args=(
+                    user,
+                    token,
+                ),
+            ).start()
 
 
 def delete_all_unexpired_sessions_for_user(user):
-    all_sessions = Session.objects.filter(
-        expire_date__gte=datetime.now())
+    all_sessions = Session.objects.filter(expire_date__gte=datetime.now())
     for session in all_sessions:
         session_data = session.get_decoded()
-        if user.pk == int(session_data.get('_auth_user_id')):
+        if user.pk == int(session_data.get("_auth_user_id")):
             session.delete()
 
 
 class ResetPasswordViewSet(viewsets.ModelViewSet):
     serializer_class = ResetPasswordSerializer
-    permission_classes = (PostOnly, )
+    permission_classes = (PostOnly,)
 
     def create(self, request, *args, **kwargs):
-        email = request.data['email']
+        email = request.data["email"]
 
         if email is None:
-            raise exceptions.ValidationError(
-                {
-                    'email': 'Missing Email field.'
-                })
+            raise exceptions.ValidationError({"email": "Missing Email field."})
 
         email = email.lower()
 
@@ -118,90 +122,88 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
             validate_email(email)
         except ValidationError as e:
             raise exceptions.ValidationError(
-                {
-                    'email': 'Invalid format. Check and try again.'
-                })
+                {"email": "Invalid format. Check and try again."}
+            )
 
-        Thread(target=reset_password, args=(email,)).start()
+        Thread(target=reset_password, args=(email.lower(),)).start()
 
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['post'], url_path='verify')
+    @action(detail=False, methods=["post"], url_path="verify")
     def verify(self, request, *args, **kwargs):
-        token = request.data['consumer']
+        token = request.data["consumer"]
 
         try:
             resetSession = ResetPasswordSession.objects.get(token=token)
 
-            minutes_diff = (datetime.now() -
-                            resetSession.created_date).total_seconds() / 60.0
+            minutes_diff = (
+                datetime.now() - resetSession.created_date
+            ).total_seconds() / 60.0
             reset_expiry_minutes = 20  # 20
 
             if minutes_diff > reset_expiry_minutes:
                 resetSession.delete()
 
                 return Response(
-                    {'error': 'Reset password link has expired. Please try another link or create a new reset password request'},
-                    status=status.HTTP_401_UNAUTHORIZED
+                    {
+                        "error": "Reset password link has expired. Please try another link or create a new reset password request"
+                    },
+                    status=status.HTTP_401_UNAUTHORIZED,
                 )
             else:
                 resetSession.verified_token = token_urlsafe(20)
                 resetSession.save()
 
-                return Response(
-                    {'verified-token': resetSession.verified_token}
-                )
+                return Response({"verified-token": resetSession.verified_token})
 
         except ResetPasswordSession.DoesNotExist:
             return Response(
-                {'error': 'Invalid reset password link. Please try another link or create a new reset password request'},
-                status=status.HTTP_401_UNAUTHORIZED
+                {
+                    "error": "Invalid reset password link. Please try another link or create a new reset password request"
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         return Response(status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['post'], url_path='submit')
+    @action(detail=False, methods=["post"], url_path="submit")
     def submit(self, request, *args, **kwargs):
-        password = request.data['new_password']
-        confirm_password = request.data['confirm_password']
-        token = request.data['verified_token']
+        password = request.data["new_password"]
+        confirm_password = request.data["confirm_password"]
+        token = request.data["verified_token"]
 
         if password is None:
-            content = {"error": {
-                'invalid': 'Missing password field.'
-            }}
+            content = {"error": {"invalid": "Missing password field."}}
             return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         if password != confirm_password:
-            content = {"error": {
-                'invalid': 'Confirm passwords must match.'
-            }}
+            content = {"error": {"invalid": "Confirm passwords must match."}}
             return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         try:
             password_validation.validate_password(password)
         except ValidationError as error:
-            content = {"error": {
-                'invalid': error
-            }}
+            content = {"error": {"invalid": error}}
             return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         try:
-            resetSession = ResetPasswordSession.objects.get(
-                verified_token=token)
+            resetSession = ResetPasswordSession.objects.get(verified_token=token)
 
-            minutes_diff = (datetime.now() -
-                            resetSession.created_date).total_seconds() / 60.0
+            minutes_diff = (
+                datetime.now() - resetSession.created_date
+            ).total_seconds() / 60.0
             reset_expiry_minutes = 5  # 5
 
             if minutes_diff > reset_expiry_minutes:
                 resetSession.delete()
 
                 return Response(
-                    {'error': {
-                        'expired': 'Reset password token has expired. Please create a new reset password request.'
-                    }},
-                    status=status.HTTP_401_UNAUTHORIZED
+                    {
+                        "error": {
+                            "expired": "Reset password token has expired. Please create a new reset password request."
+                        }
+                    },
+                    status=status.HTTP_401_UNAUTHORIZED,
                 )
             else:
                 try:
@@ -209,10 +211,12 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
 
                 except User.DoesNotExist:
                     return Response(
-                        {'error': {
-                            'not_found': 'Invalid reset password token. Please create a new reset password request.'
-                        }},
-                        status=status.HTTP_401_UNAUTHORIZED
+                        {
+                            "error": {
+                                "not_found": "Invalid reset password token. Please create a new reset password request."
+                            }
+                        },
+                        status=status.HTTP_401_UNAUTHORIZED,
                     )
 
                 delete_all_unexpired_sessions_for_user(user)
@@ -230,10 +234,12 @@ class ResetPasswordViewSet(viewsets.ModelViewSet):
 
         except ResetPasswordSession.DoesNotExist:
             return Response(
-                {'error': {
-                    'not_found': 'Invalid reset password token. Please create a new reset password request.'
-                }},
-                status=status.HTTP_401_UNAUTHORIZED
+                {
+                    "error": {
+                        "not_found": "Invalid reset password token. Please create a new reset password request."
+                    }
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
             )
 
         return Response(status=status.HTTP_200_OK)

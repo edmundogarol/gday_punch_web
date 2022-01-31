@@ -25,19 +25,16 @@ from gdaypunchbackend.settings import DOMAIN
 def send_manuscript_download_link(email):
     email_template_name = "emails/download_manuscript.html"
 
-    email_config = {
-        "download": "download",
-        "website": DOMAIN
-    }
+    email_config = {"download": "download", "website": DOMAIN}
 
     try:
         email_html = render_to_string(email_template_name, email_config)
 
         send_mail(
-            subject='Manga manuscript download ready',
+            subject="Manga manuscript download ready",
             message=email_html,
             html_message=email_html,
-            from_email='Gday Punch Manga Magazine<info@gdaypunch.com.au>',
+            from_email="Gday Punch Manga Magazine<info@gdaypunch.com.au>",
             recipient_list=[email],
             fail_silently=False,
         )
@@ -57,18 +54,20 @@ class DownloadManuscript(APIView):
         if loggedIn:
             user = User.objects.get(email=self.request.user)
 
-            Thread(target=send_manuscript_download_link,
-                   args=(user.email,)).start()
+            Thread(target=send_manuscript_download_link, args=(user.email,)).start()
 
             try:
-                existingCustomer = Customer.objects.get(
-                    email=user.email)
+                existingCustomer = Customer.objects.get(email=user.email)
 
                 if existingCustomer.user is None:
                     existingCustomer.user = user
                     existingCustomer.save()
 
-                if existingCustomer.subscribed in [NOT_SUBSCRIBED, UNSUBSCRIBED, CHECKOUT_SUBSCRIBED]:
+                if existingCustomer.subscribed in [
+                    NOT_SUBSCRIBED,
+                    UNSUBSCRIBED,
+                    CHECKOUT_SUBSCRIBED,
+                ]:
                     existingCustomer.subscribed = DOWNLOAD_SUBSCRIBED
                     existingCustomer.save()
 
@@ -81,32 +80,44 @@ class DownloadManuscript(APIView):
                 customer.save()
 
             return Response(
-                {'detail': 'We have sent you an email with the download link! Please check your junk folder.'},
-                status=status.HTTP_200_OK
+                {
+                    "detail": "We have sent you an email with the download link! Please check your junk folder."
+                },
+                status=status.HTTP_200_OK,
             )
 
         if email is None:
-            return Response({'error': 'Must provide email to send download link to.'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+            return Response(
+                {"error": "Must provide email to send download link to."},
+                status=status.HTTP_406_NOT_ACCEPTABLE,
+            )
 
         try:
             validate_email(email)
         except ValidationError as e:
             raise exceptions.ValidationError(
-                {
-                    'error': 'Invalid format. Check and try again.'
-                })
+                {"error": "Invalid format. Check and try again."}
+            )
 
-        Thread(target=send_manuscript_download_link, args=(email,)).start()
+        Thread(target=send_manuscript_download_link, args=(email.lower(),)).start()
 
         try:
-            existingCustomer = Customer.objects.get(
-                email=request.data['email'])
+            existingCustomer = Customer.objects.get(email=request.data["email"].lower())
 
-            if existingCustomer.subscribed in [NOT_SUBSCRIBED, UNSUBSCRIBED, CHECKOUT_SUBSCRIBED]:
+            if existingCustomer.subscribed in [
+                NOT_SUBSCRIBED,
+                UNSUBSCRIBED,
+                CHECKOUT_SUBSCRIBED,
+            ]:
                 existingCustomer.subscribed = DOWNLOAD_SUBSCRIBED
                 existingCustomer.save()
 
-            return Response({'detail': 'We have sent you an email with the download link! Please check your junk folder.'}, status=status.HTTP_208_ALREADY_REPORTED)
+            return Response(
+                {
+                    "detail": "We have sent you an email with the download link! Please check your junk folder."
+                },
+                status=status.HTTP_208_ALREADY_REPORTED,
+            )
 
         except Customer.DoesNotExist:
             customer = Customer.objects.create(
@@ -117,6 +128,8 @@ class DownloadManuscript(APIView):
             customer.save()
 
         return Response(
-            {'detail': 'We have sent you an email with the download link! Please check your junk folder.'},
-            status=status.HTTP_200_OK
+            {
+                "detail": "We have sent you an email with the download link! Please check your junk folder."
+            },
+            status=status.HTTP_200_OK,
         )

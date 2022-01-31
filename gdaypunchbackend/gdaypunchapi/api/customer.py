@@ -54,7 +54,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         elif pk == "new":
             try:
                 user = User.objects.get(id=user)
-                existingCustomer = Customer.objects.get(email=email)
+                existingCustomer = Customer.objects.get(email=email.lower())
 
                 if existingCustomer.user is None:
                     existingCustomer.user = user
@@ -151,7 +151,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
             user = User.objects.get(email=self.request.user)
 
         try:
-            existingCustomer = Customer.objects.get(email=request.data["email"])
+            existingCustomer = Customer.objects.get(email=request.data["email"].lower())
 
             if existingCustomer.user is None:
                 existingCustomer.user = user

@@ -190,6 +190,8 @@ class UserViewSet(ModelViewSet):
         if email is not None:
             try:
                 validate_email(email)
+                request.data["email"] = email.lower()
+
             except ValidationError as e:
                 content = {"error": e}
                 return Response(content, status=status.HTTP_406_NOT_ACCEPTABLE)
