@@ -190,7 +190,6 @@ class UserViewSet(ModelViewSet):
         if email is not None:
             try:
                 validate_email(email)
-                request.data["email"] = email.lower()
 
             except ValidationError as e:
                 content = {"error": e}
@@ -219,10 +218,14 @@ class UserViewSet(ModelViewSet):
             else:
                 os.remove(os.path.join(MEDIA_ROOT, user.cover.name))
 
-        if LOCAL_DEV:
-            request.data["image_public"] = None
+        mutable_req_data = request.data.copy()
 
-        serializer = UserSerializer(user, data=request.data, partial=True)
+        if LOCAL_DEV:
+            mutable_req_data["image_public"] = None
+
+        mutable_req_data["email"] = email.lower()
+
+        serializer = UserSerializer(user, data=mutable_req_data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 

@@ -405,7 +405,7 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
                 price_id=stripe_price.id,
                 price_title=request.data["title"],
                 price_type=RECURRING if recurring else ONE_TIME,
-                month_interval=month_interval,
+                month_interval=month_interval if month_interval else 0,
             )
             new_stripe_price.save()
 
