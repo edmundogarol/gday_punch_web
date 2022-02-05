@@ -1227,6 +1227,8 @@ class PayoutUpdate(models.Model):
 
 
 class SellerOrderRef(models.Model):
-    seller = models.ForeignKey(User, on_delete=models.PROTECT, blank=False, null=False)
+    seller = models.ForeignKey(
+        Seller, on_delete=models.PROTECT, blank=False, null=False
+    )
     order = models.ForeignKey(Order, on_delete=models.PROTECT, blank=False, null=False)
     date_created = models.DateTimeField(null=False, blank=False, default=timezone.now)

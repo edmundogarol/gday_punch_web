@@ -9,17 +9,40 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('gdaypunchapi', '0115_payout_payoutupdate_seller'),
+        ("gdaypunchapi", "0115_payout_payoutupdate_seller"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SellerOrderRef',
+            name="SellerOrderRef",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_created', models.DateTimeField(default=django.utils.timezone.now)),
-                ('order', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='gdaypunchapi.Order')),
-                ('seller', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "date_created",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
+                (
+                    "order",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="gdaypunchapi.Order",
+                    ),
+                ),
+                (
+                    "seller",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="gdaypunchapi.Seller",
+                    ),
+                ),
             ],
         ),
     ]
