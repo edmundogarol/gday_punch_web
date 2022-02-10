@@ -5,10 +5,29 @@ export const FINISHED_FETCHING_SELLER_DETAILS =
   "account/FINISHED_FETCHING_SELLER_DETAILS";
 export const UPDATE_SELLER_DETAILS_ERRORS =
   "account/UPDATE_SELLER_DETAILS_ERRORS";
-export const RESET_SELLER_DETAILS = "account/RESET_SELLER_DETAILS";
+export const SUBMIT_SELLER_DETAILS = "account/SUBMIT_SELLER_DETAILS";
+export const UPDATING_SELLER_DETAILS = "account/UPDATING_SELLER_DETAILS";
+export const FINISHED_UPDATING_SELLER_DETAILS =
+  "account/FINISHED_UPDATING_SELLER_DETAILS";
 
-export const fetchSellerDetails = () => ({
+export const UPDATE_EDITING_SELLER_DETAILS_ERRORS =
+  "account/UPDATE_EDITING_SELLER_DETAILS_ERRORS";
+
+export const FETCH_SELLER_SALES = "account/FETCH_SELLER_SALES";
+export const FETCHING_SELLER_SALES = "account/FETCHING_SELLER_SALES";
+export const UPDATE_SELLER_SALES = "account/UPDATE_SELLER_SALES";
+export const FINISHED_FETCHING_SELLER_SALES =
+  "account/FINISHED_FETCHING_SELLER_SALES";
+export const UPDATE_SELLER_SALES_ERRORS = "account/UPDATE_SELLER_SALES_ERRORS";
+
+export const RESET_SELLER_DETAILS = "account/RESET_SELLER_DETAILS";
+export const RESET_SELLER_SALES = "account/RESET_SELLER_SALES";
+
+export const fetchSellerDetails = (sellerId) => ({
   type: FETCH_SELLER_DETAILS,
+  payload: {
+    sellerId,
+  },
 });
 
 export const fetchingSellerDetails = () => ({
@@ -33,6 +52,61 @@ export const updateSellerDetailsError = (errors) => ({
   },
 });
 
+export const updateEditingSellerDetailsError = (errors) => ({
+  type: UPDATE_EDITING_SELLER_DETAILS_ERRORS,
+  payload: {
+    errors,
+  },
+});
+
+export const submitSellerDetails = (details) => ({
+  type: SUBMIT_SELLER_DETAILS,
+  payload: {
+    details,
+  },
+});
+
+export const updatingSellerDetails = () => ({
+  type: UPDATING_SELLER_DETAILS,
+});
+
+export const finishedUpdatingSellerDetails = () => ({
+  type: FINISHED_UPDATING_SELLER_DETAILS,
+});
+
+export const fetchSellerSales = (sellerId) => ({
+  type: FETCH_SELLER_SALES,
+  payload: {
+    sellerId,
+  },
+});
+
+export const fetchingSellerSales = () => ({
+  type: FETCHING_SELLER_SALES,
+});
+
+export const updateSellerSales = (sales) => ({
+  type: UPDATE_SELLER_SALES,
+  payload: {
+    sales,
+  },
+});
+
+export const finishedFetchingSellerSales = () => ({
+  type: FINISHED_FETCHING_SELLER_SALES,
+});
+
+export const updateSellerSalesError = (errors) => ({
+  type: UPDATE_SELLER_SALES_ERRORS,
+  payload: {
+    errors,
+  },
+});
+
 export const resetSellerDetails = () => ({
   type: RESET_SELLER_DETAILS,
+});
+
+export const resetSellerSales = () => ({
+  type: RESET_SELLER_SALES,
 });

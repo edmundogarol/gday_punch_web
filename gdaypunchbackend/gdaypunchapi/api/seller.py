@@ -21,3 +21,12 @@ class SellerViewSet(viewsets.ModelViewSet):
 
     #     serializer = SellerSerializer(seller)
     #     return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        queryset = Seller.objects.all()
+        seller = queryset.get(pk=kwargs.get("pk"))
+        serializer = SellerSerializer(seller, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data)

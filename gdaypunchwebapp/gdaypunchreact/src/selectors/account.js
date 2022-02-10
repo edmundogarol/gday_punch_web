@@ -6,3 +6,8 @@ export const selectAccountOrdersState = createSelector(
   selectDomain,
   ({ orders }) => orders
 );
+
+export const selectSellerState = createSelector(
+  selectDomain,
+  ({ seller }) => seller
+);

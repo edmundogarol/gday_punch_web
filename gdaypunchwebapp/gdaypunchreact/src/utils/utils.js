@@ -115,3 +115,10 @@ export function makeSafeUrl(text) {
   if (!text) return;
   return encodeURIComponent(text.toLowerCase().replaceAll(" ", "-"));
 }
+
+export function bankValidator(bsbInput, accInput) {
+  return (
+    bsbInput.replaceAll(" ", "").length > 5 &&
+    accInput.replaceAll(" ", "").length > 8
+  );
+}

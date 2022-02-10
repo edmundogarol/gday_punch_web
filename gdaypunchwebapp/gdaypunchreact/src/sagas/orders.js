@@ -1,8 +1,6 @@
 import { call, all, takeLatest, put, delay } from "redux-saga/effects";
-import { message } from "antd";
 
 import { api } from "utils/api";
-import { arrayIdsMapToObject } from "utils/utils";
 import {
   fetchingViewingOrder,
   FETCH_VIEWING_ORDER,

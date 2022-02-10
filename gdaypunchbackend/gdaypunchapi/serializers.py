@@ -72,6 +72,7 @@ class UserSerializer(serializers.ModelSerializer):
             "cover",
             "last_login",
             "author_details",
+            "seller_id",
         )
         extra_kwargs = {"password": {"write_only": True}}
 
