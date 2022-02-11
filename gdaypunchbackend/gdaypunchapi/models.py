@@ -1195,8 +1195,9 @@ class Vote(models.Model):
 
 
 class Seller(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT, unique=True, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT, blank=True, null=True)
     paypal_email = models.TextField(max_length=50, blank=True)
+    bank_acc_name = models.TextField(max_length=50, blank=True)
     bank_bsb = models.TextField(max_length=10, blank=True)
     bank_acc = models.TextField(max_length=20, blank=True)
     use_paypal = models.BooleanField(default=False)

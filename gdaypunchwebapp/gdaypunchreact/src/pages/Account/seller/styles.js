@@ -3,7 +3,12 @@ import { Modal } from "antd";
 import { device } from "utils/styles";
 
 export const SellerDetailsModal = styled(Modal)`
-  max-width: 72em;
+  width: 100%;
+  max-width: 100%;
+
+  @media ${device.laptop} {
+    max-width: 72em;
+  }
 
   .ant-modal-body {
     display: flex;

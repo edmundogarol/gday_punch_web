@@ -5,7 +5,7 @@ import { NavLink } from "react-router-dom";
 import { message, Input, Button, Select, Checkbox, Alert } from "antd";
 const { Option } = Select;
 
-import { bankValidator, emailValidator } from "utils/utils";
+import { bankValidator, emailValidator, nameValidator } from "utils/utils";
 
 import { SellerDetailsModal } from "./styles";
 import { selectSellerState } from "selectors/account";
@@ -16,7 +16,6 @@ import {
   updateSellerDetails,
   submitSellerDetails,
 } from "actions/seller";
-import seller from "./index";
 
 function SellerDetails({ sellerDetailsOpen, toggleSellerDetailsOpen }) {
   const currentUser = useSelector(selectUser);
@@ -30,6 +29,7 @@ function SellerDetails({ sellerDetailsOpen, toggleSellerDetailsOpen }) {
       submitSellerDetails({
         user: currentUser.id,
         paypal_email: sellerDetails.paypal_email,
+        bank_acc_name: sellerDetails.bank_acc_name,
         bank_bsb: sellerDetails.bank_bsb,
         bank_acc: sellerDetails.bank_acc,
         use_paypal: sellerDetails.use_paypal,
@@ -40,17 +40,16 @@ function SellerDetails({ sellerDetailsOpen, toggleSellerDetailsOpen }) {
 
   const handleSubmit = () => {
     const paypalValid = emailValidator(sellerDetails.paypal_email);
-    const bankValid = bankValidator(
-      sellerDetails.bank_bsb,
-      sellerDetails.bank_acc
-    );
+    const bankValid =
+      bankValidator(sellerDetails.bank_bsb, sellerDetails.bank_acc) &&
+      nameValidator(sellerDetails.bank_acc_name);
 
     // Client validators
     if (sellerDetails.use_paypal && !paypalValid) {
       message.error("Invalid PayPal email format.");
       dispatch(
         updateEditingSellerDetailsError(
-          "Please provide a valid PayPal email address. Providing incorrect details can cause delays or fees deducted from your payouts."
+          "Please provide a valid PayPal email address. Submitting incorrect details can cause delays or fees deducted from your payouts."
         )
       );
     } else {
@@ -58,10 +57,10 @@ function SellerDetails({ sellerDetailsOpen, toggleSellerDetailsOpen }) {
     }
 
     if (!sellerDetails.use_paypal && !bankValid) {
-      message.error("Invalid Bank BSB or Account details");
+      message.error("Invalid Bank Account details");
       dispatch(
         updateEditingSellerDetailsError(
-          "Please provide valid Bank details. Providing incorrect details can cause delays or fees deducted from your payouts."
+          "Please provide valid Bank details. Submitting incorrect details can cause delays or fees deducted from your payouts."
         )
       );
     } else {
@@ -78,7 +77,7 @@ function SellerDetails({ sellerDetailsOpen, toggleSellerDetailsOpen }) {
 
   return (
     <SellerDetailsModal
-      width="50%"
+      $width="50%"
       title="Seller Details"
       visible={updatingSellerDetails || sellerDetailsOpen}
       closeable={false}
@@ -90,10 +89,14 @@ function SellerDetails({ sellerDetailsOpen, toggleSellerDetailsOpen }) {
         <Button
           loading={updatingSellerDetails}
           disabled={
-            (sellerDetails.use_paypal &&
-              !emailValidator(sellerDetails.paypal_email)) ||
-            (!sellerDetails.use_paypal &&
-              !bankValidator(sellerDetails.bank_bsb, sellerDetails.bank_acc)) ||
+            // (sellerDetails.use_paypal &&
+            //   !emailValidator(sellerDetails.paypal_email)) ||
+            // (!sellerDetails.use_paypal &&
+            //   (!nameValidator(sellerDetails.bank_acc_name) ||
+            //     !bankValidator(
+            //       sellerDetails.bank_bsb,
+            //       sellerDetails.bank_acc
+            //     ))) ||
             !sellerDetails.agreeTerms
           }
           type="primary"
@@ -141,6 +144,18 @@ function SellerDetails({ sellerDetailsOpen, toggleSellerDetailsOpen }) {
         ) : (
           <>
             <h4>Bank Account</h4>
+            <Input
+              placeholder="Enter Bank Account Name"
+              value={sellerDetails.bank_acc_name}
+              onChange={(e) =>
+                dispatch(
+                  updateSellerDetails({
+                    ...sellerDetails,
+                    bank_acc_name: e.target.value,
+                  })
+                )
+              }
+            />
             <Input
               placeholder="Enter Bank BSB"
               value={sellerDetails.bank_bsb}

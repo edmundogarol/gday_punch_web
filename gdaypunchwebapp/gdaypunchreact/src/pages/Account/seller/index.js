@@ -161,7 +161,7 @@ function Seller(props) {
           toggleSellerDetailsOpen={toggleSellerDetailsOpen}
         />
       ) : null}
-      {!sellerDetails?.id ? (
+      {finishedFetchingSellerDetails && !sellerDetails?.id ? (
         <Result
           title="You are currently not a Seller"
           extra={
@@ -175,6 +175,18 @@ function Seller(props) {
           }
         />
       ) : null}
+      {finishedFetchingSellerDetails && sellerDetails?.id && (
+        <Card className="non-first-tab" type="inner" title="Sales Summaries">
+          <DetailField>
+            <label>Weekly Total</label>
+            <p className="large">A$0.00</p>
+          </DetailField>
+          <DetailField>
+            <label>All Time Total</label>
+            <p>A$0.00</p>
+          </DetailField>
+        </Card>
+      )}
       {sellerDetails?.id ? (
         <Card
           className="non-first-tab"
@@ -196,11 +208,17 @@ function Seller(props) {
               <p>{sellerDetails.paypal_email}</p>
             </DetailField>
           ) : (
-            <DetailField $bankAccount>
-              <label>Bank Account</label>
-              <p>{sellerDetails.bank_bsb}</p>
-              <p>{sellerDetails.bank_acc}</p>
-            </DetailField>
+            <>
+              <DetailField>
+                <label>Account Name</label>
+                <p>{sellerDetails.bank_acc_name}</p>
+              </DetailField>
+              <DetailField>
+                <label>Bank Account</label>
+                <p>{sellerDetails.bank_bsb}</p>
+                <p>{sellerDetails.bank_acc}</p>
+              </DetailField>
+            </>
           )}
         </Card>
       ) : null}

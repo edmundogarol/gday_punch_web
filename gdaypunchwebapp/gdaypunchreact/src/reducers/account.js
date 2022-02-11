@@ -30,6 +30,7 @@ const INITIAL_STATE = {
       id: undefined,
       use_paypal: true,
       paypal_email: "",
+      bank_acc_name: "",
       bank_bsb: "",
       bank_acc: "",
     },

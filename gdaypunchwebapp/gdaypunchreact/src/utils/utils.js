@@ -101,6 +101,10 @@ export function titleValidator(inputtxt) {
   return inputtxt.replaceAll(" ", "").length > 0;
 }
 
+export function nameValidator(inputtxt) {
+  return inputtxt.replaceAll(" ", "").length > 1;
+}
+
 export function generatePermaLink(product) {
   let prefix = "";
   if (product.user === 1) {

@@ -192,6 +192,10 @@ export const DetailField = styled.div`
       `
       : ""}
 
+  .large {
+    font-size: 1.5em;
+  }
+
   .unset {
     color: #b7b7b7;
   }
