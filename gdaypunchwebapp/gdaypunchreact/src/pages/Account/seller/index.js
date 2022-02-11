@@ -70,6 +70,11 @@ function Seller(props) {
   useEffect(() => {
     if (finishedUpdatingSellerDetails && !sellerDetailsUpdateError) {
       toggleSellerDetailsOpen(false);
+
+      if (!sellerDetails.id) {
+        dispatch(fetchSellerDetails(user.seller_id));
+        dispatch(fetchSellerSales(user.seller_id));
+      }
     }
   }, [finishedUpdatingSellerDetails]);
 
@@ -161,7 +166,7 @@ function Seller(props) {
           toggleSellerDetailsOpen={toggleSellerDetailsOpen}
         />
       ) : null}
-      {finishedFetchingSellerDetails && !sellerDetails?.id ? (
+      {!sellerDetails?.id ? (
         <Result
           title="You are currently not a Seller"
           extra={
@@ -179,11 +184,11 @@ function Seller(props) {
         <Card className="non-first-tab" type="inner" title="Sales Summaries">
           <DetailField>
             <label>Weekly Total</label>
-            <p className="large">A$0.00</p>
+            <p className="large">A${sellerDetails.next_payout.toFixed(2)}</p>
           </DetailField>
           <DetailField>
             <label>All Time Total</label>
-            <p>A$0.00</p>
+            <p>A${sellerDetails.total_sales.toFixed(2)}</p>
           </DetailField>
         </Card>
       )}

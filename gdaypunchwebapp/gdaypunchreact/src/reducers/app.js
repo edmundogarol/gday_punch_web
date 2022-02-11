@@ -79,6 +79,7 @@ import { resourcesReducer } from "./resources";
 import { extractCommentUsers, extractProductUsers } from "utils/users";
 import { arrayIdsMapToObject } from "utils/utils";
 import { stallReducer } from "./stall";
+import { UPDATE_SELLER_DETAILS } from "actions/seller";
 
 const INITIAL_STATE = {
   user: {
@@ -97,6 +98,7 @@ const INITIAL_STATE = {
     errors: undefined,
     updating: false,
     finished: false,
+    seller_id: undefined,
   },
 
   users: {
@@ -751,6 +753,18 @@ const appReducer = (state = INITIAL_STATE, action) => {
           castError: payload.error,
         },
       };
+    case UPDATE_SELLER_DETAILS:
+      if (payload.details.id) {
+        return {
+          ...state,
+          user: {
+            ...state.user,
+            seller_id: payload.details.id,
+          },
+        };
+      } else {
+        return state;
+      }
     default:
       return state;
   }

@@ -327,7 +327,18 @@ class SettingsSerializer(serializers.ModelSerializer):
 class SellerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seller
-        fields = "__all__"
+        fields = (
+            "id",
+            "user",
+            "paypal_email",
+            "bank_acc_name",
+            "bank_bsb",
+            "bank_acc",
+            "use_paypal",
+            "next_payout",
+            "total_sales",
+            "last_payout_date",
+        )
 
 
 class PayoutSerializer(serializers.ModelSerializer):

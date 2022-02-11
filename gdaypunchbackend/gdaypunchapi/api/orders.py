@@ -21,6 +21,7 @@ from ..models import (
     Order,
     OrderStatusUpdate,
     Product,
+    Seller,
     SellerOrderRef,
     StripeCustomer,
     Customer,
@@ -424,16 +425,19 @@ def handle_create_order(
             product.stock = product.stock - int(item["qty"])
             product.save()
 
-        try:
+        if product.user.seller_id:
+
             seller_order_ref_exists = SellerOrderRef.objects.filter(
-                seller=product.user.id
+                seller=product.user.seller_id
             ).filter(order=order.id)
 
-        except SellerOrderRef.DoesNotExist:
-            SellerOrderRef.objects.create(
-                seller=product.user,
-                order=order,
-            )
+            if seller_order_ref_exists.first() is None:
+                seller = Seller.objects.get(id=product.user.seller_id)
+
+                SellerOrderRef.objects.create(
+                    seller=seller,
+                    order=order,
+                )
 
     if digital_purchase == len(items):
         order.status = PURCHASED

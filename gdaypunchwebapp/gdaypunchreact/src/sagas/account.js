@@ -100,7 +100,7 @@ export function* fetchSellerSalesCall(action) {
 
   const response = yield call(
     api,
-    `orders/seller/${action.payload.sellerId}/`,
+    `orders/me/?seller=${action.payload.sellerId}`,
     {
       method: "GET",
     }

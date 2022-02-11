@@ -1,7 +1,6 @@
 import json
-import random
 import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
 from storages.backends.s3boto3 import S3Boto3Storage
 
 from rest_framework import exceptions
@@ -9,7 +8,6 @@ from rest_framework import exceptions
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.db.models import Count
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -21,13 +19,11 @@ from django.core.validators import validate_email
 from django.contrib.postgres.fields import ArrayField
 from django_currentuser.middleware import (
     get_current_user,
-    get_current_authenticated_user,
 )
 from django_currentuser.db.models import CurrentUserField
 
 from .constants import *
 from .utils import get_readable_date_time
-from .model_utils import create_default_sku
 
 
 class Settings(models.Model):
@@ -1204,11 +1200,34 @@ class Seller(models.Model):
 
     @property
     def next_payout(self):
-        return 62  # Order ID's from within the last week of sales = total amount
+        try:
+            how_many_days = 7
+            order_refs = SellerOrderRef.objects.filter(
+                date_created__gte=datetime.now() - timedelta(days=how_many_days)
+            ).filter(seller=self.id)
+
+            week_total = 0
+            for order_ref in order_refs:
+                order = Order.objects.get(id=order_ref.order.id)
+                week_total = float(order.amount) + week_total
+
+            return week_total  # Order ID's from within the last week of sales = total amount
+        except SellerOrderRef.DoesNotExist:
+            return 0
 
     @property
     def total_sales(self):
-        return 450  # All seller orders = total amount
+        try:
+            order_refs = SellerOrderRef.objects.filter(seller=self.id)
+
+            all_time_total = 0
+            for order_ref in order_refs:
+                order = Order.objects.get(id=order_ref.order.id)
+                all_time_total = float(order.amount) + all_time_total
+
+            return all_time_total  # All seller orders = total amount
+        except SellerOrderRef.DoesNotExist:
+            return 0
 
     @property
     def last_payout_date(self):
