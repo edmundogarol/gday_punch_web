@@ -360,6 +360,10 @@ function MangaDetail({
               <p className="capitalize">{uploadingDetails.age_rating}</p>
             </div>
             <div className="summary-item">
+              <h4>{"Price"}</h4>
+              <p className="capitalize">A${uploadingDetails.active_price}</p>
+            </div>
+            <div className="summary-item">
               <h4>{"SKU"}</h4>
               <p>{uploadingDetails.sku}</p>
             </div>
