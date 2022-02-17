@@ -494,7 +494,7 @@ function MangaDetail({
             updateUploadingDetails({ ...uploadingDetails, release_date: val })
           }
         />
-        {hasPrivilege(currentUser, "admin") && currentUser.seller_id && (
+        {currentUser.seller_id && (
           <>
             <h4>Sell</h4>
             <Checkbox onChange={(e) => toggleMarkForSale(e.target.checked)}>

@@ -160,8 +160,8 @@ class OrdersByUserPermissions(BasePermission):
 
                 if seller_id:
                     try:
-                        seller = User.objects.get(id=seller_id)
-                        return seller.email.strip() == str(request.user).strip()
+                        seller = Seller.objects.get(id=seller_id)
+                        return seller.user.email.strip() == str(request.user).strip()
                     except User.DoesNotExist:
                         return False
 
