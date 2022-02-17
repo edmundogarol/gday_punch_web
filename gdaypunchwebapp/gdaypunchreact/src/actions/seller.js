@@ -19,6 +19,14 @@ export const UPDATE_SELLER_SALES = "account/UPDATE_SELLER_SALES";
 export const FINISHED_FETCHING_SELLER_SALES =
   "account/FINISHED_FETCHING_SELLER_SALES";
 export const UPDATE_SELLER_SALES_ERRORS = "account/UPDATE_SELLER_SALES_ERRORS";
+export const FETCH_SALE_STATUS_UPDATES = "account/FETCH_SALE_STATUS_UPDATES";
+export const UPDATE_SALE_STATUS_UPDATES = "account/UPDATE_SALE_STATUS_UPDATES";
+export const UPDATE_SALE_STATUS = "account/UPDATE_SALE_STATUS";
+export const UPDATE_SALE_STATUS_REASON = "account/UPDATE_SALE_STATUS_REASON";
+export const UPDATE_SALE_PARTIAL_REFUND_AMOUNT =
+  "account/UPDATE_SALE_PARTIAL_REFUND_AMOUNT";
+export const UPDATE_SALE = "account/UPDATE_SALE";
+export const SET_SELECTED_SALE = "account/SET_SELECTED_SALE";
 
 export const RESET_SELLER_DETAILS = "account/RESET_SELLER_DETAILS";
 export const RESET_SELLER_SALES = "account/RESET_SELLER_SALES";
@@ -100,6 +108,58 @@ export const updateSellerSalesError = (errors) => ({
   type: UPDATE_SELLER_SALES_ERRORS,
   payload: {
     errors,
+  },
+});
+
+export const fetchSaleStatusUpdates = (orderId) => ({
+  type: FETCH_SALE_STATUS_UPDATES,
+  payload: {
+    orderId,
+  },
+});
+
+export const updateSaleStatusUpdates = (orderId, statusUpdates) => ({
+  type: UPDATE_SALE_STATUS_UPDATES,
+  payload: {
+    orderId,
+    statusUpdates,
+  },
+});
+
+export const updateSaleStatus = (orderId, status, customerId) => ({
+  type: UPDATE_SALE_STATUS,
+  payload: {
+    orderId,
+    status,
+    customerId, // Unused for Seller Sales
+  },
+});
+
+export const updateSaleStatusReason = (reason) => ({
+  type: UPDATE_SALE_STATUS_REASON,
+  payload: {
+    reason,
+  },
+});
+
+export const updateSalePartialRefund = (amount) => ({
+  type: UPDATE_SALE_PARTIAL_REFUND_AMOUNT,
+  payload: {
+    amount,
+  },
+});
+
+export const updateSale = (order) => ({
+  type: UPDATE_SALE,
+  payload: {
+    order,
+  },
+});
+
+export const setSelectedSale = (orderId) => ({
+  type: SET_SELECTED_SALE,
+  payload: {
+    orderId,
   },
 });
 

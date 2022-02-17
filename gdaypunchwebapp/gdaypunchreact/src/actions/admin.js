@@ -279,7 +279,7 @@ export const tweetError = (error) => ({
   },
 });
 
-export const doResetTweet = (embedded) => ({
+export const doResetTweet = () => ({
   type: TWEET_RESET,
 });
 

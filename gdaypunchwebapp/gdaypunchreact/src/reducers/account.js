@@ -10,17 +10,23 @@ import {
   FINISHED_FETCHING_SELLER_DETAILS,
   FINISHED_FETCHING_SELLER_SALES,
   FINISHED_UPDATING_SELLER_DETAILS,
+  SET_SELECTED_SALE,
   UPDATE_EDITING_SELLER_DETAILS_ERRORS,
+  UPDATE_SALE,
+  UPDATE_SALE_PARTIAL_REFUND_AMOUNT,
+  UPDATE_SALE_STATUS_REASON,
+  UPDATE_SALE_STATUS_UPDATES,
   UPDATE_SELLER_DETAILS,
   UPDATE_SELLER_DETAILS_ERRORS,
   UPDATE_SELLER_SALES,
   UPDATE_SELLER_SALES_ERRORS,
   UPDATING_SELLER_DETAILS,
 } from "actions/seller";
+import { arrayIdsMapToObject } from "utils/utils";
 
 const INITIAL_STATE = {
   orders: {
-    orderList: [],
+    orderList: {},
     fetching: false,
     finished: false,
     errors: undefined,
@@ -37,13 +43,20 @@ const INITIAL_STATE = {
     fetchingSellerDetails: false,
     finishedFetchingSellerDetails: false,
     sellerDetailsError: undefined,
-    sellerSales: [],
-    fetchingSellerSales: false,
-    finishedFetchingSellerSales: false,
-    sellerSalesError: undefined,
     updatingSellerDetails: false,
     finishedUpdatingSellerDetails: false,
     sellerDetailsUpdateError: undefined,
+
+    count: 0,
+    next: undefined,
+    selected: undefined,
+    orderList: {},
+    fetchingSellerSales: false,
+    finishedFetchingSellerSales: false,
+    sellerSalesError: undefined,
+
+    reason: undefined,
+    partial_refund: undefined,
   },
 };
 
@@ -149,11 +162,18 @@ export const accountReducer = (state = INITIAL_STATE, action) => {
         },
       };
     case UPDATE_SELLER_SALES:
+      const { results, count, next } = action.payload.sales;
+
       return {
         ...state,
         seller: {
           ...state.seller,
-          sellerSales: payload.sales,
+          next,
+          count,
+          orderList: {
+            ...state.seller.orderList,
+            ...arrayIdsMapToObject(results),
+          },
         },
       };
     case FETCHING_SELLER_SALES:
@@ -180,6 +200,58 @@ export const accountReducer = (state = INITIAL_STATE, action) => {
         seller: {
           ...state.seller,
           sellerSalesError: payload.errors,
+        },
+      };
+    case UPDATE_SALE_STATUS_UPDATES:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          orderList: {
+            ...state.seller.orderList,
+            [action.payload.orderId]: {
+              ...state.seller.orderList[action.payload.orderId],
+              statuses: action.payload.statusUpdates,
+            },
+          },
+        },
+      };
+    case UPDATE_SALE:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          orderList: {
+            ...state.seller.orderList,
+            [action.payload.order.id]: {
+              ...state.seller.orderList[action.payload.order.id],
+              ...action.payload.order,
+            },
+          },
+        },
+      };
+    case UPDATE_SALE_STATUS_REASON:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          reason: action.payload.reason,
+        },
+      };
+    case UPDATE_SALE_PARTIAL_REFUND_AMOUNT:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          partial_refund: action.payload.amount,
+        },
+      };
+    case SET_SELECTED_SALE:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          selected: action.payload.orderId,
         },
       };
     default:

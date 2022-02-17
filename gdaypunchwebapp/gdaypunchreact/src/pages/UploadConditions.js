@@ -229,7 +229,7 @@ function UploadConditions(props) {
                   new sales balance will be added $1.50.
                 </li>
                 <li>
-                  You can nominate either an Australain Bank Account or Paypal
+                  You can nominate either an Australian Bank Account or Paypal
                   account where your proceeds will be paid out to every week.
                   <br />※ Proceeds will be paid out in Australian Dollars (AUD).
                 </li>

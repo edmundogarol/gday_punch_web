@@ -127,7 +127,7 @@ const INITIAL_STATE = {
   },
 
   orders: {
-    orderList: [],
+    orderList: {},
     count: 0,
     next: undefined,
     fetching: false,

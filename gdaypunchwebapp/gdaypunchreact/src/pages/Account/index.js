@@ -73,6 +73,10 @@ function Account(props) {
 
   const { tab } = useParams();
 
+  const orderListData = !isEmpty(orderList)
+    ? Object.values(orderList).map((order) => ({ id: order.id, ...order }))
+    : [];
+
   useScrollTop();
 
   useEffect(() => {
@@ -94,7 +98,7 @@ function Account(props) {
   useEffect(() => {
     if (
       user.stripe_customer_id &&
-      isEmpty(orderList) &&
+      isEmpty(orderListData) &&
       !fetchingOrders &&
       !fetchingOrdersFinished
     ) {
@@ -477,7 +481,7 @@ function Account(props) {
               <LoadingSpinner />
             ) : (
               <Table
-                dataSource={orderList.map((order) => ({
+                dataSource={orderListData.map((order) => ({
                   ...order,
                   key: order.id,
                 }))}

@@ -1,4 +1,3 @@
-import os
 import stripe
 import json
 import pytz
@@ -11,6 +10,7 @@ from smtplib import SMTPAuthenticationError
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.shortcuts import get_list_or_404
+from django.db.models import Q
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
@@ -67,13 +67,14 @@ class OrderViewSet(viewsets.ModelViewSet):
             queryset = SellerOrderRef.objects.all().order_by("-id")
             seller_order_refs = get_list_or_404(queryset, seller=seller_id)
 
-            orders = []
+            query = Q()
             for order_ref in seller_order_refs:
-                curr_order = Order.objects.get(id=order_ref.order.id)
-                serializer = OrderSerializer(curr_order)
-                orders.append(serializer.data)
+                query &= Q(id=order_ref.order.id)
 
-            return Response(orders)
+            orders = Order.objects.filter(query).order_by("-id")
+            page = self.paginate_queryset(orders)
+            serializer = OrderSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
         queryset = Order.objects.all().order_by("-id")
         orders = get_list_or_404(queryset, customer=pk)

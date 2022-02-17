@@ -1,4 +1,5 @@
-import { call, all, takeLatest, put } from "redux-saga/effects";
+import { call, all, select, takeLatest, put } from "redux-saga/effects";
+import { message } from "antd";
 
 import { api } from "utils/api";
 import {
@@ -12,19 +13,29 @@ import { FOLLOW_USER, UNFOLLOW_USER } from "actions/user";
 import {
   fetchingSellerDetails,
   fetchingSellerSales,
+  fetchSaleStatusUpdates,
+  FETCH_SALE_STATUS_UPDATES,
   FETCH_SELLER_DETAILS,
   FETCH_SELLER_SALES,
   finishedFetchingSellerDetails,
   finishedFetchingSellerSales,
   finishedUpdatingSellerDetails,
   SUBMIT_SELLER_DETAILS,
+  updateSale,
+  updateSaleStatusReason,
+  updateSaleStatusUpdates,
   updateSellerDetails,
   updateSellerDetailsError,
   updateSellerSales,
   updateSellerSalesError,
+  UPDATE_SALE_STATUS,
   updatingSellerDetails,
 } from "actions/seller";
 import { updateUsers } from "actions/app";
+import {
+  selectSalePartialRefundAmount,
+  selectSaleStatusUpdateReason,
+} from "selectors/account";
 
 export function* fetchingAccountOrdersCall(action) {
   yield put(fetchingAccountOrders());
@@ -141,8 +152,62 @@ export function* submitSellerDetailsCall(action) {
     yield put(finishedUpdatingSellerDetails());
   } else {
     yield put(finishedUpdatingSellerDetails());
-    console.log("Follow error", JSON.stringify(response));
+    console.log("Seller details submit error", JSON.stringify(response));
     yield put(updateSellerDetailsError(response.data));
+  }
+}
+
+export function* fetchSaleStatusUpdatesCall(action) {
+  const { orderId } = action.payload;
+
+  const response = yield call(api, `orders-status/${orderId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateSaleStatusUpdates(orderId, data));
+  } else {
+    console.log("Sale Status Updates Fetch error", JSON.stringify(response));
+  }
+}
+
+export function* fetchSaleDetails(orderId) {
+  const response = yield call(api, `order/${orderId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateSale(data));
+  } else {
+    console.log("Sale details fetch error", JSON.stringify(response));
+  }
+}
+
+export function* updateSaleStatusCall(action) {
+  const { orderId, status } = action.payload;
+  const reason = yield select(selectSaleStatusUpdateReason);
+  const amount = yield select(selectSalePartialRefundAmount);
+
+  const response = yield call(api, `orders-status/`, {
+    method: "POST",
+    body: {
+      order: orderId,
+      status,
+      reasons: reason,
+      partial_refund: status === "partially_refunded" ? amount : undefined,
+    },
+  });
+
+  if (response && response.ok) {
+    // const data = response.data;
+    yield put(fetchSaleStatusUpdates(orderId));
+    yield call(fetchSaleDetails, orderId);
+    yield put(updateSaleStatusReason(undefined));
+  } else {
+    console.log("Sale Status Update error", JSON.stringify(response));
+    message.error(`Sale status update error: ${response.data}`);
   }
 }
 
@@ -154,5 +219,7 @@ export default function* accountSaga() {
     takeLatest(FETCH_SELLER_DETAILS, fetchSellerDetailsCall),
     takeLatest(FETCH_SELLER_SALES, fetchSellerSalesCall),
     takeLatest(SUBMIT_SELLER_DETAILS, submitSellerDetailsCall),
+    takeLatest(FETCH_SALE_STATUS_UPDATES, fetchSaleStatusUpdatesCall),
+    takeLatest(UPDATE_SALE_STATUS, updateSaleStatusCall),
   ]);
 }

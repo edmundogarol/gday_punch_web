@@ -2,6 +2,27 @@ import styled from "styled-components";
 import { Modal } from "antd";
 import { device } from "utils/styles";
 
+export const SellerContainer = styled.div`
+  .desktop {
+    display: none;
+  }
+
+  @media ${device.tablet} {
+    .mobile {
+      display: none;
+    }
+    .desktop {
+      display: initial;
+
+      .center {
+        p {
+          margin-bottom: unset;
+        }
+      }
+    }
+  }
+`;
+
 export const SellerDetailsModal = styled(Modal)`
   width: 100%;
   max-width: 100%;
