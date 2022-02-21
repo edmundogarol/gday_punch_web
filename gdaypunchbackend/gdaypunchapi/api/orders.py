@@ -74,7 +74,6 @@ class OrderViewSet(viewsets.ModelViewSet):
             orders = Order.objects.filter(query).order_by("-id")
             page = self.paginate_queryset(orders)
             serializer = OrderSerializer(page, many=True)
-            print(serializer.data)
             return self.get_paginated_response(serializer.data)
 
         queryset = Order.objects.all().order_by("-id")
