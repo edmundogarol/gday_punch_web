@@ -1,7 +1,6 @@
 from rest_framework.permissions import BasePermission
 
 from .models import (
-    SellerOrderRef,
     User,
     Order,
     Comment,
@@ -12,6 +11,8 @@ from .models import (
     Save,
     Follow,
     Seller,
+    Payout,
+    SellerOrderRef,
 )
 
 
@@ -389,6 +390,30 @@ class SellerPermissions(BasePermission):
                     seller = Seller.objects.get(id=seller_id)
                     return seller.user.email.strip() == str(request.user).strip()
                 except Seller.DoesNotExist:
+                    return False
+        else:
+            return False
+
+
+class PayoutPermissions(BasePermission):
+    def has_permission(self, request, view):
+        payout_id = view.kwargs.get("pk")
+        WRITE_METHODS = [
+            "POST",
+        ]
+
+        if request.method in WRITE_METHODS or staff(request):
+            return True
+        elif view.action in ["create"]:
+            return True
+        elif view.action in ["list"]:
+            return True
+        elif view.action in ["retrieve", "update", "partial_update", "destroy"]:
+            if request.user.is_authenticated:
+                try:
+                    payout = Payout.objects.get(id=payout_id)
+                    return payout.seller.user.email.strip() == str(request.user).strip()
+                except Payout.DoesNotExist:
                     return False
         else:
             return False

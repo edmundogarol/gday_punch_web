@@ -78,7 +78,7 @@ from .gdaypunchapi.api.gp_settings import (
 )
 from .gdaypunchapi.api.follows import FollowViewSet, FollowingViewSet
 from .gdaypunchapi.api.stall import StallViewSet
-from .gdaypunchapi.api.seller import SellerViewSet
+from .gdaypunchapi.api.seller import PayoutViewSet, SellerViewSet
 
 router = routers.DefaultRouter()
 router.register(r"user", UserViewSet, basename="user")
@@ -100,6 +100,7 @@ router.register(r"coupons", CouponViewSet, basename="customer")
 router.register(r"seller", SellerViewSet, basename="seller")
 router.register(r"orders", OrderViewSet, basename="orders")
 router.register(r"order", OrderDetailViewSet, basename="order")
+router.register(r"payouts", PayoutViewSet, basename="payouts")
 router.register(r"orders-status", OrderStatusUpdateViewset, basename="orders-status")
 router.register(
     r"order-confirmation", OrderConfirmationViewSet, basename="order-confirmation"

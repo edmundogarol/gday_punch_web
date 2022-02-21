@@ -1235,6 +1235,7 @@ class Seller(models.Model):
 
 
 class Payout(models.Model):
+    seller = models.ForeignKey(Seller, on_delete=models.PROTECT, blank=False, null=True)
     amount = models.FloatField(blank=False)
     start_order_id = models.IntegerField(blank=True, null=True)
     end_order_id = models.IntegerField(blank=True, null=True)
