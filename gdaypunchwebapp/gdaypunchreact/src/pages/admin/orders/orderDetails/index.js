@@ -449,13 +449,15 @@ function OrderDetails(props) {
           <span>{`A$${order.amount.toFixed(2)}`}</span>
         </div>
       </ProductTotalsContainer>
-      <StatusButtons>
-        {accountSeller ? null : (
-          <Button onClick={() => decline()}>Decline</Button>
-        )}
-        <Button onClick={() => refund()}>Refund</Button>
-        <Button onClick={() => partialRefund()}>Partial Refund</Button>
-      </StatusButtons>
+      {accountSeller && order.status === "refunded" ? null : (
+        <StatusButtons>
+          {accountSeller ? null : (
+            <Button onClick={() => decline()}>Decline</Button>
+          )}
+          <Button onClick={() => refund()}>Refund</Button>
+          <Button onClick={() => partialRefund()}>Partial Refund</Button>
+        </StatusButtons>
+      )}
       <AddressBillingContainer>
         <LeftContainer>
           {order.address_line_1 ? (
