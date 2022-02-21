@@ -44,6 +44,14 @@ class PayoutViewSet(viewsets.ModelViewSet):
         else:
             return Response([])
 
+        admin_view = request.GET.get("admin", None)
+
+        if admin_view and user.is_staff:
+            queryset = Payout.objects.all().order_by("-id")
+            page = self.paginate_queryset(queryset)
+            serializer = PayoutSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         try:
             seller = Seller.objects.get(user_id=user.id)
         except Seller.DoesNotExist:
