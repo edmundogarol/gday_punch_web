@@ -128,7 +128,7 @@ function OrderDetails(props) {
                 <a
                   href="mailto:info@gdaypunch.com.au"
                   target="_blank"
-                  rel="noopener"
+                  rel="noopener" // rel="noreferrer"
                 >
                   info@gdaypunch.com.au
                 </a>{" "}

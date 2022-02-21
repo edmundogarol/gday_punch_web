@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 
 from .models import (
+    SellerOrderRef,
     User,
     Order,
     Comment,
@@ -182,21 +183,38 @@ class OrdersByUserPermissions(BasePermission):
 class OrderDetailsPermissions(BasePermission):
     def has_permission(self, request, view):
         order_id = view.kwargs.get("pk")
+        seller_id = request.GET.get("seller")
 
         if staff(request):
             return True
         elif view.action in ["retrieve"]:
             if request.user.is_authenticated:
+                if seller_id:
+                    order_seller_ref = SellerOrderRef.objects.filter(
+                        seller_id=seller_id
+                    ).filter(order_id=order_id)
+
+                    if order_seller_ref.first() is not None:
+                        try:
+                            seller = Seller.objects.get(
+                                id=order_seller_ref.first().seller_id
+                            )
+                        except Seller.DoesNotExist:
+                            return False
+
+                        return seller.user.email.strip() == str(request.user).strip()
+
                 try:
                     order = Order.objects.get(id=order_id)
-                    stripe_customer = StripeCustomer.objects.get(id=order.customer)
+                except Order.DoesNotExist:
+                    return False
 
+                try:
+                    stripe_customer = StripeCustomer.objects.get(id=order.customer.id)
                     return (
                         stripe_customer.user.email.strip() == str(request.user).strip()
                     )
                 except StripeCustomer.DoesNotExist:
-                    return False
-                except Order.DoesNotExist:
                     return False
         else:
             return False
@@ -206,22 +224,60 @@ class OrderDetailsPermissions(BasePermission):
 class OrderStatusUpdatesPermissions(BasePermission):
     def has_permission(self, request, view):
         order_id = view.kwargs.get("pk")
+        seller_id = request.GET.get("seller")
+        create_order_status_order_id = request.GET.get("order")
 
         if staff(request):
             return True
+
+        elif view.action in ["create"]:
+            if request.user.is_authenticated:
+                order_seller_ref = SellerOrderRef.objects.filter(
+                    seller_id=seller_id
+                ).filter(order_id=create_order_status_order_id)
+
+                if order_seller_ref.first() is not None:
+                    try:
+                        seller = Seller.objects.get(
+                            id=order_seller_ref.first().seller_id
+                        )
+                    except Seller.DoesNotExist:
+                        return False
+
+                    return seller.user.email.strip() == str(request.user).strip()
+
         elif view.action in ["retrieve"]:
             if request.user.is_authenticated:
-                try:
-                    order = Order.objects.get(id=order_id)
-                    stripe_customer = StripeCustomer.objects.get(id=order.customer)
+                if seller_id:
+                    order_seller_ref = SellerOrderRef.objects.filter(
+                        seller_id=seller_id
+                    ).filter(order_id=order_id)
 
-                    return (
-                        stripe_customer.user.email.strip() == str(request.user).strip()
-                    )
-                except StripeCustomer.DoesNotExist:
-                    return False
-                except Order.DoesNotExist:
-                    return False
+                    if order_seller_ref.first() is not None:
+                        try:
+                            seller = Seller.objects.get(
+                                id=order_seller_ref.first().seller_id
+                            )
+                        except Seller.DoesNotExist:
+                            return False
+
+                        return seller.user.email.strip() == str(request.user).strip()
+                else:
+                    try:
+                        order = Order.objects.get(id=order_id)
+                    except Order.DoesNotExist:
+                        return False
+
+                    try:
+                        stripe_customer = StripeCustomer.objects.get(
+                            id=order.customer.id
+                        )
+                        return (
+                            stripe_customer.user.email.strip()
+                            == str(request.user).strip()
+                        )
+                    except StripeCustomer.DoesNotExist:
+                        return False
         else:
             return False
 

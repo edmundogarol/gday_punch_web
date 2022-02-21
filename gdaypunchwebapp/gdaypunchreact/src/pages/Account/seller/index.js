@@ -402,7 +402,7 @@ function Seller() {
       {finishedFetchingSellerDetails && sellerDetails?.id && (
         <Card className="non-first-tab" type="inner" title="Sales Summaries">
           <DetailField>
-            <label>Weekly Total</label>
+            <label>Next Payout (Week&apos;s Sales)</label>
             <p className="large">A${sellerDetails.next_payout.toFixed(2)}</p>
           </DetailField>
           <DetailField>

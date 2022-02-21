@@ -32,6 +32,7 @@ import {
   updatingSellerDetails,
 } from "actions/seller";
 import { updateUsers } from "actions/app";
+import { selectUser } from "selectors/app";
 import {
   selectSalePartialRefundAmount,
   selectSaleStatusUpdateReason,
@@ -158,11 +159,16 @@ export function* submitSellerDetailsCall(action) {
 }
 
 export function* fetchSaleStatusUpdatesCall(action) {
+  const { seller_id } = yield select(selectUser);
   const { orderId } = action.payload;
 
-  const response = yield call(api, `orders-status/${orderId}/`, {
-    method: "GET",
-  });
+  const response = yield call(
+    api,
+    `orders-status/${orderId}/?seller=${seller_id}`,
+    {
+      method: "GET",
+    }
+  );
 
   if (response && response.ok) {
     const data = response.data;
@@ -173,7 +179,8 @@ export function* fetchSaleStatusUpdatesCall(action) {
 }
 
 export function* fetchSaleDetails(orderId) {
-  const response = yield call(api, `order/${orderId}/`, {
+  const { seller_id } = yield select(selectUser);
+  const response = yield call(api, `order/${orderId}/?seller=${seller_id}`, {
     method: "GET",
   });
 
@@ -187,22 +194,27 @@ export function* fetchSaleDetails(orderId) {
 
 export function* updateSaleStatusCall(action) {
   const { orderId, status } = action.payload;
+  const { seller_id } = yield select(selectUser);
   const reason = yield select(selectSaleStatusUpdateReason);
   const amount = yield select(selectSalePartialRefundAmount);
 
-  const response = yield call(api, `orders-status/`, {
-    method: "POST",
-    body: {
-      order: orderId,
-      status,
-      reasons: reason,
-      partial_refund: status === "partially_refunded" ? amount : undefined,
-    },
-  });
+  const response = yield call(
+    api,
+    `orders-status/?seller=${seller_id}&order=${orderId}`,
+    {
+      method: "POST",
+      body: {
+        order: orderId,
+        status,
+        reasons: reason,
+        partial_refund: status === "partially_refunded" ? amount : undefined,
+      },
+    }
+  );
 
   if (response && response.ok) {
     // const data = response.data;
-    yield put(fetchSaleStatusUpdates(orderId));
+    // yield put(fetchSaleStatusUpdates(orderId));
     yield call(fetchSaleDetails, orderId);
     yield put(updateSaleStatusReason(undefined));
   } else {
