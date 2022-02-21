@@ -65,15 +65,16 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         if seller_id:
             queryset = SellerOrderRef.objects.all().order_by("-id")
-            seller_order_refs = get_list_or_404(queryset, seller=seller_id)
+            seller_order_refs = get_list_or_404(queryset, seller_id=seller_id)
 
             query = Q()
             for order_ref in seller_order_refs:
-                query &= Q(id=order_ref.order.id)
+                query |= Q(id=order_ref.order_id)
 
             orders = Order.objects.filter(query).order_by("-id")
             page = self.paginate_queryset(orders)
             serializer = OrderSerializer(page, many=True)
+            print(serializer.data)
             return self.get_paginated_response(serializer.data)
 
         queryset = Order.objects.all().order_by("-id")

@@ -21,6 +21,12 @@ export const SellerContainer = styled.div`
       }
     }
   }
+
+  .ant-table-cell {
+    p {
+      margin: unset;
+    }
+  }
 `;
 
 export const SellerDetailsModal = styled(Modal)`

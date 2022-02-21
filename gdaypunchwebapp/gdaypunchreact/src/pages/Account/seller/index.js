@@ -404,6 +404,7 @@ function Seller() {
           <DetailField>
             <label>Next Payout (Week&apos;s Sales)</label>
             <p className="large">A${sellerDetails.next_payout.toFixed(2)}</p>
+            <p>Due Feb 25th</p>
           </DetailField>
           <DetailField>
             <label>All Time Total</label>

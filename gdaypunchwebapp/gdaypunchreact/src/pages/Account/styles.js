@@ -175,7 +175,13 @@ export const DetailField = styled.div`
   display: grid;
   grid-template-columns: 9.1em auto 1fr 1fr;
   text-align: start;
+  align-items: center;
   column-gap: 16px;
+  margin-bottom: 1em;
+
+  p {
+    margin: unset;
+  }
 
   ${(props) =>
     props.noLabel
