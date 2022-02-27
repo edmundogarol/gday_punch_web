@@ -20,12 +20,14 @@ from ..constants import *
 from ..models import (
     Order,
     OrderStatusUpdate,
+    PayoutUpdate,
     Product,
     Seller,
     SellerOrderRef,
     StripeCustomer,
     Customer,
     Purchase,
+    Payout,
 )
 from ..serializers import OrderSerializer, OrderStatusUpdateSerializer
 from ..api_permissions import (
@@ -426,8 +428,10 @@ def handle_create_order(
             product.stock = product.stock - int(item["qty"])
             product.save()
 
+        # Product has an active seller
         if product.user.seller_id:
 
+            # Create order-seller ref if none exists
             seller_order_ref_exists = SellerOrderRef.objects.filter(
                 seller=product.user.seller_id
             ).filter(order=order.id)
@@ -438,6 +442,49 @@ def handle_create_order(
                 SellerOrderRef.objects.create(
                     seller=seller,
                     order=order,
+                )
+
+            # Update seller payout
+
+            # Get seller's last payout
+            seller_latest_payout = Payout.objects.filter(
+                seller_id=product.user.seller_id
+            ).last()
+
+            if seller_latest_payout:
+                # Get payout's current status
+                payout_update = PayoutUpdate.objects.filter(
+                    payout=seller_latest_payout.id
+                ).last()
+
+                # Active payout
+                if payout_update.status == PAYOUT_SCHEDULED:
+                    print("active payout: scheduled")
+
+                    # Make this latest order in payout if it is not
+                    if seller_latest_payout.end_order_id != order.id:
+                        seller_latest_payout.end_order_id = order.id
+
+                        # Update payout amount
+                        seller_latest_payout.amount = (
+                            seller_latest_payout.amount + order.amount
+                        )
+                        seller_latest_payout.save()
+
+            # Seller has no pre-existing payout
+            else:
+                print("Seller has no upcoming payout")
+
+                # Create first payout
+                new_payout = Payout.objects.create(
+                    seller=seller,
+                    amount=order.amount,
+                    start_order_id=order.id,
+                    end_order_id=order.id,
+                )
+
+                PayoutUpdate.objects.create(
+                    payout=new_payout, description="Payout is currently processing"
                 )
 
     if digital_purchase == len(items):

@@ -1,6 +1,6 @@
 import json
 import pytz
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from storages.backends.s3boto3 import S3Boto3Storage
 
 from rest_framework import exceptions
@@ -1200,38 +1200,43 @@ class Seller(models.Model):
 
     @property
     def next_payout(self):
-        try:
-            how_many_days = 7
-            order_refs = SellerOrderRef.objects.filter(
-                date_created__gte=datetime.now() - timedelta(days=how_many_days)
-            ).filter(seller=self.id)
+        payout = Payout.objects.filter(seller=self.id).last()
 
-            week_total = 0
-            for order_ref in order_refs:
-                order = Order.objects.get(id=order_ref.order.id)
-                week_total = float(order.amount) + week_total
-
-            return week_total  # Order ID's from within the last week of sales = total amount
-        except SellerOrderRef.DoesNotExist:
+        if payout:
+            return payout.amount
+        else:
             return 0
 
     @property
     def total_sales(self):
-        try:
-            order_refs = SellerOrderRef.objects.filter(seller=self.id)
+        order_refs = SellerOrderRef.objects.filter(seller=self.id)
 
+        if order_refs:
             all_time_total = 0
             for order_ref in order_refs:
                 order = Order.objects.get(id=order_ref.order.id)
                 all_time_total = float(order.amount) + all_time_total
 
             return all_time_total  # All seller orders = total amount
-        except SellerOrderRef.DoesNotExist:
+        else:
             return 0
 
     @property
     def last_payout_date(self):
         return "20-10-2022:10:40:2T3"  # Get latest SUCCESS Payout from seller
+
+    @property
+    def payout_due_date(self):
+        d = timezone.now()
+        today = d
+
+        if today.isoweekday() == 5:
+            d += timedelta(days=1)
+
+        while d.isoweekday() != 5:
+            d += timedelta(days=1)
+
+        return get_readable_date_time(d)
 
 
 class Payout(models.Model):
@@ -1240,13 +1245,37 @@ class Payout(models.Model):
     start_order_id = models.IntegerField(blank=True, null=True)
     end_order_id = models.IntegerField(blank=True, null=True)
 
+    @property
+    def readable_date(self):
+        update = PayoutUpdate.objects.filter(payout=self.id).last()
+        if update:
+            return update.readable_date
+        else:
+            return None
+
+    @property
+    def status(self):
+        update = PayoutUpdate.objects.filter(payout=self.id).last()
+        if update:
+            return update.status
+        else:
+            return None
+
+    @property
+    def description(self):
+        update = PayoutUpdate.objects.filter(payout=self.id).last()
+        if update:
+            return update.description
+        else:
+            return None
+
 
 class PayoutUpdate(models.Model):
     payout = models.ForeignKey(
         Payout, on_delete=models.PROTECT, blank=False, null=False
     )
     status = models.TextField(
-        max_length=30, choices=PAYOUT_STATUSES, default=PAYOUT_PROCESSING
+        max_length=30, choices=PAYOUT_STATUSES, default=PAYOUT_SCHEDULED
     )
     update_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
     description = models.TextField(max_length=300, blank=True)

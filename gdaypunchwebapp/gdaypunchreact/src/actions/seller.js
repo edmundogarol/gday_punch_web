@@ -28,6 +28,12 @@ export const UPDATE_SALE_PARTIAL_REFUND_AMOUNT =
 export const UPDATE_SALE = "account/UPDATE_SALE";
 export const SET_SELECTED_SALE = "account/SET_SELECTED_SALE";
 
+export const FETCH_PAYOUTS = "account/FETCH_PAYOUTS";
+export const FETCHING_PAYOUTS = "account/FETCHING_PAYOUTS";
+export const UPDATE_PAYOUTS = "account/UPDATE_PAYOUTS";
+export const FINISHED_FETCHING_PAYOUTS = "account/FINISHED_FETCHING_PAYOUTS";
+export const UPDATE_PAYOUTS_ERROR = "account/UPDATE_PAYOUTS_ERROR";
+
 export const RESET_SELLER_DETAILS = "account/RESET_SELLER_DETAILS";
 export const RESET_SELLER_SALES = "account/RESET_SELLER_SALES";
 
@@ -160,6 +166,32 @@ export const setSelectedSale = (orderId) => ({
   type: SET_SELECTED_SALE,
   payload: {
     orderId,
+  },
+});
+
+export const fetchPayouts = () => ({
+  type: FETCH_PAYOUTS,
+});
+
+export const fetchingPayouts = () => ({
+  type: FETCHING_PAYOUTS,
+});
+
+export const updatePayouts = (payouts) => ({
+  type: UPDATE_PAYOUTS,
+  payload: {
+    payouts,
+  },
+});
+
+export const finishedFetchingPayouts = () => ({
+  type: FINISHED_FETCHING_PAYOUTS,
+});
+
+export const updatePayoutsError = (errors) => ({
+  type: UPDATE_PAYOUTS_ERROR,
+  payload: {
+    errors,
   },
 });
 

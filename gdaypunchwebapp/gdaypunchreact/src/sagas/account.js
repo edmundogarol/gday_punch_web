@@ -30,6 +30,11 @@ import {
   updateSellerSalesError,
   UPDATE_SALE_STATUS,
   updatingSellerDetails,
+  FETCH_PAYOUTS,
+  fetchingPayouts,
+  finishedFetchingPayouts,
+  updatePayouts,
+  updatePayoutsError,
 } from "actions/seller";
 import { updateUsers } from "actions/app";
 import { selectUser } from "selectors/app";
@@ -223,6 +228,24 @@ export function* updateSaleStatusCall(action) {
   }
 }
 
+export function* fetchPayoutsCall() {
+  yield put(fetchingPayouts());
+
+  const response = yield call(api, `payouts/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updatePayouts(data));
+    yield put(finishedFetchingPayouts());
+  } else {
+    console.log("Payouts fetch error", JSON.stringify(response));
+    yield put(finishedFetchingPayouts());
+    yield put(updatePayoutsError(response.data));
+  }
+}
+
 export default function* accountSaga() {
   yield all([
     takeLatest(FETCH_ACCOUNT_ORDERS, fetchingAccountOrdersCall),
@@ -233,5 +256,6 @@ export default function* accountSaga() {
     takeLatest(SUBMIT_SELLER_DETAILS, submitSellerDetailsCall),
     takeLatest(FETCH_SALE_STATUS_UPDATES, fetchSaleStatusUpdatesCall),
     takeLatest(UPDATE_SALE_STATUS, updateSaleStatusCall),
+    takeLatest(FETCH_PAYOUTS, fetchPayoutsCall),
   ]);
 }

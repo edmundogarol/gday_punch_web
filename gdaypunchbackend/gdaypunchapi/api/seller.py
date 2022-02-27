@@ -58,6 +58,5 @@ class PayoutViewSet(viewsets.ModelViewSet):
             return Response({"detail": "Seller not found."}, status.HTTP_404_NOT_FOUND)
 
         queryset = Payout.objects.filter(seller_id=seller.id).order_by("-id")
-        page = self.paginate_queryset(queryset)
-        serializer = PayoutSerializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
+        serializer = PayoutSerializer(queryset, many=True)
+        return Response(serializer.data)

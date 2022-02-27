@@ -3,6 +3,7 @@ import { withRouter } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Table, Input, Button, Space, Result, Card } from "antd";
 import Highlighter from "react-highlight-words";
+import moment from "moment";
 
 import { isEmpty } from "lodash";
 import {
@@ -16,6 +17,7 @@ import {
 
 import LoadingSpinner from "components/loadingSpinner";
 import {
+  fetchPayouts,
   fetchSaleStatusUpdates,
   fetchSellerDetails,
   fetchSellerSales,
@@ -48,6 +50,10 @@ function Seller() {
     finishedUpdatingSellerDetails,
     sellerDetailsUpdateError,
     selected,
+    payouts,
+    fetchingPayouts,
+    finishedFetchingPayouts,
+    payoutsError,
   } = useSelector(selectSellerState);
 
   const dispatch = useDispatch();
@@ -60,6 +66,10 @@ function Seller() {
 
   const sellerSalesData = !isEmpty(sellerSales)
     ? Object.values(sellerSales).map((sale) => ({ id: sale.id, ...sale }))
+    : [];
+
+  const payoutsData = !isEmpty(payouts)
+    ? Object.values(payouts).map((sale) => ({ id: sale.id, ...sale }))
     : [];
 
   useScrollTop();
@@ -86,6 +96,17 @@ function Seller() {
       dispatch(fetchSellerSales(user.seller_id));
     }
   }, [user, sellerSales, fetchingSellerSales, finishedFetchingSellerSales]);
+
+  useEffect(() => {
+    if (
+      user.id &&
+      user.seller_id &&
+      !fetchingPayouts &&
+      !finishedFetchingPayouts
+    ) {
+      dispatch(fetchPayouts());
+    }
+  }, [user, payouts, fetchingPayouts, finishedFetchingPayouts]);
 
   useEffect(() => {
     if (finishedUpdatingSellerDetails && !sellerDetailsUpdateError) {
@@ -356,6 +377,32 @@ function Seller() {
     },
   ];
 
+  const payoutColumns = [
+    {
+      title: "Last Update",
+      dataIndex: "readable_date",
+      key: "readable_date",
+      width: "100px",
+      render: (readable_date) => readable_date.date,
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount) => `A$${amount.toFixed(2)}`,
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+  ];
+
   const handleSaleOpen = (order) => {
     return {
       onClick: () => {
@@ -363,6 +410,14 @@ function Seller() {
         if (!order.statuses) {
           dispatch(fetchSaleStatusUpdates(order.id));
         }
+      },
+    };
+  };
+
+  const handlePayoutOpen = (payout) => {
+    return {
+      onClick: () => {
+        alert("Payout open");
       },
     };
   };
@@ -402,14 +457,35 @@ function Seller() {
       {finishedFetchingSellerDetails && sellerDetails?.id && (
         <Card className="non-first-tab" type="inner" title="Sales Summaries">
           <DetailField>
-            <label>Next Payout (Week&apos;s Sales)</label>
-            <p className="large">A${sellerDetails.next_payout.toFixed(2)}</p>
-            <p>Due Feb 25th</p>
+            <label>Next Payout (Every Friday)</label>
+            <p className="large">A${sellerDetails.next_payout?.toFixed(2)}</p>
+            {sellerDetails.next_payout > 0 ? (
+              <p>
+                Due{" "}
+                {moment(
+                  sellerDetails.payout_due_date.date,
+                  "DD/MM/YYYY"
+                ).format("LL")}
+              </p>
+            ) : null}
           </DetailField>
           <DetailField>
             <label>All Time Total</label>
             <p>A${sellerDetails.total_sales.toFixed(2)}</p>
           </DetailField>
+          <DetailField />
+          <DetailField>
+            <h4>Payout History</h4>
+          </DetailField>
+          <Table
+            className="desktop"
+            dataSource={payoutsData.map((order) => ({
+              ...order,
+              key: order.id,
+            }))}
+            columns={payoutColumns}
+            onRow={handlePayoutOpen}
+          />
         </Card>
       )}
       {sellerDetails?.id ? (

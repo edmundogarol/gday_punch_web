@@ -21,6 +21,10 @@ import {
   UPDATE_SELLER_SALES,
   UPDATE_SELLER_SALES_ERRORS,
   UPDATING_SELLER_DETAILS,
+  UPDATE_PAYOUTS,
+  FETCHING_PAYOUTS,
+  FINISHED_FETCHING_PAYOUTS,
+  UPDATE_PAYOUTS_ERROR,
 } from "actions/seller";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -57,6 +61,11 @@ const INITIAL_STATE = {
 
     reason: undefined,
     partial_refund: undefined,
+
+    payouts: {},
+    fetchingPayouts: false,
+    finishedFetchingPayouts: false,
+    payoutError: undefined,
   },
 };
 
@@ -252,6 +261,43 @@ export const accountReducer = (state = INITIAL_STATE, action) => {
         seller: {
           ...state.seller,
           selected: action.payload.orderId,
+        },
+      };
+    case UPDATE_PAYOUTS:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          payouts: {
+            ...state.seller.payouts,
+            ...arrayIdsMapToObject(action.payload.payouts),
+          },
+        },
+      };
+    case FETCHING_PAYOUTS:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          fetchingPayouts: true,
+          finishedFetchingPayouts: false,
+        },
+      };
+    case FINISHED_FETCHING_PAYOUTS:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          fetchingPayouts: false,
+          finishedFetchingPayouts: true,
+        },
+      };
+    case UPDATE_PAYOUTS_ERROR:
+      return {
+        ...state,
+        seller: {
+          ...state.seller,
+          payoutError: payload.errors,
         },
       };
     default:

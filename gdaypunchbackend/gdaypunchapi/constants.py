@@ -152,6 +152,7 @@ PURCHASE_REASONS = (
 )
 
 # Payout status updates
+PAYOUT_SCHEDULED = "scheduled"
 PAYOUT_PROCESSING = "processing"
 PAYOUT_SUCCEEDED = "succeeded"
 PAYOUT_FAILED = "failed"

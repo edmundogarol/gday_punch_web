@@ -338,13 +338,23 @@ class SellerSerializer(serializers.ModelSerializer):
             "next_payout",
             "total_sales",
             "last_payout_date",
+            "payout_due_date",
         )
 
 
 class PayoutSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payout
-        fields = "__all__"
+        fields = (
+            "id",
+            "seller",
+            "amount",
+            "start_order_id",
+            "end_order_id",
+            "readable_date",
+            "status",
+            "description",
+        )
 
 
 class PayoutUpdateSerializer(serializers.ModelSerializer):
