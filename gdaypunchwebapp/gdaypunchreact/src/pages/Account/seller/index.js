@@ -35,6 +35,14 @@ import { DetailField } from "../styles";
 import SellerDetails from "./SellerDetails";
 import OrderDetailsModal from "pages/Admin/orders/orderDetails";
 
+const payoutStatuses = {
+  scheduled: "Scheduled",
+  processing: "Processing",
+  succeeded: "Succeeded",
+  failed: "Failed",
+  retrying: "Retrying",
+};
+
 function Seller() {
   const user = useSelector(selectUser);
 
@@ -395,6 +403,33 @@ function Seller() {
       title: "Status",
       dataIndex: "status",
       key: "status",
+      render: (status) => payoutStatuses[status],
+    },
+    {
+      title: "Description",
+      dataIndex: "description",
+      key: "description",
+    },
+  ];
+
+  const mobilePayoutColumns = [
+    {
+      title: "Status",
+      dataIndex: "date_status",
+      key: "date_status",
+      width: "100px",
+      render: (dateStatus, payout) => (
+        <div className="detail-3-column-compressed">
+          <p>{payout.readable_date.date}</p>
+          <p>{payoutStatuses[payout.status]}</p>
+        </div>
+      ),
+    },
+    {
+      title: "Amount",
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount) => `A$${amount.toFixed(2)}`,
     },
     {
       title: "Description",
@@ -410,14 +445,6 @@ function Seller() {
         if (!order.statuses) {
           dispatch(fetchSaleStatusUpdates(order.id));
         }
-      },
-    };
-  };
-
-  const handlePayoutOpen = (payout) => {
-    return {
-      onClick: () => {
-        alert("Payout open");
       },
     };
   };
@@ -484,7 +511,16 @@ function Seller() {
               key: order.id,
             }))}
             columns={payoutColumns}
-            onRow={handlePayoutOpen}
+            // onRow={handlePayoutOpen}
+          />
+          <Table
+            className="mobile"
+            dataSource={payoutsData.map((order) => ({
+              ...order,
+              key: order.id,
+            }))}
+            columns={mobilePayoutColumns}
+            // onRow={handlePayoutOpen}
           />
         </Card>
       )}
