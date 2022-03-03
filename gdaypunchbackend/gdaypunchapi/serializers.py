@@ -193,6 +193,7 @@ class ProductSerializer(serializers.ModelSerializer):
             "saved_date",
             "saves",
             "user_avatar",
+            "editable",
         )
 
 
@@ -349,8 +350,8 @@ class PayoutSerializer(serializers.ModelSerializer):
             "id",
             "seller",
             "amount",
-            "start_order_id",
-            "end_order_id",
+            "start_order",
+            "end_order",
             "readable_date",
             "status",
             "description",

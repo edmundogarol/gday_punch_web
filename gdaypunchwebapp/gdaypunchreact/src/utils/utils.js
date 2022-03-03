@@ -2,7 +2,7 @@
 /* eslint-disable no-undef */
 
 import { set } from "lodash";
-
+import { SELLER_PERCENTAGE_FEE, SELLER_FLAT_FEE } from "constants";
 /**
  * Retrieves an img Module with default data image base64
  *
@@ -125,4 +125,9 @@ export function bankValidator(bsbInput, accInput) {
     bsbInput.replaceAll(" ", "").length > 5 &&
     accInput.replaceAll(" ", "").length > 8
   );
+}
+
+export function getSellerFee(paid) {
+  const tenPercentOfAmount = paid * (SELLER_PERCENTAGE_FEE / 100);
+  return tenPercentOfAmount + SELLER_FLAT_FEE;
 }

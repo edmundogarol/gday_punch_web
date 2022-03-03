@@ -15,6 +15,7 @@ export const UPLOADING_MANGA = "manga/UPLOADING_MANGA";
 export const UPLOADING_MANGA_FINISHED = "manga/UPLOADING_MANGA_FINISHED";
 export const UPLOADING_MANGA_ERROR = "manga/UPLOADING_MANGA_ERROR";
 export const UPLOAD_MANGA_PROGRESS = "manga/UPLOAD_MANGA_PROGRESS";
+export const UPDATE_MANGA_PRODUCT = "manga/UPDATE_MANGA_PRODUCT";
 
 export const doGetManga = (mangaId) => ({
   type: DO_GET_MANGA,
@@ -123,5 +124,13 @@ export const recordView = (mangaId) => ({
   type: RECORD_VIEW,
   payload: {
     mangaId,
+  },
+});
+
+export const updateMangaProduct = (manga, resetUpdatingMangaDetails) => ({
+  type: UPDATE_MANGA_PRODUCT,
+  payload: {
+    manga,
+    resetUpdatingMangaDetails,
   },
 });

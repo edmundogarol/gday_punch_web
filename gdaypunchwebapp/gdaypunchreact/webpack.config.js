@@ -66,6 +66,7 @@ module.exports = {
       reducers: path.resolve(__dirname, "src/reducers/"),
       utils: path.resolve(__dirname, "src/utils/"),
       static: path.resolve(__dirname, "public/static/"),
+      constants: path.resolve(__dirname, "src/constants"),
     },
   },
   plugins: [

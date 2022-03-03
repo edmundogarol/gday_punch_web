@@ -229,6 +229,10 @@ function UploadConditions(props) {
                   new sales balance will be added $1.50.
                 </li>
                 <li>
+                  Manga that has been sold or purchased within the website will
+                  no longer be editable.
+                </li>
+                <li>
                   You can nominate either an Australian Bank Account or Paypal
                   account where your proceeds will be paid out to every week.
                   <br />※ Proceeds will be paid out in Australian Dollars (AUD).
@@ -246,6 +250,10 @@ function UploadConditions(props) {
                 <li>
                   If there is an error with your registered bank account or
                   Paypal, a $10AUD penalty may be charged.
+                </li>
+                <li>
+                  Our fees and other charges are subject to change without
+                  notice.
                 </li>
               </ul>
             </dd>

@@ -1,3 +1,6 @@
+SELLER_FLAT_FEE = 0.30 # 30 cents
+SELLER_PERCENTAGE_FEE = 10 # 10%
+
 # User privileges
 SUPER = 1
 ADMIN = 2

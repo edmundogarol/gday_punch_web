@@ -117,6 +117,7 @@ function Stall({ history }) {
   const [editingBio, toggleEditingBio] = useState(false);
   const [newBio, updateNewBio] = useState(undefined);
   const [deletingProduct, updateDeletingProduct] = useState(false);
+  const [editingManga, updateEditingManga] = useState(undefined);
 
   useScrollTop();
 
@@ -393,14 +394,6 @@ function Stall({ history }) {
 
   return (
     <StallContainer className="App">
-      {/* {editingManga ? (
-        <MangaDetail
-          editingManga={editingManga}
-          coverPageNumber={coverPageNumber}
-          uploadingMangaData={editingManga.pdf}
-          uploadingDetails={editingManga}
-        />
-      ) : null} */}
       {user?.following_users?.length ? (
         <FollowingModal
           visible={user.following_users.length && followingModalOpen}
@@ -676,9 +669,12 @@ function Stall({ history }) {
               <ProductTile
                 editable={myStallView || hasPrivilege(currentUser, "admin")}
                 key={`${product.id}_${product.quantity || 0}`}
-                // editCallback={(manga) =>
-                //   updateEditingManga(normaliseProductData(manga))
-                // }
+                editCallback={
+                  (manga) => updateEditingManga(normaliseProductData(manga))
+                  // console.log({
+                  //   normalisedProductData: normaliseProductData(manga),
+                  // })
+                }
                 deleteCallback={(mangaProd) => {
                   if (!deletingProduct) {
                     confirmBeforeDelete(normaliseProductData(mangaProd));
@@ -732,6 +728,13 @@ function Stall({ history }) {
         updateCoverPageNumber={updateCoverPageNumber}
         uploadingDetails={uploadingDetails}
         updateUploadingDetails={updateUploadingDetails}
+      />
+      <MangaDetail
+        editingManga={editingManga}
+        coverPageNumber={1}
+        uploadingMangaData={editingManga?.pdf}
+        uploadingDetails={editingManga}
+        updateUploadingDetails={updateEditingManga}
       />
     </StallContainer>
   );

@@ -34,8 +34,7 @@ export const UPDATE_PAYOUTS = "account/UPDATE_PAYOUTS";
 export const FINISHED_FETCHING_PAYOUTS = "account/FINISHED_FETCHING_PAYOUTS";
 export const UPDATE_PAYOUTS_ERROR = "account/UPDATE_PAYOUTS_ERROR";
 
-export const RESET_SELLER_DETAILS = "account/RESET_SELLER_DETAILS";
-export const RESET_SELLER_SALES = "account/RESET_SELLER_SALES";
+export const RESET_SELLER = "account/RESET_SELLER";
 
 export const fetchSellerDetails = (sellerId) => ({
   type: FETCH_SELLER_DETAILS,
@@ -195,10 +194,6 @@ export const updatePayoutsError = (errors) => ({
   },
 });
 
-export const resetSellerDetails = () => ({
-  type: RESET_SELLER_DETAILS,
-});
-
-export const resetSellerSales = () => ({
-  type: RESET_SELLER_SALES,
+export const resetSeller = () => ({
+  type: RESET_SELLER,
 });

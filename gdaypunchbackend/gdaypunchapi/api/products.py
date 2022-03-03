@@ -344,6 +344,9 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
         user = None
         product_type = request.data["product_type"]
         month_interval = request.data.get("month_interval")
+        stripe_prices = request.data.get("stripe_prices", None)
+        updating_manga_product = request.data.get("updating_manga_product", None)
+        sku = request.data.get("sku", None)
 
         if str(self.request.user) != "AnonymousUser":
             user = User.objects.get(email=self.request.user)
@@ -356,6 +359,14 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
+        if sku and "GPMM" in sku and not user.is_staff:
+            return Response(
+                {
+                    "sku": "SKU contains a reserved combination 'GPMM'. Remove this and try again."
+                },
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
         queryset = Product.objects.all()
         product = queryset.get(pk=kwargs.get("pk"))
 
@@ -364,10 +375,19 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
             or request.data["active_price"] == ""
             or None
         )
-        use_existing_price = len(request.data["stripe_prices"]) > 0
+
+        use_existing_price = (
+            stripe_prices and len(stripe_prices) > 0
+        ) or request.data.get("active_price") == product.active_price
         create_stripe_price = not free and not use_existing_price
 
         if create_stripe_price:
+
+            # Delete existing prices for this product
+            for product_stripe_price in product.stripe_prices.all():
+                stripe.Price.modify(product_stripe_price.price_id, active=False)
+                product_stripe_price.delete()
+
             recurring = False
 
             # if product_type == MAG_SUBSCRIPTION: Subscription done manually through Admin portal (Per release)
@@ -411,11 +431,24 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
 
             request.data["stripe_prices"] = [new_stripe_price.id]
 
-        for price in product.stripe_prices.all():
-            if price.month_interval != month_interval:
-                current_price = StripePrice.objects.get(id=price.id)
-                current_price.month_interval = month_interval
-                current_price.save()
+        if month_interval:
+            for price in product.stripe_prices.all():
+                if price.month_interval != month_interval:
+                    current_price = StripePrice.objects.get(id=price.id)
+                    current_price.month_interval = month_interval
+                    current_price.save()
+
+        if updating_manga_product:
+            for product_manga in product.manga.all():
+                update_manga = Manga.objects.get(id=product_manga.id)
+
+                update_manga.title = request.data["title"]
+                update_manga.release_date = request.data["release_date"]
+                update_manga.age_rating = request.data["age_rating"]
+                update_manga.japanese_reading = (
+                    request.data["japanese_reading"] == "japanese"
+                )
+                update_manga.save()
 
         serializer = ProductSerializer(product, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)

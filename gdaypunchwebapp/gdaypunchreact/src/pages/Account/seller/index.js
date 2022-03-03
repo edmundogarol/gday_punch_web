@@ -21,6 +21,7 @@ import {
   fetchSaleStatusUpdates,
   fetchSellerDetails,
   fetchSellerSales,
+  resetSeller,
   setSelectedSale,
   updateSalePartialRefund,
   updateSaleStatus,
@@ -34,6 +35,7 @@ import { SellerContainer } from "./styles";
 import { DetailField } from "../styles";
 import SellerDetails from "./SellerDetails";
 import OrderDetailsModal from "pages/Admin/orders/orderDetails";
+import { getSellerFee } from "utils/utils";
 
 const payoutStatuses = {
   scheduled: "Scheduled",
@@ -43,7 +45,7 @@ const payoutStatuses = {
   retrying: "Retrying",
 };
 
-function Seller() {
+function Seller({ history }) {
   const user = useSelector(selectUser);
 
   const {
@@ -115,6 +117,13 @@ function Seller() {
       dispatch(fetchPayouts());
     }
   }, [user, payouts, fetchingPayouts, finishedFetchingPayouts]);
+
+  useEffect(() => {
+    return () => {
+      if (!history.location.pathname.includes("seller"))
+        dispatch(resetSeller());
+    };
+  }, []);
 
   useEffect(() => {
     if (finishedUpdatingSellerDetails && !sellerDetailsUpdateError) {
@@ -332,11 +341,11 @@ function Seller() {
       },
     },
     {
-      title: "Paid",
+      title: "Received",
       dataIndex: "amount",
       key: "amount",
       width: "15%",
-      render: (amount) => `A$${amount.toFixed(2)}`,
+      render: (amount) => `A$${(amount - getSellerFee(amount)).toFixed(2)}`,
     },
   ];
 
@@ -467,7 +476,7 @@ function Seller() {
           updatePartialRefund={updateSalePartialRefund}
         />
       )}
-      {!sellerDetails?.id ? (
+      {user.id && !user.seller_id ? (
         <Result
           title="You are currently not a Seller"
           extra={
@@ -559,9 +568,8 @@ function Seller() {
           )}
         </Card>
       ) : null}
-      {fetchingSellerSales ? (
-        <LoadingSpinner />
-      ) : (
+      {fetchingSellerSales ? <LoadingSpinner /> : null}
+      {sellerDetails.id && finishedFetchingSellerSales && (
         <Card className="non-first-tab" type="inner" title="Stall Sales">
           <Table
             className="desktop"

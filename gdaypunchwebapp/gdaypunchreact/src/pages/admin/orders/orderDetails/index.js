@@ -10,7 +10,7 @@ import {
   ExclamationCircleOutlined,
 } from "@ant-design/icons";
 
-import { getGdayPunchStaticUrl } from "utils/utils";
+import { getGdayPunchStaticUrl, getSellerFee } from "utils/utils";
 import {
   OrderModal,
   ProductTotalsContainer,
@@ -423,14 +423,6 @@ function OrderDetails(props) {
       />
       <ProductTotalsContainer>
         <div>
-          Subtotal{" "}
-          <span>{`A$${
-            order.products_total_price
-              ? order.products_total_price.toFixed(2)
-              : "Error"
-          }`}</span>
-        </div>
-        <div>
           Shipping
           <span>{`A$${order.country === "AU" ? "0.00" : "13.00"}`}</span>
         </div>
@@ -445,9 +437,32 @@ function OrderDetails(props) {
           <span>{`A$${order.tax ? order.tax.toFixed(2) : "Error"}`}</span>
         </div>
         <div>
-          Total:
-          <span>{`A$${order.amount.toFixed(2)}`}</span>
+          Subtotal{" "}
+          <span>{`A$${
+            order.products_total_price
+              ? order.products_total_price.toFixed(2)
+              : "Error"
+          }`}</span>
         </div>
+        {accountSeller ? (
+          <div>
+            {`Seller Fee (10% + 30c)`}
+            <span>{`- A$${getSellerFee(order.amount)}`}</span>
+          </div>
+        ) : null}
+        {!accountSeller ? (
+          <div>
+            Total:
+            <span>{`A$${order.amount.toFixed(2)}`}</span>
+          </div>
+        ) : (
+          <div>
+            Total:
+            <span>{`A$${(order.amount - getSellerFee(order.amount)).toFixed(
+              2
+            )}`}</span>
+          </div>
+        )}
       </ProductTotalsContainer>
       {accountSeller && order.status === "refunded" ? null : (
         <StatusButtons>

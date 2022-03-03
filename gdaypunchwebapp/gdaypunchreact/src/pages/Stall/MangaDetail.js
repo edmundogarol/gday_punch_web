@@ -35,7 +35,11 @@ import {
 } from "utils/utils";
 
 import { MangaUploaderModal, ConfirmUploadSummary } from "./styles";
-import { uploadManga, uploadingMangaError } from "actions/manga";
+import {
+  uploadManga,
+  uploadingMangaError,
+  updateMangaProduct,
+} from "actions/manga";
 import { selectUser } from "selectors/app";
 
 const initialUploadState = {
@@ -74,7 +78,7 @@ function MangaDetail({
   const [markForSale, toggleMarkForSale] = useState(false);
 
   const sellingValid = markForSale
-    ? priceValidator(uploadingDetails.active_price)
+    ? priceValidator(uploadingDetails?.active_price)
     : true;
 
   useEffect(() => {
@@ -85,6 +89,11 @@ function MangaDetail({
     }
   }, [uploading, uploadingFinished]);
 
+  useEffect(() => {
+    return () => {
+      updateCoverPageNumber ? updateCoverPageNumber(1) : null;
+    };
+  }, []);
   const updateDescription = (description) => {
     return {
       __html: description,
@@ -150,9 +159,14 @@ function MangaDetail({
   };
 
   const handleUploadConfirmed = () => {
+    const callerAction = editingManga ? updateMangaProduct : uploadManga;
+    const callBackFunction = editingManga
+      ? () => updateUploadingDetails(undefined)
+      : history;
     dispatch(
-      uploadManga(
+      callerAction(
         {
+          id: uploadingDetails.id,
           title: uploadingDetails.title,
           description: sanitiseTooManyNewLines(uploadingDetails.description),
           sku: uploadingDetails.sku,
@@ -169,7 +183,7 @@ function MangaDetail({
             uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
               .currentSrc,
         },
-        history
+        callBackFunction
       )
     );
   };
@@ -288,18 +302,25 @@ function MangaDetail({
     }
   };
 
+  if (!uploadingDetails) {
+    return null;
+  }
+
   return (
     <MangaUploaderModal
       width="80%"
       title="Manga Uploader"
-      visible={uploadingManga || editingManga}
+      visible={uploadingManga || editingManga?.id}
       closeable={false}
       closeIcon={<div style={{ display: "none" }} />}
       footer={[
         <Button
           key="cancel"
           onClick={() => {
-            updateUploadingManga(false);
+            updateUploadingManga
+              ? updateUploadingManga(false)
+              : updateUploadingDetails(undefined);
+            updateCoverPageNumber(1);
           }}
         >
           Cancel
@@ -449,7 +470,9 @@ function MangaDetail({
       </div>
       <div className="right-container">
         <div className="cover-preview">
-          <h4 className="cover-title">Cover Preview</h4>
+          <h4 className="cover-title">
+            {editingManga ? "Cover" : "Cover Preview"}
+          </h4>
           <Document
             style={{ width: "30em" }}
             file={uploadingMangaData}
@@ -482,13 +505,15 @@ function MangaDetail({
               }}
             />
           </Document>
-          <Slider
-            min={1}
-            value={coverPageNumber}
-            defaultValue={1}
-            onChange={(val) => updateCoverPageNumber(val)}
-            max={uploadingDetails.pages}
-          />
+          {editingManga ? null : (
+            <Slider
+              min={1}
+              value={coverPageNumber}
+              defaultValue={1}
+              onChange={(val) => updateCoverPageNumber(val)}
+              max={uploadingDetails.pages}
+            />
+          )}
         </div>
         <h4>Release Date</h4>
         <DatePicker
@@ -498,15 +523,15 @@ function MangaDetail({
             updateUploadingDetails({ ...uploadingDetails, release_date: val })
           }
         />
-        {currentUser.seller_id && (
+        {currentUser.seller_id && uploadingDetails.active_price <= 0 ? (
           <>
             <h4>Sell</h4>
             <Checkbox onChange={(e) => toggleMarkForSale(e.target.checked)}>
               List this manga for work for sale.
             </Checkbox>
           </>
-        )}
-        {markForSale && (
+        ) : null}
+        {(markForSale || uploadingDetails.active_price > 0) && (
           <>
             <h4>Price $AUD</h4>
             <Input

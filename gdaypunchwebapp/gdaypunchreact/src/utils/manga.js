@@ -18,5 +18,7 @@ export function normaliseProductData(product) {
     release_date: product.release_date,
     pages: product.page_count,
     product_type: product.product_type,
+    active_price: product.active_price,
+    stripe_prices: product.stripe_prices,
   };
 }

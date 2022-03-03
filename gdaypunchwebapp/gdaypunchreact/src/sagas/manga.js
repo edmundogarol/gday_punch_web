@@ -26,6 +26,7 @@ import {
   uploadingMangaError,
   setUploadProgress,
   RECORD_VIEW,
+  UPDATE_MANGA_PRODUCT,
 } from "actions/manga";
 import { selectUser } from "selectors/app";
 import { api } from "utils/api";
@@ -267,6 +268,37 @@ export function* uploadMangaCall(action) {
   }
 }
 
+export function* updateMangaProductCall(action) {
+  yield put(uploadingManga());
+  const { manga, resetUpdatingMangaDetails } = action.payload;
+  const { id: userId } = yield select(selectUser);
+
+  const response = yield call(api, `product/${manga.id}/`, {
+    method: "PATCH",
+    body: {
+      ...action.payload.manga,
+      updating_manga_product: true,
+      manga: undefined,
+      id: undefined,
+    },
+  });
+
+  if (response && response.ok) {
+    // const data = response.data;
+
+    yield put(fetchProducts(userId));
+    yield put(uploadingMangaFinished());
+    resetUpdatingMangaDetails();
+  } else {
+    console.log("Upload Manga error", JSON.stringify(response));
+    Object.values(response.data).map((error) =>
+      message.error(`Upload Manga Error: ${error}`)
+    );
+    yield put(uploadingMangaFinished());
+    yield put(uploadingMangaError(response.data));
+  }
+}
+
 export function* recordView(action) {
   const response = yield call(api, `manga-view/`, {
     method: "POST",
@@ -291,6 +323,7 @@ export default function* mangaSaga() {
     takeEvery(DO_GET_COMMENTS, getComments),
     takeEvery(DO_LIKE_COMMENT, likeComment),
     takeEvery(UPLOAD_MANGA, uploadMangaCall),
+    takeEvery(UPDATE_MANGA_PRODUCT, updateMangaProductCall),
     takeLatest(RECORD_VIEW, recordView),
   ]);
 }

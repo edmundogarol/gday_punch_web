@@ -4,6 +4,8 @@ import socket
 
 from rest_framework.permissions import BasePermission
 
+from gdaypunchbackend.gdaypunchapi.constants import SELLER_FLAT_FEE, SELLER_PERCENTAGE_FEE
+
 if "DEVENV" in os.environ:
     log = True
 else:
@@ -116,3 +118,9 @@ class AuthenticatedCreateAndEditOnly(BasePermission):
             return False
         else:
             return False
+
+
+def get_seller_fee(paid):
+    ten_percent_of_paid = paid * (SELLER_PERCENTAGE_FEE / 100);
+    return ten_percent_of_paid + SELLER_FLAT_FEE;
+

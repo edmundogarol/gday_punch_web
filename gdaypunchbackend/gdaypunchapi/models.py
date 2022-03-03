@@ -388,6 +388,8 @@ class Manga(models.Model):
         # Staff access
         if user and user.is_staff:
             return self.pdf.name
+        elif user.id == self.author.id:
+            return self.pdf.name
         else:
             # Temporary fix to keep pdf's live in gdaypunch.com
             if product.sku in ["GPMMD1", "GPMMD4"]:
@@ -676,6 +678,30 @@ class Product(models.Model):
 
         except Save.DoesNotExist:
             return None
+
+    @property  # Product is part of an existing order
+    def editable(self):
+        if self.user.id != get_current_user().id:
+            return False
+
+        purchases = Purchase.objects.filter(product_id=self.id)
+        if purchases.first() is not None:
+
+            no_orders = True
+            for purchase in purchases:
+                try:
+                    order = Order.objects.get(purchase_id=purchase.id)
+                    no_orders = False
+
+                except Order.DoesNotExist:
+                    print("No order")
+
+            if no_orders:
+                return True
+            else:
+                return False
+        else:
+            return True
 
 
 class Save(models.Model):
@@ -1215,7 +1241,15 @@ class Seller(models.Model):
             all_time_total = 0
             for order_ref in order_refs:
                 order = Order.objects.get(id=order_ref.order.id)
-                all_time_total = float(order.amount) + all_time_total
+
+                ten_percent_of_order_amount = order.amount * (
+                    SELLER_PERCENTAGE_FEE / 100
+                )
+                seller_minus_fees = (
+                    order.amount - ten_percent_of_order_amount - SELLER_FLAT_FEE
+                )
+
+                all_time_total = float(seller_minus_fees) + all_time_total
 
             return all_time_total  # All seller orders = total amount
         else:
@@ -1242,8 +1276,20 @@ class Seller(models.Model):
 class Payout(models.Model):
     seller = models.ForeignKey(Seller, on_delete=models.PROTECT, blank=False, null=True)
     amount = models.FloatField(blank=False)
-    start_order_id = models.IntegerField(blank=True, null=True)
-    end_order_id = models.IntegerField(blank=True, null=True)
+    start_order = models.ForeignKey(
+        Order,
+        on_delete=models.PROTECT,
+        related_name="start_order",
+        blank=False,
+        null=True,
+    )
+    end_order = models.ForeignKey(
+        Order,
+        on_delete=models.PROTECT,
+        related_name="end_order",
+        blank=False,
+        null=True,
+    )
 
     @property
     def readable_date(self):

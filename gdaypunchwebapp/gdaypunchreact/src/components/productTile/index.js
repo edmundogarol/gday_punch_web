@@ -12,7 +12,7 @@ import {
 import { Badge, Tooltip, Popover } from "antd";
 
 import UserAvatar, { initialAuthor } from "components/UserAvatar";
-import { doLikeManga, unlikeManga } from "actions/manga";
+import { doLikeManga, unlikeManga, updateMangaProduct } from "actions/manga";
 import { doSuggestRegister, openRegistration } from "actions/user";
 import { updateCartItemQuantity } from "actions/cart";
 import {
@@ -84,6 +84,7 @@ function ProductTile(props) {
     saved,
     saves,
     visible,
+    editable: can_edit,
   } = product;
   const {
     id: mangaId,
@@ -216,10 +217,16 @@ function ProductTile(props) {
           title={product.name}
           content={
             <TilePopover>
-              <Tooltip title="Not yet available.">
+              <Tooltip
+                title={
+                  can_edit
+                    ? "Edit manga details"
+                    : "This product cannot be edited as it has been previously sold."
+                }
+              >
                 <button
-                  disabled
-                  className="pop-over-button coming-soon"
+                  disabled={!can_edit}
+                  className={`pop-over-button ${can_edit ? "" : "coming-soon"}`}
                   onClick={() =>
                     editCallback({
                       ...product,
@@ -231,18 +238,34 @@ function ProductTile(props) {
                   Edit
                 </button>
               </Tooltip>
-              <button
-                className="pop-over-button"
-                onClick={() =>
-                  deleteCallback({
-                    ...product,
-                    ...manga_details,
-                    id: product.id,
-                  })
+              <Tooltip
+                title={
+                  can_edit
+                    ? "Delete manga"
+                    : "This product cannot be deleted as it has been previously sold."
                 }
               >
-                Delete
-              </button>
+                <button
+                  className="pop-over-button"
+                  onClick={() =>
+                    can_edit
+                      ? deleteCallback({
+                          ...product,
+                          ...manga_details,
+                          id: product.id,
+                        })
+                      : dispatch(
+                          updateMangaProduct({
+                            ...product,
+                            ...manga_details,
+                            visible: false,
+                          })
+                        )
+                  }
+                >
+                  {can_edit ? "Delete" : "Archive (Unlist)"}
+                </button>
+              </Tooltip>
             </TilePopover>
           }
           trigger="click"

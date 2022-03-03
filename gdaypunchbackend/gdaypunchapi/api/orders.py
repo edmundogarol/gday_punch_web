@@ -38,6 +38,7 @@ from ..api_permissions import (
 from ..utils import (
     AdminOrReadOnly,
     AdminOnly,
+    get_seller_fee,
 )
 
 from gdaypunchbackend.settings import STRIPE_API_KEY, DOMAIN
@@ -466,8 +467,8 @@ def handle_create_order(
                         seller_latest_payout.end_order_id = order.id
 
                         # Update payout amount
-                        seller_latest_payout.amount = (
-                            seller_latest_payout.amount + order.amount
+                        seller_latest_payout.amount = order.amount - get_seller_fee(
+                            order.amount
                         )
                         seller_latest_payout.save()
 
@@ -478,13 +479,13 @@ def handle_create_order(
                 # Create first payout
                 new_payout = Payout.objects.create(
                     seller=seller,
-                    amount=order.amount,
-                    start_order_id=order.id,
-                    end_order_id=order.id,
+                    amount=order.amount - get_seller_fee(order.amount),
+                    start_order=order,
+                    end_order=order,
                 )
 
                 PayoutUpdate.objects.create(
-                    payout=new_payout, description="Payout is currently processing"
+                    payout=new_payout, description="Payout is scheduled"
                 )
 
     if digital_purchase == len(items):

@@ -25,6 +25,7 @@ import {
   FETCHING_PAYOUTS,
   FINISHED_FETCHING_PAYOUTS,
   UPDATE_PAYOUTS_ERROR,
+  RESET_SELLER,
 } from "actions/seller";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -299,6 +300,11 @@ export const accountReducer = (state = INITIAL_STATE, action) => {
           ...state.seller,
           payoutError: payload.errors,
         },
+      };
+    case RESET_SELLER:
+      return {
+        ...state,
+        seller: INITIAL_STATE.seller,
       };
     default:
       return state;
