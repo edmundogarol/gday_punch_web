@@ -388,7 +388,7 @@ class Manga(models.Model):
         # Staff access
         if user and user.is_staff:
             return self.pdf.name
-        elif user.id == self.author.id:
+        elif user and user.id == self.author.id:
             return self.pdf.name
         else:
             # Temporary fix to keep pdf's live in gdaypunch.com
@@ -1308,6 +1308,11 @@ class Payout(models.Model):
             amount = amount + (order.amount - get_seller_fee(order.amount))
 
         return amount
+
+    @property
+    def author(self):
+        user = User.objects.get(id=self.seller.user.id)
+        return user.author_name
 
 
 class PayoutUpdate(models.Model):

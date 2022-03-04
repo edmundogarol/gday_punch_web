@@ -353,6 +353,7 @@ class PayoutSerializer(serializers.ModelSerializer):
             "readable_date",
             "status",
             "description",
+            "author",
         )
 
 
