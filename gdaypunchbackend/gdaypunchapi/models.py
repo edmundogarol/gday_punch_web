@@ -23,7 +23,7 @@ from django_currentuser.middleware import (
 from django_currentuser.db.models import CurrentUserField
 
 from .constants import *
-from .utils import get_readable_date_time
+from .utils import get_readable_date_time, get_seller_fee
 
 
 class Settings(models.Model):
@@ -1275,21 +1275,7 @@ class Seller(models.Model):
 
 class Payout(models.Model):
     seller = models.ForeignKey(Seller, on_delete=models.PROTECT, blank=False, null=True)
-    amount = models.FloatField(blank=False)
-    start_order = models.ForeignKey(
-        Order,
-        on_delete=models.PROTECT,
-        related_name="start_order",
-        blank=False,
-        null=True,
-    )
-    end_order = models.ForeignKey(
-        Order,
-        on_delete=models.PROTECT,
-        related_name="end_order",
-        blank=False,
-        null=True,
-    )
+    orders = models.ManyToManyField(Order, blank=True)
 
     @property
     def readable_date(self):
@@ -1314,6 +1300,14 @@ class Payout(models.Model):
             return update.description
         else:
             return None
+
+    @property
+    def amount(self):
+        amount = 0
+        for order in self.orders.all():
+            amount = amount + (order.amount - get_seller_fee(order.amount))
+
+        return amount
 
 
 class PayoutUpdate(models.Model):

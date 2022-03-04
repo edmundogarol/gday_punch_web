@@ -350,8 +350,6 @@ class PayoutSerializer(serializers.ModelSerializer):
             "id",
             "seller",
             "amount",
-            "start_order",
-            "end_order",
             "readable_date",
             "status",
             "description",
