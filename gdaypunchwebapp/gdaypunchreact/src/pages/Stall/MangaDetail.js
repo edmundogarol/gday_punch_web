@@ -83,9 +83,15 @@ function MangaDetail({
 
   useEffect(() => {
     if (!uploading && uploadingFinished && !uploadingErrors) {
-      updateUploadingDetails(initialUploadState);
-      updateUploadingMangaData(undefined);
-      updateUploadingManga(false);
+      if (
+        updateUploadingDetails &&
+        updateUploadingMangaData &&
+        updateUploadingManga
+      ) {
+        updateUploadingDetails(initialUploadState);
+        updateUploadingMangaData(undefined);
+        updateUploadingManga(false);
+      }
     }
   }, [uploading, uploadingFinished]);
 
@@ -179,9 +185,10 @@ function MangaDetail({
           product_type: uploadingDetails.product_type,
           active_price: uploadingDetails.active_price,
           manga: uploadingMangaData,
-          image:
-            uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
-              .currentSrc,
+          image: editingManga
+            ? undefined
+            : uploadingDetails.cover[`img_p${coverPageNumber - 1}_1`].data
+                .currentSrc,
         },
         callBackFunction
       )
@@ -320,7 +327,7 @@ function MangaDetail({
             updateUploadingManga
               ? updateUploadingManga(false)
               : updateUploadingDetails(undefined);
-            updateCoverPageNumber(1);
+            updateCoverPageNumber ? updateCoverPageNumber(1) : null;
           }}
         >
           Cancel

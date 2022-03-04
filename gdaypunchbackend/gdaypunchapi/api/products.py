@@ -40,6 +40,24 @@ from gdaypunchbackend.settings import STRIPE_API_KEY, LOCAL_DEV
 stripe.api_key = STRIPE_API_KEY
 
 
+def delete_product_prices(product):
+    # Archive existing stripe prices, and products for this gdaypunch product; also delete references in db
+    prices_to_delete = []
+    for product_stripe_price in product.stripe_prices.all():
+        stripe_price_object = stripe.Price.retrieve(product_stripe_price.price_id)
+        stripe.Price.modify(product_stripe_price.price_id, active=False)
+        prices_to_delete.append(product_stripe_price)
+
+        stripe_product = stripe.Product.retrieve(stripe_price_object.product)
+        stripe.Product.modify(stripe_product.id, active=False)
+
+    product.stripe_prices.clear()
+    product.save()
+
+    for price in prices_to_delete:
+        price.delete()
+
+
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -211,6 +229,8 @@ class ProductViewSet(viewsets.ModelViewSet):
                 {"error": "Product does not exist."}, status=status.HTTP_404_NOT_FOUND
             )
 
+        delete_product_prices(product)
+
         purchases = Purchase.objects.all().filter(product=product.id)
         if purchases:
             return Response(
@@ -319,6 +339,7 @@ class ProductViewSet(viewsets.ModelViewSet):
         # Stall filter
         if user_id:
             user = User.objects.get(pk=user_id)
+            queryset = Product.objects.all().order_by("-id")
             queryset = queryset.filter(user=user.id)
         else:
             pass
@@ -347,6 +368,7 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
         stripe_prices = request.data.get("stripe_prices", None)
         updating_manga_product = request.data.get("updating_manga_product", None)
         sku = request.data.get("sku", None)
+        image = request.data.get("image", None)
 
         if str(self.request.user) != "AnonymousUser":
             user = User.objects.get(email=self.request.user)
@@ -376,67 +398,70 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
             or None
         )
 
-        use_existing_price = (
-            stripe_prices and len(stripe_prices) > 0
-        ) or request.data.get("active_price") == product.active_price
-        create_stripe_price = not free and not use_existing_price
+        if request.data["active_price"] == "" or request.data["active_price"] == "0":
+            request.data["active_price"] = 0
+            delete_product_prices(product)
 
-        if create_stripe_price:
+        else:
+            use_existing_price = (
+                stripe_prices and len(stripe_prices) > 0
+            ) or request.data.get("active_price") == product.active_price
+            create_stripe_price = not free and not use_existing_price
 
-            # Delete existing prices for this product
-            for product_stripe_price in product.stripe_prices.all():
-                stripe.Price.modify(product_stripe_price.price_id, active=False)
-                product_stripe_price.delete()
+            if create_stripe_price:
 
-            recurring = False
+                delete_product_prices(product)
 
-            # if product_type == MAG_SUBSCRIPTION: Subscription done manually through Admin portal (Per release)
-            if product_type == SUBSCRIPTION:
-                recurring = True
-            if product_type == DIG_SUBSCRIPTION:
-                recurring = True
-                month_interval = 1
+                recurring = False
 
-            stripe_price = stripe.Price.create(
-                unit_amount=int(float(request.data["active_price"]) * 100),
-                currency="aud",
-                recurring={
-                    "interval": "month",
-                    "interval_count": month_interval if month_interval else 1,
-                }
-                if recurring
-                else None,
-                product_data={
-                    "name": request.data["title"],
-                },
-            )
+                # if product_type == MAG_SUBSCRIPTION: Subscription done manually through Admin portal (Per release)
+                if product_type == SUBSCRIPTION:
+                    recurring = True
+                if product_type == DIG_SUBSCRIPTION:
+                    recurring = True
+                    month_interval = 1
 
-            stripe_product = stripe.Product.retrieve(stripe_price.product)
-            stripe.Product.modify(
-                stripe_product.id,
-                images=[
-                    "https://gdaypunch-static.s3.us-west-2.amazonaws.com/"
-                    + request.data["image"]
-                ],
-            )
+                stripe_price = stripe.Price.create(
+                    unit_amount=int(float(request.data["active_price"]) * 100),
+                    currency="aud",
+                    recurring={
+                        "interval": "month",
+                        "interval_count": month_interval if month_interval else 1,
+                    }
+                    if recurring
+                    else None,
+                    product_data={
+                        "name": request.data["title"],
+                    },
+                )
 
-            new_stripe_price = StripePrice(
-                price_amount=(stripe_price.unit_amount / 100),
-                price_id=stripe_price.id,
-                price_title=request.data["title"],
-                price_type=RECURRING if recurring else ONE_TIME,
-                month_interval=month_interval,
-            )
-            new_stripe_price.save()
+                if image:
+                    stripe_product = stripe.Product.retrieve(stripe_price.product)
+                    stripe.Product.modify(
+                        stripe_product.id,
+                        images=[
+                            "https://gdaypunch-static.s3.us-west-2.amazonaws.com/"
+                            + image
+                        ],
+                    )
 
-            request.data["stripe_prices"] = [new_stripe_price.id]
+                new_stripe_price = StripePrice(
+                    price_amount=(stripe_price.unit_amount / 100),
+                    price_id=stripe_price.id,
+                    price_title=request.data["title"],
+                    price_type=RECURRING if recurring else ONE_TIME,
+                    month_interval=month_interval if month_interval else 0,
+                )
+                new_stripe_price.save()
 
-        if month_interval:
-            for price in product.stripe_prices.all():
-                if price.month_interval != month_interval:
-                    current_price = StripePrice.objects.get(id=price.id)
-                    current_price.month_interval = month_interval
-                    current_price.save()
+                request.data["stripe_prices"] = [new_stripe_price.id]
+
+            if month_interval:
+                for price in product.stripe_prices.all():
+                    if price.month_interval != month_interval:
+                        current_price = StripePrice.objects.get(id=price.id)
+                        current_price.month_interval = month_interval
+                        current_price.save()
 
         if updating_manga_product:
             for product_manga in product.manga.all():
@@ -446,7 +471,8 @@ class ProductDetailView(UpdateModelMixin, viewsets.ViewSet):
                 update_manga.release_date = request.data["release_date"]
                 update_manga.age_rating = request.data["age_rating"]
                 update_manga.japanese_reading = (
-                    request.data["japanese_reading"] == "japanese"
+                    request.data.get("japanese_reading", None) == "japanese"
+                    or request.data.get("orientation", None) == "japanese"
                 )
                 update_manga.save()
 

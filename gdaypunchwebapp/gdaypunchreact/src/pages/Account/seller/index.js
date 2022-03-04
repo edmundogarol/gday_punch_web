@@ -5,7 +5,7 @@ import { Table, Input, Button, Space, Result, Card } from "antd";
 import Highlighter from "react-highlight-words";
 import moment from "moment";
 
-import { isEmpty } from "lodash";
+import { isEmpty, orderBy } from "lodash";
 import {
   ClockCircleOutlined as PendingIcon,
   CheckCircleOutlined as PurchasedIcon,
@@ -74,13 +74,15 @@ function Seller({ history }) {
   const [searchText, updateSearchText] = useState("");
   const [searchedColumn, updateSearchedColumn] = useState("");
 
-  const sellerSalesData = !isEmpty(sellerSales)
+  let sellerSalesData = !isEmpty(sellerSales)
     ? Object.values(sellerSales).map((sale) => ({ id: sale.id, ...sale }))
     : [];
+  sellerSalesData = orderBy(sellerSalesData, "id", "desc");
 
-  const payoutsData = !isEmpty(payouts)
+  let payoutsData = !isEmpty(payouts)
     ? Object.values(payouts).map((sale) => ({ id: sale.id, ...sale }))
     : [];
+  payoutsData = orderBy(payoutsData, "id", "desc");
 
   useScrollTop();
 

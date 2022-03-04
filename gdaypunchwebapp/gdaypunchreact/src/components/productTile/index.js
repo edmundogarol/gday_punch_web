@@ -256,14 +256,19 @@ function ProductTile(props) {
                         })
                       : dispatch(
                           updateMangaProduct({
-                            ...product,
                             ...manga_details,
-                            visible: false,
+                            ...product,
+                            id: product.id,
+                            visible: !visible,
                           })
                         )
                   }
                 >
-                  {can_edit ? "Delete" : "Archive (Unlist)"}
+                  {can_edit
+                    ? "Delete"
+                    : visible
+                    ? "Archive (Unlist)"
+                    : "Unarchive (List)"}
                 </button>
               </Tooltip>
             </TilePopover>

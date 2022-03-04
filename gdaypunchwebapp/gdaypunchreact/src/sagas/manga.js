@@ -288,7 +288,10 @@ export function* updateMangaProductCall(action) {
 
     yield put(fetchProducts(userId));
     yield put(uploadingMangaFinished());
-    resetUpdatingMangaDetails();
+
+    if (resetUpdatingMangaDetails) {
+      resetUpdatingMangaDetails();
+    }
   } else {
     console.log("Upload Manga error", JSON.stringify(response));
     Object.values(response.data).map((error) =>

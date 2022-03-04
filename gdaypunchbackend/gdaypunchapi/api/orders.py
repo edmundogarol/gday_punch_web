@@ -467,8 +467,8 @@ def handle_create_order(
                         seller_latest_payout.end_order_id = order.id
 
                         # Update payout amount
-                        seller_latest_payout.amount = order.amount - get_seller_fee(
-                            order.amount
+                        seller_latest_payout.amount = seller_latest_payout.amount + (
+                            order.amount - get_seller_fee(order.amount)
                         )
                         seller_latest_payout.save()
 

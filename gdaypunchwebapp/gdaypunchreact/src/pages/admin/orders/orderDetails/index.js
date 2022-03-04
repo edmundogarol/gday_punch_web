@@ -447,7 +447,7 @@ function OrderDetails(props) {
         {accountSeller ? (
           <div>
             {`Seller Fee (10% + 30c)`}
-            <span>{`- A$${getSellerFee(order.amount)}`}</span>
+            <span>{`- A$${getSellerFee(order.amount).toFixed(2)}`}</span>
           </div>
         ) : null}
         {!accountSeller ? (
