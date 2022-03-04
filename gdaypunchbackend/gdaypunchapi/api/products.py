@@ -33,6 +33,7 @@ from ..serializers import (
     StripePriceSerializer,
     SaveSerializer,
     ProductSimpleSerializer,
+    ProductSellerSerializer,
 )
 
 from gdaypunchbackend.settings import STRIPE_API_KEY, LOCAL_DEV
@@ -290,6 +291,9 @@ class ProductViewSet(viewsets.ModelViewSet):
                 if user_id:
                     user = User.objects.get(pk=user_id)
                     queryset = queryset.filter(user=user.id)
+
+                    serializer = ProductSellerSerializer(queryset, many=True)
+                    return Response(serializer.data)
                 else:
                     pass
 
@@ -326,7 +330,7 @@ class ProductViewSet(viewsets.ModelViewSet):
                     if v_prod.user.id == user_id:
                         new_visible_products.append(v_prod)
 
-                serializer = ProductSerializer(new_visible_products, many=True)
+                serializer = ProductSellerSerializer(new_visible_products, many=True)
                 return Response(serializer.data)
             else:
                 serializer = ProductSerializer(visible_products, many=True)
@@ -341,6 +345,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             user = User.objects.get(pk=user_id)
             queryset = Product.objects.all().order_by("-id")
             queryset = queryset.filter(user=user.id)
+            serializer = ProductSellerSerializer(queryset, many=True)
         else:
             pass
 

@@ -156,3 +156,13 @@ export const selectSettings = createSelector(
   selectDomain,
   ({ settings }) => settings
 );
+
+export const selectPayoutsState = createSelector(
+  selectDomain,
+  ({ payouts }) => payouts
+);
+
+export const selectPayoutStatusUpdateReason = createSelector(
+  selectDomain,
+  ({ payouts: { reason } }) => reason
+);

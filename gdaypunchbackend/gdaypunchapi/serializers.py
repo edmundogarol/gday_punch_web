@@ -193,6 +193,34 @@ class ProductSerializer(serializers.ModelSerializer):
             "saved_date",
             "saves",
             "user_avatar",
+        )
+
+
+class ProductSellerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = (
+            "id",
+            "title",
+            "description",
+            "image",
+            "product_type",
+            "active_price",
+            "sale_price",
+            "visible",
+            "stock",
+            "stripe_prices",
+            "manga_details",
+            "sku",
+            "manga",
+            "user",
+            "user_string",
+            "purchased",
+            "subscription_interval",
+            "saved",
+            "saved_date",
+            "saves",
+            "user_avatar",
             "editable",
         )
 
@@ -354,6 +382,11 @@ class PayoutSerializer(serializers.ModelSerializer):
             "status",
             "description",
             "author",
+            "email",
+            "use_paypal",
+            "payout_destination",
+            "statuses",
+            "order_summaries",
         )
 
 

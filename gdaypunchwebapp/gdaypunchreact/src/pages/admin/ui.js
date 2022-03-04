@@ -15,6 +15,7 @@ import Votes from "./votes";
 import Orders from "./orders";
 import Contacts from "./contacts";
 import Coupons from "./coupons";
+import Payouts from "./payouts";
 import StripeProducts from "./products/stripeProducts";
 import ProductDetail from "./products/productDetails";
 
@@ -34,6 +35,7 @@ function Ui(props) {
   const orders = app === "orders";
   const votes = app === "votes";
   const coupons = app === "coupons";
+  const payouts = app === "payouts";
   const products = app === "products";
   const contacts = app === "contacts";
   const stripeProducts = app === "stripe-products";
@@ -118,6 +120,11 @@ function Ui(props) {
           </NavLink>
         )}
         {hasPrivilege("admin") && (
+          <NavLink className="desktop-only" to="/admin/payouts">
+            Payouts
+          </NavLink>
+        )}
+        {hasPrivilege("admin") && (
           <NavLink className="desktop-only" to="/admin/coupons">
             Coupons
           </NavLink>
@@ -134,6 +141,7 @@ function Ui(props) {
         {votes && <Votes />}
         {products && <Products />}
         {orders && <Orders />}
+        {payouts && <Payouts />}
         {contacts && <Contacts />}
         {stripeProducts && <StripeProducts />}
         {productDetail && <ProductDetail />}

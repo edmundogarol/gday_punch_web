@@ -61,7 +61,8 @@ function Ui(props) {
         ? [
             { key: 1, route: "orders" },
             { key: 2, route: "products" },
-            { key: 3, route: "coupons" },
+            { key: 3, route: "payouts" },
+            { key: 4, route: "coupons" },
           ]
         : [],
     },

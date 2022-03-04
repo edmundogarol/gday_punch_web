@@ -404,16 +404,25 @@ class PayoutPermissions(BasePermission):
 
         if request.method in WRITE_METHODS or staff(request):
             return True
-        elif view.action in ["create"]:
-            return True
+        # elif view.action in ["create"]:
+        #     return True
         elif view.action in ["list"]:
             return True
-        elif view.action in ["retrieve", "update", "partial_update", "destroy"]:
-            if request.user.is_authenticated:
-                try:
-                    payout = Payout.objects.get(id=payout_id)
-                    return payout.seller.user.email.strip() == str(request.user).strip()
-                except Payout.DoesNotExist:
-                    return False
+        # elif view.action in ["retrieve", "update", "partial_update", "destroy"]:
+        #     if request.user.is_authenticated:
+        #         try:
+        #             payout = Payout.objects.get(id=payout_id)
+        #             return payout.seller.user.email.strip() == str(request.user).strip()
+        #         except Payout.DoesNotExist:
+        #             return False
+        else:
+            return False
+
+
+class PayoutStatusUpdatesPermissions(BasePermission):
+    def has_permission(self, request, view):
+
+        if staff(request):
+            return True
         else:
             return False

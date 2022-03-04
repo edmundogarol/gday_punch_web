@@ -459,15 +459,23 @@ def handle_create_order(
 
                 # Active payout
                 if payout_update.status == PAYOUT_SCHEDULED:
-                    print("active payout: scheduled")
-
                     seller_latest_payout.add(order)
                     seller_latest_payout.save()
 
+                else:
+                    # Create new payout if latest payout is no longer scheduled
+                    new_payout = Payout.objects.create(
+                        seller=seller,
+                    )
+                    new_payout.add(order)
+                    new_payout.save()
+
+                    PayoutUpdate.objects.create(
+                        payout=new_payout, description="Payout is scheduled"
+                    )
+
             # Seller has no pre-existing payout
             else:
-                print("Seller has no upcoming payout")
-
                 # Create first payout
                 new_payout = Payout.objects.create(
                     seller=seller,

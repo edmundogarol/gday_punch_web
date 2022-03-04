@@ -111,6 +111,18 @@ export const FETCHING_ORDERS_SALES_GRAPH = "admin/FETCHING_ORDERS_SALES_GRAPH";
 export const FINISHED_FETCHING_ORDERS_SALES_GRAPH =
   "admin/FINISHED_FETCHING_ORDERS_SALES_GRAPH";
 
+export const SET_SELECTED_ADMIN_PAYOUT = "admin/SET_SELECTED_ADMIN_PAYOUT";
+export const FETCH_ADMIN_PAYOUTS = "admin/FETCH_ADMIN_PAYOUTS";
+export const FETCHING_ADMIN_PAYOUTS = "admin/FETCHING_ADMIN_PAYOUTS";
+export const UPDATE_ADMIN_PAYOUTS = "admin/UPDATE_ADMIN_PAYOUTS";
+export const UPDATE_ADMIN_PAYOUT = "admin/UPDATE_ADMIN_PAYOUT";
+export const UPDATE_PAYOUT_STATUS = "admin/UPDATE_PAYOUT_STATUS";
+export const UPDATE_PAYOUT_STATUS_REASON = "admin/UPDATE_PAYOUT_STATUS_REASON";
+export const FINISHED_FETCHING_ADMIN_PAYOUTS =
+  "admin/FINISHED_FETCHING_ADMIN_PAYOUTS";
+export const UPDATE_ADMIN_PAYOUTS_ERROR = "admin/UPDATE_ADMIN_PAYOUTS_ERROR";
+export const RESET_ADMIN_PAYOUTS = "admin/RESET_ADMIN_PAYOUTS";
+
 export const fetchSettings = () => ({
   type: FETCH_SETTINGS,
 });
@@ -626,4 +638,63 @@ export const fetchingOrdersSalesGraph = () => ({
 
 export const finishedFetchingOrdersSalesGraph = () => ({
   type: FINISHED_FETCHING_ORDERS_SALES_GRAPH,
+});
+
+export const setSelectedAdminPayout = (payoutId) => ({
+  type: SET_SELECTED_ADMIN_PAYOUT,
+  payload: {
+    payoutId,
+  },
+});
+
+export const fetchAdminPayouts = () => ({
+  type: FETCH_ADMIN_PAYOUTS,
+});
+
+export const fetchingAdminPayouts = () => ({
+  type: FETCHING_ADMIN_PAYOUTS,
+});
+
+export const updateAdminPayouts = (payouts) => ({
+  type: UPDATE_ADMIN_PAYOUTS,
+  payload: {
+    payouts,
+  },
+});
+
+export const updateAdminPayout = (payout) => ({
+  type: UPDATE_ADMIN_PAYOUT,
+  payload: {
+    payout,
+  },
+});
+
+export const updatePayoutStatus = (payoutId, status) => ({
+  type: UPDATE_PAYOUT_STATUS,
+  payload: {
+    payoutId,
+    status,
+  },
+});
+
+export const updatePayoutStatusReason = (reason) => ({
+  type: UPDATE_PAYOUT_STATUS_REASON,
+  payload: {
+    reason,
+  },
+});
+
+export const finishedFetchingAdminPayouts = () => ({
+  type: FINISHED_FETCHING_ADMIN_PAYOUTS,
+});
+
+export const updateAdminPayoutsError = (errors) => ({
+  type: UPDATE_ADMIN_PAYOUTS_ERROR,
+  payload: {
+    errors,
+  },
+});
+
+export const resetAdminPayouts = () => ({
+  type: RESET_ADMIN_PAYOUTS,
 });

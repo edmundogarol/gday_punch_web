@@ -53,6 +53,14 @@ import {
   UPDATE_SETTINGS,
   CHANGING_SETTINGS,
   FINISHED_CHANGING_SETTINGS,
+  SET_SELECTED_ADMIN_PAYOUT,
+  UPDATE_ADMIN_PAYOUTS,
+  FETCHING_ADMIN_PAYOUTS,
+  FINISHED_FETCHING_ADMIN_PAYOUTS,
+  UPDATE_ADMIN_PAYOUTS_ERROR,
+  RESET_ADMIN_PAYOUTS,
+  UPDATE_ADMIN_PAYOUT,
+  UPDATE_PAYOUT_STATUS_REASON,
 } from "actions/admin";
 import { arrayIdsMapToObject } from "utils/utils";
 
@@ -147,6 +155,15 @@ const INITIAL_STATE = {
     vote_tally: {},
     fetching: false,
     finishedFetching: false,
+  },
+
+  payouts: {
+    payoutsList: {},
+    fetching: false,
+    finishedFetching: false,
+    errors: undefined,
+    selected: undefined,
+    reason: undefined,
   },
 };
 
@@ -627,6 +644,78 @@ export const adminReducer = (state = INITIAL_STATE, action) => {
           ...state.orders,
           salesGraph: payload.salesGraph,
         },
+      };
+    case SET_SELECTED_ADMIN_PAYOUT:
+      return {
+        ...state,
+        payouts: {
+          ...state.payouts,
+          selected: action.payload.payoutId,
+        },
+      };
+    case UPDATE_ADMIN_PAYOUTS:
+      return {
+        ...state,
+        payouts: {
+          ...state.payouts,
+          payoutsList: {
+            ...state.payouts.payoutsList,
+            ...arrayIdsMapToObject(action.payload.payouts),
+          },
+        },
+      };
+    case UPDATE_ADMIN_PAYOUT:
+      return {
+        ...state,
+        payouts: {
+          ...state.payouts,
+          payoutsList: {
+            ...state.payouts.payoutsList,
+            [action.payload.payout.id]: {
+              ...state.payouts.payoutsList[action.payload.payout.id],
+              ...action.payload.payout,
+            },
+          },
+        },
+      };
+    case UPDATE_PAYOUT_STATUS_REASON:
+      return {
+        ...state,
+        payouts: {
+          ...state.payouts,
+          reason: action.payload.reason,
+        },
+      };
+    case FETCHING_ADMIN_PAYOUTS:
+      return {
+        ...state,
+        payouts: {
+          ...state.payouts,
+          fetching: true,
+          finishedFetching: false,
+        },
+      };
+    case FINISHED_FETCHING_ADMIN_PAYOUTS:
+      return {
+        ...state,
+        payouts: {
+          ...state.payouts,
+          fetching: false,
+          finishedFetching: true,
+        },
+      };
+    case UPDATE_ADMIN_PAYOUTS_ERROR:
+      return {
+        ...state,
+        payouts: {
+          ...state.payouts,
+          errors: payload.errors,
+        },
+      };
+    case RESET_ADMIN_PAYOUTS:
+      return {
+        ...state,
+        payouts: INITIAL_STATE.payouts,
       };
     default:
       return state;

@@ -85,6 +85,14 @@ import {
   finishedFetchingSettings,
   changingSettings,
   finishedChangingSettings,
+  FETCH_ADMIN_PAYOUTS,
+  fetchingAdminPayouts,
+  updateAdminPayouts,
+  finishedFetchingAdminPayouts,
+  updateAdminPayoutsError,
+  updateAdminPayout,
+  updatePayoutStatusReason,
+  UPDATE_PAYOUT_STATUS,
 } from "actions/admin";
 import {
   selectPendingTweet,
@@ -96,6 +104,7 @@ import {
   selectUsersCount,
   selectUserDetails,
   selectSettings,
+  selectPayoutStatusUpdateReason,
 } from "selectors/admin";
 import { fetchAllProductsCall } from "./products";
 import { arrayIdsMapToObject } from "utils/utils";
@@ -935,6 +944,60 @@ export function* fetchOrderSalesGraphCall(action) {
   }
 }
 
+export function* fetchAdminPayoutsCall() {
+  yield put(fetchingAdminPayouts());
+
+  const response = yield call(api, `payouts/?admin=view`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateAdminPayouts(data));
+    yield put(finishedFetchingAdminPayouts());
+  } else {
+    console.log("Payouts fetch error", JSON.stringify(response));
+    yield put(finishedFetchingAdminPayouts());
+    yield put(updateAdminPayoutsError(response.data));
+  }
+}
+
+export function* fetchPayoutDetails(payoutId) {
+  const response = yield call(api, `payouts/${payoutId}/`, {
+    method: "GET",
+  });
+
+  if (response && response.ok) {
+    const data = response.data;
+    yield put(updateAdminPayout(data));
+  } else {
+    console.log("Payout details fetch error", JSON.stringify(response));
+  }
+}
+
+export function* updatePayoutStatusCall(action) {
+  const { payoutId, status } = action.payload;
+  const reason = yield select(selectPayoutStatusUpdateReason);
+
+  const response = yield call(api, `payouts-status/`, {
+    method: "POST",
+    body: {
+      payout: payoutId,
+      status,
+      reasons: reason,
+    },
+  });
+
+  if (response && response.ok) {
+    // const data = response.data;
+    yield call(fetchPayoutDetails, payoutId);
+    yield put(updatePayoutStatusReason(undefined));
+  } else {
+    console.log("Payout Status Update error", JSON.stringify(response));
+    message.error(`Payout status update error: ${response.data}`);
+  }
+}
+
 export default function* adminSaga() {
   yield all([
     takeLatest(DO_TWEET, callTweet),
@@ -973,5 +1036,7 @@ export default function* adminSaga() {
     takeLatest(FETCH_ORDERS_SALES_GRAPH, fetchOrderSalesGraphCall),
     takeLatest(FETCH_SETTINGS, fetchSettingsCall),
     takeLatest(CHANGE_SETTINGS, changeSettingsCall),
+    takeLatest(FETCH_ADMIN_PAYOUTS, fetchAdminPayoutsCall),
+    takeLatest(UPDATE_PAYOUT_STATUS, updatePayoutStatusCall),
   ]);
 }

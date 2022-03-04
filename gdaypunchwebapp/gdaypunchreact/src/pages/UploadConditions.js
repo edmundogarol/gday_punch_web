@@ -220,13 +220,17 @@ function UploadConditions(props) {
                 </li>
                 <li>
                   Listing a manga up for sale is free, however Gday Punch Web
-                  App will take a 10% + 30c hosting fee for every sale to cover
-                  costs of Stripe (payment gateway) fees, website upkeep and
-                  traffic management.
+                  App will take a Selelr Fee* of 10% + 30c hosting fee for every
+                  sale to cover costs of Stripe (payment gateway) fees, website
+                  upkeep and traffic management.
                   <br />※ For example: <br />
                   If you sell Chapter 1 of your manga for $2, Gday Punch will
                   take a fee of 20c (10%) + 30c, for a total of 50c. <br /> Your
                   new sales balance will be added $1.50.
+                </li>
+                <li>
+                  Seller fees are not refunded to you, if you choose to process
+                  any refunds for your sales/orders to your customers.
                 </li>
                 <li>
                   Manga that has been sold or purchased within the website will

@@ -1,0 +1,134 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Gday Punch Order Update</title>
+  <meta name="description" content="Gday Punch Purchase Receipt">
+  <meta name="author" content="Gday Punch">
+  <style type="text/css">
+    .link:hover {
+      cursor: pointer;
+    }
+
+    @media screen and (max-width: 600px), screen and (max-device-width: 600px) {
+        .outer {
+          padding-left: unset !important;
+          padding-right: unset !important;
+        }
+        .footer-img {
+          width: unset !important;
+        }
+        .address-field {
+          padding-left: unset !important;
+        }
+    }
+  </style>
+</head>
+<body class="outer" style="background: #eaeaea; margin-left: auto; margin-right: auto; margin-top: 1em; transform: scale(1.2); padding: 2em;">
+  <div style="max-width: 36em; margin-left: auto; margin-right: auto; font-family: sans-serif; font-weight: 300; background: white; padding: 1em; color: dimgray;">
+    <table style="width: 100%; border-bottom: 1px solid #bfbfbf;">
+      <tr>
+        <td>
+          <img style="height: 4em;" src="https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com/gday.png">
+        </td>
+        <td style="text-align: end;">
+          <table style="width: 100%;">
+            <tr>
+              <td>
+                Payout
+              </td>
+            </tr>
+            <tr style="font-size: 0.7em">
+              <td>
+                {{ update_date }}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    <div style="font-size: 1.5em; font-weight: 400; color: #8e8e8e; text-align: center; padding: 2em; border-bottom: 1px solid #bfbfbf;">
+      <div>Hi {{ payout.author }},</div>
+      <div>{{ subtitle }}</div>
+    </div>
+    <div style="font-size: 1.5em; font-weight: 400; color: #8e8e8e; text-align: center; padding: 2em; border-bottom: 1px solid #bfbfbf;">
+      <div>A${{ amount }}</div>
+    </div>
+    <div>
+      <table style="width: 100%;">
+        <tr>
+          <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
+            <h4>Contact Information</h4>
+            <span></span>
+            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
+              {{ payout.author }}
+            </p>
+            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
+              E: {{ payout.email }}
+            </p>
+          </td>
+          <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
+            <h4>Payout Destination</h4>
+            <span></span>
+            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
+              Method: {% if using_bank %} Bank Account {% else %} PayPayl {% endif %}
+            </p>
+            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
+              Account: {{ payout.payout_destination }}
+            </p>
+            {% if using_bank %}
+            <br />
+            <br />
+            <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
+              *Please note that bank transfers could take 1-3 business days to arrive in your nominated account.
+            </p>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </div>
+    <table style="width: 100%;">
+      <tr>
+        <td class="address-field" style="padding-left: 1em; padding-right: 1em; width: 50%; vertical-align: top;">
+          <h4>Notes</h4>
+          <span></span>
+          <p style="font-size: 0.9em; margin-top: 0.2em; margin-bottom: 0.2em;">
+            {{ notes }}
+          </p>
+        </td>
+      </tr>
+    </table>
+    <table style="width: 100%; margin-top: 1em;">
+      <tr>
+        <td class="footer-img" style="float: right;">
+          <img style="height: 4em;" src="https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com/gday_header.png">
+        </td>
+        <td style="font-family: sans-serif; font-size: 0.7em; color: dimgrey;">
+          <table>
+            <tr>
+              <td style="text-transform: uppercase;">
+                Gday Punch Pty Ltd
+              </td>
+            </tr>
+            <tr>
+              <td>
+                Melbourne, VIC 3000 Australia
+              </td>
+            </tr>
+            <tr>
+              <td>  
+                <p style="margin: unset;" class="link" onclick="window.open('{{ website }}', '_blank')">
+                  www.gdaypunch.com.au
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>

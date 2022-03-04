@@ -694,7 +694,7 @@ class Product(models.Model):
                     no_orders = False
 
                 except Order.DoesNotExist:
-                    print("No order")
+                    pass
 
             if no_orders:
                 return True
@@ -1228,7 +1228,7 @@ class Seller(models.Model):
     def next_payout(self):
         payout = Payout.objects.filter(seller=self.id).last()
 
-        if payout:
+        if payout and payout.status == PAYOUT_SCHEDULED:
             return payout.amount
         else:
             return 0
@@ -1304,15 +1304,81 @@ class Payout(models.Model):
     @property
     def amount(self):
         amount = 0
-        for order in self.orders.all():
-            amount = amount + (order.amount - get_seller_fee(order.amount))
+
+        print("self.orders", self.orders)
+        if self.orders:
+            for order in self.orders.all():
+                amount = amount + (order.amount - get_seller_fee(order.amount))
 
         return amount
 
     @property
     def author(self):
-        user = User.objects.get(id=self.seller.user.id)
-        return user.author_name
+        return self.seller.user.author_name
+
+    @property
+    def email(self):
+        return self.seller.user.email
+
+    @property
+    def use_paypal(self):
+        return self.seller.use_paypal
+
+    @property
+    def payout_destination(self):
+        if self.seller.use_paypal:
+            return self.seller.paypal_email
+        else:
+            return (
+                self.seller.bank_acc_name
+                + " "
+                + self.seller.bank_bsb
+                + " "
+                + self.seller.bank_acc
+            )
+
+    @property
+    def statuses(self):
+        statuses = []
+        queryset = PayoutUpdate.objects.filter(payout=self.id).order_by("-id")
+
+        for update in queryset:
+            statuses.append(
+                {
+                    "id": update.id,
+                    "status": update.status,
+                    "description": update.description,
+                    "update_date": update.update_date,
+                    "readable_date": update.readable_date,
+                }
+            )
+
+        return statuses
+
+    @property
+    def order_summaries(self):
+        orders = []
+
+        for order in self.orders.all():
+            orders.append(
+                {
+                    "id": order.id,
+                    "amount": order.amount,
+                    "products_total_price": order.products_total_price,
+                    "products_qty": order.products_qty,
+                    "number": order.number,
+                    "date_created": order.date_created,
+                    "status": order.status,
+                    "email": order.email,
+                    "first_name": order.first_name,
+                    "last_name": order.last_name,
+                    "product_qty_details": order.product_qty_details,
+                    "fulfillment_type": order.fulfillment_type,
+                    "readable_date": order.readable_date,
+                }
+            )
+
+        return orders
 
 
 class PayoutUpdate(models.Model):
