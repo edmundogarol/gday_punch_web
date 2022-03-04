@@ -346,6 +346,7 @@ class ProductViewSet(viewsets.ModelViewSet):
             queryset = Product.objects.all().order_by("-id")
             queryset = queryset.filter(user=user.id)
             serializer = ProductSellerSerializer(queryset, many=True)
+            return Response(serializer.data)
         else:
             pass
 

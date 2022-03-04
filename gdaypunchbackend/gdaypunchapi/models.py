@@ -1305,7 +1305,6 @@ class Payout(models.Model):
     def amount(self):
         amount = 0
 
-        print("self.orders", self.orders)
         if self.orders:
             for order in self.orders.all():
                 amount = amount + (order.amount - get_seller_fee(order.amount))
