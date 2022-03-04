@@ -536,7 +536,7 @@ function MangaDetail({
           <>
             <h4>Sell</h4>
             <Checkbox onChange={(e) => toggleMarkForSale(e.target.checked)}>
-              List this manga for work for sale.
+              List this manga work up for sale.
             </Checkbox>
           </>
         ) : null}
