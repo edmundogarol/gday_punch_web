@@ -43,7 +43,7 @@ WORKDIR /opt/app
 #Install requirements and migrate - Cachebust db-config download to always pick up latest config
 RUN pip install -r requirements.txt
 ARG CACHEBUST=1
-RUN aws s3 cp s3://gdaypunch-static/gday-db-config.json .
+RUN aws s3 cp s3://gdaypunch-secs/gday-db-config.json .
 # RUN cat gday-db-config.json
 RUN python manage.py migrate --noinput
 

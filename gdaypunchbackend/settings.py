@@ -31,18 +31,12 @@ DEBUG = True
 ALLOWED_HOSTS = [
     "gdaypunch.com.au",
     "www.gdaypunch.com.au",
-    "gdaypunch.com",
-    ".gdaypunch.com",
     "gdaypunch.elasticbeanstalk.com",
     "gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
     ".gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
-    "localhost",
-    "0.0.0.0",
-    "192.168.1.108",
-    "192.168.1.103",
-    "192.168.43.128",
-    "172.31.15.249",
-    "172.31.6.161",
+    # "localhost",
+    # "0.0.0.0",
+    # "192.168.1.108",
 ]
 
 if "DEVENV" not in os.environ and "DEPLOYENV" not in os.environ:
