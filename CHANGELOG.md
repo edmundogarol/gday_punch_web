@@ -1,3 +1,9 @@
+#### 20.4.2022
+
+### Django
+
+- Update email server to SendGrid (free - 100 emails/per day) with SMTP relay
+
 #### 28.3.2022
 
 ### Django
