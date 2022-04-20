@@ -36,7 +36,6 @@ ALLOWED_HOSTS = [
     ".gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
     # "localhost",
     # "0.0.0.0",
-    # "192.168.1.108",
 ]
 
 if "DEVENV" not in os.environ and "DEPLOYENV" not in os.environ:
@@ -235,7 +234,7 @@ if "DEVENV" in os.environ:
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = "smtp.sendgrid.net"
-    EMAIL_USE_SSL = True
+    EMAIL_USE_TLS = True
 
     AWS_ACCESS_KEY_ID = SETTINGS["AWS_ACCESS_KEY_ID"]
     AWS_SECRET_ACCESS_KEY = SETTINGS["AWS_SECRET_ACCESS_KEY"]
