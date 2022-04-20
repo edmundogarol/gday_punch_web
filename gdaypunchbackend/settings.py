@@ -234,7 +234,7 @@ if "DEVENV" in os.environ:
     EMAIL_HOST = "0.0.0.0"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.gmail.com"
+    EMAIL_HOST = "smtp.sendgrid.net"
     EMAIL_USE_SSL = True
 
     AWS_ACCESS_KEY_ID = SETTINGS["AWS_ACCESS_KEY_ID"]
