@@ -34,8 +34,8 @@ ALLOWED_HOSTS = [
     "gdaypunch.elasticbeanstalk.com",
     "gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
     ".gday-punch-web-dev.us-west-2.elasticbeanstalk.com",
-    # "localhost",
-    # "0.0.0.0",
+    "localhost",
+    "0.0.0.0",
 ]
 
 if "DEVENV" not in os.environ and "DEPLOYENV" not in os.environ:
