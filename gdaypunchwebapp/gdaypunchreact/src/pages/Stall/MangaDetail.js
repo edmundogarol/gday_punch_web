@@ -530,9 +530,7 @@ function MangaDetail({
             updateUploadingDetails({ ...uploadingDetails, release_date: val })
           }
         />
-        {currentUser.seller_id &&
-        (uploadingDetails.active_price <= 0 ||
-          !uploadingDetails.active_price) ? (
+        {currentUser.seller_id ? (
           <>
             <h4>Sell</h4>
             <Checkbox onChange={(e) => toggleMarkForSale(e.target.checked)}>

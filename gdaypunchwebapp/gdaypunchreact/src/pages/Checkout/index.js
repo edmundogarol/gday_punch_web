@@ -424,7 +424,6 @@ function Checkout({ history }) {
   }, [clientSecret]);
 
   const conditionalValidationFields = [
-    "phone",
     "city",
     "country",
     "address1",

@@ -458,7 +458,7 @@ def handle_create_order(
                 ).last()
 
                 # Active payout
-                if payout_update.status == PAYOUT_SCHEDULED:
+                if payout_update and payout_update.status == PAYOUT_SCHEDULED:
                     seller_latest_payout.add(order)
                     seller_latest_payout.save()
 
@@ -467,7 +467,7 @@ def handle_create_order(
                     new_payout = Payout.objects.create(
                         seller=seller,
                     )
-                    new_payout.add(order)
+                    new_payout.orders.add(order)
                     new_payout.save()
 
                     PayoutUpdate.objects.create(
@@ -480,7 +480,7 @@ def handle_create_order(
                 new_payout = Payout.objects.create(
                     seller=seller,
                 )
-                new_payout.add(order)
+                new_payout.orders.add(order)
                 new_payout.save()
 
                 PayoutUpdate.objects.create(
