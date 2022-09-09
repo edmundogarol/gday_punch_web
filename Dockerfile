@@ -41,7 +41,7 @@ WORKDIR /opt/app
 # RUN ls gdaypunchbackend/public/static
 
 #Install requirements and migrate - Cachebust db-config download to always pick up latest config
-RUN pip install -r requirements.txt
+RUN pip install --upgrade wheel && pip install --upgrade setuptools && pip install -r requirements.txt
 ARG CACHEBUST=1
 RUN aws s3 cp s3://gdaypunch-secs/gday-db-config.json .
 # RUN cat gday-db-config.json
