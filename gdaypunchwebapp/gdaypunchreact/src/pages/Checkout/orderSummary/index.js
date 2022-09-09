@@ -80,7 +80,13 @@ function Ui(props) {
             <ItemTotal>
               <TotalLabel>Total:</TotalLabel>
               <h3>
-                A${(freeShipping ? cartTotal : cartTotal + 13).toFixed(2)}
+                A$
+                {(allDigitalCart
+                  ? cartTotal
+                  : freeShipping
+                  ? cartTotal
+                  : cartTotal + 13
+                ).toFixed(2)}
               </h3>
             </ItemTotal>
             <GSTLabel>[Price Includes GST]</GSTLabel>
