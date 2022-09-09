@@ -19,7 +19,7 @@ dev:
 	python -m venv venv && source venv/bin/activate && brew services start postgresql
 
 build:
-	pip install --upgrade pip && pip install --user -r requirements.txt && pip list
+	pip install --upgrade pip && pip install --upgrade wheel && pip install --upgrade setuptools && pip install --user -r requirements.txt && pip list
 
 env: dev build
 
