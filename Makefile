@@ -15,27 +15,32 @@ deletemigrations:
 deletedb:
 	rm db.sqlite3
 
+stoppg:
+	brew services stop postgresql@14 || true
+
 dev:
-	python -m venv venv && source venv/bin/activate && brew services start postgresql
+	python3 -m venv venv && source venv/bin/activate && brew services start postgresql
+
+predev: stoppg dev
 
 build:
-	pip install --upgrade pip && pip install --user -r requirements.txt && pip list
+	python -m pip install --upgrade pip && python -m pip install -r requirements.txt && pip list
 
 env: dev build
 
 migrate:
-	DEVENV=development python manage.py migrate
+	DEVENV=development python3 manage.py migrate
 
 makemigrations:
-	DEVENV=development python manage.py makemigrations 
+	DEVENV=development python3 manage.py makemigrations 
 
 static:
-	DEPLOYENV=deployment python manage.py collectstatic --noinput 
+	DEPLOYENV=deployment python3 manage.py collectstatic --noinput 
 
 migrations: makemigrations migrate
 
 server:
-	DEVENV=development python manage.py runserver 0.0.0.0:8000
+	DEVENV=development python3 manage.py runserver 0.0.0.0:8000
 
 mailserver:
 	brew services start mailhog
@@ -47,7 +52,7 @@ buildrun: env server
 
 resetdb: deletemigrations deletedb makemigrations migrate
 
-app: gui	dev build migrate	server
+app: gui predev build migrate	server
 
 dockerapp: gui build migrate	server
 

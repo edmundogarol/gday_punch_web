@@ -1,6 +1,6 @@
 {
-    "RDS_DB_NAME": "gdaypunch",
-    "RDS_USERNAME": "gdayuser",  
+    "RDS_DB_NAME": "gday_punch",
+    "RDS_USERNAME": "gday_user",  
     "RDS_PASSWORD": "gdaypassword",  
     "RDS_HOSTNAME": "localhost",  
     "RDS_PORT": "5432",

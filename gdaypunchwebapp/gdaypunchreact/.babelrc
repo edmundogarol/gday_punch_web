@@ -13,6 +13,7 @@
         {
           "fileName": false
         }
-      ]
+      ],
+      ["@babel/plugin-proposal-optional-chaining"]
     ]
 }
