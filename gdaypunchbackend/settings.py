@@ -129,7 +129,6 @@ private_ip = get_linux_ec2_private_ip()
 if private_ip:
     ALLOWED_HOSTS.append(private_ip.decode("UTF-8"))
 
-# Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -196,6 +195,9 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ],
         },
+        'libraries': {
+            'staticfiles': 'django.templatetags.static',
+        }
     },
 ]
 

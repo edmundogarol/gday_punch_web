@@ -20,6 +20,7 @@
 
 ## VirtualEnv [Venv]
 > Create python venv folder `/opt/homebrew/opt/python@3.11/bin/python3.11 -m venv venv`
+> Activate venv `source venv/bin/activate`
 
 ## Yarn + Node
 > Install yarn `brew install yarn`
