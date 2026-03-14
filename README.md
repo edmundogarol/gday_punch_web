@@ -23,7 +23,9 @@ If I were to rebuild this today, I would likely introduce:
 
 Repository: `gday_punch_web`
 
-![gday_punch_web_app](https://gdaypunch-resources.s3.ap-southeast-2.amazonaws.com/gday-punch-webapp.png)
+![Gday Punch Web App](https://edmundo-dev-assets.s3.us-west-2.amazonaws.com/screenshots/gday-punch-webapp)
+
+![Digital manga details](https://edmundo-dev-assets.s3.us-west-2.amazonaws.com/screenshots/gday-punch-webapp-digital_manga_summary)
 
 #Starting Gday Punch Web App
 
