@@ -28,6 +28,11 @@ Repository: `gday_punch_web`
 
 ## Digital Manga(Book) Purchasing + Reader
 ![Digital manga details](https://edmundo-dev-assets.s3.us-west-2.amazonaws.com/screenshots/gday-punch-webapp-digital_manga_summary)
+![Digital manga details](https://edmundo-dev-assets.s3.us-west-2.amazonaws.com/screenshots/gday-punch-webapp-received_order)
+
+## Admin Portal (User management)
+![Digital manga details](https://edmundo-dev-assets.s3.us-west-2.amazonaws.com/screenshots/gday-punch-webapp-user_manager)
+![Digital manga details](https://edmundo-dev-assets.s3.us-west-2.amazonaws.com/screenshots/gday-punch-webapp-admin_user_profile_manager)
 
 #Starting Gday Punch Web App
 
